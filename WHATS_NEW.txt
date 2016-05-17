@@ -1,0 +1,91 @@
+* New design that is easier to use!
+* Improved sales and receiving's interface for faster checkout
+* Added time clock for employee time tracking and simplified payroll
+* Customer Loyalty/Points system
+* Inventory counting/reconciliation feature for items
+* Added Stripe and Braintree as credit card gateway providers
+* Can now create purchase orders for receiving's
+* Now support EMV/Chip cards for Mercury credit card processing
+* Now can capture digital signature using Topaz 1x5 pads on windows and iPad/Android/iPhone devices on screen
+* Now tracking of a sale was a layaway or estimate and now added filters for suspended sale report
+* Now allowing the use UPC or Product ID as the value of a barcode for items
+* Now possible to print barcodes from a receiving order
+* Suspended receiving's report
+* Can now track expenses
+* Barcode sheet now prints onto Avery 8160 sheets (30 per sheet) via inkjet printer
+* Now can use an internal messaging system to alert employees or let them know important information
+* Can now set custom taxes for customers (sale) and suppliers (recv.)
+* Made many of the summary reports comparable on a date range
+* Improved Bulk edit for items. Now tied to a search AND you can do percent increase/decrease for selling price, cost price, and promo price
+* Added additional fields to employees (Hire date, birthday inactive..etc)
+* Now support any currency for Cash Tracking (Defaults To United States Currency)
+* Performance improvement for excel import for items
+* Now possible to view inventory reports for other locations even if employee doesn't have access to location via a permission
+* Can now track expiring inventory via items, receiving, and Inventory --> Expiring inventory report
+* Added summary tiers report
+* Can print mailing labels for customers, employees, and suppliers
+* Improved items excel import by allow for more fields to be imported (promo price, promo start, end date)
+* Added closeout report
+* Added summary + graphical time range report for sales
+* Can now create unlimited categories and sub-categories for items + item kits + expenses
+* Can now add multiple tags to items
+* Can now force password employee change after login
+* Item and item kit cost price can be dynamically determined based on the entire weight average of whole inventory (Checkbox "Always Use Global Average Cost Price For A Sale Item's Cost Price" in store config)
+* Inventory summary report now shows how many items are in stock + weighted average cost price
+* Commission can now also be based on profit
+* Can now sort reports by newest date or oldest date
+* Added store account activity report
+* Inventory low report now shows items that have 0 or less in stock
+* Don't replace saved credit card info when a card is on file and a charge without saved card is completed
+* Added sub permission for editing quantity for items
+* Can now run most reports across multiple locations
+* Can compare some reports to arbitrary date ranges
+* Can now force password reset upon login
+* Can now optionally charge tax on receving's
+* Allow for "Color" option for locations so it is easier to tell which location you are on
+* Cost price averaging new method -- Don't average; update cost price directly
+* Added configuration option to limit/expand how many recent customer sales show up on sales screen
+* Added option to hide suspended recv. in reports
+* Added ability to clone employee for fast employee creation
+* Can Now edit basic user info for self without having access to employees module
+* Added configuration option on when to calculate profit for gift cards
+* Closeout report to view summary of activity for 1 day
+* Made it possible to require employee login before each sale. Also made it possible to login without password.
+* Added store config preference to sort by newest or oldest for reports
+* Can now email store account statements to customers
+* Improved search for users running mysql 5.6 or newer
+* Added configuration option Speed up search queries that makes searches faster; but disables the ability to sort
+* Size now shows up for barcodes
+* Can now configure with item number shows on barcodes (item id, UPC/EAN/ISBN, or product id)
+* Gift card history report
+* Can now customize the number of decimals as well as the thousands separator
+* new receipt design
+* Added permission for inventory report to restrict the ability to view all commissions
+* Can now filter recv. report by supplier
+* Added database backup for mysqli and changed mysql --> mysqli for default
+* Now showing signature for store accounts
+* Added full screen mode for sales + receiving's pages
+* Detailed Gift card report can now be filtered by gift card number
+* Added option to hide customer information on receipt
+* Added quick complete option that combines add payment and complete  sale into one click
+* Added support for wireless barcode scanner for iPad (Socket Mobile 7Ci Barcode). Also works with CHS 7Ci, 7Mi, 7Pi, 7Di, 7Qi, 7Xi, CHS 8Ci and 8Qi
+* Discount percent for tier prices or sale + recv. can now be decimal
+* Discount option for flat amount or flat percent
+* Added tier pricing information to items + item kits popups
+* Have ability to use very little paper to pop open drawer via printer
+* Added preference Do NOT Group Items That Are The Same for sales in store config
+* Reorder level alert on manage items screen (red)
+* Improved date/time input for reports
+* Added filter to summary customers report to have an amount filter
+* Improved and Fixed profit and loss reports
+* Can now choose non taxable during excel import
+* Can now add non taxable tax certificate number for customer
+* Can now customize receipt title
+* Can now control how many items/categories are shown on item grid for sales + recv.
+* Fixed bug so payment times always preserved when editing a sale that was NOT a layaway.
+* Custom report can be filter tax exempt transactions
+* Can require a customer for a suspended sale (Store config/settings option)
+* Many minor enhancements/fixes
+* Added German and Khmer languages/translations
+* Added ability to NOT sell items below cost (Will not allow)
+* Minor Bug Fixes

@@ -1,0 +1,31 @@
+<?php
+$lang['item_kits_name'] = 'Tên gói sản phẩm';
+$lang['item_kits_description'] = 'Mô tả gói sản phẩm';
+$lang['item_kits_no_item_kits_to_display'] = 'Không có gói sản phẩm nào để hiển thị';
+$lang['item_kits_update'] = 'Cập nhật gói sản phẩm';
+$lang['item_kits_new'] = 'Thêm mới gói';
+$lang['item_kits_none_selected'] = "Bạn chưa chọn gói sản phẩm";
+$lang['item_kits_info'] = 'Thông tin gói';
+$lang['item_kits_successful_adding'] = 'Bạn đã thêm thành công gói sản phẩm';
+$lang['item_kits_successful_updating'] = 'Bạn đã cập nhật thành công gói sản phẩm';
+$lang['item_kits_error_adding_updating'] = 'Lỗi thêm/ cập nhật gói sản phẩm';
+$lang['item_kits_successful_deleted'] = 'Bạn đã xóa thành công';
+$lang['item_kits_confirm_delete'] = 'Bạn có chắc chắn bạn muốn xóa gói sản phẩm được chọn?';
+$lang['item_kits_one_or_multiple'] = 'Gói sản phẩm';
+$lang['item_kits_cannot_be_deleted'] = 'Không thể xóa gói sản phẩm';
+$lang['item_kits_add_item'] = 'Thêm mới gói';
+$lang['item_kits_items'] = 'Sản phẩm/ hàng hóa/ dịch vụ';
+$lang['item_kits_item'] = 'Sản phẩm/ hàng hóa/ dịch vụ';
+$lang['item_kits_quantity'] = 'Số lượng';
+$lang['item_kits_desc'] = 'Gói sản phẩm được hình thành từ việc thêm một hoặc nhiều sản phẩm/ dịch vụ, bạn có thể bắt đầu bằng việc nhập sản phẩm/ dịch vụ dưới đây.';
+$lang['item_kits_items_added'] = 'Thêm mới sản phẩm/ dịch vụ';
+$lang['item_kits_id'] = 'ID Gói';
+$lang['item_kits_cleanup_sucessful'] = 'Đã xóa thành công gói sản phẩm';
+$lang['item_kits_cleanup_old_item_kits'] = 'Xóa gói sản phẩm cũ';
+$lang['item_kits_confirm_cleanup'] = 'Bạn có chắc chắn bạn muốn xóa vĩnh viễn tất cả các gói sản phẩm đã bị xóa? (Thao tác này sẽ loại bỏ số gói đã xóa để chúng ta có thể sử dụng lại)';
+$lang['item_kits_tax_1_name'] = 'Tên thuế 1';
+$lang['item_kits_tax_1_percent'] = '% thuế 1';
+$lang['item_kits_tax_2_name'] = 'Tên thuế 2';
+$lang['item_kits_tax_2_percent'] = '% thuế 2';
+$lang['item_kits_tax_2_cummulative'] = 'Thuế lũy tiến (Thuế thu nhập/ Giá trị tài sản)';
+?>
