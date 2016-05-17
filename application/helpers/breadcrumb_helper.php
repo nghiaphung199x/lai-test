@@ -91,6 +91,10 @@ function create_breadcrumb()
 		{
 			$return.=create_current_page_url(lang('items_manage_tags'));
 		}
+		elseif($ci->uri->segment(2) == 'manage_measures')
+		{
+			$return.=create_current_page_url(lang('items_manage_measures'));
+		}
 		elseif($ci->uri->segment(2) == 'generate_barcode_labels' || $ci->uri->segment(2) == 'generate_barcodes' || $ci->uri->segment(2) == 'generate_barcodes_labels_from_recv' || $ci->uri->segment(2) =='generate_barcodes_from_recv')
 		{
 			$return.=create_current_page_url(lang('common_generate_barcodes'));

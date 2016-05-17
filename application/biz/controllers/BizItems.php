@@ -9,6 +9,168 @@ class BizItems extends Items
 		$this->load->model('Receiving');
 		$this->load->model('Item_location');
 		$this->load->library('BizSession');
+		$this->load->model('Measure');
+	}
+	
+	function _get_item_data($item_id)
+	{
+		$this->load->helper('report');
+	
+		$data = array();
+		$data['controller_name']=$this->_controller_name;
+	
+		$data['item_info']=$this->Item->get_info($item_id);
+	
+		$data['categories'][''] = lang('common_select_category');
+	
+		$categories = $this->Category->sort_categories_and_sub_categories($this->Category->get_all_categories_and_sub_categories());
+		foreach($categories as $key=>$value)
+		{
+			$name = str_repeat('&nbsp;&nbsp;', $value['depth']).$value['name'];
+			$data['categories'][$key] = $name;
+		}
+	
+		$data['tags'] = implode(',',$this->Tag->get_tags_for_item($item_id));
+	
+		$data['measures'] = array();
+		$measures = $this->Measure->get_all();
+		foreach($measures as $key=>$measure)
+		{
+			$data['measures'][$key] = $measure['name'];
+		}
+	
+		$data['item_tax_info']=$this->Item_taxes->get_info($item_id);
+		$data['tiers']=$this->Tier->get_all()->result();
+		$data['locations'] = array();
+		$data['location_tier_prices'] = array();
+		$data['additional_item_numbers'] = $this->Additional_item_numbers->get_item_numbers($item_id);
+	
+		if ($item_id != -1)
+		{
+			$data['next_item_id'] = $this->Item->get_next_id($item_id);
+			$data['prev_item_id'] = $this->Item->get_prev_id($item_id);;
+		}
+			
+		foreach($this->Location->get_all()->result() as $location)
+		{
+			if($this->Employee->is_location_authenticated($location->location_id))
+			{
+				$data['locations'][] = $location;
+				$data['location_items'][$location->location_id] = $this->Item_location->get_info($item_id,$location->location_id);
+				$data['location_taxes'][$location->location_id] = $this->Item_location_taxes->get_info($item_id, $location->location_id);
+	
+				foreach($data['tiers'] as $tier)
+				{
+					$tier_prices = $this->Item_location->get_tier_price_row($tier->id,$data['item_info']->item_id, $location->location_id);
+					if (!empty($tier_prices))
+					{
+						$data['location_tier_prices'][$location->location_id][$tier->id] = $tier_prices;
+					}
+					else
+					{
+						$data['location_tier_prices'][$location->location_id][$tier->id] = FALSE;
+					}
+				}
+			}
+	
+		}
+	
+	
+		if ($item_id == -1)
+		{
+			$suppliers = array(''=> lang('common_not_set'), '-1' => lang('common_none'));
+		}
+		else
+		{
+			$suppliers = array('-1' => lang('common_none'));
+		}
+		foreach($this->Supplier->get_all()->result_array() as $row)
+		{
+			$suppliers[$row['person_id']] = $row['company_name'] .' ('.$row['first_name'] .' '. $row['last_name'].')';
+		}
+	
+		$data['tier_prices'] = array();
+		$data['tier_type_options'] = array('unit_price' => lang('common_fixed_price'), 'percent_off' => lang('common_percent_off'));
+		foreach($data['tiers'] as $tier)
+		{
+			$tier_prices = $this->Item->get_tier_price_row($tier->id,$data['item_info']->item_id);
+	
+			if (!empty($tier_prices))
+			{
+				$data['tier_prices'][$tier->id] = $tier_prices;
+			}
+			else
+			{
+				$data['tier_prices'][$tier->id] = FALSE;
+			}
+		}
+	
+		$data['suppliers']=$suppliers;
+		$data['selected_supplier'] = $this->Item->get_info($item_id)->supplier_id;
+	
+		$decimals = $this->Appconfig->get_raw_number_of_decimals();
+		$decimals = $decimals !== NULL && $decimals!= '' ? $decimals : 2;
+		$data['decimals'] = $decimals;
+	
+		return $data;
+	}
+	
+	function manage_measures()
+	{
+		// $this->check_action_permission('manage_measures');
+		$measures = $this->Measure->get_all();
+		$data = array('measures' => $measures, 'measure_list' => $this->_measureList());
+		$this->load->view('items/measures',$data);
+	}
+	
+	function _measureList()
+	{
+		$measures = $this->Measure->get_all();
+		$return = '<ul>';
+		foreach($measures as $measureId => $measure)
+		{
+			$return .='<li>'.$measure['name'].
+			'<a href="javascript:void(0);" class="edit_measure" data-name = "'.H($measure['name']).'" data-measure_id="'.$measureId.'">['.lang('common_edit').']</a> '.
+			'<a href="javascript:void(0);" class="delete_measure" data-measure_id="'.$measureId.'">['.lang('common_delete').']</a> ';
+			$return .='</li>';
+		}
+		$return .='</ul>';
+	
+		return $return;
+	}
+	
+	function saveMeasure($measureId = FALSE)
+	{
+		// $this->check_action_permission('manage_tags');
+		$measureName = $this->input->post('measure_name');
+	
+		if ($this->Measure->save($measureName, $measureId))
+		{
+			echo json_encode(array('success'=>true,'message'=>lang('items_tag_successful_adding').' '.$measureName));
+		}
+		else
+		{
+			echo json_encode(array('success'=>false,'message'=>lang('items_tag_successful_error')));
+		}
+	}
+	
+	function deleteMeasure()
+	{
+		// $this->check_action_permission('manage_tags');
+		$measureId = $this->input->post('measure_id');
+		if($this->Measure->delete($measureId))
+		{
+			echo json_encode(array('success'=>true,'message'=>lang('items_successful_deleted')));
+		}
+		else
+		{
+			echo json_encode(array('success'=>false,'message'=>lang('items_cannot_be_deleted')));
+		}
+	}
+	
+	function measureList()
+	{
+		echo $this->_measureList();
 	}
 	
 	public function showNotAudit() {

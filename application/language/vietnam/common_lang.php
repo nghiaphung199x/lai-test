@@ -384,4 +384,7 @@ $lang['common_saled'] = 'Đã thanh toán';
 $lang['common_refund_money'] = 'Tiền trả lại khách';
 $lang['common_sales_balance_total'] = 'Tổng nợ tất cả';
 $lang['common_total_money'] = 'Tổng tiền';
+
+$lang['common_measure_convert'] = 'Chuyển đổi đơn vị';
+$lang['common_measure'] = 'Đơn vị tính';
 ?>
