@@ -1,12 +1,12 @@
 
-CREATE TABLE `phppos_measures` (
+CREATE TABLE IF NOT EXISTS `phppos_measures` (
 `id`  int(11) NOT NULL AUTO_INCREMENT ,
 `name`  varchar(255) NOT NULL ,
 `deleted`  tinyint(1) NOT NULL DEFAULT 0 ,
 PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `phppos_item_measures` (
+CREATE TABLE IF NOT EXISTS `phppos_item_measures` (
 `id`  int(11) NOT NULL AUTO_INCREMENT ,
 `item_id`  int(11) NOT NULL ,
 `measure_id`  int(11) NOT NULL ,
