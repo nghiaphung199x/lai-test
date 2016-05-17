@@ -10,6 +10,319 @@ class BizItems extends Items
 		$this->load->model('Item_location');
 		$this->load->library('BizSession');
 		$this->load->model('Measure');
+		$this->load->model('ItemMeasures');
+	}
+	
+	function save($item_id=-1)
+	{
+		$this->load->model('Item_taxes');
+		$this->load->model('Item_location');
+		$this->load->model('Item_location_taxes');
+	
+		$this->check_action_permission('add_update');
+	
+		if (!$this->Category->exists($this->input->post('category_id')))
+		{
+			if (!$category_id = $this->Category->get_category_id($this->input->post('category_id')))
+			{
+				$category_id = $this->Category->save($this->input->post('category_id'));
+			}
+		}
+		else
+		{
+			$category_id = $this->input->post('category_id');
+		}
+		
+		// TODO XXX
+		$measureId = $this->input->post('measure_id');
+		$isMeasureConvert = $this->input->post('convert_measure');
+		$measureData = array();
+		if(!empty($isMeasureConvert)) {
+			$measureData = $this->input->post('measure_converted');
+		}
+	
+		$item_data = array(
+				'name'=>$this->input->post('name'),
+				'description'=>$this->input->post('description'),
+				'tax_included'=>$this->input->post('tax_included') ? $this->input->post('tax_included') : 0,
+				'category_id'=>$category_id,
+				'measure_id'=>$measureId,
+				'measure_converted'=>isset($isMeasureConvert) ? $isMeasureConvert : 0,
+				'size'=>$this->input->post('size'),
+				'expire_days'=>$this->input->post('expire_days') ?  $this->input->post('expire_days') : NULL,
+				'supplier_id'=>$this->input->post('supplier_id')== -1 || $this->input->post('supplier_id') == '' ? null:$this->input->post('supplier_id'),
+				'item_number'=>$this->input->post('item_number')=='' ? null:$this->input->post('item_number'),
+				'product_id'=>$this->input->post('product_id')=='' ? null:$this->input->post('product_id'),
+				'cost_price'=>$this->input->post('cost_price'),
+				'change_cost_price' => $this->input->post('change_cost_price') ? $this->input->post('change_cost_price') : 0,
+				'unit_price'=>$this->input->post('unit_price'),
+				'promo_price'=>$this->input->post('promo_price') ? $this->input->post('promo_price') : NULL,
+				'start_date'=>$this->input->post('start_date') ? date('Y-m-d', strtotime($this->input->post('start_date'))) : NULL,
+				'end_date'=>$this->input->post('end_date') ?date('Y-m-d', strtotime($this->input->post('end_date'))) : NULL,
+				'reorder_level'=>$this->input->post('reorder_level')!='' ? $this->input->post('reorder_level') : NULL,
+				'is_service'=>$this->input->post('is_service') ? $this->input->post('is_service') : 0 ,
+				'allow_alt_description'=>$this->input->post('allow_alt_description') ? $this->input->post('allow_alt_description') : 0 ,
+				'is_serialized'=>$this->input->post('is_serialized') ? $this->input->post('is_serialized') : 0,
+				'override_default_tax'=> $this->input->post('override_default_tax') ? $this->input->post('override_default_tax') : 0,
+		);
+	
+		if ($this->input->post('override_default_commission'))
+		{
+			if ($this->input->post('commission_type') == 'fixed')
+			{
+				$item_data['commission_fixed'] = (float)$this->input->post('commission_value');
+				$item_data['commission_percent_type'] = '';
+				$item_data['commission_percent'] = NULL;
+			}
+			else
+			{
+				$item_data['commission_percent'] = (float)$this->input->post('commission_value');
+				$item_data['commission_percent_type'] = $this->input->post('commission_percent_type');
+				$item_data['commission_fixed'] = NULL;
+			}
+		}
+		else
+		{
+			$item_data['commission_percent'] = NULL;
+			$item_data['commission_fixed'] = NULL;
+			$item_data['commission_percent_type'] = '';
+		}
+	
+		$employee_id=$this->Employee->get_logged_in_employee_info()->person_id;
+		$cur_item_info = $this->Item->get_info($item_id);
+	
+		$redirect=$this->input->post('redirect');
+		$sale_or_receiving=$this->input->post('sale_or_receiving');
+	
+		if($this->Item->save($item_data,$item_id))
+		{
+			$this->Tag->save_tags_for_item(isset($item_data['item_id']) ? $item_data['item_id'] : $item_id, $this->input->post('tags'));
+			$tier_type = $this->input->post('tier_type');
+				
+			if ($this->input->post('item_tier'))
+			{
+				foreach($this->input->post('item_tier') as $tier_id => $price_or_percent)
+				{
+					if ($price_or_percent)
+					{
+						$tier_data=array('tier_id'=>$tier_id);
+						$tier_data['item_id'] = isset($item_data['item_id']) ? $item_data['item_id'] : $item_id;
+	
+						if ($tier_type[$tier_id] == 'unit_price')
+						{
+							$tier_data['unit_price'] = $price_or_percent;
+							$tier_data['percent_off'] = NULL;
+						}
+						else
+						{
+							$tier_data['percent_off'] = (float)$price_or_percent;
+							$tier_data['unit_price'] = NULL;
+						}
+							
+						$this->Item->save_item_tiers($tier_data,$item_id);
+					}
+					else
+					{
+						$this->Item->delete_tier_price($tier_id, $item_id);
+					}
+	
+				}
+			}
+				
+				
+			$success_message = '';
+				
+			//New item
+			if($item_id==-1)
+			{
+				$success_message = lang('common_successful_adding').' '.$item_data['name'];
+				$this->session->set_flashdata('manage_success_message', $success_message);
+				echo json_encode(array('success'=>true,'message'=>$success_message,'item_id'=>$item_data['item_id'],'redirect' => $redirect, 'sale_or_receiving'=>$sale_or_receiving));
+				$item_id = $item_data['item_id'];
+			}
+			else //previous item
+			{
+				$success_message = lang('common_items_successful_updating').' '.$item_data['name'];
+				$this->session->set_flashdata('manage_success_message', $success_message);
+				echo json_encode(array('success'=>true,'message'=>$success_message,'item_id'=>$item_id,'redirect' => $redirect, 'sale_or_receiving'=>$sale_or_receiving));
+			}
+				
+			if ($this->input->post('additional_item_numbers') && is_array($this->input->post('additional_item_numbers')))
+			{
+				$this->Additional_item_numbers->save($item_id, $this->input->post('additional_item_numbers'));
+			}
+			else
+			{
+				$this->Additional_item_numbers->delete($item_id);
+			}
+				
+			if ($this->input->post('locations'))
+			{
+				foreach($this->input->post('locations') as $location_id => $item_location_data)
+				{
+					$override_prices = isset($item_location_data['override_prices']) && $item_location_data['override_prices'];
+					$quantity_add_minus = isset($item_location_data['quantity_add_minus']) && $item_location_data['quantity_add_minus'] ? $item_location_data['quantity_add_minus'] : 0;
+						
+					$item_location_before_save = $this->Item_location->get_info($item_id,$location_id);
+					$new_quantity = ($item_location_before_save->quantity ? $item_location_before_save->quantity : 0) + $quantity_add_minus;
+						
+					$data = array(
+							'location_id' => $location_id,
+							'item_id' => $item_id,
+							'location' => $item_location_data['location'],
+							'cost_price' => $override_prices && $item_location_data['cost_price'] != '' ? $item_location_data['cost_price'] : NULL,
+							'unit_price' => $override_prices && $item_location_data['unit_price'] != '' ? $item_location_data['unit_price'] : NULL,
+							'promo_price' => $override_prices && $item_location_data['promo_price'] != '' ? $item_location_data['promo_price'] : NULL,
+							'start_date' => $override_prices && $item_location_data['promo_price']!='' && $item_location_data['start_date'] != '' ? date('Y-m-d', strtotime($item_location_data['start_date'])) : NULL,
+							'end_date' => $override_prices && $item_location_data['promo_price'] != '' && $item_location_data['end_date'] != '' ? date('Y-m-d', strtotime($item_location_data['end_date'])) : NULL,
+							'quantity' => !$this->input->post('is_service')  ? $new_quantity : NULL,
+							'reorder_level' => isset($item_location_data['reorder_level']) && $item_location_data['reorder_level'] != '' ? $item_location_data['reorder_level'] : NULL,
+							'override_default_tax'=> isset($item_location_data['override_default_tax'] ) && $item_location_data['override_default_tax'] != '' ? $item_location_data['override_default_tax'] : 0,
+					);
+					$this->Item_location->save($data, $item_id,$location_id);
+						
+	
+					if (isset($item_location_data['item_tier']))
+					{
+						$tier_type = $item_location_data['tier_type'];
+	
+						foreach($item_location_data['item_tier'] as $tier_id => $price_or_percent)
+						{
+							//If we are overriding prices and we have a price/percent, add..otherwise delete
+							if ($override_prices && $price_or_percent)
+							{
+								$tier_data=array('tier_id'=>$tier_id);
+								$tier_data['item_id'] = isset($item_data['item_id']) ? $item_data['item_id'] : $item_id;
+								$tier_data['location_id'] = $location_id;
+									
+								if ($tier_type[$tier_id] == 'unit_price')
+								{
+									$tier_data['unit_price'] = $price_or_percent;
+									$tier_data['percent_off'] = NULL;
+								}
+								else
+								{
+									$tier_data['percent_off'] = (float)$price_or_percent;
+									$tier_data['unit_price'] = NULL;
+								}
+	
+								$this->Item_location->save_item_tiers($tier_data,$item_id, $location_id);
+							}
+							else
+							{
+								$this->Item_location->delete_tier_price($tier_id, $item_id, $location_id);
+							}
+	
+						}
+					}
+						
+	
+					if (isset($item_location_data['tax_names']))
+					{
+						$location_items_taxes_data = array();
+						$tax_names = $item_location_data['tax_names'];
+						$tax_percents = $item_location_data['tax_percents'];
+						$tax_cumulatives = $item_location_data['tax_cumulatives'];
+						for($k=0;$k<count($tax_percents);$k++)
+						{
+							if (is_numeric($tax_percents[$k]))
+							{
+								$location_items_taxes_data[] = array('name'=>$tax_names[$k], 'percent'=>$tax_percents[$k], 'cumulative' => isset($tax_cumulatives[$k]) ? $tax_cumulatives[$k] : '0' );
+							}
+						}
+						$this->Item_location_taxes->save($location_items_taxes_data, $item_id, $location_id);
+					}
+						
+					if (isset($item_location_data['quantity_add_minus']) && $item_location_data['quantity_add_minus'] && !$this->input->post('is_service'))
+					{
+						$inv_data = array
+						(
+								'trans_date'=>date('Y-m-d H:i:s'),
+								'trans_items'=>$item_id,
+								'trans_user'=>$employee_id,
+								'trans_comment'=>lang('items_manually_editing_of_quantity'),
+								'trans_inventory'=>$item_location_data['quantity_add_minus'],
+								'location_id' => $location_id,
+						);
+						$this->Inventory->insert($inv_data);
+					}
+				}
+			}
+			$items_taxes_data = array();
+			$tax_names = $this->input->post('tax_names');
+			$tax_percents = $this->input->post('tax_percents');
+			$tax_cumulatives = $this->input->post('tax_cumulatives');
+			for($k=0;$k<count($tax_percents);$k++)
+			{
+				if (is_numeric($tax_percents[$k]))
+				{
+					$items_taxes_data[] = array('name'=>$tax_names[$k], 'percent'=>$tax_percents[$k], 'cumulative' => isset($tax_cumulatives[$k]) ? $tax_cumulatives[$k] : '0' );
+				}
+			}
+			$this->Item_taxes->save($items_taxes_data, $item_id);
+				
+				
+			//Delete Image
+			if($this->input->post('del_image') && $item_id != -1)
+			{
+				if($cur_item_info->image_id != null)
+				{
+					$this->load->model('Appfile');
+					$this->Item->update_image(NULL,$item_id);
+					$this->Appfile->delete($cur_item_info->image_id);
+				}
+			}
+	
+			//Save Image File
+			if(!empty($_FILES["image_id"]) && $_FILES["image_id"]["error"] == UPLOAD_ERR_OK)
+			{
+				$allowed_extensions = array('png', 'jpg', 'jpeg', 'gif');
+				$extension = strtolower(pathinfo($_FILES["image_id"]["name"], PATHINFO_EXTENSION));
+	
+				if (in_array($extension, $allowed_extensions))
+				{
+					$config['image_library'] = 'gd2';
+					$config['source_image']	= $_FILES["image_id"]["tmp_name"];
+					$config['create_thumb'] = FALSE;
+					$config['maintain_ratio'] = TRUE;
+					$config['width']	 = 400;
+					$config['height']	= 300;
+					$this->load->library('image_lib', $config);
+					$this->image_lib->resize();
+					$this->load->model('Appfile');
+						
+					$image_file_id = $this->Appfile->save($_FILES["image_id"]["name"], file_get_contents($_FILES["image_id"]["tmp_name"]));
+				}
+	
+				$this->Item->update_image($image_file_id,$item_id);
+			}
+			
+			// TODO XXX
+			$this->ItemMeasures->deleteByItemId($item_id);
+			if(!empty($measureData)) {
+				foreach ($measureData as $measureConverted)
+				{
+					$itemMeasure = array(
+						'item_id' => $item_id,
+						'measure_id' => $measureId,
+						'measure_converted_id' => $measureConverted['id'],
+						'measure_converted_id' => $measureConverted['id'],
+						'qty_converted' => $measureConverted['qty'],
+						'cost_price_percentage_converted' => $measureConverted['cost_price'],
+						'unit_price_percentage_converted' => $measureConverted['unit_price'],
+					);
+					
+					$this->ItemMeasures->save($itemMeasure);
+				}
+				
+			}
+		}
+		else //failure
+		{
+			echo json_encode(array('success'=>false,'message'=>lang('common_error_adding_updating').' '.
+					$item_data['name'],'item_id'=>-1));
+		}
+	
 	}
 	
 	function _get_item_data($item_id)
@@ -20,6 +333,8 @@ class BizItems extends Items
 		$data['controller_name']=$this->_controller_name;
 	
 		$data['item_info']=$this->Item->get_info($item_id);
+		
+		$data['item_info']->measures_converted = $this->ItemMeasures->getMeasuresByItemId($item_id);
 	
 		$data['categories'][''] = lang('common_select_category');
 	

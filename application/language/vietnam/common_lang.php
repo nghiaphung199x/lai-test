@@ -387,4 +387,8 @@ $lang['common_total_money'] = 'Tổng tiền';
 
 $lang['common_measure_convert'] = 'Chuyển đổi đơn vị';
 $lang['common_measure'] = 'Đơn vị tính';
+$lang['common_measure_converted'] = 'Đơn vị quy đổi';
+$lang['common_measure_converted_qty'] = 'Số lượng quy đổi';
+$lang['common_measure_converted_cost_percentage'] = 'Giá vốn sau khi quy đổi (%)';
+$lang['common_measure_converted_unit_percentage'] = 'Giá bán sau khi quy đổi (%)';
 ?>

@@ -140,7 +140,7 @@
 				<div class="form-group">
 					<?php echo form_label(lang('common_measure').' :', 'measures',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
 					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_dropdown('measure_id', $measures, /*$item_info->category_id*/ 1, 'class="form-control form-inps" id ="measure_id"');?>
+						<?php echo form_dropdown('measure_id', $measures, $item_info->measure_id, 'class="form-control form-inps" id ="measure_id"');?>
 						<?php // if ($this->Employee->has_module_action_permission('items', 'manage_tags', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
 								<div>
 									<?php echo anchor("items/manage_measures",lang('items_manage_measures'),array('target' => '_blank', 'title'=>lang('items_manage_measures')));?>
@@ -150,18 +150,72 @@
 				</div>
 				
 				<div class="form-group">
-					<?php echo form_label(lang('common_measure_convert').' :', 'measure_convert',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+					<?php echo form_label(lang('common_measure_convert').' :', 'convert_measure',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
 					<div class="col-sm-9 col-md-9 col-lg-10">
 						<?php echo form_checkbox(array(
-							'name'=>'measure_convert',
-							'id'=>'measure_convert',
+							'name'=>'convert_measure',
+							'id'=>'convert_measure',
 							'class'=>'delete-checkbox',
-							'value'=>1
+							'value'=>1,
+							'checked'=> $item_info->measure_converted ? 1 : 0
 						));?>
-						<label for="measure_convert"><span></span></label>
+						<label for="convert_measure"><span></span></label>
 					</div>
 				</div>
-
+				
+				<div id="measure_items" style="display: <?php echo $item_info->measure_converted ? "block" : "none" ;?>">
+					<?php foreach ($item_info->measures_converted as $key => $measure_converted) {?>
+					<div class="measure_item">
+						<div class="form-group">
+							<?php echo form_label(lang('common_measure_converted').' :', 'measures',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+							<div class="col-sm-9 col-md-9 col-lg-10">
+								<?php echo form_dropdown('measure_converted['. ($key + 1) .'][id]', $measures, $measure_converted['measure_converted_id'], 'class="form-control form-inps"');?>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<?php echo form_label(lang('common_measure_converted_qty').' :', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+							<div class="col-sm-9 col-md-9 col-lg-10">
+								<?php echo form_input(array(
+									'name'=>'measure_converted['. ($key + 1) .'][qty]',
+									'class'=>'form-control form-inps',
+									'value'=> $measure_converted['qty_converted'])
+								);?>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<?php echo form_label(lang('common_measure_converted_cost_percentage').' :', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+							<div class="col-sm-9 col-md-9 col-lg-10">
+								<?php echo form_input(array(
+									'name'=>'measure_converted['. ($key + 1) .'][cost_price]',
+									'class'=>'form-control form-inps',
+									'value'=> $measure_converted['cost_price_percentage_converted'])
+								);?>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<?php echo form_label(lang('common_measure_converted_unit_percentage').' :', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+							<div class="col-sm-9 col-md-9 col-lg-10">
+								<?php echo form_input(array(
+									'name'=>'measure_converted['. ($key + 1) .'][unit_price]',
+									'class'=>'form-control form-inps',
+									'value'=> $measure_converted['unit_price_percentage_converted'])
+								);?>
+							</div>
+						</div>
+					</div>
+					<?php } ?>
+					
+				</div>
+				<div class="form-group" id="add_more_measure" style="display: <?php echo $item_info->measure_converted ? "block" : "none" ;?>">
+					<?php echo form_label('', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+					<div class="col-sm-9 col-md-9 col-lg-10">
+						<button id="add_more" type="button" class="btn btn-default"><span class="ti-plus"></span></button>
+					</div>
+				</div>
+				<hr/>
 				<div class="form-group">
 					<?php echo form_label(lang('common_size').' :', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
 					<div class="col-sm-9 col-md-9 col-lg-10">
@@ -1268,7 +1322,22 @@ function calculate_margin_price()
 
 
 $(document).ready(function()
-{	
+{
+	$('#add_more_measure #add_more').click(function(){
+		var html = '<div class="measure_item">' + $('#measure_item_tmp').html().replace(/___INDEX___/g, ($('#measure_items .measure_item').length + 1)) + '</div>';
+		
+		$('#measure_items').append(html);
+	});
+	$('#convert_measure').change(function(){
+		if($(this).is(':checked')) {
+			$('#measure_items').show();
+			$('#add_more_measure').show();
+		} else {
+			$('#measure_items').hide();
+			$('#add_more_measure').hide();
+		}
+	});
+	
 	<?php if (!$this->config->item('disable_margin_calculator')) { ?>
 	
 	if ($('#unit_price').val() && $('#cost_price').val())
@@ -1633,5 +1702,46 @@ function cancelItemAddingFromSaleOrRecv()
 
 </script>
 <?php echo form_close(); ?>
+<div id="measure_item_tmp" style="display: none">
+	<div class="form-group">
+		<?php echo form_label(lang('common_measure_converted').' :', 'measures',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+		<div class="col-sm-9 col-md-9 col-lg-10">
+			<?php echo form_dropdown('measure_converted[___INDEX___][id]', $measures, null, 'class="form-control form-inps"');?>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<?php echo form_label(lang('common_measure_converted_qty').' :', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+		<div class="col-sm-9 col-md-9 col-lg-10">
+			<?php echo form_input(array(
+				'name'=>'measure_converted[___INDEX___][qty]',
+				'class'=>'form-control form-inps',
+				'value'=> '')
+			);?>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<?php echo form_label(lang('common_measure_converted_cost_percentage').' :', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+		<div class="col-sm-9 col-md-9 col-lg-10">
+			<?php echo form_input(array(
+				'name'=>'measure_converted[___INDEX___][cost_price]',
+				'class'=>'form-control form-inps',
+				'value'=> '')
+			);?>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<?php echo form_label(lang('common_measure_converted_unit_percentage').' :', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+		<div class="col-sm-9 col-md-9 col-lg-10">
+			<?php echo form_input(array(
+				'name'=>'measure_converted[___INDEX___][unit_price]',
+				'class'=>'form-control form-inps',
+				'value'=> '')
+			);?>
+		</div>
+	</div>
+</div>
 </div>
 <?php $this->load->view('partial/footer'); ?>
