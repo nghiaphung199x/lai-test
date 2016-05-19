@@ -64,14 +64,24 @@ else
 
 			if (!$models)
 			{
+				$bizModelFiles = get_filenames(BIZ_MODEL_PATH, TRUE);
+				foreach($bizModelFiles as $bizModelFile) {
+					$model_relative_name = str_replace('.php','',substr($bizModelFile,strlen(BIZ_MODEL_PATH)));
+					$model_folder = strpos($model_relative_name, DIRECTORY_SEPARATOR) !== FALSE ? substr($model_relative_name,0,strrpos($model_relative_name,DIRECTORY_SEPARATOR)) : '';
+					$model_name = str_replace($model_folder.DIRECTORY_SEPARATOR, '',$model_relative_name);
+					$model_name = str_replace(ucfirst(BIZ_PREFIX), '',$model_name);
+					$models[$model_name] = $model_folder.'/'.$model_name;
+				}
+				
 				$model_files = get_filenames(APPPATH.'models', TRUE);
 				foreach($model_files as $model_file)
 				{
 					$model_relative_name = str_replace('.php','',substr($model_file,strlen(APPPATH.'models'.DIRECTORY_SEPARATOR)));
 					$model_folder = strpos($model_relative_name, DIRECTORY_SEPARATOR) !== FALSE ? substr($model_relative_name,0,strrpos($model_relative_name,DIRECTORY_SEPARATOR)) : '';
 					$model_name = str_replace($model_folder.DIRECTORY_SEPARATOR, '',$model_relative_name);
-
-					$models[$model_name] = $model_folder.'/'.$model_name;
+					if (!isset($models[$model_name])) {
+						$models[$model_name] = $model_folder.'/'.$model_name;
+					}
 				}
 			}
 
