@@ -408,8 +408,10 @@ class MY_Loader extends CI_Loader
 				continue;
 			}
 
-			if($path == APPPATH && file_exists(BIZ_LIB_PATH.'/'.$subdir.$class.'.php'))
+			if($path == APPPATH && file_exists(BIZ_LIB_PATH.'/'.$subdir.ucfirst(BIZ_PREFIX).$class.'.php'))
 			{
+				$object_name = strtolower($class);
+				$class = ucfirst(BIZ_PREFIX).$class;
 				$filepath = BIZ_LIB_PATH.'/'.$subdir.$class.'.php';
 			} else {
 				$filepath = $path.'libraries/'.$subdir.$class.'.php';
