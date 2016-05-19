@@ -13,6 +13,16 @@ class BizItems extends Items
 		$this->load->model('ItemMeasures');
 	}
 	
+	public function measures($item_id) {
+		$measuresConverted = $this->Measure->getAvailableMeasuresByItemId($item_id);
+		$measureJsonFormat = array();
+		foreach ($measuresConverted as $measure)
+		{
+			$measureJsonFormat[] = array('value' => $measure['id'], 'text' => $measure['name']);
+		}
+		echo json_encode($measureJsonFormat);
+	}
+	
 	function save($item_id=-1)
 	{
 		$this->load->model('Item_taxes');

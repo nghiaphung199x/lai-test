@@ -55,6 +55,19 @@ class BizMeasure extends CI_Model
 		return FALSE;
 	}
 	
+	public function getInfo($measureId = 0) {
+		$this->db->from('measures');
+		$this->db->where('id', $measureId);
+		$result = $this->db->get();
+		if($result->num_rows() > 0)
+		{
+			$row = $result->result();
+			return $row[0];
+		}
+		
+		return FALSE;
+	}
+	
 	/*
 	Deletes one tag
 	*/
@@ -62,5 +75,20 @@ class BizMeasure extends CI_Model
 	{		
 		$this->db->where('id', $measureId);
 		return $this->db->update('measures', array('deleted' => 1, 'name' => NULL));
+	}
+	
+	public function getAvailableMeasuresByItemId($itemId=false) {
+		if($itemId) {
+			$items=$this->db->dbprefix('items');
+			$measures=$this->db->dbprefix('measures');
+			
+			$this->db->select('measures.*');
+			$this->db->from('measures');
+			$this->db->join('item_measures', 'measures.id = item_measures.measure_converted_id');
+			$this->db->where('item_id', $itemId);
+			$this->db->or_where($measures. '.id = (SELECT '. $items .'.measure_id FROM '. $items .' WHERE '. $items .'.item_id = '. $itemId .')');
+			return $this->db->get()->result_array();
+		}
+		return array();
 	}
 }
