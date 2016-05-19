@@ -1,6 +1,6 @@
 <?php
 
-class BizSession {
+class BizMySession {
 	var $CI;
 	
 	function __construct()

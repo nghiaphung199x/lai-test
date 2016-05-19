@@ -8,7 +8,7 @@ class BizItems extends Items
 		parent::__construct();
 		$this->load->model('Receiving');
 		$this->load->model('Item_location');
-		$this->load->library('BizSession');
+		$this->load->library('MySession');
 		$this->load->model('Measure');
 		$this->load->model('ItemMeasures');
 	}
@@ -496,7 +496,7 @@ class BizItems extends Items
 		$auditedIds = array_map(function($item) {
 			return $item['item_id'];
 		}, $data['audit_items']);
-		$extra['category_id'] = (int) $this->bizsession->getValue('AUDIT_CATEGORY');
+		$extra['category_id'] = (int) $this->mysession->getValue('AUDIT_CATEGORY');
 		$data['notAuditedItems'] = $this->Item->getNotAuditedInLocation($auditedIds, $extra);
 		$response['html'] = $this->load->view('items/partials/not_audited', $data, TRUE);
 		echo json_encode($response);
@@ -505,7 +505,7 @@ class BizItems extends Items
 	function item_search()
 	{
 		//allow parallel searchs to improve performance.
-		$extra['category_id'] = (int) $this->bizsession->getValue('AUDIT_CATEGORY');
+		$extra['category_id'] = (int) $this->mysession->getValue('AUDIT_CATEGORY');
 		$extra['by_current_location'] = true;
 		session_write_close();
 		$suggestions = $this->Item->get_item_search_suggestions($this->input->get('term'),100, $extra);
@@ -549,7 +549,7 @@ class BizItems extends Items
 	{
 		$response = array('success' => 1);
 		$categoryId = $this->input->post('category_id', 0);
-		$this->bizsession->setValue('AUDIT_CATEGORY', $categoryId);
+		$this->mysession->setValue('AUDIT_CATEGORY', $categoryId);
 		echo json_encode($response);
 	}
 	
