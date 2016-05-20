@@ -729,7 +729,12 @@ $(document).ready(function()
 		}
     });
 
-    $('.measure_item').editable();
+    $('.measure_item').editable({
+    	success: function(response, newValue) {
+			 last_focused_id = $(this).attr('id');
+			 $("#register_container").html(response);
+		}
+    });
 	 
 	 $(".expire_date").editable({
      	validate: function(value) {

@@ -109,5 +109,72 @@ class BizReceiving_lib extends receiving_lib
 		return true;
 
 	}
+	
+	function edit_item($line,$description = NULL,$serialnumber = NULL,$expire_date= null, $quantity = NULL,$quantity_received=NULL,$discount = NULL,$price = NULL, $measureId = NULL )
+	{
+		$items = $this->get_cart();
+		if(isset($items[$line]))
+		{
+			
+			if ($description !== NULL ) {
+				$items[$line]['description'] = $description;
+			}
+			if ($serialnumber !== NULL ) {
+				$items[$line]['serialnumber'] = $serialnumber;
+			}
+				
+			if ($expire_date !== NULL ) {
+	
+				if ($expire_date == '')
+				{
+					$items[$line]['expire_date'] = NULL;
+				}
+				else
+				{
+					$items[$line]['expire_date'] =  date(get_date_format(),strtotime($expire_date));
+				}
+			}
+				
+			if ($quantity_received !== NULL ) {
+				$items[$line]['quantity_received'] = $quantity_received;
+			}
+				
+			if ($quantity !== NULL ) {
+				$items[$line]['quantity'] = $quantity;
+			}
+			if ($discount !== NULL ) {
+				$items[$line]['discount'] = $discount;
+			}
+			
+			if ($price !== NULL ) {
+				$items[$line]['price'] = $price;
+			}
+			
+			if ($measureId) {
+				$items[$line]['measure_id'] = (int) $measureId;
+				$measure = $this->CI->Measure->getInfo((int) $measureId);
+				$items[$line]['measure'] = $measure->name;
+				$itemObj = $this->CI->Item->get_info($items[$line]['item_id']);
+				if($measureId != $itemObj->measure_id) {
+					$items[$line]['price'] = $this->getPriceByMeasureConverted($items[$line]['item_id'], (int) $measureId);
+				} else {
+					$items[$line]['price'] = $itemObj->cost_price;
+				}
+			}
+			$items[$line]['cost_price_preview']=$this->calculate_average_cost_price_preview($items[$line]['item_id'], $items[$line]['price'], $items[$line]['quantity'],$items[$line]['discount']);
+			
+			$this->set_cart($items);
+				
+			return true;
+		}
+	
+		return false;
+	}
+	
+	protected function getPriceByMeasureConverted($itemId = 0, $measureConvertedId = 0){
+		$itemObj = $this->CI->Item->get_info($itemId);
+		$convertedValue = $this->CI->ItemMeasures->getConvertedValue($itemId, $itemObj->measure_id, $measureConvertedId);
+		return $itemObj->cost_price * $convertedValue->qty_converted * (100 + $convertedValue->cost_price_percentage_converted) / 100;
+	}
 }
 ?>
