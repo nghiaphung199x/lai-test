@@ -150,7 +150,7 @@ class BizReceiving_lib extends receiving_lib
 				$items[$line]['price'] = $price;
 			}
 			
-			if ($measureId) {
+			if ($measureId /* && ($this->get_mode() == 'receive' || $this->get_mode() == 'purchase_order') */) {
 				$items[$line]['measure_id'] = (int) $measureId;
 				$measure = $this->CI->Measure->getInfo((int) $measureId);
 				$items[$line]['measure'] = $measure->name;

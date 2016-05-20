@@ -110,16 +110,12 @@ class BizReceiving extends Receiving
 			$cur_item_location_info = $this->Item_location->get_info($item['item_id']);
 			$cost_price = ($cur_item_location_info && $cur_item_location_info->cost_price) ? $cur_item_location_info->cost_price : $cur_item_info->cost_price;
 			
-			if( $cur_item_info->measure_id != $item['measure_id'] )
+			if( $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
 			{
 				$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $cur_item_info->measure_id, $item['measure_id']);
 				$cost_price = $cost_price * (100 + (int)$convertedValue->cost_price_percentage_converted ) / 100;
 				
 				$totalQty = $item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
-				if($item['quantity_received'] !== NULL)
-				{
-					$totalQty = $item['quantity_received'] = $item['quantity_received'] * (int)$convertedValue->qty_converted;
-				}
 				
 				$item['price'] = $item['price'] / $totalQty;
 			}
