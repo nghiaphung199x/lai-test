@@ -341,10 +341,18 @@ class BizReceiving extends Receiving
 		{
 			$cur_item_info = $this->Item->get_info($item['item_id']);
 			
-			
-			
 			$cur_item_location_info = $this->Item_location->get_info($item['item_id'], $location_from_id);
 			$cost_price = ($cur_item_location_info && $cur_item_location_info->cost_price) ? $cur_item_location_info->cost_price : $cur_item_info->cost_price;
+			
+			if( $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
+			{
+				$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $cur_item_info->measure_id, $item['measure_id']);
+				$cost_price = $cost_price * (100 + (int)$convertedValue->cost_price_percentage_converted ) / 100;
+			
+				$totalQty = $item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
+			
+				$item['price'] = $item['price'] / $totalQty;
+			}
 			
 			$item_unit_price_before_tax = $item['price'];
 				
@@ -393,9 +401,6 @@ class BizReceiving extends Receiving
 			// TODO -- HERE
 			if (!$cur_item_info->is_service)
 			{
-// 				echo '<pre>';
-// 				print_r( $item );
-// 				die('+++ DEBUG +++');
 				//If we have a null quanity set it to 0, otherwise use the value
 				$cur_item_location_info->quantity = $cur_item_location_info->quantity !== NULL ? $cur_item_location_info->quantity : 0;
 				//This means we never adjusted quantity_received so we should accept all
@@ -416,6 +421,7 @@ class BizReceiving extends Receiving
 						$inventory_to_add = $previous_amount_received + $item['quantity'] - $item['quantity_received'];
 					}
 				}
+				
 				// HERE YOU ARE!
 				if ($inventory_to_add !=0)
 				{
