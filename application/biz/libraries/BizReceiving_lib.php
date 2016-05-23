@@ -1,6 +1,6 @@
 <?php
 require_once (APPPATH.'/libraries/Receiving_lib.php');
-class BizReceiving_lib extends receiving_lib
+class BizReceiving_lib extends Receiving_lib
 {
 	function add_item($item_id,$quantity=1,$quantity_received=NULL,$discount=0,$price=null,$description=null,$serialnumber=null,$expire_date= null, $force_add = FALSE, $line = FALSE)
 	{
