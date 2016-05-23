@@ -11,6 +11,7 @@ class BizItems extends Items
 		$this->load->library('MySession');
 		$this->load->model('Measure');
 		$this->load->model('ItemMeasures');
+		$this->load->helper('items');
 	}
 	
 	public function measures($item_id) {
@@ -614,8 +615,8 @@ class BizItems extends Items
 		$response = array('success' => 1);
 		$data = array();
 		$itemId = $this->input->post('item_id', 0);
-
-		$data['qty_locations'] = $this->Item_location->getQtyOfEachLocation($itemId);
+		$data['qty_locations'] = getItemConvertedQtyAllLocation($itemId);
+		
 		$response['html'] = $this->load->view('items/partials/qty_location', $data, TRUE);
 		echo json_encode($response);
 	}

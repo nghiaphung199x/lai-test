@@ -31,7 +31,7 @@
 							<td><?php echo $index + 1;?></td>
 							<td><?php echo $qty_location['item_name'];?></td>
 							<td><?php echo $qty_location['location_name'];?></td>
-							<td><?php echo to_quantity($qty_location['quantity']);?></td>
+							<td><?php echo $qty_location['quantity_converted'];?></td>
 						</tr>
           <?php } ?>
           </tbody>
