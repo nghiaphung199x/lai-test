@@ -231,11 +231,7 @@ class BizSales extends Sales
 		{
 			$this->sale_lib->clear_all();
 		}
-                $data['fulfillment'] = TRUE;
-                $this->sale_lib->set_mode($sale_mode);
-                $this->sale_lib->set_payments($data['payments']);
-                $this->sale_lib->set_cart($data['cart']);
-                $this->session->set_userdata('customer_balance_for_sale_before',$data['customer_balance_for_sale_before']);
+
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['payments'], $sale_mode);
 		$data['pdf_block_html'] = $this->load->view('sales/partials/' . $typeOfView, $data, TRUE);
