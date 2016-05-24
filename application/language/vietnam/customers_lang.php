@@ -57,4 +57,23 @@ $lang['customers_update'] = 'Cập nhật';
 $lang['customers_filter_tier'] = 'Loại/Nhóm';
 $lang['customers_filter_created_by'] = 'Nhân viên';
 
+$lang['customers_sms_code'] = 'Mã SMS';
+$lang['customers_sms_title'] = 'Tiêu đề SMS';
+$lang['customers_sms_description'] = 'Nội dung';
+$lang['customers_sms_num_character'] = 'Số lượng kí tự';
+$lang['customers_sms_num_message'] = 'Số lượng tin nhắn';
+$lang['customers_sms_edit'] = 'Sửa SMS';
+$lang['customers_sms_none'] = 'Không có dữ liệu SMS';
+$lang['customers_sms_new'] = 'Thêm mới SMS Brandname';
+$lang['customers_sms_basic_information'] = 'Thông tin SMS';
+$lang['customers_sms_note_basic_information'] = "Nội dung tin nhắn không từ tiếng việt có dấu, không vượt quá 460 ký tự, nên sử dụng các từ 'Chuc mung', 'Thong bao', 'Cam on' trước mỗi nội dung tin nhắn";
+$lang['customers_sms_msg_new'] = 'Tạo mới SMS';
+$lang['customers_sms_msg_success'] = 'thành công';
+$lang['customers_sms_msg_update'] = 'Cập nhật SMS';
+$lang['customers_sms_msg_error'] = 'Lỗi thêm mới hoặc cập nhật SMS';
+$lang['customers_sms_are_you_sure_cancel'] = 'Bạn có chắc chắn muốn hủy bỏ sửa/thêm SMS này ?';
+$lang['customers_sms_title_required'] = 'Bạn chưa điền thông tin tiêu đề SMS';
+$lang['customers_sms_message_required'] = 'Bạn chưa điền thông tin nội dung SMS';
+$lang['customers_sms_message_maxlength'] = 'Nội dung không vượt quá 460 ký tự';
+
 ?>

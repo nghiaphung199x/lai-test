@@ -172,5 +172,56 @@ class BizCustomer extends Customer
 		$this->db->offset($offset);
 		return $this->db->get();
 	}
+	
+	function count_all_sms() {
+		$this->db->from('sms');
+		$this->db->where('deleted',0);
+		return $this->db->count_all_results();
+	}
+	
+	function get_all_sms($limit = 10000, $offset = 0, $col = 'id', $order = 'DESC'){
+		$this->db->from('sms');
+		$this->db->where('deleted', 0);
+		$this->db->order_by($col, $order);
+		$this->db->limit($limit);
+		$this->db->offset($offset);
+		return $this->db->get();
+	}
+	
+	function get_info_sms($id){
+		$this->db->from('sms');
+		$this->db->where('id',$id);
+		$query = $this->db->get();
+		if ($query->num_rows() == 1) {
+			return $query->row();
+		} else {
+			//Get empty base parent object, as $customer_id is NOT an customer
+			$person_obj = parent::get_info(-1);
+			//Get all the fields from customer table
+			$fields = $this->db->list_fields('sms');
+			//append those fields to base parent object, we we have a complete empty object
+			foreach ($fields as $field) {
+				$person_obj->$field = '';
+			}
+			return $person_obj;
+		}
+	}
+	
+	function exists_sms($id){
+		$this->db->where('id',$id);
+		$query = $this->db->get("sms");
+		return ($query->num_rows() == 1);
+	}
+	function save_sms(&$sms_data, $id = false){
+		if(!$id or !$this->exists_sms($id)){
+			if ($this->db->insert('sms', $sms_data)) {
+				$sms_data['id'] = $this->db->insert_id();
+				return true;
+			}
+			return false;
+		}
+		$this->db->where('id', $id);
+		return $this->db->update('sms', $sms_data);
+	}
 }
 ?>

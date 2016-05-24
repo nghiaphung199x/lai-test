@@ -282,5 +282,81 @@ class BizCustomers extends Customers
 			$person_data['first_name'].' '.$person_data['last_name'],'person_id'=>-1));
 		}
 	}
+	
+	/*
+	 get the width for the add/edit form
+	 */
+	
+	function get_form_width() {
+		return 750;
+	}
+	
+	/**
+	 * SMS Brandname
+	 */
+	function manage_sms() {
+		$config['total_rows'] = $this->Customer->count_all_sms();
+		
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$config['base_url'] = site_url('customers/sorting_sms');
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['controller_name'] = $this->_controller_name;
+		$data['form_width'] = $this->get_form_width();
+		$data['per_page'] = $config['per_page'];
+		$data['manage_table'] = get_sms_manage_table($this->Customer->get_all_sms($data['per_page']), $this);
+		
+		$this->load->view("customers/manage_sms", $data);
+	}
+	
+	function sorting_sms() {
+		$per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$config['total_rows'] = $this->Customer->count_all_sms();
+		$table_data = $this->Customer->get_all_sms($per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'id', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'DESC');
+	
+		$config['base_url'] = site_url('customers/sorting_sms');
+		$config['per_page'] = $per_page;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['manage_table'] = get_sms_manage_table_data_rows($table_data, $this);
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
+	}
+	
+	function search_sms() {
+		$this->check_action_permission('search');
+		$search = $this->input->post('search');
+		$per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$search_data = $this->Customer->search_sms($search, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'id', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
+		$config['base_url'] = site_url("customers/search_sms");
+		$config['total_rows'] = $this->Customer->search_count_sms($search);
+		$config['per_page'] = $per_page;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['manage_table'] = get_sms_manage_table_data_rows($search_data, $this);
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
+	}
+	
+	function view_sms($id = -1) {
+		$data['info_sms'] = $this->Customer->get_info_sms($id);
+		$this->load->view("customers/form_sms", $data);
+	}
+	
+	function save_sms($id = -1) {
+		$sms_data = array(
+				'title' => $this->input->post('sms_title'),
+				'message' => $this->input->post('sms_message'),
+				'number_char' => $this->input->post('sms_num_char'),
+				'number_message' => $this->input->post('sms_num_mess'),
+		);
+		if ($this->Customer->save_sms($sms_data, $id)) {
+			if ($id == -1) {
+				echo json_encode(array('success' => true, 'message' => lang('customers_sms_msg_new'). ' (' . $sms_data['title'] . ')'. lang('customers_sms_msg_success') .' !', 'id' => $sms_data['id'],'redirect_code'=> 'customers/manage_sms'));
+			} else { //previous customer
+				echo json_encode(array('success' => true, 'message' => lang('customers_sms_msg_update') . ' (' . $sms_data['title'] . ') '. lang('customers_sms_msg_success') .' !', 'id' => $sms_data['id'],'redirect_code'=> 'customers/manage_sms'));
+			}
+		} else {//failure
+			echo json_encode(array('success' => false, 'message' => lang('customers_sms_msg_error'), 'id' => -1));
+		}
+	}
 }
 ?>
