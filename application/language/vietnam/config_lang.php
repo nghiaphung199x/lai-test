@@ -217,4 +217,9 @@ $lang['config_store_account_statement_message'] = 'Kho lưu trữ tài khoản
 $lang['config_disable_margin_calculator'] = 'Khóa tính năng, tính giá theo tỉ suất lợi nhuận';
 $lang['config_disable_quick_edit'] = 'Tắt tính năng sửa nhanh trên trang quản lý';
 $lang['config_sales_receipt_pdf_size'] = 'Chọn kích thước giấy in'
+$lang['common_total_money'] = 'Tổng tiền';
+$lang['config_brand_name'] = 'Tên Brandname';
+$lang['config_user_sms'] = 'Tài khoản SMS';
+$lang['config_user_pass'] = 'Mật khẩu SMS';
+$lang['config_sms_email'] = 'Sms và email';
 ?>
