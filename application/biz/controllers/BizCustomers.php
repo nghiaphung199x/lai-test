@@ -358,5 +358,19 @@ class BizCustomers extends Customers
 			echo json_encode(array('success' => false, 'message' => lang('customers_sms_msg_error'), 'id' => -1));
 		}
 	}
+	
+	function delete_sms() {
+		$sms_to_delete = $this->input->post('ids');
+		if ($this->Customer->delete_sms_list($sms_to_delete)) {
+			echo json_encode(array('success' => true, 'message' => ' Đã xóa!' . count($sms_to_delete) . ' SMS!'));
+		} else {
+			echo json_encode(array('success' => false, 'message' => 'Lỗi! Không xóa được, vui lòng thử lại!'));
+		}
+	}
+	
+	function suggest_sms() {
+		$suggestions = $this->Customer->get_search_suggestions_sms($this->input->get('term'), 100);
+		echo json_encode($suggestions);
+	}
 }
 ?>

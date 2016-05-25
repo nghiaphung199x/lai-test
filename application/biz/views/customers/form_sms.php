@@ -83,7 +83,8 @@
 
 					</div>
 				</div>
-
+				
+				<?php echo form_hidden('redirect_code', $redirect_code); ?>
 				<div class="form-actions pull-right">
 					<?php
 					echo form_button(array(
@@ -125,14 +126,15 @@ $(document).ready(function(){
     var submitting = false;
     $('#sms_form').validate({
         submitHandler:function(form){
-            if (submitting) return;
-            submitting = true;
             $(form).mask(<?php echo json_encode(lang('common_wait')); ?>);
             $(form).ajaxSubmit({
                 success:function(response){
                     submitting = false;
-                    tb_remove();
-                    post_item_form_submit(response);
+                    show_feedback(response.success ? 'success' : 'error',response.message,response.success ? <?php echo json_encode(lang('common_success')); ?> : <?php echo json_encode(lang('common_error')); ?>);
+                    
+                    if(response.success){
+                    	window.location.href = '<?php echo site_url('customers/manage_sms'); ?>';
+                    }
                 },
                 dataType:'json'
             });
