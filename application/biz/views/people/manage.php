@@ -99,6 +99,15 @@
 						</button>
 						<ul class="dropdown-menu" role="menu">
 							<li>
+								<?php if ($controller_name =='customers') {  
+								?>
+								<?php echo anchor("$controller_name/manage_sms/",
+									'<span class="">'.lang('customers_sms_menu_link').'</span>',
+									array('class'=>'hidden-xs','title'=>lang('customers_sms_menu_link')));
+								} ?>
+							</li>
+							
+							<li>
 								<?php if ($controller_name =='customers' || $controller_name == 'suppliers') {  
 								?>
 								<?php echo anchor("$controller_name/excel_import/",

@@ -820,7 +820,7 @@ function get_sms_manage_table_data_rows($sms, $controller)
 function get_sms_data_row($sms, $controller) 
 {
 	$CI = & get_instance();
-	$controller_name = strtolower(get_class($CI));
+	$controller_name = str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
 
 	$table_data_row = '<tr>';
 	$table_data_row.="<td><input type='checkbox' id='sms_$sms->id' value='" . $sms->id . "'/><label for='sms_$sms->id'><span></span></label></td>";

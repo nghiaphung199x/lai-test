@@ -223,5 +223,27 @@ class BizCustomer extends Customer
 		$this->db->where('id', $id);
 		return $this->db->update('sms', $sms_data);
 	}
+	
+	function delete_sms_list($sms_ids) {
+		$this->db->where_in('id', $sms_ids);
+		return $this->db->update('sms', array('deleted' => 1));
+	}
+	
+	function get_search_suggestions_sms($search,$limit = 25){
+		$this->db->from('sms');
+		$this->db->where('deleted', 0);
+		$this->db->like('title', $search);
+		$this->db->order_by("id", "asc");
+		$sms = $this->db->get();
+	
+		foreach ($sms->result() as $row) {
+			$suggestions[] = array('label' => $row->title);
+		}
+		//only return $limit suggestions
+		if (count($suggestions > $limit)) {
+			$suggestions = array_slice($suggestions, 0, $limit);
+		}
+		return $suggestions;
+	}
 }
 ?>
