@@ -398,7 +398,7 @@ class BizSale extends Sale
 			{
 				$cur_item_info = $this->Item->get_info($item['item_id']);
 				$cur_item_location_info = $this->Item_location->get_info($item['item_id']);
-				
+				$qtyOriginal = $item['quantity'];
 				if( $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
 				{
 					$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $cur_item_info->measure_id, $item['measure_id']);
@@ -450,7 +450,9 @@ class BizSale extends Sale
 					'line'=>$item['line'],
 					'description'=>$item['description'],
 					'serialnumber'=>$item['serialnumber'],
-					'quantity_purchased'=>$item['quantity'],
+					'quantity_purchased'=>$item['quantity'], // qty is converted to base measure
+					'measure_id' => $item['measure_id'],
+					'measure_qty' => $qtyOriginal, // qty by measure
 					'discount_percent'=>$item['discount'],
 					'item_cost_price' =>  $global_weighted_average_cost === FALSE ? to_currency_no_money($cost_price,10) : $global_weighted_average_cost,
 					'item_unit_price'=>$item['price'],
@@ -735,6 +737,61 @@ class BizSale extends Sale
 		}
 			
 		return $sale_id;				
+	}
+	
+	function _create_sales_items_temp_table_query($where)
+	{
+		set_time_limit(0);
+	
+		$decimals = $this->config->item('number_of_decimals') !== NULL && $this->config->item('number_of_decimals') != '' ? (int)$this->config->item('number_of_decimals') : 2;
+		
+		return $this->db->query("CREATE TEMPORARY TABLE ".$this->db->dbprefix('sales_items_temp')."
+		(SELECT ".$this->db->dbprefix('sales').".location_id as location_id, ".$this->db->dbprefix('sales').".deleted as deleted,".$this->db->dbprefix('sales').".deleted_by as deleted_by, sale_time, date(sale_time) as sale_date, ".$this->db->dbprefix('registers').'.name as register_name,'.$this->db->dbprefix('sales_items').".sale_id, comment,payment_type, customer_id, employee_id, sold_by_employee_id,
+		".$this->db->dbprefix('items').".item_id, NULL as item_kit_id, supplier_id, quantity_purchased, ". $this->db->dbprefix('sales_items') .".measure_id, ". $this->db->dbprefix('sales_items') .".measure_qty, item_cost_price, item_unit_price, ".$this->db->dbprefix('categories').'.name as category'.", ".$this->db->dbprefix('categories').'.id as category_id'.",
+				discount_percent, ROUND(item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100,CASE WHEN tax_included =1 THEN 10 ELSE $decimals END) as subtotal,
+				".$this->db->dbprefix('sales_items').".line as line, serialnumber, ".$this->db->dbprefix('sales_items').".description as description,
+				(ROUND(item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100,CASE WHEN tax_included =1 THEN 10 ELSE $decimals END))+(item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100)
+				+(((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100) + (item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100))
+				*(SUM(CASE WHEN cumulative = 1 THEN percent ELSE 0 END))/100) as total,
+				(item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100)
+				+(((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100) + (item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100))
+				*(SUM(CASE WHEN cumulative = 1 THEN percent ELSE 0 END))/100) as tax,
+				ROUND((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100),CASE WHEN tax_included =1 THEN 10 ELSE $decimals END) - (item_cost_price*quantity_purchased) as profit, commission, store_account_payment,item_cost_price as sale_item_temp_cost_price, points_used, points_gained
+				FROM ".$this->db->dbprefix('sales_items')."
+		INNER JOIN ".$this->db->dbprefix('sales')." ON  ".$this->db->dbprefix('sales_items').'.sale_id='.$this->db->dbprefix('sales').'.sale_id'."
+		INNER JOIN ".$this->db->dbprefix('items')." ON  ".$this->db->dbprefix('sales_items').'.item_id='.$this->db->dbprefix('items').'.item_id'."
+		LEFT OUTER JOIN ".$this->db->dbprefix('suppliers')." ON  ".$this->db->dbprefix('items').'.supplier_id='.$this->db->dbprefix('suppliers').'.person_id'."
+		LEFT OUTER JOIN ".$this->db->dbprefix('sales_items_taxes')." ON  "
+				.$this->db->dbprefix('sales_items').'.sale_id='.$this->db->dbprefix('sales_items_taxes').'.sale_id'." and "
+				.$this->db->dbprefix('sales_items').'.item_id='.$this->db->dbprefix('sales_items_taxes').'.item_id'." and "
+				.$this->db->dbprefix('sales_items').'.line='.$this->db->dbprefix('sales_items_taxes').'.line'. "
+		LEFT OUTER JOIN ".$this->db->dbprefix('registers')." ON  ".$this->db->dbprefix('registers').'.register_id='.$this->db->dbprefix('sales').'.register_id'."
+		LEFT OUTER JOIN ".$this->db->dbprefix('categories')." ON  ".$this->db->dbprefix('categories').'.id='.$this->db->dbprefix('items').'.category_id'."
+				$where
+				GROUP BY sale_id, item_id, line)
+				UNION ALL
+				(SELECT ".$this->db->dbprefix('sales').".location_id as location_id, ".$this->db->dbprefix('sales').".deleted as deleted,".$this->db->dbprefix('sales').".deleted_by as deleted_by, sale_time, date(sale_time) as sale_date, ".$this->db->dbprefix('registers').'.name as register_name,'.$this->db->dbprefix('sales_item_kits').".sale_id, comment,payment_type, customer_id, employee_id, sold_by_employee_id,
+		NULL as item_id, ".$this->db->dbprefix('item_kits').".item_kit_id, '' as supplier_id, quantity_purchased, '' as measure_id, '' as measure_qty, item_kit_cost_price, item_kit_unit_price,".$this->db->dbprefix('categories').'.name as category'.", ".$this->db->dbprefix('categories').'.id as category_id'.",
+				discount_percent, ROUND(item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100,CASE WHEN tax_included =1 THEN 10 ELSE $decimals END) as subtotal,
+				".$this->db->dbprefix('sales_item_kits').".line as line, '' as serialnumber, ".$this->db->dbprefix('sales_item_kits').".description as description,
+				(ROUND(item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100,CASE WHEN tax_included =1 THEN 10 ELSE $decimals END))+(item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100)
+				+(((item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100) + (item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100))
+				*(SUM(CASE WHEN cumulative = 1 THEN percent ELSE 0 END))/100) as total,
+				(item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100)
+				+(((item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100) + (item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100))
+				*(SUM(CASE WHEN cumulative = 1 THEN percent ELSE 0 END))/100) as tax,
+				ROUND((item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100),CASE WHEN tax_included =1 THEN 10 ELSE $decimals END) - (item_kit_cost_price*quantity_purchased) as profit, commission, store_account_payment, item_kit_cost_price as sale_item_temp_cost_price, points_used, points_gained
+				FROM ".$this->db->dbprefix('sales_item_kits')."
+		INNER JOIN ".$this->db->dbprefix('sales')." ON  ".$this->db->dbprefix('sales_item_kits').'.sale_id='.$this->db->dbprefix('sales').'.sale_id'."
+		INNER JOIN ".$this->db->dbprefix('item_kits')." ON  ".$this->db->dbprefix('sales_item_kits').'.item_kit_id='.$this->db->dbprefix('item_kits').'.item_kit_id'."
+		LEFT OUTER JOIN ".$this->db->dbprefix('sales_item_kits_taxes')." ON  "
+				.$this->db->dbprefix('sales_item_kits').'.sale_id='.$this->db->dbprefix('sales_item_kits_taxes').'.sale_id'." and "
+				.$this->db->dbprefix('sales_item_kits').'.item_kit_id='.$this->db->dbprefix('sales_item_kits_taxes').'.item_kit_id'." and "
+				.$this->db->dbprefix('sales_item_kits').'.line='.$this->db->dbprefix('sales_item_kits_taxes').'.line'. "
+		LEFT OUTER JOIN ".$this->db->dbprefix('registers')." ON  ".$this->db->dbprefix('registers').'.register_id='.$this->db->dbprefix('sales').'.register_id'."
+		LEFT OUTER JOIN ".$this->db->dbprefix('categories')." ON  ".$this->db->dbprefix('categories').'.id='.$this->db->dbprefix('item_kits').'.category_id'."
+				$where
+				GROUP BY sale_id, item_kit_id, line) ORDER BY sale_id, line");
 	}
 }
 ?>
