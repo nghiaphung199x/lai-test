@@ -33,6 +33,16 @@
 
 					$(this).attr('href','<?php echo site_url("$controller_name/mailing_labels");?>/'+selected.join('~'));
 				});
+				$('#sendSMS').click(function(){
+					var selected = get_selected_values();
+					if (selected.length == 0 || selected.length >1)
+					{
+						bootbox.alert(<?php echo json_encode(lang('common_must_select_customer_for_sms')); ?>);
+						return false;
+					}
+
+					$(this).attr('href','<?php echo site_url("$controller_name/send_sms");?>/'+selected['0']);
+				});
 		}); 
 </script>
 
@@ -40,6 +50,10 @@
 <div class="manage_buttons">
 <div class="manage-row-options hidden">
 	<div class="email_buttons text-center">
+		<a class="btn btn-primary btn-lg" title="<?php echo ('Gửi SMS');?>" id="sendSMS" href="<?php echo current_url(). '#'; ?>"  data-toggle="modal" data-target="#myModal">
+			<span class=""><?php echo ('Gửi SMS'); ?></span>
+		</a>
+		
 		<a class="btn btn-primary btn-lg disabled email email_inactive" title="<?php echo lang("common_email");?>" id="email" href="<?php echo current_url(). '#'; ?>" >
 			<span class=""><?php echo lang('common_email'); ?></span>
 		</a>

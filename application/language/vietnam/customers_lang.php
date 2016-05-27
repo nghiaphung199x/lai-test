@@ -76,5 +76,9 @@ $lang['customers_sms_title_required'] = 'Bạn chưa điền thông tin tiêu đ
 $lang['customers_sms_message_required'] = 'Bạn chưa điền thông tin nội dung SMS';
 $lang['customers_sms_message_maxlength'] = 'Nội dung không vượt quá 460 ký tự';
 $lang['customers_sms_menu_link'] = 'Quản lý SMS Brandname';
+$lang['customers_sms_send_sms'] = 'Gửi SMS';
+$lang['customers_sms_do_send_sms'] = 'Lựa chọn SMS để gửi';
+$lang['customers_sms_list_sms'] = 'Danh sách SMS';
+$lang['common_must_select_customer_for_sms'] = 'Bạn phải chọn đúng 1 khách hàng để gửi SMS';
 
 ?>

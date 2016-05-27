@@ -336,8 +336,9 @@ class BizCustomers extends Customers
 		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
 	}
 	
-	function view_sms($id = -1) {
+	function view_sms($id = -1,$redirect=0) {
 		$data['info_sms'] = $this->Customer->get_info_sms($id);
+		$data['redirect']= $redirect;
 		$this->load->view("customers/form_sms", $data);
 	}
 	
@@ -348,11 +349,13 @@ class BizCustomers extends Customers
 				'number_char' => $this->input->post('sms_num_char'),
 				'number_message' => $this->input->post('sms_num_mess'),
 		);
+		$redirect=$this->input->post('redirect');
+		
 		if ($this->Customer->save_sms($sms_data, $id)) {
 			if ($id == -1) {
-				echo json_encode(array('success' => true, 'message' => lang('customers_sms_msg_new'). ' (' . $sms_data['title'] . ')'. lang('customers_sms_msg_success') .' !', 'id' => $sms_data['id'],'redirect_code'=> 'customers/manage_sms'));
+				echo (json_encode(array('success' => true, 'message' => lang('customers_sms_msg_new'). ' (' . $sms_data['title'] . ')'. lang('customers_sms_msg_success') .' !', 'id' => $sms_data['id'],'redirect'=> $redirect)));	
 			} else { //previous customer
-				echo json_encode(array('success' => true, 'message' => lang('customers_sms_msg_update') . ' (' . $sms_data['title'] . ') '. lang('customers_sms_msg_success') .' !', 'id' => $sms_data['id'],'redirect_code'=> 'customers/manage_sms'));
+				echo (json_encode(array('success' => true, 'message' => lang('customers_sms_msg_update') . ' (' . $sms_data['title'] . ') '. lang('customers_sms_msg_success') .' !', 'id' => $sms_data['id'],'redirect'=> $redirect)));
 			}
 		} else {//failure
 			echo json_encode(array('success' => false, 'message' => lang('customers_sms_msg_error'), 'id' => -1));
@@ -371,6 +374,78 @@ class BizCustomers extends Customers
 	function suggest_sms() {
 		$suggestions = $this->Customer->get_search_suggestions_sms($this->input->get('term'), 100);
 		echo json_encode($suggestions);
+	}
+	function clear_state_sms()
+	{
+		redirect('customers/manage_sms');
+	}
+	
+	function send_sms() {
+		$sms_to_send = $this->input->post('ids');
+		$data['list_sms'] = $this->Customer->get_all_sms();
+		$this->load->view("customers/send_sms", $data);
+	}
+	
+	function get_number_sms(){
+		$max_id_sms = $this->Customer->get_table_number_sms();
+		$sms = $this->Customer->get_info_id_max_of_table_number_sms($max_id_sms['id']);
+		echo json_encode(array("quantity_sms" => $sms['quantity_sms']));
+	}
+	
+	function do_send_sms()
+	{
+		$customer_ids = $this->input->post('customer_ids');
+		$sms_id = $this->input->post('sms_id');
+		$info_sms = $this->Customer->get_info_sms($sms_id);
+		$message = $info_sms->message;
+		echo json_encode(array("success" => false, "message" => "Phần gửi tin nhắn đang được xử lý, vui lòng quay lại sau !"));
+		
+		/*
+		$max_id_table_number_sms = $this->Customer->get_table_number_sms();
+		$info_max_id = $this->Customer->get_info_id_max_of_table_number_sms($max_id_table_number_sms['id']);
+		if($info_max_id['quantity_sms'] > 0){
+			foreach ($customer_ids as $id_cus) {
+				$info_cus = $this->Customer->get_info($id_cus);
+				$mobile = '84' . substr($info_cus->phone_number, 1, strlen($info_cus->phone_number));
+				$getdata = http_build_query(array(
+						'username' => $this->config->item('user_sms'),
+						'password' => $this->config->item('pass_sms'),
+						'source_addr' => $this->config->item('brandname'),
+						'dest_addr' => $mobile,
+						'message' => $message,
+				));
+				$opts = array(
+						'http' => array(
+								'method' => 'GET',
+								'content' => $getdata
+						)
+				);
+				$context = stream_context_create($opts);
+				$result = file_get_contents('http://sms.vnet.vn:8082/api/sent?' . $getdata, false, $context);
+				if ($result) {
+					$data_insert = array(
+							'id_cus' => $id_cus,
+							'mobile' => $mobile,
+							'content_message' => $message,
+							'equals' => $result,
+							'date_send' => date('Y-m-d H:i:s'),
+					);
+					$this->Customer->save_message($data_insert);
+					if($result > 0){
+						$data_update_table_number_sms = array(
+								'quantity_sms' => ($info_max_id['quantity_sms'] - $info_sms->number_message),
+						);
+						$this->Customer->update_number_sms($max_id_table_number_sms['id'],$data_update_table_number_sms);
+					}
+					echo json_encode(array("success" => true, "message" => "Thực hiện thành công"));
+				} else {
+					echo json_encode(array("success" => false, "message" => "Thực hiện không thành công"));
+				}
+			}
+		}else{
+			echo json_encode(array("success" => false, "message" => "Tin nhắn không đủ để thực hiện! Vui lòng liên hệ với nhà cung cấp để mua thêm tin nhắn"));
+		}
+		*/
 	}
 }
 ?>
