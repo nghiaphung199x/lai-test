@@ -7,7 +7,7 @@ $(document).ready(function (){
     enable_checkboxes();
     enable_row_selection();
 	enable_search('<?php echo site_url("$controller_name/suggest_sms");?>',<?php echo json_encode(lang("common_confirm_search"));?>);
-    enable_delete(<?php echo json_encode('Bạn muốn xóa SMS này?'); ?>,<?php echo json_encode(lang($controller_name . "_none_selected")); ?>);
+    enable_delete(<?php echo json_encode(lang('customers_sms_delete_msg_confrim')); ?>,<?php echo json_encode(lang($controller_name . "_none_selected")); ?>);
 });
 
 </script>

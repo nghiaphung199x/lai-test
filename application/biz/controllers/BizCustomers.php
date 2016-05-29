@@ -365,9 +365,9 @@ class BizCustomers extends Customers
 	function delete_sms() {
 		$sms_to_delete = $this->input->post('ids');
 		if ($this->Customer->delete_sms_list($sms_to_delete)) {
-			echo json_encode(array('success' => true, 'message' => ' Đã xóa!' . count($sms_to_delete) . ' SMS!'));
+			echo json_encode(array('success' => true, 'message' => lang('customers_sms_delete_msg_frs').' ' . count($sms_to_delete) . ' ' . lang('customers_sms_delete_msg_ed')));
 		} else {
-			echo json_encode(array('success' => false, 'message' => 'Lỗi! Không xóa được, vui lòng thử lại!'));
+			echo json_encode(array('success' => false, 'message' => lang('customers_sms_delete_error')));
 		}
 	}
 	
@@ -398,9 +398,7 @@ class BizCustomers extends Customers
 		$sms_id = $this->input->post('sms_id');
 		$info_sms = $this->Customer->get_info_sms($sms_id);
 		$message = $info_sms->message;
-		echo json_encode(array("success" => false, "message" => "Phần gửi tin nhắn đang được xử lý, vui lòng quay lại sau !"));
 		
-		/*
 		$max_id_table_number_sms = $this->Customer->get_table_number_sms();
 		$info_max_id = $this->Customer->get_info_id_max_of_table_number_sms($max_id_table_number_sms['id']);
 		if($info_max_id['quantity_sms'] > 0){
@@ -437,15 +435,15 @@ class BizCustomers extends Customers
 						);
 						$this->Customer->update_number_sms($max_id_table_number_sms['id'],$data_update_table_number_sms);
 					}
-					echo json_encode(array("success" => true, "message" => "Thực hiện thành công"));
+					echo json_encode(array("success" => true, "message" => lang('customers_sms_send_sms_success')));
 				} else {
-					echo json_encode(array("success" => false, "message" => "Thực hiện không thành công"));
+					echo json_encode(array("success" => false, "message" => lang('customers_sms_send_sms_unsuccess')));
 				}
 			}
 		}else{
-			echo json_encode(array("success" => false, "message" => "Tin nhắn không đủ để thực hiện! Vui lòng liên hệ với nhà cung cấp để mua thêm tin nhắn"));
+			echo json_encode(array("success" => false, "message" => lang('customers_sms_send_sms_not_enough')));
 		}
-		*/
+		
 	}
 }
 ?>

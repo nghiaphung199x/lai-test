@@ -50,8 +50,8 @@
 <div class="manage_buttons">
 <div class="manage-row-options hidden">
 	<div class="email_buttons text-center">
-		<a class="btn btn-primary btn-lg" title="<?php echo ('Gửi SMS');?>" id="sendSMS" href="<?php echo current_url(). '#'; ?>"  data-toggle="modal" data-target="#myModal">
-			<span class=""><?php echo ('Gửi SMS'); ?></span>
+		<a class="btn btn-primary btn-lg" title="<?php echo (lang('customers_sms_send_sms'));?>" id="sendSMS" href="<?php echo current_url(). '#'; ?>"  data-toggle="modal" data-target="#myModal">
+			<span class=""><?php echo (lang('customers_sms_send_sms')); ?></span>
 		</a>
 		
 		<a class="btn btn-primary btn-lg disabled email email_inactive" title="<?php echo lang("common_email");?>" id="email" href="<?php echo current_url(). '#'; ?>" >

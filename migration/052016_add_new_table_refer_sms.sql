@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS `phppos_messages` (
   CONSTRAINT `phppos_messages_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `phppos_employees` (`person_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `lifetek_number_sms` (
+DROP TABLE IF EXISTS `lifetek_number_sms`;
+CREATE TABLE IF NOT EXISTS `phppos_number_sms` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `total_sms` int(11) NOT NULL,
   `quantity_sms` int(11) NOT NULL,

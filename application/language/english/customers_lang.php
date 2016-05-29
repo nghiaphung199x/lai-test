@@ -52,4 +52,39 @@ $lang['customers_amount_to_spend_for_next_point'] = 'Amount to spend for next po
 
 
 $lang['customers_update'] = 'Update';
+
+$lang['customers_filter_tier'] = 'Type/Group';
+$lang['customers_filter_created_by'] = 'Employee';
+
+$lang['customers_sms_code'] = 'Code SMS';
+$lang['customers_sms_title'] = 'Title SMS';
+$lang['customers_sms_description'] = 'Message';
+$lang['customers_sms_num_character'] = 'Character number';
+$lang['customers_sms_num_message'] = 'Message number';
+$lang['customers_sms_edit'] = 'Edit SMS Brandname';
+$lang['customers_sms_none'] = 'No data SMS';
+$lang['customers_sms_new'] = 'Add new SMS Brandname';
+$lang['customers_sms_basic_information'] = 'SMS Description';
+$lang['customers_sms_note_basic_information'] = "Nội dung tin nhắn không từ tiếng việt có dấu, không vượt quá 460 ký tự, nên sử dụng các từ 'Chuc mung', 'Thong bao', 'Cam on' trước mỗi nội dung tin nhắn";
+$lang['customers_sms_msg_new'] = 'Add new SMS';
+$lang['customers_sms_msg_success'] = 'success';
+$lang['customers_sms_msg_update'] = 'Update SMS';
+$lang['customers_sms_msg_error'] = 'Error Adding/Updating SMS';
+$lang['customers_sms_are_you_sure_cancel'] = 'Are you sure cancel add/update SMS ?';
+$lang['customers_sms_title_required'] = 'You have not add title SMS';
+$lang['customers_sms_message_required'] = 'You have not add message SMS';
+$lang['customers_sms_message_maxlength'] = 'Message has not more than 460 characters';
+$lang['customers_sms_menu_link'] = 'Manage SMS Brandname';
+$lang['customers_sms_send_sms'] = 'Send SMS';
+$lang['customers_sms_do_send_sms'] = 'Select SMS';
+$lang['customers_sms_list_sms'] = 'SMS list';
+$lang['common_must_select_customer_for_sms'] = 'You are select only one customer to send SMS';
+$lang['customers_sms_send_sms_success'] = 'Send SMS success';
+$lang['customers_sms_send_sms_unsuccess'] = 'Send SMS unsuccess';
+$lang['customers_sms_send_sms_not_enough'] = 'Tin nhắn không đủ để thực hiện! Vui lòng liên hệ với nhà cung cấp để mua thêm tin nhắn';
+$lang['customers_sms_delete_error'] = 'Error ! You can not delete, Please try again!';
+$lang['customers_sms_delete_msg_frs'] = 'Deleted';
+$lang['customers_sms_delete_msg_ed'] = 'SMS !';
+$lang['customers_sms_delete_msg_confrim'] = 'Are you sure want to delete this SMS ?';
+
 ?>

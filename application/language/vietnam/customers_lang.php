@@ -79,6 +79,13 @@ $lang['customers_sms_menu_link'] = 'Quản lý SMS Brandname';
 $lang['customers_sms_send_sms'] = 'Gửi SMS';
 $lang['customers_sms_do_send_sms'] = 'Lựa chọn SMS để gửi';
 $lang['customers_sms_list_sms'] = 'Danh sách SMS';
-$lang['common_must_select_customer_for_sms'] = 'Bạn phải chọn đúng 1 khách hàng để gửi SMS';
+$lang['common_must_select_customer_for_sms'] = 'Bạn chỉ được chọn 1 khách hàng để gửi SMS';
+$lang['customers_sms_send_sms_success'] = 'Thực hiện gửi SMS thành công';
+$lang['customers_sms_send_sms_unsuccess'] = 'Thực hiện gửi SMS không thành công';
+$lang['customers_sms_send_sms_not_enough'] = 'Tin nhắn không đủ để thực hiện! Vui lòng liên hệ với nhà cung cấp để mua thêm tin nhắn';
+$lang['customers_sms_delete_error'] = 'Lỗi! Không xóa được, vui lòng thử lại!';
+$lang['customers_sms_delete_msg_frs'] = 'Đã xóa';
+$lang['customers_sms_delete_msg_ed'] = 'SMS !';
+$lang['customers_sms_delete_msg_confrim'] = 'Bạn muốn xóa SMS này?';
 
 ?>
