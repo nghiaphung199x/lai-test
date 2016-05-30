@@ -21,6 +21,22 @@ function getItemConvertedQtyAllLocation($itemId) {
 	return $allQty;
 }
 
+function qtyToString($itemId, $qty) {
+	$CI =& get_instance();
+	$measures = $CI->ItemMeasures->getMeasuresByItemId($itemId);
+	$itemInfo = $CI->Item->get_info($itemId);
+	
+	$convertedQtyToString = '';
+	$convertedQty = getItemConvertedQty($qty['quantity'], $itemInfo->measure_id, $measures);
+	foreach ($convertedQty as $convertedMeasureId => $convertedMeasureQty)
+	{
+		$measure = $CI->Measure->getInfo($convertedMeasureId);
+		$convertedQtyToString .= to_quantity($convertedMeasureQty) . ' ' . $measure->name . ', ';
+	}
+	return rtrim(trim($convertedQtyToString), ",");
+}
+
+
 function getItemConvertedQty($qty, $baseMeasureId, $measures) {
 	$result = array();
 	foreach ($measures as $measure) {
