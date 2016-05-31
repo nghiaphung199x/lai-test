@@ -90,8 +90,9 @@ class BizDetailed_receivings extends Detailed_receivings
 			$receiving_ids[] = $receiving_row['receiving_id'];
 		}
 
-		$this->db->select('name, receiving_id, receiving_date, items.item_id, receivings_items_temp.measure_id, receivings_items_temp.category, quantity_purchased,quantity_received, measure_qty, measure_qty_received, serialnumber,total, subtotal, tax, discount_percent,items.product_id, items.size', false);
+		$this->db->select('items.name as item_name, receiving_id, receiving_date, items.item_id, receivings_items_temp.measure_id, receivings_items_temp.category, quantity_purchased,quantity_received, measure_qty, measure_qty_received, measures.name as measure_name, serialnumber,total, subtotal, tax, discount_percent,items.product_id, items.size', false);
 		$this->db->from('receivings_items_temp');
+		$this->db->join('measures', 'measures.id = receivings_items_temp.measure_id','left');
 		$this->db->join('items', 'receivings_items_temp.item_id = items.item_id');
 		
 		if (!empty($receiving_ids))

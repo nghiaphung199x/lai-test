@@ -1,7 +1,294 @@
 <?php
 require_once (APPPATH . "controllers/Reports.php");
 class BizReports extends Reports 
-{	
+{
+	function __construct()
+	{
+		parent::__construct();
+		$this->load->helper('items');
+	}
+	
+	function detailed_suspended_receivings($start_date, $end_date, $supplier_id,$sale_type, $export_excel=0, $offset=0)
+	{
+		$this->load->model('Receiving');
+		$this->check_action_permission('view_receivings');
+		$start_date=rawurldecode($start_date);
+		$end_date=rawurldecode($end_date);
+	
+		$this->load->model('reports/Detailed_receivings');
+		$model = $this->Detailed_receivings;
+		$model->setParams(array('start_date'=>$start_date, 'end_date'=>$end_date, 'sale_type' => $sale_type, 'offset' => $offset, 'export_excel' => $export_excel, 'supplier_id' => $supplier_id, 'force_suspended' => true));
+	
+		$this->Receiving->create_receivings_items_temp_table(array('start_date'=>$start_date, 'end_date'=>$end_date, 'sale_type' => $sale_type, 'force_suspended' => true));
+		$config = array();
+		$config['base_url'] = site_url("reports/detailed_receivings/".rawurlencode($start_date).'/'.rawurlencode($end_date)."/$supplier_id/$sale_type/$export_excel");
+		$config['total_rows'] = $model->getTotalRows();
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+		$config['uri_segment'] = 8;
+		$this->load->library('pagination');$this->pagination->initialize($config);
+	
+	
+		$headers = $model->getDataColumns();
+		$report_data = $model->getData();
+	
+		$summary_data = array();
+		$details_data = array();
+	
+		$location_count = count(Report::get_selected_location_ids());
+
+		foreach($report_data['summary'] as $key=>$row)
+		{
+			$summary_data[$key] = array(
+				array('data'=>anchor('receivings/receipt/'.$row['receiving_id'], '<i class="ion-printer"></i>', array('target' => '_blank')).' '.anchor('receivings/edit/'.$row['receiving_id'], '<i class="ion-document-text"></i>', array('target' => '_blank')).' '.anchor('receivings/edit/'.$row['receiving_id'], lang('common_edit').' '.$row['receiving_id'], array('target' => '_blank')).' ['.anchor('items/generate_barcodes_from_recv/'.$row['receiving_id'], lang('common_barcode_sheet'), array('target' => '_blank')).' / '.anchor('items/generate_barcodes_labels_from_recv/'.$row['receiving_id'], lang('common_barcode_labels'), array('target' => '_blank')).']', 'align'=> 'left'), 
+				array('data'=>date(get_date_format(), strtotime($row['receiving_date'])), 'align'=> 'left'), 
+				array('data'=>to_quantity($row['items_purchased']), 'align'=> 'left'),
+				array('data'=>to_quantity($row['reports_measure_purchased']), 'align'=> 'left'), 
+				array('data'=>$row['employee_name'], 'align'=> 'left'), 
+				array('data'=>$row['supplier_name'], 'align'=> 'left'), 
+				array('data'=>to_currency($row['subtotal']), 'align'=> 'right'), 
+				array('data'=>to_currency($row['total']), 'align'=> 'right'),
+				array('data'=>to_currency($row['tax']), 'align'=> 'right'), 
+				array('data'=>$row['payment_type'], 'align'=> 'left'), 
+				array('data'=>$row['comment'], 'align'=> 'left')
+			);
+				
+			if ($location_count > 1)
+			{
+				array_unshift($summary_data[$key], array('data'=>$row['location_name'], 'align'=> 'left'));
+			}
+				
+			foreach($report_data['details'][$key] as $drow)
+			{
+				if( $drow['measure_qty'] && $drow['measure_name'] ) {
+					$details_data[$key][] = array(
+						array('data'=>$drow['item_name'], 'align'=> 'left'),
+						array('data'=>$drow['product_id'], 'align'=> 'left'),
+						array('data'=>$drow['category'], 'align'=> 'left'),
+						array('data'=>$drow['size'], 'align'=> 'left'),
+						// array('data'=>to_quantity($drow['quantity_purchased']), 'align'=> 'left'),
+						// array('data'=>to_quantity($drow['quantity_received']), 'align'=> 'left'),
+						array('data'=>to_quantity($drow['measure_qty']), 'align'=>'left'),
+						array('data'=>$drow['measure_name'], 'align'=>'left'),
+							
+						array('data'=>to_currency($drow['subtotal']), 'align'=> 'right'),
+						array('data'=>to_currency($drow['total']), 'align'=> 'right'),
+						array('data'=>to_currency($drow['tax']), 'align'=> 'right'),
+						array('data'=>$drow['discount_percent'].'%', 'align'=> 'left')
+					);
+				} else {
+					$this->load->model('Item');
+					$details_data[$key][] = array(
+						array('data'=>$drow['name'], 'align'=> 'left'),
+						array('data'=>$drow['product_id'], 'align'=> 'left'),
+						array('data'=>$drow['category'], 'align'=> 'left'),
+						array('data'=>$drow['size'], 'align'=> 'left'),
+						array('data'=>to_quantity($drow['quantity_purchased']), 'align'=> 'left'),
+						// array('data'=>to_quantity($drow['quantity_received']), 'align'=> 'left'),
+						array('data'=> $this->Item->getMeasureName($drow['item_id']), 'align'=>'left'),
+							
+						array('data'=>to_currency($drow['subtotal']), 'align'=> 'right'),
+						array('data'=>to_currency($drow['total']), 'align'=> 'right'),
+						array('data'=>to_currency($drow['tax']), 'align'=> 'right'),
+						array('data'=>$drow['discount_percent'].'%', 'align'=> 'left')
+					);
+				}
+			}
+		}
+	
+		$data = array(
+				"title" =>lang('reports_detailed_suspended_receivings_report'),
+				"subtitle" => date(get_date_format(), strtotime($start_date)) .'-'.date(get_date_format(), strtotime($end_date)),
+				"headers" => $model->getDataColumns(),
+				"summary_data" => $summary_data,
+				"details_data" => $details_data,
+				"overall_summary_data" => $model->getSummaryData(),
+				"export_excel" => $export_excel,
+				"pagination" => $this->pagination->create_links(),
+		);
+	
+		$this->load->view("reports/tabular_details",$data);
+	}
+	
+	function summary_items($start_date, $end_date, $do_compare, $compare_start_date, $compare_end_date, $supplier_id = -1, $category_id = -1, $sale_type = 'all', $export_excel=0, $offset = 0)
+	{
+		$this->load->model('Category');
+		$this->load->model('Sale');
+		$this->check_action_permission('view_items');
+		$start_date=rawurldecode($start_date);
+		$end_date=rawurldecode($end_date);
+		$compare_start_date=rawurldecode($compare_start_date);
+		$compare_end_date=rawurldecode($compare_end_date);
+	
+	
+		$this->load->model('reports/Summary_items');
+		$model = $this->Summary_items;
+		$model->setParams(array('start_date'=>$start_date, 'end_date'=>$end_date, 'sale_type' => $sale_type, 'category_id' => $category_id, 'supplier_id' => $supplier_id, 'offset' => $offset, 'export_excel' => $export_excel));
+	
+		$this->Sale->create_sales_items_temp_table(array('start_date'=>$start_date, 'end_date'=>$end_date, 'sale_type' => $sale_type));
+	
+		$config = array();
+		$config['base_url'] = site_url("reports/summary_items/".rawurlencode($start_date).'/'.rawurlencode($end_date).'/'.$do_compare.'/'.rawurlencode($compare_start_date).'/'.rawurlencode($compare_end_date)."/$supplier_id/$category_id/$sale_type/$export_excel");
+		$config['total_rows'] = $model->getTotalRows();
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+		$config['uri_segment'] = 12;
+	
+		$this->load->library('pagination');$this->pagination->initialize($config);
+	
+		$tabular_data = array();
+		$report_data = $model->getData();
+		$summary_data = $model->getSummaryData();
+	
+		if ($do_compare)
+		{
+			$compare_to_items = array();
+				
+			for($k=0;$k<count($report_data);$k++)
+			{
+				$compare_to_items[] = $report_data[$k]['item_id'];
+			}
+				
+			$model_compare = $this->Summary_items;
+			$model_compare->setParams(array('start_date'=>$compare_start_date, 'end_date'=>$compare_end_date, 'sale_type' => $sale_type, 'category_id' => $category_id, 'supplier_id' => $supplier_id, 'offset' => $offset, 'export_excel' => $export_excel, 'compare_to_items' => $compare_to_items));
+				
+			$this->Sale->drop_sales_items_temp_table();
+			$this->Sale->create_sales_items_temp_table(array('start_date'=>$compare_start_date, 'end_date'=>$compare_end_date, 'sale_type' => $sale_type));
+				
+			$report_data_compare = $model_compare->getData();
+			$report_data_summary_compare = $model_compare->getSummaryData();
+		}
+	
+	
+		foreach($report_data as $row)
+		{
+			if ($do_compare)
+			{
+				$index_compare = -1;
+				$item_id_to_compare_to = $row['item_id'];
+	
+				for($k=0;$k<count($report_data_compare);$k++)
+				{
+					if ($report_data_compare[$k]['item_id'] == $item_id_to_compare_to)
+					{
+						$index_compare = $k;
+						break;
+					}
+				}
+	
+				if (isset($report_data_compare[$index_compare]))
+				{
+					$row_compare = $report_data_compare[$index_compare];
+				}
+				else
+				{
+					$row_compare = FALSE;
+				}
+			}
+				
+			$data_row = array();
+			$data_row[] = array('data'=>$row['name'], 'align' => 'left');
+			$data_row[] = array('data'=>$row['item_number'], 'align' => 'left');
+			$data_row[] = array('data'=>$row['product_id'], 'align' => 'left');
+			$data_row[] = array('data'=>$row['category'], 'align' => 'left');
+			$data_row[] = array('data'=>to_currency($row['current_selling_price']), 'align' => 'right');
+			$data_row[] = array('data'=>qtyToString($row['item_id'], $row['quantity']), 'align' => 'left');
+			$data_row[] = array('data'=>qtyToString($row['item_id'], $row['quantity_purchased']).($do_compare && $row_compare ? ' / <span class="compare '.($row_compare['quantity_purchased'] >= $row['quantity_purchased'] ? ($row['quantity_purchased'] == $row_compare['quantity_purchased'] ?  '' : 'compare_better') : 'compare_worse').'">'.to_quantity($row_compare['quantity_purchased']) .'</span>' :''), 'align' => 'left');
+			$data_row[] = array('data'=>to_currency($row['subtotal']).($do_compare && $row_compare ? ' / <span class="compare '.($row_compare['subtotal'] >= $row['subtotal'] ? ($row['subtotal'] == $row_compare['subtotal'] ?  '' : 'compare_better') : 'compare_worse').'">'.to_currency($row_compare['subtotal']) .'</span>' :''), 'align' => 'right');
+			$data_row[] = array('data'=>to_currency($row['total']).($do_compare && $row_compare ? ' / <span class="compare '.($row_compare['total'] >= $row['total'] ? ($row['total'] == $row_compare['total'] ?  '' : 'compare_better') : 'compare_worse').'">'.to_currency($row_compare['total']) .'</span>' :''), 'align' => 'right');
+			$data_row[] = array('data'=>to_currency($row['tax']).($do_compare && $row_compare ? ' / <span class="compare '.($row_compare['tax'] >= $row['tax'] ? ($row['tax'] == $row_compare['tax'] ?  '' : 'compare_better') : 'compare_worse').'">'.to_currency($row_compare['tax']) .'</span>' :''), 'align' => 'right');
+			if($this->has_profit_permission)
+			{
+				$data_row[] = array('data'=>to_currency($row['profit']).($do_compare && $row_compare ? ' / <span class="compare '.($row_compare['profit'] >= $row['profit'] ? ($row['profit'] == $row_compare['profit'] ?  '' : 'compare_better') : 'compare_worse').'">'.to_currency($row_compare['profit']) .'</span>' :''), 'align' => 'right');
+			}
+			$tabular_data[] = $data_row;
+	
+		}
+	
+		if ($do_compare)
+		{
+			foreach($summary_data as $key=>$value)
+			{
+				$summary_data[$key] = to_currency($value) . ' / <span class="compare '.($report_data_summary_compare[$key] >= $value ? ($value == $report_data_summary_compare[$key] ?  '' : 'compare_better') : 'compare_worse').'">'.to_currency($report_data_summary_compare[$key]).'</span>';
+			}
+				
+		}
+	
+		$data = array(
+				"title" => lang('reports_items_summary_report'),
+				"subtitle" => date(get_date_format(), strtotime($start_date)) .'-'.date(get_date_format(), strtotime($end_date)).($do_compare  ? ' '. lang('reports_compare_to'). ' '. date(get_date_format(), strtotime($compare_start_date)) .'-'.date(get_date_format(), strtotime($compare_end_date)) : ''),
+				"headers" => $model->getDataColumns(),
+				"data" => $tabular_data,
+				"summary_data" => $summary_data,
+				"export_excel" => $export_excel,
+				"pagination" => $this->pagination->create_links()
+		);
+	
+		$this->load->view("reports/tabular",$data);
+	}
+	
+	function inventory_low($supplier = -1, $category_id = -1, $inventory = 'all', $reorder_only = 0, $export_excel=0, $offset=0)
+	{
+		$category_id = rawurldecode($category_id);
+	
+		$this->check_action_permission('view_inventory_reports');
+		$this->load->model('reports/Inventory_low');
+		$model = $this->Inventory_low;
+		$model->setParams(array('supplier'=>$supplier,'category_id' => $category_id, 'export_excel' => $export_excel, 'offset'=>$offset, 'inventory' => $inventory, 'reorder_only' => $reorder_only));
+	
+		$config = array();
+		$config['base_url'] = site_url("reports/inventory_low/$supplier/$category_id/$inventory/$reorder_only/export_excel");
+		$config['total_rows'] = $model->getTotalRows();
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+		$config['uri_segment'] = 8;
+		$this->load->library('pagination');$this->pagination->initialize($config);
+	
+		$tabular_data = array();
+		$report_data = $model->getData();
+		$location_count = count(Report::get_selected_location_ids());
+	
+		foreach($report_data as $row)
+		{
+			$data_row = array();
+				
+	
+			if ($location_count > 1)
+			{
+				$data_row[] = array('data'=>$row['location_name'], 'align' => 'left');
+			}
+			$data_row[] = array('data'=>$row['item_id'], 'align' => 'left');
+			$data_row[] = array('data'=>$row['name'], 'align' => 'left');
+			$data_row[] = array('data'=>$row['category'], 'align'=> 'left');
+			$data_row[] = array('data'=>$row['company_name'], 'align'=> 'left');
+			$data_row[] = array('data'=>$row['item_number'], 'align'=> 'left');
+			$data_row[] = array('data'=>$row['product_id'], 'align'=> 'left');
+			$data_row[] = array('data'=>$row['description'], 'align'=> 'left');
+			$data_row[] = array('data'=>$row['size'], 'align'=> 'left');
+			$data_row[] = array('data'=>$row['location'], 'align'=> 'left');
+				
+			if($this->has_cost_price_permission)
+			{
+				$data_row[] = array('data'=>to_currency($row['cost_price']), 'align'=> 'right');
+			}
+			$data_row[] = array('data'=>to_currency($row['unit_price']), 'align'=> 'right');
+			$data_row[] = array('data'=>qtyToString($row['item_id'], $row['quantity']), 'align'=> 'left');
+			$data_row[] = array('data'=>to_quantity($row['reorder_level']), 'align'=> 'left');
+				
+			$tabular_data[] = $data_row;
+				
+		}
+	
+		$data = array(
+				"title" => lang('reports_low_inventory_report'),
+				"subtitle" => '',
+				"headers" => $model->getDataColumns(),
+				"data" => $tabular_data,
+				"summary_data" => $model->getSummaryData(),
+				"export_excel" => $export_excel,
+				"pagination" => $this->pagination->create_links(),
+		);
+	
+		$this->load->view("reports/tabular",$data);
+	}
+	
 	function detailed_sales($start_date, $end_date, $sale_type, $export_excel=0, $offset = 0)
 	{
 		$this->load->model('Sale');

@@ -28,10 +28,16 @@ function qtyToString($itemId, $qty) {
 	
 	$convertedQtyToString = '';
 	$convertedQty = getItemConvertedQty($qty['quantity'], $itemInfo->measure_id, $measures);
-	foreach ($convertedQty as $convertedMeasureId => $convertedMeasureQty)
-	{
-		$measure = $CI->Measure->getInfo($convertedMeasureId);
-		$convertedQtyToString .= to_quantity($convertedMeasureQty) . ' ' . $measure->name . ', ';
+	
+	if( !empty($convertedQty) ) {
+		foreach ($convertedQty as $convertedMeasureId => $convertedMeasureQty)
+		{
+			$measure = $CI->Measure->getInfo($convertedMeasureId);
+			$convertedQtyToString .= to_quantity($convertedMeasureQty) . ' ' . $measure->name . ', ';
+		}
+	} else {
+		$measure = $CI->Measure->getInfo($itemInfo->measure_id);
+		$convertedQtyToString = to_quantity($qty) . ' ' . $measure->name . ', ';
 	}
 	return rtrim(trim($convertedQtyToString), ",");
 }
