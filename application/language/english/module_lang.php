@@ -3,6 +3,7 @@ $lang['module_home']='Home';
 
 $lang['module_customers']='Customers';
 $lang['module_customers_desc']='Add, Update, Delete, and Search customers';
+$lang['module_customers_sms']='SMS Brandname';
 
 $lang['module_suppliers']='Suppliers';
 $lang['module_suppliers_desc']='Add, Update, Delete, and Search suppliers';

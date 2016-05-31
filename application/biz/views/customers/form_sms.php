@@ -8,7 +8,7 @@
 	</div>
 
 	<div class="col-md-12">
-			<?php echo form_open_multipart('customers/save_sms/'.$info_sms->id,array('id'=>'sms_form','class'=>'form-horizontal')); 	?>
+			<?php echo form_open('customers/save_sms/'.$info_sms->id,array('id'=>'sms_form','class'=>'form-horizontal')); 	?>
 
 			<div class="panel panel-piluku">
 			<div class="panel-heading">
@@ -84,7 +84,7 @@
 					</div>
 				</div>
 				
-				<?php echo form_hidden('redirect_code', $redirect_code); ?>
+				<?php echo form_hidden('redirect', $redirect); ?>
 				<div class="form-actions pull-right">
 					<?php
 					echo form_button(array(
@@ -106,17 +106,12 @@
 					?>
 				</div>
 			</div>
-
 		</div>
+			<?php echo form_close();?>
 	</div>
 	<!-- /row -->
-		<?php echo form_close();?>
 </div>
-
-
-
-<?php $this->load->view("partial/footer"); ?>
-
+</div>
 
 <script type='text/javascript'>
 //validation and submit handling
@@ -125,13 +120,14 @@ $(document).ready(function(){
     setTimeout(function(){$(":input:visible:first","#sms_form").focus();},100);
     var submitting = false;
     $('#sms_form').validate({
-        submitHandler:function(form){
-            $(form).mask(<?php echo json_encode(lang('common_wait')); ?>);
+    	submitHandler:function(form){
+            if (submitting) return;
+            submitting = true;
             $(form).ajaxSubmit({
-                success:function(response){
-                    submitting = false;
-                    show_feedback(response.success ? 'success' : 'error',response.message,response.success ? <?php echo json_encode(lang('common_success')); ?> : <?php echo json_encode(lang('common_error')); ?>);
-                    
+            	success:function(response){
+            		submitting = false;
+					show_feedback(response.success ? 'success' : 'error',response.message, response.success ? <?php echo json_encode(lang('common_success')); ?>  : <?php echo json_encode(lang('common_error')); ?>);
+					
                     if(response.success){
                     	window.location.href = '<?php echo site_url('customers/manage_sms'); ?>';
                     }
@@ -191,3 +187,5 @@ function cancelCustomerAddingSMS()
 	});
 }
 </script>
+
+<?php $this->load->view("partial/footer"); ?>

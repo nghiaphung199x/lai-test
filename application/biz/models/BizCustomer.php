@@ -245,5 +245,44 @@ class BizCustomer extends Customer
 		}
 		return $suggestions;
 	}
+	
+	function search_sms($search, $limit = 20, $offset = 0, $column = 'id', $orderby = 'desc') {
+		$this->db->from('sms');
+		$this->db->like('title', $search);
+		$this->db->where('deleted',0);
+		$this->db->order_by($column, $orderby);
+		$this->db->limit($limit);
+		$this->db->offset($offset);
+		return $this->db->get();
+	}
+	
+	function search_count_sms($search, $limit = 10000) {
+		$this->db->from('sms');
+		$this->db->like('title', $search);
+		$this->db->where('deleted',0);
+		$result = $this->db->get();
+		return $result->num_rows();
+	}
+	
+	function get_table_number_sms(){
+		$this->db->select_max("id");
+		$query = $this->db->get("number_sms");
+		return $query->row_array();
+	}
+	
+	function get_info_id_max_of_table_number_sms($id_max){
+		$this->db->where("id",$id_max);
+		$query = $this->db->get("number_sms");
+		return $query->row_array();
+	}
+	
+	function save_message($data){
+		$this->db->insert("message",$data);
+	}
+	
+	function update_number_sms($id,$data){
+		$this->db->where('id',$id);
+		$this->db->update("number_sms",$data);
+	}
 }
 ?>

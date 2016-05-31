@@ -7,7 +7,7 @@ $(document).ready(function (){
     enable_checkboxes();
     enable_row_selection();
 	enable_search('<?php echo site_url("$controller_name/suggest_sms");?>',<?php echo json_encode(lang("common_confirm_search"));?>);
-    enable_delete(<?php echo json_encode('Bạn muốn xóa SMS này?'); ?>,<?php echo json_encode(lang($controller_name . "_none_selected")); ?>);
+    enable_delete(<?php echo json_encode(lang('customers_sms_delete_msg_confrim')); ?>,<?php echo json_encode(lang($controller_name . "_none_selected")); ?>);
 });
 
 </script>
@@ -29,7 +29,12 @@ $(document).ready(function (){
 			<?php echo form_open("$controller_name/search_sms",array('id'=>'search_form', 'autocomplete'=> 'off', 'class' => 'form-inline')); ?>
 				<div class="search no-left-border">
 					<input type="text" class="form-control" name ='search' id='search' value="<?php echo H($search); ?>" placeholder="<?php echo lang('common_search'); ?> <?php echo lang('module_'.$controller_name .'_sms'); ?>"/>
-				</div>		
+				</div>
+				<div class="clear-block <?php echo ($search=='') ? 'hidden' : ''  ?>">
+					<a class="clear" href="<?php echo site_url($controller_name.'/clear_state_sms'); ?>">
+						<i class="ion ion-close-circled"></i>
+					</a>	
+				</div>
 			</form>	
 			
 		</div>
