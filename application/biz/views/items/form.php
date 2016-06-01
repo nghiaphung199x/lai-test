@@ -148,7 +148,17 @@
 						);?>
 					</div>
 				</div>
-
+				<div class="form-group">
+					<?php echo form_label(lang('common_measure').' :', 'measures',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+					<div class="col-sm-9 col-md-9 col-lg-10">
+						<?php echo form_dropdown('measure_id', $measures, $item_info->measure_id, 'class="form-control form-inps" id ="measure_id"');?>
+						<?php // if ($this->Employee->has_module_action_permission('items', 'manage_tags', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
+								<div>
+									<?php echo anchor("items/manage_measures",lang('items_manage_measures'),array('target' => '_blank', 'title'=>lang('items_manage_measures')));?>
+								</div>
+						<?php // } ?>
+					</div>
+				</div>
 				<div class="form-group">
 					<?php echo form_label(lang('common_supplier').' :', 'supplier_id',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide '.(!$item_info->item_id ? 'required' : ''))); ?>
 					<div class="col-sm-9 col-md-9 col-lg-10">
@@ -993,19 +1003,7 @@
 				<?php echo form_hidden('sale_or_receiving', isset($sale_or_receiving) ? $sale_or_receiving : ''); ?>
 				
 				<hr/>
-				<div class="form-heading">Đơn vị tính</div>
-				<div class="form-group">
-					<?php echo form_label(lang('common_measure').' :', 'measures',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_dropdown('measure_id', $measures, $item_info->measure_id, 'class="form-control form-inps" id ="measure_id"');?>
-						<?php // if ($this->Employee->has_module_action_permission('items', 'manage_tags', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
-								<div>
-									<?php echo anchor("items/manage_measures",lang('items_manage_measures'),array('target' => '_blank', 'title'=>lang('items_manage_measures')));?>
-								</div>
-						<?php // } ?>
-					</div>
-				</div>
-				
+				<div class="form-heading">Đổi đơn vị tính</div>
 				<div class="form-group">
 					<?php echo form_label(lang('common_measure_convert').' :', 'convert_measure',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
 					<div class="col-sm-9 col-md-9 col-lg-10">
