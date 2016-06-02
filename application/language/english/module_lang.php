@@ -10,6 +10,9 @@ $lang['module_suppliers_desc']='Add, Update, Delete, and Search suppliers';
 $lang['module_employees']='Employees';
 $lang['module_employees_desc']='Add, Update, Delete, and Search employees';
 
+$lang['module_groups']='Groups';
+$lang['module_groups_desc']='Add, Update, Delete, and Search groups';
+
 $lang['module_sales']='Sales';
 $lang['module_sales_desc']='Process sales and returns';
 
@@ -37,6 +40,7 @@ $lang['module_locations_desc']='Add, Update, Delete, and Search locations';
 
 $lang['module_action_add_update'] = 'Add, Update';
 $lang['module_action_delete'] = 'Delete';
+$lang['module_action_search'] = 'Search Groups';
 $lang['module_action_search_customers'] = 'Search customers';
 $lang['module_action_search_items'] = 'Search items';
 $lang['module_action_search_giftcards'] = 'Search Giftcards';

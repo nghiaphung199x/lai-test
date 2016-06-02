@@ -1,0 +1,19 @@
+body, html { font-family: Arial; font-size: 14px; line-height: 20px; letter-spacing: normal }
+.btn { font-size: 14px; font-family: Arial }
+.left-bar .admin-logo .logo-holder, .side-bar .admin-logo .logo-holder { padding-top: 0px !important; position: relative; top: 5px; }
+.wrapper.mini-bar .left-bar .admin-logo .logo-holder .logo { position: relative; top: 8px; }
+.table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > th, .table > caption + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > td, .table > thead:first-child > tr:first-child > td { font-weight: bold }
+.list-inline select { margin-top: 5px; }
+.nicescroll-cursors { background-color: rgba(255, 255, 255, .5) !important; border: none !important; width: 3px !important; }
+.nicescroll-cursors:hover { width: 5px !important; cursor: pointer }
+.control-label { font-size: 14px; letter-spacing: normal }
+.h1 .small, .h1 small, .h2 .small, .h2 small, .h3 .small, .h3 small, h1 .small, h1 small, h2 .small, h2 small, h3 .small, h3 small { font-size: 80%; }
+.panel, .panel-heading { border-radius: 0px !important; }
+.panel { border: none; box-shadow: 0 0px 4px rgba(0,0,0, .1); }
+.top-bar .top-elements .dropdown .dropdown-menu a { font-size: 14px; font-family: Arial; }
+.sub { color: #ccc;}
+.panel-heading { background-color: #f3f3f3; }
+.btn-default { border: none !important; background-color: #eee; }
+textarea.form-control { height: auto !important; }
+.panel-body.bootstrap { padding: 15px !important; }
+label.error { font-weight: normal; color: red; }

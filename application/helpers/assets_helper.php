@@ -25,6 +25,7 @@ function get_css_files()
 		array('path' =>'assets/css/invoice.css'),
 		array('path' =>'assets/css/toastr.css'),
 		array('path' =>'assets/css/style.css'),
+		array('path' =>'assets/css/extended_style.css'),
 		array('path' =>'assets/css/custom.css'),
 		array('path' =>'assets/css/bootstrap-select.css'),
 		array('path' =>'assets/css/select2.css'),

@@ -126,6 +126,13 @@
 				});
 				
 			});
+
+            /* Validate Form Fields: Begin */
+            var $form_validate = $('.form-validate');
+            if ($form_validate.size() > 0) {
+                $form_validate.validate();
+            }
+            /* Validate Form Fields: End */
 			
 			<?php
 			//If we are using on browser close (NULL or ""; both false) then we want to keep session alive

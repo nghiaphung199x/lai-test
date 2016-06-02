@@ -769,4 +769,78 @@ function get_expenses_data_row($expense,$controller)
 	$table_data_row.='</tr>';
 	return $table_data_row;
 }
+
+/*
+Gets the html table to manage groups.
+*/
+function get_groups_manage_table( $groups, $controller )
+{
+    $table='<table class="tablesorter table table-hover" id="sortable_table">';
+
+    $headers = array('<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
+        lang('common_name'),
+        lang('common_description'),
+        '&nbsp;',
+    );
+
+    $table.='<thead><tr>';
+    $count = 0;
+    foreach($headers as $header)
+    {
+        $count++;
+
+        if ($count == 1)
+        {
+            $table.="<th class='leftmost'>$header</th>";
+        }
+        elseif ($count == count($headers))
+        {
+            $table.="<th class='rightmost'>$header</th>";
+        }
+        else
+        {
+            $table.="<th>$header</th>";
+        }
+    }
+    $table.='</tr></thead><tbody>';
+    $table.=get_groups_manage_table_data_rows( $groups, $controller );
+    $table.='</tbody></table>';
+    return $table;
+}
+
+/*
+Gets the html data rows for the group.
+*/
+function get_groups_manage_table_data_rows( $groups, $controller )
+{
+    $table_data_rows = '';
+
+    foreach($groups->result() as $group)
+    {
+        $table_data_rows .= get_group_data_row( $group, $controller );
+    }
+
+    if($groups->num_rows() == 0)
+    {
+        $table_data_rows.="<tr><td colspan='8'><span class='col-md-12 text-center text-warning' >".lang('groups_no_groups_to_display')."</span></td></tr>";
+    }
+
+    return $table_data_rows;
+}
+
+function get_group_data_row($group,$controller)
+{
+    $CI =& get_instance();
+    $controller_name=str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
+
+    $table_data_row='<tr>';
+    $table_data_row.="<td><input type='checkbox' id='group_$group->group_id' value='".$group->group_id."'/><label for='group_$group->group_id'><span></span></label></td>";
+    $table_data_row.='<td>'.H($group->name).'</td>';
+    $table_data_row.='<td>'.H($group->description).'</td>';
+    $table_data_row.='<td class="rightmost">'.anchor($controller_name."/view/$group->group_id/2	", lang('common_edit'),array('class'=>' ','title'=>lang($controller_name.'_update'))).'</td>';
+
+    $table_data_row.='</tr>';
+    return $table_data_row;
+}
+
 ?>
