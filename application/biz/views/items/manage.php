@@ -207,7 +207,18 @@ $.post('<?php echo site_url("items/clear_select_inventory");?>', {select_invento
 								'title'=>lang('items_manage_tags')));
 							?>
 						</li>
-						<?php } ?>		
+						<?php } ?>
+						
+						<?php /* if ($this->Employee->has_module_action_permission($controller_name, 'transfer_pending', $this->Employee->get_logged_in_employee_info()->person_id)) { */?>
+						<li>
+							<?php echo anchor("$controller_name/manage_measures",
+								'<span class="">'.lang("items_manage_measures").'</span>',
+								array('class'=>'',
+								'title'=>lang('items_manage_measures')));
+							?>
+						</li>
+						<?php /* } */ ?>
+							
 						<?php if ($this->Employee->has_module_action_permission($controller_name, 'count_inventory', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
 						<li>
 							<?php echo anchor("$controller_name/count",

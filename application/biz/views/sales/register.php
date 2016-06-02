@@ -95,6 +95,9 @@ $this->load->helper('demo');
 							<th class="item_name_heading" ><?php echo lang('sales_item_name'); ?></th>
 							<th class="sales_price"><?php echo lang('common_price'); ?></th>
 							<th class="sales_quantity"><?php echo lang('common_quantity'); ?></th>
+							
+							<th class="sales_measure"><?php echo lang('common_measure'); ?></th>
+							
 							<th class="sales_discount"><?php echo lang('common_discount_percent'); ?></th>
 							<th><?php echo lang('common_total'); ?></th>
 						</tr>
@@ -135,6 +138,11 @@ $this->load->helper('demo');
 								<td class="text-center">
 										<a href="#" id="quantity_<?php echo $line;?>" class="xeditable" data-type="text"  data-validate-number="true"  data-pk="1" data-name="quantity" data-url="<?php echo site_url('sales/edit_item/'.$line); ?>" data-title="<?php echo lang('common_quantity') ?>"><?php echo to_quantity($item['quantity']); ?></a>
 								</td>
+								
+								<td class="text-center">
+										<a href="#" class="measure_item" id="measure_<?php echo $line; ?>" class="xeditable" data-type="select"  data-validate-number="true"  data-value="<?php echo $item['measure_id']; ?>" data-pk="2" data-source="<?php echo site_url("items/measures/" . $item['item_id']);?>" data-name="measure" data-url="<?php echo site_url('sales/edit_item/'.$line); ?>" data-title="<?php echo lang('common_measure') ?>"><?php echo $item['measure']; ?></a>
+								</td>
+								
 								<td class="text-center">
 									<?php if ($line != $line_for_flat_discount_item && $this->Employee->has_module_action_permission('sales', 'give_discount', $this->Employee->get_logged_in_employee_info()->person_id)){ ?>
 											<a href="#" id="discount_<?php echo $line;?>" class="xeditable" data-type="text"  data-validate-number="true"  data-pk="1" data-name="discount" data-value="<?php echo to_quantity($item['discount']); ?>" data-url="<?php echo site_url('sales/edit_item/'.$line); ?>" data-title="<?php echo lang('common_discount_percent') ?>"><?php echo to_quantity($item['discount']); ?>%</a>						
@@ -932,6 +940,13 @@ $this->load->helper('demo');
     	success: function(response, newValue) {
 			 last_focused_id = $(this).attr('id');
  			 $("#register_container").html(response);
+		}
+    });
+
+    $('.measure_item').editable({
+    	success: function(response, newValue) {
+			 last_focused_id = $(this).attr('id');
+			 $("#register_container").html(response);
 		}
     });
 

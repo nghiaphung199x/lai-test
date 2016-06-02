@@ -171,8 +171,9 @@
 					<th><?php echo lang('common_item_name'); ?></th>
                                         <th>Kho chuyển</th>
                                         <th>Kho nhận</th>
-					<th><?php echo lang('common_price'); ?></th>
+					<th><?php echo lang('common_unit_report')?></th>
 					<th><?php echo lang('common_quantity'); ?></th>
+					<th><?php echo lang('common_price'); ?></th>
 					<th><?php echo lang('common_unit_total').' ('.$this->config->item('currency_symbol').')'; ?></th>
 				</tr>
 				<?php $stt = 0; 
@@ -190,8 +191,9 @@
 						<td><?php echo $item['name']; ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
                                                 <td><?php echo $authenticated_locations[$current_logged_in_location_id];?></td>
                                                 <td><?php echo $transfer_to_location?></td>
-                                                <td><?php echo to_currency_no_money(abs($item['price'])); ?></td>
+                                                <td><?php echo isset($item['measure']) ? $item['measure'] : ''; ?></td>
 						<td><?php echo to_quantity_abs($item['quantity']); ?></td>
+						<td><?php echo to_currency_no_money(abs($item['price'])); ?></td>
                                                 <td><?php echo to_currency_no_money(abs($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100)); ?></td>
 					</tr>
 					<?php if (!$item['description']=="" ||(isset($item['serialnumber']) && $item['serialnumber'] !="") ) {?>

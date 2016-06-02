@@ -227,7 +227,7 @@
 						<td><?php echo $stt; ?></td>
 						<td><?php echo $item['item_number']; ?></td>
 						<td><?php echo $item['name']; ?><?php if ($item_number_for_receipt){ ?> - <?php echo $item_number_for_receipt; ?><?php } ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
-                                                <td></td>
+                                                <td><?php echo isset($item['measure']) ? $item['measure'] : ''; ?></td>
 						<td><?php echo to_quantity(abs($item['quantity'])); ?></td>
                                                 <td><?php echo to_currency_no_money($item['price']); ?></td>
 						<td><?php echo $item['discount']; ?></td>
