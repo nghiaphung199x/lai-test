@@ -64,7 +64,7 @@
                             'name' => 'permissions[]',
                             'id' => 'permissions'.$module->module_id,
                             'value' => $module->module_id,
-                            'checked' => $this->Employee->has_module_permission($module->module_id,$person_info->person_id),
+                            'checked' => $this->Group->has_module_permission($module->module_id,$entity->group_id),
                             'class' => 'module_checkboxes '
                         );
 
@@ -96,7 +96,7 @@
                                         'class' => 'module_action_checkboxes',
                                         'id' => 'permissions_actions'.$module_action->module_id."|".$module_action->action_id,
                                         'value' => $module_action->module_id."|".$module_action->action_id,
-                                        'checked' => $this->Employee->has_module_action_permission($module->module_id, $module_action->action_id, $person_info->person_id)
+                                        'checked' => $this->Group->has_module_action_permission($module->module_id, $module_action->action_id, $entity->group_id)
                                     );
 
                                     if ($logged_in_employee_id != 1)

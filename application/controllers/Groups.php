@@ -114,6 +114,7 @@ class Groups extends Secure_area implements Idata_controller
         $data['entity'] = $this->Group->get_info($group_id);
         $data['all_modules'] = $this->Module->get_all_modules();
         $data['controller_name'] = $this->_controller_name;
+        $data['logged_in_employee_id'] = $this->Employee->get_logged_in_employee_info()->person_id;
         return $data;
     }
 
@@ -139,11 +140,13 @@ class Groups extends Secure_area implements Idata_controller
 
         /* Get All Data Submit */
         $data = $this->input->post('group');
+        $permission_data = $this->input->post('permissions') != false ? $this->input->post('permissions') : array();
+        $permission_action_data = $this->input->post('permissions_actions') != false ? $this->input->post('permissions_actions') : array();
 
         /* Get Redirect Code */
         $redirect_code = $this->input->post('redirect_code');
 
-        if ($data['group_id'] = $this->Group->save($data, $group_id)) {
+        if ($data['group_id'] = $this->Group->save($data, $group_id, $permission_data, $permission_action_data)) {
             /* New Group */
             if (!$group_id) {
                 $success_message = lang('groups_created_successful') . ' [' . $data['name'] . ']';
