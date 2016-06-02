@@ -10,6 +10,7 @@ body, html { font-family: Arial; font-size: 14px; line-height: 20px; letter-spac
 .h1 .small, .h1 small, .h2 .small, .h2 small, .h3 .small, .h3 small, h1 .small, h1 small, h2 .small, h2 small, h3 .small, h3 small { font-size: 80%; }
 .panel, .panel-heading { border-radius: 0px !important; }
 .panel { border: none; box-shadow: 0 0px 4px rgba(0,0,0, .1); }
+.panel-heading h3 { font-weight: bold !important; }
 .top-bar .top-elements .dropdown .dropdown-menu a { font-size: 14px; font-family: Arial; }
 .sub { color: #ccc;}
 .panel-heading { background-color: #f3f3f3; }
@@ -17,3 +18,4 @@ body, html { font-family: Arial; font-size: 14px; line-height: 20px; letter-spac
 textarea.form-control { height: auto !important; }
 .panel-body.bootstrap { padding: 15px !important; }
 label.error { font-weight: normal; color: red; }
+.navbar-breadcrumb > a.current { font-size: 14px; font-weight: bold; }

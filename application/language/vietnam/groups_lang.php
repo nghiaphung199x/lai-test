@@ -24,6 +24,7 @@ $lang['groups_field_name'] = 'Tên nhóm';
 $lang['groups_field_description'] = 'Mô tả nhóm';
 $lang['groups_required'] = 'Cần tạo ít nhất một nhóm';
 
+$lang['groups_cleanup_old_departments'] = 'Xóa thông tin nhóm cũ';
 $lang['group_assign_permission_to_employee'] = 'Gán quyền nhóm cho nhân viên';
 $lang['groups_no_groups_to_display'] = 'Chưa có nhóm nào tồn tại';
 $lang['groups_created_successful'] = 'Đã tạo nhóm mới';

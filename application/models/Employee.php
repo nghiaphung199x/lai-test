@@ -835,6 +835,49 @@ class Employee extends Person
 		$cache[$module_id.'|'.$action_id.'|'.$person_id] =  $query->num_rows() == 1;
 		return $cache[$module_id.'|'.$action_id.'|'.$person_id];
 	}
+
+    /*
+    Determins whether the employee specified employee has access the specific module.
+    */
+    function has_module_group_permission($module_id, $group_id)
+    {
+        //if no module_id is null, allow access
+        if($module_id==null)
+        {
+            return true;
+        }
+
+        static $cache;
+
+        if (isset($cache['group|' . $module_id.'|'.$group_id]))
+        {
+            return $cache['group|' . $module_id.'|'.$group_id];
+        }
+
+        $query = $this->db->get_where('group_permissions', array('group_id' => $group_id, 'module_id' => $module_id), 1);
+        $cache['group|' . $module_id.'|'.$group_id] = $query->num_rows() == 1;
+        return $cache[$module_id.'|'.$group_id];
+    }
+
+    function has_module_group_action_permission($module_id, $action_id, $group_id)
+    {
+        // if no module_id is null, allow access
+        if($module_id == null)
+        {
+            return true;
+        }
+
+        static $cache;
+
+        if (isset($cache['group|' . $module_id . '|' . $action_id . '|' . $group_id]))
+        {
+            return $cache['group|' . $module_id . '|' . $action_id . '|' . $group_id];
+        }
+
+        $query = $this->db->get_where('group_permissions_actions', array('group_id' => $group_id,'module_id'=>$module_id,'action_id'=>$action_id), 1);
+        $cache['group|' . $module_id . '|' . $action_id . '|' . $group_id] =  $query->num_rows() == 1;
+        return $cache['group|' . $module_id . '|' . $action_id.'|' . $group_id];
+    }
 	
 	function get_employee_by_username_or_email($username_or_email)
 	{

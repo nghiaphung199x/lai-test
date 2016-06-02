@@ -24,6 +24,7 @@ $lang['groups_field_name'] = 'Name';
 $lang['groups_field_description'] = 'Description';
 $lang['groups_required'] = 'At least one group is required';
 
+$lang['groups_cleanup_old_departments'] = 'Cleanup old groups';
 $lang['group_assign_permission_to_employee'] = 'Assign permission to employee';
 $lang['groups_no_groups_to_display'] = 'No groups to display';
 $lang['groups_created_successful'] = 'Group created successful';

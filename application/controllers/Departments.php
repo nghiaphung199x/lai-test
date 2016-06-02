@@ -3,35 +3,35 @@
 require_once ("Secure_area.php");
 require_once ("interfaces/Idata_controller.php");
 
-class Groups extends Secure_area implements Idata_controller
+class Departments extends Secure_area implements Idata_controller
 {
     function __construct()
     {
-        parent::__construct('groups');
-        $this->lang->load('groups');
+        parent::__construct('departments');
+        $this->lang->load('departments');
         $this->lang->load('module');
-        $this->load->model('Group');
+        $this->load->model('Department');
     }
 
     function index($offset = 0)
     {
-        $params = $this->session->userdata('group_search_data') ? $this->session->userdata('group_search_data') : array('offset' => 0, 'order_col' => 'name', 'order_dir' => 'ASC', 'search' => FALSE);
+        $params = $this->session->userdata('department_search_data') ? $this->session->userdata('department_search_data') : array('offset' => 0, 'order_col' => 'path', 'order_dir' => 'ASC', 'search' => FALSE);
         if ($offset != $params['offset']) {
-            redirect('groups/index/' . $params['offset']);
+            redirect('departments/index/' . $params['offset']);
         }
         $this->check_action_permission('search');
-        $config['base_url'] = site_url('groups/sorting');
+        $config['base_url'] = site_url('departments/sorting');
         $config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
 
         $data['controller_name'] = $this->_controller_name;
         $data['per_page'] = $config['per_page'];
         $data['search'] = $params['search'] ? $params['search'] : "";
         if ($data['search']) {
-            $config['total_rows'] = $this->Group->search_count_all($data['search']);
-            $table_data = $this->Group->search($data['search'], $data['per_page'], $params['offset'], $params['order_col'], $params['order_dir']);
+            $config['total_rows'] = $this->Department->search_count_all($data['search']);
+            $table_data = $this->Department->search($data['search'], $data['per_page'], $params['offset'], $params['order_col'], $params['order_dir']);
         } else {
-            $config['total_rows'] = $this->Group->count_all();
-            $table_data = $this->Group->get_all($data['per_page'], $params['offset'], $params['order_col'], $params['order_dir']);
+            $config['total_rows'] = $this->Department->count_all();
+            $table_data = $this->Department->get_all($data['per_page'], $params['offset'], $params['order_col'], $params['order_dir']);
         }
         $this->load->library('pagination');
         $this->pagination->initialize($config);
@@ -39,8 +39,8 @@ class Groups extends Secure_area implements Idata_controller
         $data['order_col'] = $params['order_col'];
         $data['order_dir'] = $params['order_dir'];
         $data['total_rows'] = $config['total_rows'];
-        $data['manage_table'] = get_groups_manage_table($table_data, $this);
-        $this->load->view('groups/manage', $data);
+        $data['manage_table'] = get_departments_manage_table($table_data, $this);
+        $this->load->view('departments/manage', $data);
     }
 
     function sorting()
@@ -51,25 +51,25 @@ class Groups extends Secure_area implements Idata_controller
 
         $offset = $this->input->post('offset') ? $this->input->post('offset') : 0;
         $order_col = $this->input->post('order_col') ? $this->input->post('order_col') : 'name';
-        $order_dir = $this->input->post('order_dir') ? $this->input->post('order_dir') : 'ASC';
+        $order_dir = $this->input->post('order_dir') ? $this->input->post('order_dir') : 'asc';
 
 
-        $group_search_data = array('offset' => $offset, 'order_col' => $order_col, 'order_dir' => $order_dir, 'search' => $search);
-        $this->session->set_userdata("group_search_data", $group_search_data);
+        $department_search_data = array('offset' => $offset, 'order_col' => $order_col, 'order_dir' => $order_dir, 'search' => $search);
+        $this->session->set_userdata("department_search_data", $department_search_data);
 
         if ($search) {
-            $config['total_rows'] = $this->Group->search_count_all($search);
-            $table_data = $this->Group->search($search, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'name', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'ASC');
+            $config['total_rows'] = $this->Department->search_count_all($search);
+            $table_data = $this->Department->search($search, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'path', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'ASC');
         } else {
-            $config['total_rows'] = $this->Group->count_all();
-            $table_data = $this->Group->get_all($per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'name', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'ASC');
+            $config['total_rows'] = $this->Department->count_all();
+            $table_data = $this->Department->get_all($per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'path', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'ASC');
         }
-        $config['base_url'] = site_url('groups/sorting');
+        $config['base_url'] = site_url('departments/sorting');
         $config['per_page'] = $per_page;
         $this->load->library('pagination');
         $this->pagination->initialize($config);
         $data['pagination'] = $this->pagination->create_links();
-        $data['manage_table'] = get_groups_manage_table_data_rows($table_data, $this);
+        $data['manage_table'] = get_departments_manage_table_data_rows($table_data, $this);
         echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
     }
 
@@ -78,21 +78,21 @@ class Groups extends Secure_area implements Idata_controller
         $this->check_action_permission('search');
         $search = $this->input->post('search');
         $offset = $this->input->post('offset') ? $this->input->post('offset') : 0;
-        $order_col = $this->input->post('order_col') ? $this->input->post('order_col') : 'name';
+        $order_col = $this->input->post('order_col') ? $this->input->post('order_col') : 'path';
         $order_dir = $this->input->post('order_dir') ? $this->input->post('order_dir') : 'ASC';
 
-        $group_search_data = array('offset' => $offset, 'order_col' => $order_col, 'order_dir' => $order_dir, 'search' => $search);
-        $this->session->set_userdata("group_search_data", $group_search_data);
+        $department_search_data = array('offset' => $offset, 'order_col' => $order_col, 'order_dir' => $order_dir, 'search' => $search);
+        $this->session->set_userdata("department_search_data", $department_search_data);
         $per_page = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
-        $search_data = $this->Group->search($search, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'name', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'ASC');
-        $config['base_url'] = site_url('groups/search');
-        $config['total_rows'] = $this->Group->search_count_all($search);
+        $search_data = $this->Department->search($search, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'name', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'asc');
+        $config['base_url'] = site_url('departments/search');
+        $config['total_rows'] = $this->Department->search_count_all($search);
         $config['per_page'] = $per_page;
 
         $this->load->library('pagination');
         $this->pagination->initialize($config);
         $data['pagination'] = $this->pagination->create_links();
-        $data['manage_table'] = get_groups_manage_table_data_rows($search_data, $this);
+        $data['manage_table'] = get_departments_manage_table_data_rows($search_data, $this);
         echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
 
     }
@@ -104,14 +104,15 @@ class Groups extends Secure_area implements Idata_controller
     {
         //allow parallel searchs to improve performance.
         session_write_close();
-        $suggestions = $this->Group->get_search_suggestions($this->input->get('term'), 100);
+        $suggestions = $this->Department->get_search_suggestions($this->input->get('term'), 100);
         echo json_encode($suggestions);
     }
 
-    function _get_data($group_id)
+    function _get_data($department_id)
     {
         $data = array();
-        $data['entity'] = $this->Group->get_info($group_id);
+        $data['entity'] = $this->Department->get_info($department_id);
+        $data['parents'] = $this->Department->get_all()->result();
         $data['all_modules'] = $this->Module->get_all_modules();
         $data['controller_name'] = $this->_controller_name;
         $data['logged_in_employee_id'] = $this->Employee->get_logged_in_employee_info()->person_id;
@@ -119,78 +120,78 @@ class Groups extends Secure_area implements Idata_controller
     }
 
     /*
-        View detail Group
+        View detail Department
     */
-    function view($group_id = -1, $redirect_code = 0)
+    function view($department_id = -1, $redirect_code = 0)
     {
         $this->load->model('Module_action');
         $this->check_action_permission('add_update');
-        $data = $this->_get_data($group_id);
+        $data = $this->_get_data($department_id);
         $data['redirect_code'] = $redirect_code;
-        $this->load->view("groups/form", $data);
+        $this->load->view("departments/form", $data);
     }
 
     /*
-        Inserts/Updates Group
+        Inserts/Updates Department
     */
-    function save($group_id = false)
+    function save($department_id = false)
     {
         /* Check Permission */
         $this->check_action_permission('add_update');
 
         /* Get All Data Submit */
-        $data = $this->input->post('group');
+        $data = $this->input->post('department');
         $permission_data = $this->input->post('permissions') != false ? $this->input->post('permissions') : array();
         $permission_action_data = $this->input->post('permissions_actions') != false ? $this->input->post('permissions_actions') : array();
 
         /* Get Redirect Code */
         $redirect_code = $this->input->post('redirect_code');
 
-        if ($data['group_id'] = $this->Group->save($data, $group_id, $permission_data, $permission_action_data)) {
-            /* New Group */
-            if (!$group_id) {
-                $success_message = lang('groups_created_successful') . ' [' . $data['name'] . ']';
-                echo json_encode(array('success' => true, 'message' => $success_message, 'group_id' => $data['group_id'], 'redirect_code' => $redirect_code));
+        if ($data['department_id'] = $this->Department->save($data, $department_id, $permission_data, $permission_action_data)) {
+            /* New Department */
+            if (!$department_id) {
+                $success_message = lang('departments_created_successful') . ' [' . $data['name'] . ']';
+                echo json_encode(array('success' => true, 'message' => $success_message, 'department_id' => $data['department_id'], 'redirect_code' => $redirect_code));
             } else {
-                /* Update Group */
-                $success_message = lang('groups_updated_successful') . ' [' . $data['name'] . ']';
+                /* Update Department */
+                $success_message = lang('departments_updated_successful') . ' [' . $data['name'] . ']';
                 $this->session->set_flashdata('manage_success_message', $success_message);
-                echo json_encode(array('success' => true, 'message' => $success_message, 'group_id' => $group_id, 'redirect_code' => $redirect_code));
+                echo json_encode(array('success' => true, 'message' => $success_message, 'department_id' => $department_id, 'redirect_code' => $redirect_code));
             }
         } else {
             /* Failure */
             echo json_encode(array(
                 'success' => false,
-                'message' => lang('groups_error_adding_updating') . ' ' . $data['name'], 'group_id' => -1));
+                'message' => lang('departments_error_adding_updating') . ' ' . $data['name'], 'department_id' => -1));
         }
     }
 
     /*
-    This deletes groups from the groups table
+    This deletes departments from the departments table
     */
     function delete()
     {
         $this->check_action_permission('delete');
-        $groups_to_delete = $this->input->post('ids');
+        $departments_to_delete = $this->input->post('ids');
 
-        if ($this->Group->delete_list($groups_to_delete)) {
-            echo json_encode(array('success' => true, 'message' => lang('groups_successful_deleted') . ' ' .
-                count($groups_to_delete) . ' ' . lang('groups_one_or_multiple')));
+        if ($this->Department->delete_list($departments_to_delete)) {
+            echo json_encode(array('success' => true, 'message' => lang('departments_successful_deleted') . ' ' .
+                count($departments_to_delete) . ' ' . lang('departments_one_or_multiple')));
         } else {
-            echo json_encode(array('success' => false, 'message' => lang('groups_cannot_be_deleted')));
+            echo json_encode(array('success' => false, 'message' => lang('departments_cannot_be_deleted')));
         }
     }
 
     function cleanup()
     {
-        $this->Group->cleanup();
-        echo json_encode(array('success' => true, 'message' => lang('groups_cleanup_sucessful')));
+        $this->Department->cleanup();
+        echo json_encode(array('success' => true, 'message' => lang('departments_cleanup_sucessful')));
     }
 
     function clear_state()
     {
-        $this->session->unset_userdata('group_search_data');
-        redirect('groups');
+        $this->session->unset_userdata('department_search_data');
+        redirect('departments');
     }
 
     function excel()
@@ -200,19 +201,19 @@ class Groups extends Secure_area implements Idata_controller
         $header_row = $this->_excel_get_header_row();
         $this->load->helper('spreadsheet');
         $content = array_to_spreadsheet(array($header_row));
-        force_download('groups_import.' . ($this->config->item('spreadsheet_format') == 'XLSX' ? 'xlsx' : 'csv'), $content);
+        force_download('departments_import.' . ($this->config->item('spreadsheet_format') == 'XLSX' ? 'xlsx' : 'csv'), $content);
     }
 
     function _excel_get_header_row()
     {
-        return array(lang('groups_field_name'), lang('groups_field_description'));
+        return array(lang('departments_field_name'), lang('departments_field_description'));
     }
 
     function excel_export()
     {
         set_time_limit(0);
 
-        $data = $this->Group->get_all()->result_object();
+        $data = $this->Department->get_all()->result_object();
         $this->load->helper('report');
         $rows = array();
         $rows[] = $this->_excel_get_header_row();
@@ -227,7 +228,7 @@ class Groups extends Secure_area implements Idata_controller
         $this->load->helper('download');
         $this->load->helper('spreadsheet');
         $content = array_to_spreadsheet($rows);
-        force_download('groups_export.' . ($this->config->item('spreadsheet_format') == 'XLSX' ? 'xlsx' : 'csv'), $content);
+        force_download('departments_export.' . ($this->config->item('spreadsheet_format') == 'XLSX' ? 'xlsx' : 'csv'), $content);
         exit;
     }
 
@@ -237,7 +238,7 @@ class Groups extends Secure_area implements Idata_controller
     function excel_import()
     {
         $this->check_action_permission('add_update');
-        $this->load->view("groups/excel_import", null);
+        $this->load->view("departments/excel_import", null);
     }
 
     /**
@@ -278,23 +279,23 @@ class Groups extends Secure_area implements Idata_controller
 
                     $description = $sheet->getCellByColumnAndRow(1, $k)->getValue();
 
-                    $group_id = $this->Group->get_group_id($name);
+                    $department_id = $this->Department->get_department_id($name);
 
-                    $current_group = $this->Group->get_info($group_id);
-                    $old_group_value = $current_group->value;
+                    $current_department = $this->Department->get_info($department_id);
+                    $old_department_value = $current_department->value;
 
                     //If we don't have a gift card number skip the import
                     if (!$name) {
                         continue;
                     }
 
-                    $group_data = array(
+                    $department_data = array(
                         'name' => $name,
                         'description' => $description
                     );
 
-                    if (!$this->Group->save($group_data, $group_id ? $group_id : FALSE)) {
-                        echo json_encode(array('success' => false, 'message' => lang('groups_duplicate_group')));
+                    if (!$this->Department->save($department_data, $department_id ? $department_id : FALSE)) {
+                        echo json_encode(array('success' => false, 'message' => lang('departments_duplicate_department')));
                         return;
                     }
                 }
@@ -304,7 +305,7 @@ class Groups extends Secure_area implements Idata_controller
             }
         }
         $this->db->trans_complete();
-        echo json_encode(array('success' => true, 'message' => lang('groups_import_success')));
+        echo json_encode(array('success' => true, 'message' => lang('departments_import_success')));
     }
 }
 

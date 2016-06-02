@@ -20,10 +20,13 @@ $lang['departments_cleanup_sucessful'] = 'Xóa phòng ban thành công';
 $lang['departments_confirm_cleanup'] = 'Bạn có chắc chắn bạn muốn xóa vĩnh viễn, tất cả các phòng ban đã bị xóa?';
 $lang['departments_select_all_message'] = 'Chọn tất cả';
 
+$lang['departments_root'] = 'Không thuộc phòng ban nào';
 $lang['departments_field_name'] = 'Tên phòng ban';
 $lang['departments_field_description'] = 'Mô tả phòng ban';
+$lang['departments_field_parent'] = 'Thuộc phòng ban';
 $lang['departments_required'] = 'Cần tạo ít nhất một phòng ban';
 
+$lang['departments_cleanup_old_departments'] = 'Xóa thông tin phòng ban cũ';
 $lang['departments_no_departments_to_display'] = 'Chưa có phòng ban nào tồn tại';
 $lang['departments_created_successful'] = 'Đã tạo phòng ban mới';
 $lang['departments_updated_successful'] = 'Thông tin phòng ban đã được cập nhật';

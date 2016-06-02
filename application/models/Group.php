@@ -34,7 +34,6 @@ class Group extends CI_Model
         if (!$this->config->item('speed_up_search_queries')) {
             $order_by = "ORDER BY " . $col . " " . $order;
         }
-
         $groups = $this->db->dbprefix('groups');
         $data = $this->db->query("SELECT *
 						FROM " . $groups . "
@@ -212,9 +211,8 @@ class Group extends CI_Model
     function check_duplicate($term)
     {
         $this->db->from('groups');
-        $this->db->join('people', 'groups.group_id=people.group_id');
         $this->db->where('deleted', 0);
-        $query = $this->db->where("CONCAT(first_name,' ',last_name) = " . $this->db->escape($term));
+        $this->db->where("CONCAT(name) = " . $this->db->escape($term));
         $query = $this->db->get();
 
         if ($query->num_rows() > 0) {
@@ -293,7 +291,7 @@ class Group extends CI_Model
     /*
     Preform a search on groups
     */
-    function search($search, $limit = 20, $offset = 0, $column = 'last_name', $orderby = 'asc')
+    function search($search, $limit = 20, $offset = 0, $column = 'name', $orderby = 'asc')
     {
         $this->db->from('groups');
         if ($search) {

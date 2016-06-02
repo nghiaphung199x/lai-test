@@ -20,10 +20,13 @@ $lang['departments_cleanup_sucessful'] = 'Departments cleaned successfuly';
 $lang['departments_confirm_cleanup'] = 'Are you sure you want to clean ALL deleted departments?';
 $lang['departments_select_all_message'] = 'Select all';
 
+$lang['departments_root'] = 'Not belong to any department';
 $lang['departments_field_name'] = 'Name';
 $lang['departments_field_description'] = 'Description';
+$lang['departments_field_parent'] = 'Belong to department';
 $lang['departments_required'] = 'At least one department is required';
 
+$lang['departments_cleanup_old_departments'] = 'Cleanup old departments';
 $lang['departments_no_departments_to_display'] = 'No departments to display';
 $lang['departments_created_successful'] = 'Department created successful';
 $lang['departments_updated_successful'] = 'Department updated successful';

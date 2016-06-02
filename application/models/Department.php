@@ -27,7 +27,7 @@ class Department extends CI_Model
     /*
     Returns all the departments
     */
-    function get_all($limit = 10000, $offset = 0, $col = 'name', $order = 'asc')
+    function get_all($limit = 10000, $offset = 0, $col = 'path', $order = 'ASC')
     {
         $order_by = '';
         if (!$this->config->item('speed_up_search_queries')) {
@@ -107,9 +107,27 @@ class Department extends CI_Model
         if (!$department_id) {
             if ($this->db->insert('departments', $data)) {
                 $department_id = $this->db->insert_id();
+
+                /* Update Path By Parent ID */
+                $update_data = array();
+                if (empty($data['parent_id'])) {
+                    $update_data['path'] = '/' . $department_id . '/';
+                } else {
+                    $update_data['path'] = $this->get_path($data['parent_id']) . $department_id . '/';
+                }
+                $this->db->where('department_id', $department_id);
+                $this->db->update('departments', $update_data);
+
                 return $department_id;
             }
             return $success;
+        }
+
+        /* Update Path By Parent ID */
+        if (empty($data['parent_id'])) {
+            $data['path'] = '/' . $department_id . '/';
+        } else {
+            $data['path'] = $this->get_path($data['parent_id']) . $department_id . '/';
         }
 
         /* Update Department */
@@ -218,7 +236,7 @@ class Department extends CI_Model
     /*
     Preform a search on departments
     */
-    function search($search, $limit = 20, $offset = 0, $column = 'last_name', $orderby = 'asc')
+    function search($search, $limit = 20, $offset = 0, $column = 'name', $orderby = 'asc')
     {
         $this->db->from('departments');
         if ($search) {
@@ -262,6 +280,55 @@ class Department extends CI_Model
         $department_data = array('name' => null, 'description' => null);
         $this->db->where('deleted', 1);
         return $this->db->update('departments', $department_data);
+    }
+
+    /*
+     * Get Path Of Department
+     * @param int $id
+     * @return string
+     * */
+    public function get_path($id)
+    {
+        $model = new self();
+        $model->db->reset_query();
+        $model->db->select('path');
+        $model->db->from('departments');
+        $model->db->where(array('department_id' => $id, 'deleted' => 0));
+        $row = $model->db->get()->row();
+        if (isset($row->path)) {
+            return $row->path;
+        }
+        return null;
+    }
+
+    /*
+     * Get Line Level Of Department (Format Tree View)
+     * @param mixed $department
+     * @return string
+     * */
+    public function get_level_line($department, $char = '&nbsp;', $start_item = false, $multiplication = true) {
+        $line = '';
+        if (empty($department->path)) {
+            return $line;
+        }
+        if ($department->path[0] != '/') {
+            $department->path = '/' . $department->path;
+        }
+        $department->level = count(explode('/', $department->path)) - 2;
+        if (!$start_item) {
+            if ($department->level == 1) {
+                return $line;
+            }
+        }
+        for ($i = 0; $i < $department->level; $i++) {
+            if ($multiplication) {
+                for ($t = 0; $t < 1; $t++) {
+                    $char .= $char;
+                }
+            }
+            $line .= $char;
+        }
+        return $line;
     }
 }
 
