@@ -27,7 +27,7 @@
 <div class="manage_buttons">
     <div class="manage-row-options hidden">
         <div class="email_buttons groups">
-            <?php if ($this->Group->has_module_action_permission($controller_name, 'delete', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+            <?php if ($this->Employee->has_module_action_permission($controller_name, 'delete', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
             <?php echo anchor("$controller_name/delete",
                               '<span class="">' . lang("common_delete") . '</span>',
                               array('id' => 'delete', 'class' => 'btn btn-red btn-lg disabled', 'title' => lang("common_delete")));
@@ -42,7 +42,7 @@
             <div class="search no-left-border">
                 <input type="text" class="form-control" name='search' id='search' value="<?php echo H($search); ?>" placeholder="<?php echo lang('common_search'); ?> <?php echo lang('module_'.$controller_name); ?>"/>
             </div>
-            <div class="clear-block <?php echo ($search == '') ? 'hidden' : ''  ?>">
+            <div class="clear-block <?php echo ($search == '') ? 'hidden' : '' ?>">
                 <a class="clear" href="<?php echo site_url($controller_name.'/clear_state'); ?>">
                     <i class="ion ion-close-circled"></i>
                 </a>
@@ -52,7 +52,7 @@
         <div class="col-md-4">
             <div class="buttons-list groups-buttons">
                 <div class="pull-right-btn">
-                    <?php if ($this->Group->has_module_action_permission($controller_name, 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+                    <?php if ($this->Employee->has_module_action_permission($controller_name, 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
                     <?php echo anchor("$controller_name/view/-1/",
                                       '<span class="">' . lang($controller_name . '_new') . '</span>',
                                       array('class' => 'btn btn-primary btn-lg', 'title' => lang($controller_name . '_new')));
@@ -63,7 +63,7 @@
                             <i class="ion-android-more-horizontal"></i>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                            <?php if ($this->Group->has_module_action_permission($controller_name, 'manage_categories', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+                            <?php if ($this->Employee->has_module_action_permission($controller_name, 'manage_categories', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
                             <li>
                                 <?php echo anchor("$controller_name/categories",
                                                   '<span class="">' . lang("groups_manage_categories") . '</span>',
@@ -71,7 +71,7 @@
                                 ?>
                             </li>
                             <?php endif; ?>
-                            <?php if ($this->Group->has_module_action_permission($controller_name, 'manage_tags', $this->Employee->get_logged_in_employee_info()->person_id)) { ?>
+                            <?php if ($this->Employee->has_module_action_permission($controller_name, 'manage_tags', $this->Employee->get_logged_in_employee_info()->person_id)) { ?>
                             <li>
                                 <?php echo anchor("$controller_name/manage_tags",
                                                   '<span class="">' . lang("groups_manage_tags") . '</span>',
@@ -79,7 +79,7 @@
                                 ?>
                             </li>
                             <?php } ?>
-                            <?php if ($this->Group->has_module_action_permission($controller_name, 'count_inventory', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+                            <?php if ($this->Employee->has_module_action_permission($controller_name, 'count_inventory', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
                             <li>
                                 <?php echo anchor("$controller_name/count",
                                 '<span class="">' . lang("groups_count_inventory") . '</span>',
@@ -89,7 +89,7 @@
                             </li>
                             <?php endif ?>
 
-                            <?php if ($this->Group->has_module_action_permission($controller_name, 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+                            <?php if ($this->Employee->has_module_action_permission($controller_name, 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
                             <li>
                                 <?php echo anchor("$controller_name/excel_import/",
                                                   '<span class="">' . lang("common_excel_import") . '</span>',
@@ -103,7 +103,7 @@
                                 ?>
                             </li>
                             <?php endif; ?>
-                            <?php if ($this->Group->has_module_action_permission($controller_name, 'delete', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+                            <?php if ($this->Employee->has_module_action_permission($controller_name, 'delete', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
                             <li>
                                 <?php echo anchor("$controller_name/cleanup",
                                                   '<span class="">' . lang("groups_cleanup_old_groups") . '</span>',

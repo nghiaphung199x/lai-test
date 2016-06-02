@@ -55,6 +55,7 @@ $lang['employees_reason_inactive'] = 'Reason inactive';
 $lang['employees_termination_date'] = 'Termination date';
 $lang['employees_hire_date'] = 'Hire date';
 $lang['employees_birthday'] = 'Birthday';
+$lang['employees_group'] = 'Group';
 
 
 

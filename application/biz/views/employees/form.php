@@ -317,7 +317,17 @@
 					</div>
 
 					<div class="panel-body form-group">
-					
+                        <div class="form-group">
+                            <?php echo form_label(lang('employees_group').' :', 'group_id', array('class'=>'col-sm-3 col-md-3 col-lg-2 col-sm-3 col-md-3 col-lg-2 control-label')); ?>
+                            <div class="col-sm-9 col-md-9 col-lg-10">
+                                <?php echo form_dropdown('group_id', array(
+                                    'vietnam'  => 'Việt nam',
+                                    'english'  => 'English'
+                                ),
+                                $person_info->language ? $person_info->language : $this->Appconfig->get_raw_language_value(), 'class="form-control" id="language"');
+                                ?>
+                            </div>
+                        </div>
 						<ul id="permission_list" class="list-unstyled">
 						<?php
 						foreach($all_modules->result() as $module)

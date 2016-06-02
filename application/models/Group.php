@@ -21,7 +21,7 @@ class Group extends CI_Model
         $query = $this->db->get();
 
         if ($query->num_rows() == 1) {
-            return $query->row()->username;
+            return $query->row()->name;
         }
     }
 
@@ -367,7 +367,7 @@ class Group extends CI_Model
 
     function cleanup()
     {
-        $group_data = array('username' => null);
+        $group_data = array('name' => null, 'description' => null);
         $this->db->where('deleted', 1);
         return $this->db->update('groups', $group_data);
     }
