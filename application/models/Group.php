@@ -104,15 +104,16 @@ class Group extends CI_Model
     {
         $success = false;
 
-        // Run these queries as a transaction, we want to make sure we do all or nothing
-        $this->db->trans_start();
-
         if (!$group_id) {
             if ($this->db->insert('groups', $data)) {
+
                 $data['group_id'] = $this->db->insert_id();
 
                 // We have either inserted or updated a new employee, now lets set permissions.
                 if ($data['group_id'] && !empty($permission_data) && !empty($permission_action_data)) {
+
+                    // Run these queries as a transaction, we want to make sure we do all or nothing
+                    $this->db->trans_start();
 
                     // First lets clear out any permissions the employee currently has.
                     $success = $this->db->delete('group_permissions', array('group_id' => $data['group_id']));
@@ -134,6 +135,8 @@ class Group extends CI_Model
                             $this->db->insert('group_permissions_actions', array('module_id' => $module, 'action_id' => $action, 'group_id' => $data['group_id']));
                         }
                     }
+
+                    $this->db->trans_complete();
                 }
 
                 return $data['group_id'];
@@ -146,6 +149,9 @@ class Group extends CI_Model
         $success = $this->db->update('groups', $data);
 
         if ($success && !empty($permission_data) && !empty($permission_action_data)) {
+
+            // Run these queries as a transaction, we want to make sure we do all or nothing
+            $this->db->trans_start();
 
             // First lets clear out any permissions the employee currently has.
             $success = $this->db->delete('group_permissions', array('group_id' => $group_id));
@@ -167,9 +173,10 @@ class Group extends CI_Model
                     $this->db->insert('group_permissions_actions', array('module_id' => $module, 'action_id' => $action, 'group_id' => $group_id));
                 }
             }
+
+            $this->db->trans_complete();
         }
 
-        $this->db->trans_complete();
         return $success;
     }
 
