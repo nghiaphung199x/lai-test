@@ -831,4 +831,66 @@ function get_sms_data_row($sms, $controller)
 	$table_data_row.='</tr>';
 	return $table_data_row;
 }
+
+function get_quotes_contract_manage_table($quotes_contract, $controller) {
+	$CI = & get_instance();
+	$table = '<table class="tablesorter" id="sortable_table">';
+	$headers = array(
+			'<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
+			'Mã BG - HĐ',
+			'Tiêu đề',
+			'Loại mẫu',
+			'&nbsp'
+	);
+	$table.='<thead><tr>';
+
+	$count = 0;
+	foreach ($headers as $header) {
+		$count++;
+
+		if ($count == 1) {
+			$table.="<th class='leftmost'>$header</th>";
+		} elseif ($count == count($headers)) {
+			$table.="<th class='rightmost'>$header</th>";
+		} else {
+			$table.="<th>$header</th>";
+		}
+	}
+	$table.='</tr></thead><tbody>';
+	$table.=get_quotes_contract_manage_table_data_rows($quotes_contract, $controller);
+	$table.='</tbody></table>';
+	return $table;
+}
+
+function get_quotes_contract_manage_table_data_rows($quotes_contract, $controller) {
+	$CI = & get_instance();
+	$table_data_rows = '';
+
+	foreach ($quotes_contract->result() as $val) {
+		$table_data_rows.=get_quotes_contract_data_row($val, $controller);
+	}
+
+	if ($quotes_contract->num_rows() == 0) {
+		$table_data_rows.="<tr><td colspan='5'><span class='col-md-12 text-center text-warning' >" . lang('customers_quotes_contract_none_data') . "</div></tr></tr>";
+	}
+
+	return $table_data_rows;
+}
+
+function get_quotes_contract_data_row($quotes_contract, $controller) {
+	$CI = & get_instance();
+	$controller_name=str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
+	$table_data_row = '<tr>';
+	$table_data_row .= "<td><input type='checkbox' id='person_$quotes_contract->id_quotes_contract' value='" . $quotes_contract->id_quotes_contract . "'/><label for='sms_$sms->id'><span></span></label></td>";
+	$table_data_row .= "<td>$quotes_contract->id_quotes_contract</td>";
+	$table_data_row .= "<td>$quotes_contract->title_quotes_contract</td>";
+	$table_data_row .= "<td>" . ($quotes_contract->cat_quotes_contract == 1 ? lang('quotes_contract_type_contract') : lang('quotes_contract_type_quotes')) . "</td>";
+	$table_data_row .= "<td>";
+	$table_data_row .= "<ul>";
+	$table_data_row .= "<li class='rightmost'><a href='" . base_url($controller_name . '/view/' . $quotes_contract->id_quotes_contract/2) . "' title='" . lang($controller_name . '_update') . "'>" . lang($controller_name . '_update') . "</a></li>";
+	$table_data_row .= "</ul>";
+	$table_data_row .= "</td>";
+	$table_data_row.='</tr>';
+	return $table_data_row;
+}
 ?>
