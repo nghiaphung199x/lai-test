@@ -50,10 +50,11 @@
 <div class="manage_buttons">
 <div class="manage-row-options hidden">
 	<div class="email_buttons text-center">
+		<?php if ($controller_name =='customers') { ?>
 		<a class="btn btn-primary btn-lg" title="<?php echo (lang('customers_sms_send_sms'));?>" id="sendSMS" href="<?php echo current_url(). '#'; ?>"  data-toggle="modal" data-target="#myModal">
 			<span class=""><?php echo (lang('customers_sms_send_sms')); ?></span>
 		</a>
-		
+		<?php } ?>
 		<a class="btn btn-primary btn-lg disabled email email_inactive" title="<?php echo lang("common_email");?>" id="email" href="<?php echo current_url(). '#'; ?>" >
 			<span class=""><?php echo lang('common_email'); ?></span>
 		</a>
@@ -120,7 +121,14 @@
 									array('class'=>'hidden-xs','title'=>lang('customers_sms_menu_link')));
 								} ?>
 							</li>
-							
+							<li>
+								<?php if ($controller_name =='customers') {  
+								?>
+								<?php echo anchor("$controller_name/quotes_contract",
+									'<span class="">'.lang('quotes_contract_menu_link').'</span>',
+									array('class'=>'hidden-xs','title'=>lang('quotes_contract_menu_link')));
+								} ?>
+							</li>
 							<li>
 								<?php if ($controller_name =='customers' || $controller_name == 'suppliers') {  
 								?>
