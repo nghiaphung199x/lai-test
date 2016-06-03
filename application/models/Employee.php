@@ -877,7 +877,7 @@ class Employee extends Person
         }
 
         $query = $this->db->get_where('group_permissions', array('group_id' => $group_id, 'module_id' => $module_id), 1);
-        $cache['group|' . $module_id . '|' . $group_id] = $query->num_rows() == 1;
+        $cache['group|' . $module_id . '|' . $group_id] = ($query->num_rows() == 1);
 
         return $cache['group|' . $module_id . '|' . $group_id];
     }
@@ -896,7 +896,7 @@ class Employee extends Person
         }
 
         $query = $this->db->get_where('group_permissions_actions', array('group_id' => $group_id,'module_id'=>$module_id,'action_id'=>$action_id), 1);
-        $cache['group|' . $module_id . '|' . $action_id . '|' . $group_id] =  $query->num_rows() == 1;
+        $cache['group|' . $module_id . '|' . $action_id . '|' . $group_id] = ($query->num_rows() == 1);
 
         return $cache['group|' . $module_id . '|' . $action_id.'|' . $group_id];
     }

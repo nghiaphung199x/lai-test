@@ -188,6 +188,10 @@ class Employees extends Person_controller
         foreach ($groups as $group) {
             $data['groups'][$group->group_id] = $group->name;
         }
+        $departments = $this->Department->get_all()->result();
+        foreach ($departments as $department) {
+            $data['departments'][$department->department_id] = $this->Department->get_level_line($department, '--', true, false) . ' ' . $department->name;
+        }
         $data['controller_name'] = $this->_controller_name;
 
         $locations_list = $this->Location->get_all()->result();
@@ -284,6 +288,7 @@ class Employees extends Person_controller
         //Password has been changed OR first time password set
         if ($this->input->post('password') != '') {
             $employee_data = array(
+                'department_id' => $this->input->post('department_id'),
                 'group_id' => $this->input->post('group_id'),
                 'username' => $this->input->post('username'),
                 'password' => md5($this->input->post('password')),
@@ -298,6 +303,7 @@ class Employees extends Person_controller
         } else //Password not changed
         {
             $employee_data = array(
+                'department_id' => $this->input->post('department_id'),
                 'group_id' => $this->input->post('group_id'),
                 'username' => $this->input->post('username'),
                 'inactive' => $this->input->post('inactive') && $employee_id != 1 ? 1 : 0,

@@ -55,6 +55,7 @@ $lang['employees_reason_inactive'] = 'Lý do không hoạt động';
 $lang['employees_termination_date'] = 'Ngày kết thúc';
 $lang['employees_hire_date'] = 'Ngày ký hợp đồng';
 $lang['employees_birthday'] = 'Ngay sinh nhật';
+$lang['employees_department'] = 'Phòng ban';
 $lang['employees_group'] = 'Nhóm';
 
 

@@ -310,8 +310,11 @@ class Groups extends Secure_area implements Idata_controller
     function test() {
         $logged_employee = $this->Employee->get_logged_in_employee_info();
         $module_id = 'departments';
+        $action_id = 'add_update';
         $check_group_permission = true;
         echo $this->Employee->has_module_permission($module_id, $logged_employee->person_id, $check_group_permission) ? sprintf(' Allow module %s for current logged user', $module_id) : sprintf(' Deny module %s for current logged user', $module_id);
+        echo '<br/>';
+        echo $this->Employee->has_module_action_permission($module_id, $action_id, $logged_employee->person_id, $check_group_permission) ? sprintf(' Allow module action %s|%s for current logged user', $module_id, $action_id) : sprintf(' Deny module action %s|%s for current logged user', $module_id, $action_id);
     }
 }
 
