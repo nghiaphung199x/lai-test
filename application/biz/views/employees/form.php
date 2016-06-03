@@ -333,13 +333,13 @@
 							'name' => 'permissions[]',
 							'id' => 'permissions'.$module->module_id,
 							'value' => $module->module_id,
-							'checked' => $this->Employee->has_module_permission($module->module_id,$person_info->person_id),
+							'checked' => $this->Employee->has_module_permission($module->module_id,$person_info->person_id, false),
 							'class' => 'module_checkboxes '
 							);
 							
 							if ($logged_in_employee_id != 1)
 							{
-								if(($current_employee_editing_self && $checkbox_options['checked']) || !$this->Employee->has_module_permission($module->module_id,$logged_in_employee_id))
+								if(($current_employee_editing_self && $checkbox_options['checked']) || !$this->Employee->has_module_permission($module->module_id,$logged_in_employee_id, false))
 								{
 									$checkbox_options['disabled'] = 'disabled';
 									
@@ -367,12 +367,12 @@
 								'class' => 'module_action_checkboxes',
 								'id' => 'permissions_actions'.$module_action->module_id."|".$module_action->action_id,
 								'value' => $module_action->module_id."|".$module_action->action_id,
-								'checked' => $this->Employee->has_module_action_permission($module->module_id, $module_action->action_id, $person_info->person_id)
+								'checked' => $this->Employee->has_module_action_permission($module->module_id, $module_action->action_id, $person_info->person_id, false)
 								);
 			
 								if ($logged_in_employee_id != 1)
 								{
-									if(($current_employee_editing_self && $checkbox_options['checked']) || (!$this->Employee->has_module_action_permission($module->module_id,$module_action->action_id,$logged_in_employee_id)))
+									if(($current_employee_editing_self && $checkbox_options['checked']) || (!$this->Employee->has_module_action_permission($module->module_id,$module_action->action_id,$logged_in_employee_id, false)))
 									{
 										$checkbox_options['disabled'] = 'disabled';
 										

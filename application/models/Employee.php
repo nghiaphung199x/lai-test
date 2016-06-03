@@ -793,89 +793,111 @@ class Employee extends Person
 	
 	
 	/*
-	Determins whether the employee specified employee has access the specific module.
+	    Determines whether the employee specified employee has access the specific module.
 	*/
-	function has_module_permission($module_id,$person_id)
+	function has_module_permission($module_id, $person_id, $group_permission = true)
 	{
-		//if no module_id is null, allow access
-		if($module_id==null)
-		{
+		/* If no module_id is null, allow access */
+		if ($module_id == null) {
 			return true;
 		}
 		
 		static $cache;
 		
-		if (isset($cache[$module_id.'|'.$person_id]))
+		if (isset($cache[$module_id . '|' . $person_id]))
 		{
-			return $cache[$module_id.'|'.$person_id];
+			return $cache[$module_id . '|' . $person_id];
 		}
-		
+
+        /* Check Person Level */
 		$query = $this->db->get_where('permissions', array('person_id' => $person_id,'module_id'=>$module_id), 1);
-		$cache[$module_id.'|'.$person_id] = $query->num_rows() == 1;
+		$person_permission_allowed = ($query->num_rows() == 1);
+
+        /* Check Group Level */
+        $group_permission_allowed = false;
+        if ($group_permission) {
+            $person = $this->get_info($person_id);
+            if (!empty($person->group_id)) {
+                $group_permission_allowed = $this->has_module_group_permission($module_id, $person->group_id);
+            }
+        }
+
+        /* Combined */
+        $cache[$module_id.'|'.$person_id] = ($group_permission_allowed || $person_permission_allowed);
+
 		return $cache[$module_id.'|'.$person_id];
 	}
 	
-	function has_module_action_permission($module_id, $action_id, $person_id)
+	function has_module_action_permission($module_id, $action_id, $person_id, $group_permission = true)
 	{
-		//if no module_id is null, allow access
-		if($module_id==null)
-		{
+		/* If no module_id is null, allow access */
+		if ($module_id == null) {
 			return true;
 		}
 		
 		static $cache;
 		
-		if (isset($cache[$module_id.'|'.$action_id.'|'.$person_id]))
-		{
-			return $cache[$module_id.'|'.$action_id.'|'.$person_id];
+		if (isset($cache[$module_id . '|' . $action_id . '|' . $person_id])) {
+			return $cache[$module_id . '|' . $action_id . '|' . $person_id];
 		}
-		
-		
-		$query = $this->db->get_where('permissions_actions', array('person_id' => $person_id,'module_id'=>$module_id,'action_id'=>$action_id), 1);
-		$cache[$module_id.'|'.$action_id.'|'.$person_id] =  $query->num_rows() == 1;
-		return $cache[$module_id.'|'.$action_id.'|'.$person_id];
+
+        /* Check Person Level */
+		$query = $this->db->get_where('permissions_actions', array('person_id' => $person_id, 'module_id' => $module_id, 'action_id' => $action_id), 1);
+        $person_permission_allowed = ($query->num_rows() == 1);
+
+        /* Check Group Level */
+        $group_permission_allowed = false;
+        if ($group_permission) {
+            $person = $this->get_info($person_id);
+            if (!empty($person->group_id)) {
+                $group_permission_allowed = $this->has_module_group_action_permission($module_id, $action_id, $person->group_id);
+            }
+        }
+
+        /* Combined */
+        $cache[$module_id . '|' . $action_id . '|' . $person_id] = ($group_permission_allowed || $person_permission_allowed);
+
+        return $cache[$module_id.'|'.$action_id.'|'.$person_id];
 	}
 
     /*
-    Determins whether the employee specified employee has access the specific module.
+        Determines whether the employee specified employee has access the specific module.
     */
     function has_module_group_permission($module_id, $group_id)
     {
-        //if no module_id is null, allow access
-        if($module_id==null)
-        {
+        /* If no module_id is null, allow access */
+        if ($module_id == null) {
             return true;
         }
 
         static $cache;
 
-        if (isset($cache['group|' . $module_id.'|'.$group_id]))
-        {
+        if (isset($cache['group|' . $module_id.'|'.$group_id])) {
             return $cache['group|' . $module_id.'|'.$group_id];
         }
 
         $query = $this->db->get_where('group_permissions', array('group_id' => $group_id, 'module_id' => $module_id), 1);
-        $cache['group|' . $module_id.'|'.$group_id] = $query->num_rows() == 1;
-        return $cache[$module_id.'|'.$group_id];
+        $cache['group|' . $module_id . '|' . $group_id] = $query->num_rows() == 1;
+
+        return $cache['group|' . $module_id . '|' . $group_id];
     }
 
     function has_module_group_action_permission($module_id, $action_id, $group_id)
     {
-        // if no module_id is null, allow access
-        if($module_id == null)
-        {
+        /* If no module_id is null, allow access */
+        if ($module_id == null) {
             return true;
         }
 
         static $cache;
 
-        if (isset($cache['group|' . $module_id . '|' . $action_id . '|' . $group_id]))
-        {
+        if (isset($cache['group|' . $module_id . '|' . $action_id . '|' . $group_id])) {
             return $cache['group|' . $module_id . '|' . $action_id . '|' . $group_id];
         }
 
         $query = $this->db->get_where('group_permissions_actions', array('group_id' => $group_id,'module_id'=>$module_id,'action_id'=>$action_id), 1);
         $cache['group|' . $module_id . '|' . $action_id . '|' . $group_id] =  $query->num_rows() == 1;
+
         return $cache['group|' . $module_id . '|' . $action_id.'|' . $group_id];
     }
 	

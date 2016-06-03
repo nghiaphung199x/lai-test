@@ -177,7 +177,7 @@
 						<i class="icon ti-dashboard"></i>
 						<span class="text"><?php echo lang('common_dashboard'); ?></span>
 					</a></li>
-				<?php foreach($allowed_modules->result() as $module) { ?>
+				<?php foreach($all_allowed_modules as $module) { ?>
 					<li <?php echo $module->module_id==$this->uri->segment(1)  ? 'class="active"' : ''; ?>>
 						<a tabindex = "-1" href="<?php echo site_url("$module->module_id");?>"  class="waves-effect waves-light">
 							<i class="icon ti-<?php echo $module->icon; ?>"></i>

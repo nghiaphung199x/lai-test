@@ -306,6 +306,13 @@ class Groups extends Secure_area implements Idata_controller
         $this->db->trans_complete();
         echo json_encode(array('success' => true, 'message' => lang('groups_import_success')));
     }
+
+    function test() {
+        $logged_employee = $this->Employee->get_logged_in_employee_info();
+        $module_id = 'departments';
+        $check_group_permission = true;
+        echo $this->Employee->has_module_permission($module_id, $logged_employee->person_id, $check_group_permission) ? sprintf(' Allow module %s for current logged user', $module_id) : sprintf(' Deny module %s for current logged user', $module_id);
+    }
 }
 
 ?>
