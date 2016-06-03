@@ -7,7 +7,7 @@ class BizCustomers extends Customers
 	function __construct()
 	{
 		parent::__construct();
-
+		$this->lang->load('quotes_contract');
 		if( $this->Employee->has_module_action_permission(
 			$this->module_id,
 			'view_scope_location',
@@ -304,6 +304,7 @@ class BizCustomers extends Customers
 		$data['controller_name'] = $this->_controller_name;
 		$data['form_width'] = $this->get_form_width();
 		$data['per_page'] = $config['per_page'];
+		$data['total_rows'] = $config['total_rows'];
 		$data['manage_table'] = get_sms_manage_table($this->Customer->get_all_sms($data['per_page']), $this);
 		
 		$this->load->view("customers/manage_sms", $data);
@@ -319,6 +320,7 @@ class BizCustomers extends Customers
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 		$data['manage_table'] = get_sms_manage_table_data_rows($table_data, $this);
+		$data['total_rows'] = $config['total_rows'];
 		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
 	}
 	
@@ -333,6 +335,7 @@ class BizCustomers extends Customers
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 		$data['manage_table'] = get_sms_manage_table_data_rows($search_data, $this);
+		$data['total_rows'] = $config['total_rows'];
 		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
 	}
 	
@@ -549,6 +552,108 @@ class BizCustomers extends Customers
 			}
 		}
 		redirect('customers');
+	}
+	
+	function quotes_contract()
+	{
+		$config['base_url'] = site_url('customers/quotes_contract_sorting');
+		$config['total_rows'] = $this->Customer->count_all_quotes_contract();
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['controller_name'] = $this->_controller_name;
+		$data['per_page'] = $config['per_page'];
+		$data['total_rows'] = $config['total_rows'];
+		
+		$data['manage_table'] = get_quotes_contract_manage_table($this->Customer->get_all_quotes_contract($data['per_page']), $this);
+		$this->load->view('customers/manage_quotes_contract', $data);
+	}
+	
+	function quotes_contract_sorting()
+	{
+		$this->check_action_permission('search');
+		$search = $this->input->post('search');
+		$cat = $this->input->post('cat');
+		$per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		if ($search || $cat) {
+			$config['total_rows'] = $this->Customer->search_count_all_quotes_contract($search, $cat);
+			$table_data = $this->Customer->search_quotes_contract($search, $cat, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'id_quotes_contract', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
+		} else {
+			$config['total_rows'] = $this->Customer->count_all_quotes_contract();
+			$table_data = $this->Customer->get_all_quotes_contract($per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'id_quotes_contract', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
+		}
+		$config['base_url'] = site_url('customers/quotes_contract_sorting');
+		$config['per_page'] = $per_page;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['manage_table'] = get_quotes_contract_manage_table_data_rows($table_data, $this);
+		$data['total_rows'] = $config['total_rows'];
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
+	}
+	
+	function quotes_contract_delete() {
+		$this->check_action_permission('delete');
+		$id = $this->input->post("ids");
+		if ($this->Customer->delete_list_quotes_contract($id)) {
+			echo json_encode(array('success' => true, 'message' => lang('common_delete_success'). ' ' . count($id) . '' . lang('customers_quotes_contract_menu_link') ));
+		} else {
+			echo json_encode(array('success' => false, 'message' => lang('common_error')));
+		}
+	}
+	
+	function clear_state_quotes_contract()
+	{
+		redirect('customers/quotes_contract');
+	}
+	
+	function quotes_contract_search() {
+		$this->check_action_permission('search');
+		$search = $this->input->post('search');
+		$cat = $this->input->post('cat');
+		$per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$search_data = $this->Customer->search_quotes_contract($search, $cat, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'id_quotes_contract', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
+		$config['base_url'] = site_url('quotes_contract/search');
+		$config['total_rows'] = $this->Customer->search_count_all_quotes_contract($search, $cat);
+		$config['per_page'] = $per_page;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['total_rows'] = $config['total_rows'];
+		$data['manage_table'] = get_quotes_contract_manage_table_data_rows($search_data, $this);
+	
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
+	}
+	
+	function quotes_contract_view($id = -1) {
+		$this->check_action_permission('add_update');
+		$data = array();
+		$data['info_quotes_contract'] = $this->Customer->get_info_quotes_contract($id);
+		$this->load->view("customers/form_quotes_contract", $data);
+	}
+	
+	function quotes_contract_save($id = -1) {
+		$title = $this->input->post("title_quotes_contract");
+		$cat = $this->input->post("cat_quotes_contract");
+		$content = $this->input->post("content_quotes_contract");
+		$data = array(
+				"title_quotes_contract" => $title,
+				"content_quotes_contract" => $content,
+				"cat_quotes_contract" => $cat
+		);
+		
+		if ($this->Customer->save_quotes_contract($data, $id)) {
+			if ($id == -1) {
+				echo json_encode(array('success' => true, 'message' => lang('common_add_success'), 'id' => $title));
+			} else { //previous item
+				echo json_encode(array('success' => true, 'message' => lang('common_update_success'), 'id' => $title));
+			}
+		} else {//failure
+			echo json_encode(array('success' => false, 'message' => lang('common_error')));
+		}
+	}
+	
+	function quotes_contract_suggest() {
+		$suggestions = $this->Customer->get_search_suggestions_quotes_contract($this->input->get('term'), 100);
+		echo json_encode($suggestions);
 	}
         
 }

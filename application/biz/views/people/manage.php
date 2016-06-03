@@ -125,8 +125,8 @@
 								<?php if ($controller_name =='customers') {  
 								?>
 								<?php echo anchor("$controller_name/quotes_contract",
-									'<span class="">'.lang('quotes_contract_menu_link').'</span>',
-									array('class'=>'hidden-xs','title'=>lang('quotes_contract_menu_link')));
+									'<span class="">'.lang('customers_quotes_contract_menu_link').'</span>',
+									array('class'=>'hidden-xs','title'=>lang('customers_quotes_contract_menu_link')));
 								} ?>
 							</li>
 							<li>

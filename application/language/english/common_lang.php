@@ -366,4 +366,9 @@ $lang['common_items_duplicate_exists'] = 'A similar item name already exists. Do
 $lang['common_closed'] = 'Closed';
 $lang['common_items_sold'] = 'Number of items sold';
 $lang['common_built_on'] = 'Built on';
+
+$lang['common_delete_success'] = 'Delete successfully';
+$lang['common_update_success'] = 'Update successfully';
+$lang['common_add_success'] = 'Add new successfully';
+$lang['common_error'] = 'Error ! Please recheck it';
 ?>

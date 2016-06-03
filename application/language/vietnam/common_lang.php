@@ -384,4 +384,11 @@ $lang['common_saled'] = 'Đã thanh toán';
 $lang['common_refund_money'] = 'Tiền trả lại khách';
 $lang['common_sales_balance_total'] = 'Tổng nợ tất cả';
 $lang['common_total_money'] = 'Tổng tiền';
+
+$lang['common_delete_success'] = 'Đã xóa thành công';
+$lang['common_update_success'] = 'Đã cập nhật thành công';
+$lang['common_add_success'] = 'Đã thêm mới thành công';
+$lang['common_error'] = 'Lỗi ! Vui lòng kiểm tra lại';
+
+
 ?>
