@@ -1,4 +1,5 @@
 <?php $this->load->view("partial/header"); ?>
+<script src="<?php echo base_url().'assets/js/jquery.maskMoney.js';?>" type="text/javascript"></script>
 <?php
 	$this->load->helper('sale');
 	$return_policy = ($loc_return_policy = $this->Location->get_info_for_key('return_policy', isset($override_location_id) ? $override_location_id : FALSE)) ? $loc_return_policy : $this->config->item('return_policy');
@@ -29,13 +30,12 @@
 
 <div class="manage_buttons hidden-print">
 	<div class="row">
-		<div class="col-md-6">
-                    <?php if($fulfillment){;?>
+		<div class="col-md-6"><?php 
+                ?>
 			<div class="hidden-print search no-left-border">
 				<ul class="list-inline print-buttons">
-					<li></li>
-					
-						<li>
+                                    <?php if($this->input->get('fulfillment')!== '1'){?>
+                                    <li style="padding-right: 0px;">
 							<?php 
 							 if ($sale_id_raw != lang('sales_test_mode_transaction') && !$store_account_payment && $this->Employee->has_module_action_permission('sales', 'edit_sale', $this->Employee->get_logged_in_employee_info()->person_id)){
 
@@ -46,30 +46,24 @@
 							<?php }	?>
 							</form>		
 						</li>
-					<li>
-						<button class="btn btn-primary btn-lg hidden-print" id="fufillment_sheet_button" onclick="window.open('<?php echo site_url("sales/fulfillment/$sale_id_raw"); ?>', 'blank');" > <?php echo lang('sales_fulfillment_sheet'); ?></button>
+					<li style="padding-right: 0px;">
+						<button class="btn btn-primary btn-lg hidden-print" id="fufillment_sheet_button" onclick="window.open('<?php echo site_url("sales/receipt/$sale_id_raw?fulfillment=1&type=".$type); ?>', 'blank');" > <?php echo lang('sales_fulfillment_sheet'); ?></button>
 					</li>
-					<li>
+					<li style="padding-right: 0px;">
 						<button class="btn btn-primary btn-lg hidden-print gift_receipt" id="gift_receipt_button" onclick="toggle_gift_receipt()" > <?php echo lang('sales_gift_receipt'); ?> </button>
 					</li>
-					<li>
+					<li style="padding-right: 0px;">
 						<?php if (!empty($customer_email)) { ?>
 							<?php echo anchor('sales/email_receipt/'.$sale_id_raw, lang('common_email_receipt'), array('id' => 'email_receipt','class' => 'btn btn-primary btn-lg hidden-print'));?>
 						<?php }?>
 					</li>
-				</ul>
-			</div>
-                    <?php } 
-                    else{ ?>
-                    <div class="hidden-print search no-left-border">
-				<ul class="list-inline print-buttons">
-					<li></li>
+                                    <?php }else {?>
 					<li>
 						<button class="btn btn-primary btn-lg hidden-print" id="fufillment_sheet_button" onclick="window.open('<?php echo site_url("sales/receipt/$sale_id_raw"); ?>', 'blank');" > <?php echo lang('sales_receipt'); ?></button>
 					</li>
+                                    <?php }?>
 				</ul>
 			</div>
-                    <?php }?>
 		</div>
 		<div class="col-md-6">	
 			<div class="buttons-list">

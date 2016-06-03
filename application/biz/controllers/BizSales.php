@@ -123,7 +123,6 @@ class BizSales extends Sales
 		$data['sale_id']=$this->config->item('sale_prefix').' '.$sale_id_raw;
 		$data['sale_id_raw']=$sale_id_raw;
 		
-		
 		if($customer_id!=-1)
 		{
 			$cust_info=$this->Customer->get_info($customer_id);
@@ -231,19 +230,18 @@ class BizSales extends Sales
 		{
 			$this->sale_lib->clear_all();
 		}
-                $data['fulfillment'] = TRUE;
-                $this->sale_lib->set_mode($sale_mode);
-                $this->sale_lib->set_payments($data['payments']);
-                $this->sale_lib->set_cart($data['cart']);
-                $this->session->set_userdata('customer_balance_for_sale_before',$data['customer_balance_for_sale_before']);
+                if($sale_mode=='sale')$data['type']='1';
+                elseif($sale_mode=='return')$data['type']='0';
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['payments'], $sale_mode);
 		$data['pdf_block_html'] = $this->load->view('sales/partials/' . $typeOfView, $data, TRUE);
+
 		$this->load->view("sales/receipt",$data);
 	}
 
-	protected function getTypeOfOrder($payments = array(), $mode = '', $suspended = 0)
+	protected function getTypeOfOrder($payments = array(), $mode = '', $suspended = 0,$fulfillment=0)
 	{
+            if($fulfillment==0){
 		$typeOfView = 'order';
 		foreach ($payments as $payment) {
 			if( $payment['payment_type'] == lang('common_store_account') )
@@ -267,13 +265,7 @@ class BizSales extends Sales
 		} elseif ($suspended == 2) {
 			$typeOfView = 'order_show_price';
 		}
-		return $typeOfView;
-	}
-        
-        protected function getTypeOfOrder_fulfillment($payments = array(), $mode = '', $suspended = 0)
-	{
-            echo 'mode: '.$mode;
-            echo 'suspened'.$suspended;
+            }else{
 		$typeOfView = 'order_fulfillment';
 		foreach ($payments as $payment) {
 			if( $payment['payment_type'] == lang('common_store_account') )
@@ -281,6 +273,7 @@ class BizSales extends Sales
 				$typeOfView = 'order_debit_fulfillment';
 			}
 		}
+
 		if($mode == 'return')
 		{
 			$typeOfView = 'order_return_fulfillment';
@@ -296,22 +289,39 @@ class BizSales extends Sales
 		} elseif ($suspended == 2) {
 			$typeOfView = 'order_show_price_fulfillment';
 		}
+                
+            }
+		
 		return $typeOfView;
 	}
 
 	function receipt($sale_id)
 	{
+            $this->load->helper('sale');
+            $fulfillment = $this->input->get('fulfillment');
+            $type        = $this->input->get('type');
 		//Before changing the sale session data, we need to save our current state in case they were in the middle of a sale
 		$this->sale_lib->save_current_sale_state();
 		
 		$data['is_sale'] = FALSE;
 		$sale_info = $this->Sale->get_info($sale_id)->row_array();
-
+               
 		$this->sale_lib->clear_all();
 		$this->sale_lib->copy_entire_sale($sale_id, true);
-
 		$data['cart']=$this->sale_lib->get_cart();
 
+                 $customer_id=$this->sale_lib->get_customer();
+
+		// [4biz] Get customer balance before make orther
+		if($customer_id != -1)
+		{
+			$cust_info=$this->Customer->get_info($customer_id);
+			
+			if ($cust_info->balance !=0)
+			{
+				$data['customer_balance_for_sale_before'] = $cust_info->balance;
+			}
+		}
 		$data['payments']=$this->sale_lib->get_payments();
 		$data['is_sale_cash_payment'] = $this->sale_lib->is_sale_cash_payment();
 		$data['show_payment_times'] = TRUE;
@@ -386,17 +396,19 @@ class BizSales extends Sales
 				$data['sale_type'] = lang('common_estimate');				
 			}
 		}
-		$data['fulfillment'] = TRUE;
+		$sale_mode =$this->sale_lib->get_mode();
+                if($type=='0')$sale_mode = 'return';
+                elseif($type=='1') $sale_mode = 'sales';
+                if(isset($sale_info)&&$sale_info['store_account_payment'] ==1)$sale_mode = 'store_account_payment';
 		// [4biz] switch to correct view
-		$typeOfView = $this->getTypeOfOrder($data['payments'], $this->sale_lib->get_mode(), $sale_info['suspended']);
+		$typeOfView = $this->getTypeOfOrder($data['payments'], $sale_mode, $sale_info['suspended'],$fulfillment);
 		$data['pdf_block_html'] = $this->load->view('sales/partials/' . $typeOfView, $data, TRUE);
 		
 		$this->load->view("sales/receipt",$data);
 		$this->sale_lib->clear_all();
-		$this->sale_lib->set_suspended_sale_id($sale_info['suspended']);
+		
 		//Restore previous state saved above
 		$this->sale_lib->restore_current_sale_state();
-                $this->sale_lib->set_cart($data['cart']);
 	}
 
 	function suspend($suspend_type = 1)
@@ -452,57 +464,6 @@ class BizSales extends Sales
 		{
 			$this->_reload(array('success' => lang('sales_successfully_suspended_sale')));
 		}
-	}
-        
-        function fulfillment($sale_id)
-	{
-		$data['payments']=$this->sale_lib->get_payments();
-		$data['cart'] = $this->sale_lib->get_cart();
-		$data['taxes']=$this->sale_lib->get_taxes($sale_id);
-		$data['total']=$this->sale_lib->get_total();
-		$sale_info = $this->Sale->get_info($sale_id)->row_array();
-		$data['override_location_id'] = $sale_info['location_id'];
-		$data['comment'] = $this->Sale->get_comment($sale_id);
-		$data['show_comment_on_receipt'] = $this->Sale->get_comment_on_receipt($sale_id);
-		$data['transaction_time']= date(get_date_format().' '.get_time_format(), strtotime($sale_info['sale_time']));
-		$customer_id=$sale_info['customer_id'];
-		
-		$emp_info=$this->Employee->get_info($sale_info['employee_id']);
-		$data['employee']=$emp_info->first_name.' '.$emp_info->last_name;
-                $suspended_change_sale_id=$this->sale_lib->get_suspended_sale_id() ? $this->sale_lib->get_suspended_sale_id() : $this->sale_lib->get_change_sale_id() ;
-		if($customer_id)
-		{
-			$cust_info=$this->Customer->get_info($customer_id);
-			$data['customer']=$cust_info->first_name.' '.$cust_info->last_name.($cust_info->company_name==''  ? '' :' - '.$cust_info->company_name).($cust_info->account_number==''  ? '' :' - '.$cust_info->account_number);
-			$data['customer_address_1'] = $cust_info->address_1;
-			$data['customer_address_2'] = $cust_info->address_2;
-			$data['customer_city'] = $cust_info->city;
-			$data['customer_state'] = $cust_info->state;
-			$data['customer_zip'] = $cust_info->zip;
-			$data['customer_country'] = $cust_info->country;
-			$data['customer_phone'] = $cust_info->phone_number;
-			$data['customer_email'] = $cust_info->email;
-                        $data['customer_points'] = $cust_info->points;
-                        $data['sales_until_discount'] = $this->config->item('number_of_sales_for_discount') - $cust_info->current_sales_for_discount;
-			
-			if ($cust_info->balance !=0)
-			{
-				$data['customer_balance_for_sale'] = $cust_info->balance;
-                                $data['customer_balance_for_sale_before'] = $this->session->userdata('customer_balance_for_sale_before');
-			}
-		}
-		$data['sale_id']=$this->config->item('sale_prefix').' '.$sale_id;
-		$data['sale_id_raw']=$sale_id;
-		$data['sales_items'] = $this->Sale->get_sale_items_ordered_by_category($sale_id)->result_array();
-		$data['sales_item_kits'] = $this->Sale->get_sale_item_kits_ordered_by_category($sale_id)->result_array();
-		$data['discount_exists'] = $this->_does_discount_exists($data['sales_items']) || $this->_does_discount_exists($data['sales_item_kits']);		
-                $data['fulfillment'] = TRUE;
-		// [4biz] switch to correct view
-                $sale_mode = $this->sale_lib->get_mode();
-                
-		$typeOfView = $this->getTypeOfOrder_fulfillment($data['payments'], $sale_mode,$suspended_change_sale_id);
-		$data['pdf_block_html'] = $this->load->view('sales/partials/' . $typeOfView, $data, TRUE);
-		$this->load->view("sales/receipt",$data);
 	}
 }
 ?>

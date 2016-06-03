@@ -398,5 +398,11 @@ class BizCustomer extends Customer
 		$query = $this->db->get("quotes_contract");
 		return $query->result();
 	}
+	function get_info_person_by_id($id) {
+            $this->db->where('person_id', $id);
+            $query = $this->db->get('people');
+            return $query->row_array();
+        }
+
 }
 ?>
