@@ -331,4 +331,6 @@ $lang['reports_sale_person'] = 'Người bán hàng';
 $lang['reports_expenses_summary_report'] = 'Báo cáo tổng hợp chi phí';
 $lang['reports_giftcard_number'] = 'Số thẻ quà tặng';
 $lang['reports_giftcard'] = 'Thẻ quà tặng';
+
+$lang['reports_measure_purchased'] = 'Đơn vị tính';
 ?>

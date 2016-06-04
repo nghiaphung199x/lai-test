@@ -186,7 +186,7 @@
 						<td><?php echo $stt; ?></td>
                                                 <td><?php echo H($item['product_id']);?></td>
 						<td><?php echo $item['name']; ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
-                                                <td></td>
+                                                <td><?php echo isset($item['measure']) ? $item['measure'] : ''; ?></td>
 						<td><?php echo to_quantity_abs($item['quantity']); ?></td>
                                                 <td><?php echo to_currency_no_money(abs($item['price'])); ?></td>
 						

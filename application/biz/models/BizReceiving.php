@@ -110,6 +110,20 @@ class BizReceiving extends Receiving
 			$cur_item_location_info = $this->Item_location->get_info($item['item_id']);
 			$cost_price = ($cur_item_location_info && $cur_item_location_info->cost_price) ? $cur_item_location_info->cost_price : $cur_item_info->cost_price;
 			
+			$qtyOriginal = $item['quantity'];
+			$qtyOriginalReceived = $item['quantity_received'];
+			
+			if( $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
+			{
+				$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $cur_item_info->measure_id, $item['measure_id']);
+				$cost_price = $cost_price * (100 + (int)$convertedValue->cost_price_percentage_converted ) / 100;
+				
+				$totalQty = $item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
+				$item['quantity_received'] = $item['quantity_received'] * (int)$convertedValue->qty_converted;
+				
+				$item['price'] = $item['price'] / $totalQty;
+			}
+			
 			$item_unit_price_before_tax = $item['price'];
 			
 			$expire_date = NULL;
@@ -137,8 +151,11 @@ class BizReceiving extends Receiving
 				'line'=>$item['line'],
 				'description'=>$item['description'],
 				'serialnumber'=>$item['serialnumber'],
-				'quantity_purchased'=>$item['quantity'],
+				'quantity_purchased'=>$item['quantity'], // qty is converted to base measure
 				'quantity_received'=>$quantity_received,
+				'measure_id' => $item['measure_id'],
+				'measure_qty' => $qtyOriginal, // qty by measure
+				'measure_qty_received' => $qtyOriginalReceived, // qty by measure
 				'discount_percent'=>$item['discount'],
 				'item_cost_price' => $cost_price,
 				'item_unit_price'=>$item['price'],
@@ -331,10 +348,18 @@ class BizReceiving extends Receiving
 		{
 			$cur_item_info = $this->Item->get_info($item['item_id']);
 			
-			
-			
 			$cur_item_location_info = $this->Item_location->get_info($item['item_id'], $location_from_id);
 			$cost_price = ($cur_item_location_info && $cur_item_location_info->cost_price) ? $cur_item_location_info->cost_price : $cur_item_info->cost_price;
+			
+			if( $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
+			{
+				$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $cur_item_info->measure_id, $item['measure_id']);
+				$cost_price = $cost_price * (100 + (int)$convertedValue->cost_price_percentage_converted ) / 100;
+			
+				$totalQty = $item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
+			
+				$item['price'] = $item['price'] / $totalQty;
+			}
 			
 			$item_unit_price_before_tax = $item['price'];
 				
@@ -383,9 +408,6 @@ class BizReceiving extends Receiving
 			// TODO -- HERE
 			if (!$cur_item_info->is_service)
 			{
-// 				echo '<pre>';
-// 				print_r( $item );
-// 				die('+++ DEBUG +++');
 				//If we have a null quanity set it to 0, otherwise use the value
 				$cur_item_location_info->quantity = $cur_item_location_info->quantity !== NULL ? $cur_item_location_info->quantity : 0;
 				//This means we never adjusted quantity_received so we should accept all
@@ -406,6 +428,7 @@ class BizReceiving extends Receiving
 						$inventory_to_add = $previous_amount_received + $item['quantity'] - $item['quantity_received'];
 					}
 				}
+				
 				// HERE YOU ARE!
 				if ($inventory_to_add !=0)
 				{
@@ -473,6 +496,66 @@ class BizReceiving extends Receiving
 			return -1;
 		}
 		return $receiving_id;
+	}
+	
+	public function create_receivings_items_temp_table($params)
+	{
+		set_time_limit(0);
+	
+	
+		$location_ids = implode(',',Report::get_selected_location_ids());
+	
+		$where = '';
+	
+		if (isset($params['start_date']) && isset($params['end_date']))
+		{
+			$where = 'WHERE receiving_time BETWEEN "'.$params['start_date'].'" and "'.$params['end_date'].'"'.' and '.$this->db->dbprefix('receivings').'.location_id IN ('.$location_ids.')';
+			//Added for detailed_suspended_report, we don't need this for other reports as we are always going to have start + end date
+			if (isset($params['force_suspended']) && $params['force_suspended'])
+			{
+				$where .=' and suspended != 0';
+			}
+			elseif ($this->config->item('hide_suspended_recv_in_reports'))
+			{
+				$where .=' and suspended = 0';
+			}
+		}
+		else
+		{
+			//If we don't pass in a date range, we don't need data from the temp table
+			$where = 'WHERE location_id IN ('.$location_ids.')';
+				
+			if ($this->config->item('hide_suspended_recv_in_reports'))
+			{
+				$where .=' and suspended = 0';
+			}
+		}
+		
+		$decimals = $this->config->item('number_of_decimals') !== NULL && $this->config->item('number_of_decimals') != '' ? (int)$this->config->item('number_of_decimals') : 2;
+		
+		$this->db->query("CREATE TEMPORARY TABLE ".$this->db->dbprefix('receivings_items_temp')."
+		(SELECT ".$this->db->dbprefix('receivings').".location_id as location_id, ".$this->db->dbprefix('receivings').".deleted as deleted,".$this->db->dbprefix('receivings').".deleted_by as deleted_by, receiving_time, date(receiving_time) as receiving_date, ".$this->db->dbprefix('receivings_items').".receiving_id, comment,payment_type, employee_id,
+		".$this->db->dbprefix('items').".item_id, ".$this->db->dbprefix('receivings').".supplier_id, quantity_purchased,quantity_received, ". $this->db->dbprefix('receivings_items') . ".measure_id, ".$this->db->dbprefix('receivings_items').".measure_qty, ".$this->db->dbprefix('receivings_items').".measure_qty_received, item_cost_price, item_unit_price,".$this->db->dbprefix('categories').".name as category,".$this->db->dbprefix('categories').".id as category_id,
+		discount_percent, ROUND((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100),".$decimals.") as subtotal,
+		(ROUND(item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100,".$decimals."))+(item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100)
+		+(((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100) + (item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100))
+		*(SUM(CASE WHEN cumulative = 1 THEN percent ELSE 0 END))/100) as total,
+		(item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100)
+		+(((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100) + (item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100))
+		*(SUM(CASE WHEN cumulative = 1 THEN percent ELSE 0 END))/100) as tax,
+		ROUND((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100),".$decimals.") - (item_cost_price*quantity_purchased) as profit,
+		".$this->db->dbprefix('receivings_items').".line as line, serialnumber, ".$this->db->dbprefix('receivings_items').".description as description
+		FROM ".$this->db->dbprefix('receivings_items')."
+		INNER JOIN ".$this->db->dbprefix('receivings')." ON  ".$this->db->dbprefix('receivings_items').'.receiving_id='.$this->db->dbprefix('receivings').'.receiving_id'."
+		INNER JOIN ".$this->db->dbprefix('items')." ON  ".$this->db->dbprefix('receivings_items').'.item_id='.$this->db->dbprefix('items').'.item_id'."
+		LEFT OUTER JOIN ".$this->db->dbprefix('receivings_items_taxes')." ON  "
+				.$this->db->dbprefix('receivings_items').'.receiving_id='.$this->db->dbprefix('receivings_items_taxes').'.receiving_id'." and "
+				.$this->db->dbprefix('receivings_items').'.item_id='.$this->db->dbprefix('receivings_items_taxes').'.item_id'." and "
+				.$this->db->dbprefix('receivings_items').'.line='.$this->db->dbprefix('receivings_items_taxes').'.line'. "
+		LEFT OUTER JOIN ".$this->db->dbprefix('categories')." ON  ".$this->db->dbprefix('categories').'.id='.$this->db->dbprefix('items').'.category_id'."
+					
+				$where
+				GROUP BY receiving_id, item_id, line)");
 	}
 }
 ?>
