@@ -26,6 +26,7 @@ $lang['common_you_are_using_phppos']='You are using 4Biz by LifeTek Version';
 $lang['common_please_visit_my']='Please visit our';
 $lang['common_website']='website';
 $lang['common_fields_required_message']='Fields in red are required';
+$lang['common_fields_required_alert']='Field is required';
 $lang['common_learn_about_project']='to learn the latest information about the project';
 $lang['common_searched_for']='Searched for';
 $lang['common_first_name_required']='The first name is a required field.';
