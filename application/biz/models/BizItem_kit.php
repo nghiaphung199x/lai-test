@@ -8,14 +8,19 @@ class BizItem_kit extends Item_kit
 		$isCompare = false;
 		if(!empty($items)) {
 			foreach ($items as $item) {
+				$measureConverted = $this->ItemMeasures->getConvertedValue($item['item_id'], $item['measure_id']);
+				$qtyConverted = $item['quantity'];
+				if ($measureConverted) {
+					$qtyConverted = $measureConverted->qty_converted * $item['quantity'];
+				}
 				$qtyItem = $this->Item_location->get_location_quantity($item['item_id']);
 				if( $qtyItem > 0 ) {
 					if(!$isCompare) {
-						$availableKits = (int) ($qtyItem / $item['quantity']);
+						$availableKits = (int) ($qtyItem / $qtyConverted);
 					}
 					
-					if( $isCompare && $availableKits > (int) ($qtyItem / $item['quantity']) ) {
-						$availableKits = (int) ($qtyItem / $item['quantity']);
+					if( $isCompare && $availableKits > (int) ($qtyItem / $qtyConverted) ) {
+						$availableKits = (int) ($qtyItem / $qtyConverted);
 					}
 					$isCompare = true;
 				} else {

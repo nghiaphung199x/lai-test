@@ -115,7 +115,7 @@ class BizReceiving extends Receiving
 			
 			if( $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
 			{
-				$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $cur_item_info->measure_id, $item['measure_id']);
+				$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $item['measure_id']);
 				$cost_price = $cost_price * (100 + (int)$convertedValue->cost_price_percentage_converted ) / 100;
 				
 				$totalQty = $item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
@@ -353,7 +353,7 @@ class BizReceiving extends Receiving
 			
 			if( $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
 			{
-				$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $cur_item_info->measure_id, $item['measure_id']);
+				$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $item['measure_id']);
 				$cost_price = $cost_price * (100 + (int)$convertedValue->cost_price_percentage_converted ) / 100;
 			
 				$totalQty = $item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;

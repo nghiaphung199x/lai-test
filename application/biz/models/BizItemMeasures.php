@@ -24,17 +24,19 @@ class BizItemMeasures extends CI_Model
 	public function getMeasuresByItemId($itemId=false) {
 		if($itemId) {
 			$this->db->from('item_measures');
+			$this->db->join('measures', 'measures.id = item_measures.measure_converted_id', 'left');
 			$this->db->where('item_id', $itemId);
 			return $this->db->get()->result_array();
 		}
 		return array();
 	}
 	
-	public function getConvertedValue($itemId = 0, $measureId = 0, $measureConvertedId = 0) {
-		if($itemId) {
+	public function getConvertedValue($itemId = 0, $measureConvertedId = 0) {
+		$itemInfo = $this->Item->get_info($itemId);
+		if ($itemInfo) {
 			$this->db->from('item_measures');
 			$this->db->where('item_id', $itemId);
-			$this->db->where('measure_id', $measureId);
+			$this->db->where('measure_id', $itemInfo->measure_id);
 			$this->db->where('measure_converted_id', $measureConvertedId);
 			$result = $this->db->get();
 			if($result->num_rows() > 0)

@@ -51,6 +51,7 @@
 						<th><?php echo lang('item_kits_item');?></th>
 						<th><?php echo lang('item_kits_available_qty');?></th>
 						<th><?php echo lang('item_kits_quantity');?></th>
+						<th><?php echo 'Đơn vị tính';?></th>
 					</tr>
 					<?php 
 						$items = array();
@@ -59,7 +60,17 @@
 						$items[] = array(
 								'item_id' => $item_kit_item->item_id,
 								'quantity' => $item_kit_item->quantity
-						)
+						);
+						
+						$measuresBox = array();
+						$measures = $this->Measure->getAvailableMeasuresByItemId($item_kit_item->item_id);
+						if( empty($measures) ) {
+							$measuresBox['-1'] = 'Chưa thiết lập';
+						} else {
+							foreach ($measures as $measure) {
+								$measuresBox[$measure['id']] = $measure['name'];
+							}
+						}
 					?>
 						<tr>
 							<?php
@@ -72,6 +83,9 @@
 								<div class="form-group table-form-group">
 									<input class='form-control quantity' onchange="calculateSuggestedPrices(); countAvailablePackages();" id='item_kit_item_<?php echo $item_kit_item->item_id ?>' type='number' name=item_kit_item[<?php echo $item_kit_item->item_id ?>] value='<?php echo to_quantity($item_kit_item->quantity); ?>'/>	
 								</div>
+							</td>
+							<td>
+								<?php echo form_dropdown('item_kit_measue['. $item_kit_item->item_id .']', $measuresBox, $item_kit_item->measure_id, 'class="form-control form-inps" onchange="countAvailablePackages();"');?>
 							</td>
 						</tr>
 					<?php } ?>
@@ -760,6 +774,8 @@
 </div>
 <script type='text/javascript'>
 
+var measures = <?php echo json_encode($measures); ?>
+
 function commission_change()
 {
 	if ($("#commission_type").val() == 'percent')
@@ -960,7 +976,12 @@ function calculate_margin_price()
  		minLength: 0,
  		select: function( event, ui ) 
  		{
-			console.log(ui.item);
+ 	 		var select_html = '<select name="item_kit_measue['+ ui.item.value +']" class="form-control form-inps" onchange="countAvailablePackages();">';
+ 	 		for(var id in ui.item.measures) {
+ 	 			select_html += '<option value="'+ id +'">'+ ui.item.measures[id] +'</option>';
+ 	 		}
+ 	 		select_html += '</select>';
+ 	 		
  			$( "#item" ).val("");
 			if ($("#item_kit_item_"+ui.item.value).length ==1)
 			{
@@ -968,7 +989,7 @@ function calculate_margin_price()
 			}
 			else
 			{
-				$("#item_kit_items").append("<tr class='item_kit_item_row'><td><a  href='#' onclick='return deleteItemKitRow(this);'><i class='ion-ios-trash-outline fa-2x text-danger'></i></a></td><td>"+ui.item.label+"</td><td>"+ui.item.qty+"</td><td><div class='form-group table-form-group'><input class='quantity form-control' onchange='calculateSuggestedPrices(); countAvailablePackages();' id='item_kit_item_"+ui.item.value+"' type='number' name=item_kit_item["+ui.item.value+"] value='1'/></td></tr>");
+				$("#item_kit_items").append("<tr class='item_kit_item_row'><td><a  href='#' onclick='return deleteItemKitRow(this);'><i class='ion-ios-trash-outline fa-2x text-danger'></i></a></td><td>"+ui.item.label+"</td><td>"+ui.item.qty+"</td><td><div class='form-group table-form-group'><input class='quantity form-control' onchange='calculateSuggestedPrices(); countAvailablePackages();' id='item_kit_item_"+ui.item.value+"' type='number' name=item_kit_item["+ui.item.value+"] value='1'/></td><td>"+ select_html +"</td></tr>");
 			}
 		
 			calculateSuggestedPrices();
@@ -1002,6 +1023,12 @@ $( "#ite" ).autocomplete({
 	minLength: 0,
 	select: function( event, ui ) 
 	{	
+		var select_html = '<select name="item_kit_measue['+ ui.item.value +']" class="form-control form-inps" onchange="countAvailablePackages();">';
+ 		for(var id in measures) {
+ 			select_html += '<option value="'+ id +'">'+ ui.item.measures[id] +'</option>';
+ 		}
+ 		select_html += '</select>';
+	 		
 		$( "#item" ).val("");
 		if ($("#item_kit_item_"+ui.item.value).length ==1)
 		{
@@ -1009,7 +1036,7 @@ $( "#ite" ).autocomplete({
 		}
 		else
 		{
-			$("#item_kit_items").append("<tr class='item_kit_item_row'><td><a  href='#' onclick='return deleteItemKitRow(this);'><i class='ion-ios-trash-outline fa-2x text-danger'></i></a></td><td>"+ui.item.label+"</td><td>"+ui.item.qty+"</td><td><div class='form-group table-form-group'><input class='quantity form-control' onchange='calculateSuggestedPrices(); countAvailablePackages();' id='item_kit_item_"+ui.item.value+"' type='number' name=item_kit_item["+ui.item.value+"] value='1'/></td></tr>");
+			$("#item_kit_items").append("<tr class='item_kit_item_row'><td><a  href='#' onclick='return deleteItemKitRow(this);'><i class='ion-ios-trash-outline fa-2x text-danger'></i></a></td><td>"+ui.item.label+"</td><td>"+ui.item.qty+"</td><td><div class='form-group table-form-group'><input class='quantity form-control' onchange='calculateSuggestedPrices(); countAvailablePackages();' id='item_kit_item_"+ui.item.value+"' type='number' name=item_kit_item["+ui.item.value+"] value='1'/></td><td>"+ select_html +"</td></tr>");
 		}
 	
 		calculateSuggestedPrices();
@@ -1277,10 +1304,12 @@ function countAvailablePackages()
 	{
 		var quantity = parseFloat($(element).val());
 		var item_id = $(element).attr('id').substring($(element).attr('id').lastIndexOf('_') + 1);
+		var measure_id = $(element).closest('tr').find('select').val();
 	
 		items.push({
 			item_id: item_id,
-			quantity: quantity
+			quantity: quantity,
+			measure_id: measure_id
 		});
 	});
 	var _data = {};
