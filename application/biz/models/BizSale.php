@@ -401,7 +401,7 @@ class BizSale extends Sale
 				$qtyOriginal = $item['quantity'];
 				if( $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
 				{
-					$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $cur_item_info->measure_id, $item['measure_id']);
+					$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $item['measure_id']);
 					$cost_price = $cost_price * $convertedValue->unit_price_percentage_converted / 100;
 				
 					$totalQty = $item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
@@ -603,6 +603,12 @@ class BizSale extends Sale
 					
 					$reorder_level = ($cur_item_location_info && $cur_item_location_info->reorder_level !== NULL) ? $cur_item_location_info->reorder_level : $cur_item_info->reorder_level;
 					
+					if( $cur_item_info->measure_id != $item_kit_item->measure_id /* && ($mode == 'receive' || $mode == 'purchase_order') */)
+					{
+						$convertedValue = $this->ItemMeasures->getConvertedValue($item_kit_item->item_id, $item_kit_item->measure_id);
+						$item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
+					}
+					
 					//Only do stock check + inventory update if we are NOT an estimate
 					if ($suspended != 2)
 					{
@@ -610,7 +616,6 @@ class BizSale extends Sale
 						$out_of_stock_check=false;
 						$email=false;
 						$message = '';
-
 
 						//checks if the quantity is greater than reorder level
 						if(!$cur_item_info->is_service && $cur_item_location_info->quantity > $reorder_level)

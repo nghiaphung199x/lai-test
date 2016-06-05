@@ -173,7 +173,7 @@ class BizReceiving_lib extends Receiving_lib
 	
 	protected function getPriceByMeasureConverted($itemId = 0, $measureConvertedId = 0){
 		$itemObj = $this->CI->Item->get_info($itemId);
-		$convertedValue = $this->CI->ItemMeasures->getConvertedValue($itemId, $itemObj->measure_id, $measureConvertedId);
+		$convertedValue = $this->CI->ItemMeasures->getConvertedValue($itemId, $measureConvertedId);
 		return $itemObj->cost_price * $convertedValue->qty_converted * $convertedValue->cost_price_percentage_converted / 100;
 	}
 }
