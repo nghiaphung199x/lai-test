@@ -31,7 +31,7 @@ class BizItem_kits extends Item_kits
 					$item['measures'][$measure['id']] = $measure['name'];
 				}
 			} else {
-				$item['measures']['-1'] = 'Chưa thiết lập';
+				$item['measures']['-1'] = lang('common_not_set');
 			}
 		}
 		
