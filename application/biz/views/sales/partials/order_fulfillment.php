@@ -206,16 +206,15 @@
 				 
 				$number_of_items_sold = 0;
 				$stt = 0;
-                                $total_money = 0;;
-//                                echo 'sale';
-//                                var_dump($sales_items);die;
-				foreach($sales_items as $line =>  $item)
+                                $total_money = 0;
+                                $total_money_cash = 0;
+				foreach(array_reverse($cart, true) as $line => $item)
 				{
-                                    $total_money +=($item['item_unit_price']*$item['quantity_purchased']-$item['item_unit_price']*$item['quantity_purchased']*$item['discount_percent']/100);
+                                    $total_money +=($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100);
 					$stt ++;
 					 if ($item['name'] != lang('sales_store_account_payment') && $item['name'] != lang('common_discount'))
 					 {
-				 		 $number_of_items_sold = $number_of_items_sold + $item['quantity_purchased'];
+				 		 $number_of_items_sold = $number_of_items_sold + $item['quantity'];
 					 }
 					 
 					$item_number_for_receipt = false;
@@ -248,15 +247,15 @@
                                                 <td><?php echo H($item['product_id']);?></td>
 						<td><?php echo $item['name']; ?><?php if ($item_number_for_receipt){ ?> - <?php echo $item_number_for_receipt; ?><?php } ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
                                                 <td></td>
-                                                <td><?php echo to_quantity(abs($item['quantity_purchased'])); ?></td>
-                                                <td><?php echo to_currency_no_money($item['item_unit_price']); ?></td>
-                                                <td><?php echo to_quantity($item['discount_percent']);?></td>
+                                                <td><?php echo to_quantity(abs($item['quantity'])); ?></td>
+                                                <td><?php echo NumberFormatToCurrency($item['price']); ?></td>
+                                                <td><?php echo to_quantity($item['discount']);?></td>
                                                 <td><?php echo to_quantity($item['tax_included']);?></td>
-                                                <td><?php echo to_currency_no_money($item['item_unit_price']*$item['quantity_purchased']-$item['item_unit_price']*$item['quantity_purchased']*$item['discount_percent']/100); ?></td>
+                                                <td><?php echo NumberFormatToCurrency(abs($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100)); ?></td>
 					</tr>
 					<?php if (!$item['description']=="" ||(isset($item['serialnumber']) && $item['serialnumber'] !="") ) {?>
 					<tr>
-						<td colspan="5">
+						<td colspan="9">
 							<?php if(!$item['description']==""){ ?>
 								<div class="invoice-desc"><?php echo $item['description']; ?></div>
 							<?php } ?>
@@ -268,9 +267,8 @@
 					</tr>
 					<?php } ?>
 				<?php } ?>
-				
 				<tr>
-                                    <td class="border-bottom text-bold" colspan="9"><?php echo lang('common_total_money').': '; echo to_currency_no_money(abs($total_money)); ?></td>
+                                    <td class="border-bottom text-bold" colspan="9"><?php echo lang('common_total_money').': '; echo NumberFormatToCurrency(abs($total_money)); ?></td>
 				</tr>
 				
                                 <?php if ($this->config->item('group_all_taxes_on_receipt')) { ?>
@@ -282,27 +280,39 @@
 				 	}
 					?>
 					<tr>
-						<td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('common_tax').': '; echo to_currency_no_money(abs($total_tax),1); ?></td>
+						<td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('common_tax').': '; echo NumberFormatToCurrency(abs($total_tax),1); ?></td>
 					</tr>
 				<?php }else {?>
 					<?php foreach($taxes as $name=>$value) { ?>
 						<tr>
 							<td class="border-bottom border-top text-bold" colspan="9"><?php echo $name.': '; 
-                                                        echo to_currency_no_money(abs($value),1); ?></td>
+                                                        echo NumberFormatToCurrency(abs($value),1); ?></td>
 						</tr>
 					<?php }; ?>
 				<?php } ?>
                                 
                                 <tr>
-                                    <td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('common_total').': '; echo $this->config->item('round_cash_on_sales') && $is_sale_cash_payment ? to_currency_no_money(round_to_nearest_05($total)) : to_currency_no_money($total); ?></td>
+                                    <td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('common_total').': '; echo $this->config->item('round_cash_on_sales') && $is_sale_cash_payment ? NumberFormatToCurrency(round_to_nearest_05($total)) : NumberFormatToCurrency($total); ?></td>
 				</tr>
 				<?php foreach($payments as $payment_id => $payment) { ?>
 				<tr>
                                     <td colspan="9" class="border-top border-bottom text-bold"><?php if (($is_integrated_credit_sale || sale_has_partial_credit_card_payment()) && ($payment['payment_type'] == lang('common_credit') ||  $payment['payment_type'] == lang('sales_partial_credit'))) { ?>
-						<?php echo $payment['card_issuer']. ': '.$payment['truncated_card'].': '; ?>
+						<?php echo $payment['card_issuer']. ': '.$payment['truncated_card'].': '; 
+                                                $total_money_cash += $payment['truncated_card'];
+                                                ?>
 					<?php } else { ?>
 						<?php $splitpayment=explode(':',$payment['payment_type']); echo $splitpayment[0].': '; ?>
-					<?php }  echo $this->config->item('round_cash_on_sales') && $payment['payment_type'] == lang('common_cash') ? ': '.to_currency_no_money(round_to_nearest_05($payment['payment_amount'])) : to_currency_no_money($payment['payment_amount']); ?></td>
+					<?php }
+                                        if( $this->config->item('round_cash_on_sales') && $payment['payment_type'] == lang('common_cash')) { 
+                                            echo ': '.NumberFormatToCurrency(round_to_nearest_05($payment['payment_amount']));
+                                            $total_money_cash += round_to_nearest_05($payment['payment_amount']);
+                                                
+                                        }
+                                        else {
+                                            $total_money_cash += $payment['payment_amount'];
+                                            echo NumberFormatToCurrency($payment['payment_amount']); 
+                                        }
+                                        ?></td>
 				</tr>
 				<?php } ?>
 
@@ -312,7 +322,7 @@
 						<tr>
 							<td colspan="9" class="border-top border-bottom text-bold"><?php echo lang('sales_giftcard_balance');  
                                                         echo $payment['payment_type'].': ';
-                                                        echo to_currency_no_money($this->Giftcard->get_giftcard_value(end($giftcard_payment_row))); ?></td>
+                                                        echo NumberFormatToCurrency($this->Giftcard->get_giftcard_value(end($giftcard_payment_row))); ?></td>
 						</tr>
 					<?php }?>
 				<?php }?>
@@ -320,12 +330,12 @@
 				<?php if ($amount_change >= 0) {?>
 					<tr>
 						<td colspan="9" class="border-top border-bottom text-bold"><?php echo lang('common_change_due').': '; 
-                                                echo $this->config->item('round_cash_on_sales')  && $is_sale_cash_payment ?  to_currency_no_money(round_to_nearest_05($amount_change)) : to_currency_no_money($amount_change); ?></td>
+                                                echo $this->config->item('round_cash_on_sales')  && $is_sale_cash_payment ?  NumberFormatToCurrency(round_to_nearest_05($amount_change)) : NumberFormatToCurrency($amount_change); ?></td>
 					</tr>
 				<?php } else { ?>
 					<tr>
 						<td colspan="9" class="border-top border-bottom text-bold"><?php echo lang('common_amount_due').': '; 
-                                                echo $this->config->item('round_cash_on_sales')  && $is_sale_cash_payment ?  to_currency_no_money(round_to_nearest_05($amount_change * -1)) : to_currency_no_money($amount_change * -1); ?></td>
+                                                echo $this->config->item('round_cash_on_sales')  && $is_sale_cash_payment ?  NumberFormatToCurrency(round_to_nearest_05($amount_change * -1)) : NumberFormatToCurrency($amount_change * -1); ?></td>
 					</tr>
 				<?php } ?>
 
@@ -361,7 +371,7 @@
 		</table>
 	</div>
 	<div>
-            <p>Số tiền viết bằng chữ: <span><?php echo get_string_number(to_currency_no_money(round_to_nearest_05($amount_change)));?></span></p>
+            <p>Số tiền viết bằng chữ: <span><?php echo getStringNumber(round_to_nearest_05($total_money_cash));?></span></p>
 	</div>
 		<?php if($this->config->item('return_policy')){?>
 		<div id="policy"><?php echo $this->config->item('return_policy'); ?></div>

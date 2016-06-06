@@ -33,6 +33,16 @@
 
 					$(this).attr('href','<?php echo site_url("$controller_name/mailing_labels");?>/'+selected.join('~'));
 				});
+				$('#sendSMS').click(function(){
+					var selected = get_selected_values();
+					if (selected.length == 0 || selected.length >1)
+					{
+						bootbox.alert(<?php echo json_encode(lang('common_must_select_customer_for_sms')); ?>);
+						return false;
+					}
+
+					$(this).attr('href','<?php echo site_url("$controller_name/send_sms");?>/'+selected['0']);
+				});
 		}); 
 </script>
 
@@ -40,6 +50,11 @@
 <div class="manage_buttons">
 <div class="manage-row-options hidden">
 	<div class="email_buttons text-center">
+		<?php if ($controller_name =='customers') { ?>
+		<a class="btn btn-primary btn-lg" title="<?php echo (lang('customers_sms_send_sms'));?>" id="sendSMS" href="<?php echo current_url(). '#'; ?>"  data-toggle="modal" data-target="#myModal">
+			<span class=""><?php echo (lang('customers_sms_send_sms')); ?></span>
+		</a>
+		<?php } ?>
 		<a class="btn btn-primary btn-lg disabled email email_inactive" title="<?php echo lang("common_email");?>" id="email" href="<?php echo current_url(). '#'; ?>" >
 			<span class=""><?php echo lang('common_email'); ?></span>
 		</a>
@@ -98,6 +113,22 @@
 							<i class="ion-android-more-horizontal"></i>
 						</button>
 						<ul class="dropdown-menu" role="menu">
+							<li>
+								<?php if ($controller_name =='customers') {  
+								?>
+								<?php echo anchor("$controller_name/manage_sms/",
+									'<span class="">'.lang('customers_sms_menu_link').'</span>',
+									array('class'=>'hidden-xs','title'=>lang('customers_sms_menu_link')));
+								} ?>
+							</li>
+							<li>
+								<?php if ($controller_name =='customers') {  
+								?>
+								<?php echo anchor("$controller_name/quotes_contract",
+									'<span class="">'.lang('customers_quotes_contract_menu_link').'</span>',
+									array('class'=>'hidden-xs','title'=>lang('customers_quotes_contract_menu_link')));
+								} ?>
+							</li>
 							<li>
 								<?php if ($controller_name =='customers' || $controller_name == 'suppliers') {  
 								?>

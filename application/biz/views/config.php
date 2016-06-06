@@ -1628,6 +1628,34 @@ $this->load->helper('demo');
 				</div>
 			</div>
 		</div>
+                
+                <div class="col-md-12">
+			<div class="panel panel-piluku">
+				<div class="panel-heading">
+					<?php echo lang("config_sms_email"); ?>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">	
+						<?php echo form_label(lang('config_brand_name').' :', 'brand_name',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+						<input type="text" data-index="<?php echo $tier->id; ?>" class="user_sms form-control" name="brand_name" value="<?php echo H($this->config->item('config_brand_name')); ?>" />
+						</div>
+					</div>
+                                    <div class="form-group">	
+						<?php echo form_label(lang('config_user_sms').' :', 'user_sms',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+                                                    <input type="text" data-index="<?php echo $tier->id; ?>" class="user_sms form-control" name="user_sms" value="<?php echo H($this->config->item('config_user_sms')); ?>" />
+						</div>
+					</div>
+                                    <div class="form-group">	
+						<?php echo form_label(lang('config_user_pass').' :', 'user_pass',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+                                                    <input type="password" data-index="<?php echo $tier->id; ?>" class="user_pass form-control" name="user_pass" value="<?php echo H($this->config->item('config_user_pass')); ?>" />
+						</div>
+					</div>
+                                </div>
+                        </div>
+                </div>
 		<?php echo form_close(); ?>	
 	</div>
 </div>

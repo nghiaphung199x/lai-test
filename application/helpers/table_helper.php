@@ -925,4 +925,124 @@ function get_department_data_row($department, $controller = null)
     return $table_data_row;
 }
 
+function get_sms_manage_table($sms, $controller) 
+{
+	$CI = & get_instance();
+		
+	$table = '<table class="tablesorter table table-hover" id="sortable_table">';
+	$headers = array(
+			'<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
+			lang('customers_sms_code'),
+			lang('customers_sms_title'),
+			lang('customers_sms_description'),
+			'&nbsp'
+	);
+	$table.='<thead><tr>';
+
+	$count = 0;
+	foreach ($headers as $header) {
+		$count++;
+
+		if ($count == 1) {
+			$table.="<th class='leftmost'>$header</th>";
+		} elseif ($count == count($headers)) {
+			$table.="<th class='rightmost'>$header</th>";
+		} else {
+			$table.="<th>$header</th>";
+		}
+	}
+	$table.='</tr></thead><tbody>';
+	$table.=get_sms_manage_table_data_rows($sms, $controller);
+	$table.='</tbody></table>';
+	return $table;
+}
+
+function get_sms_manage_table_data_rows($sms, $controller) 
+{
+	$CI = & get_instance();
+	$table_data_rows = '';
+
+	foreach ($sms->result() as $s) {
+		$table_data_rows.=get_sms_data_row($s, $controller);
+	}
+
+	if ($sms->num_rows() == 0) {
+		$table_data_rows.="<tr><td colspan='11'><span class='col-md-12 text-center text-warning' >".lang('customers_sms_none')."</span></td></tr>";
+	}
+	return $table_data_rows;
+}
+
+function get_sms_data_row($sms, $controller) 
+{
+	$CI = & get_instance();
+	$controller_name = str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
+
+	$table_data_row = '<tr>';
+	$table_data_row.="<td><input type='checkbox' id='sms_$sms->id' value='" . $sms->id . "'/><label for='sms_$sms->id'><span></span></label></td>";
+	$table_data_row.="<td>" . $sms->id . "</td>";
+	$table_data_row.='<td>' . H($sms->title) . '</a></td>';
+	$table_data_row.='<td>' . H($sms->message) . '</td>';
+	$table_data_row.='<td class="rightmost">' . anchor($controller_name . "/view_sms/$sms->id/2", lang('common_edit'), array('title' => lang('customers_sms_edit'), 'class' => '')) . '</td>';
+	$table_data_row.='</tr>';
+	return $table_data_row;
+}
+
+function get_quotes_contract_manage_table($quotes_contract, $controller) {
+	$CI = & get_instance();
+	$table = '<table class="tablesorter" id="sortable_table">';
+	$headers = array(
+			'<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
+			lang('customers_quotes_contract_table_code'),
+			lang('customers_quotes_contract_table_title'),
+			lang('customers_quotes_contract_table_type'),
+			'&nbsp'
+	);
+	$table.='<thead><tr>';
+
+	$count = 0;
+	foreach ($headers as $header) {
+		$count++;
+
+		if ($count == 1) {
+			$table.="<th class='leftmost'>$header</th>";
+		} elseif ($count == count($headers)) {
+			$table.="<th class='rightmost'>$header</th>";
+		} else {
+			$table.="<th>$header</th>";
+		}
+	}
+	$table.='</tr></thead><tbody>';
+	$table.=get_quotes_contract_manage_table_data_rows($quotes_contract, $controller);
+	$table.='</tbody></table>';
+	return $table;
+}
+
+function get_quotes_contract_manage_table_data_rows($quotes_contract, $controller) {
+	$CI = & get_instance();
+	$table_data_rows = '';
+
+	foreach ($quotes_contract->result() as $val) {
+		$table_data_rows.=get_quotes_contract_data_row($val, $controller);
+	}
+
+	if ($quotes_contract->num_rows() == 0) {
+		$table_data_rows.="<tr><td colspan='5'><span class='col-md-12 text-center text-warning' >" . lang('customers_quotes_contract_none_data') . "</div></tr></tr>";
+	}
+
+	return $table_data_rows;
+}
+
+function get_quotes_contract_data_row($quotes_contract, $controller) {
+	$CI = & get_instance();
+	$controller_name=str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
+	$table_data_row = '<tr>';
+	$table_data_row .= "<td width='5%'><input type='checkbox' id='person_$quotes_contract->id_quotes_contract' value='" . $quotes_contract->id_quotes_contract . "'/><label for='quotes_contract_$quotes_contract->id_quotes_contract'><span></span></label></td>";
+	$table_data_row .= "<td width='15%'>$quotes_contract->id_quotes_contract</td>";
+	$table_data_row .= "<td width='41%'>$quotes_contract->title_quotes_contract</td>";
+	$table_data_row .= "<td width='35%'>" . ($quotes_contract->cat_quotes_contract == 1 ? lang('customers_quotes_contract_type_contract') : lang('customers_quotes_contract_type_quotes')) . "</td>";
+	$table_data_row .= '<td width="5%" class="rightmost">' . anchor($controller_name . "/quotes_contract_view/$quotes_contract->id_quotes_contract/2", lang('common_edit'), array('title' => lang('customers_quotes_contract_update'), 'class' => '')) . '</td>';
+	$table_data_row.='</tr>';
+	return $table_data_row;
+}
+
 ?>

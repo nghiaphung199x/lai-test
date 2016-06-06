@@ -140,7 +140,7 @@ function to_quantity_abs($val, $show_not_set = TRUE)
 	
 }
 
-function get_string_number($amount)
+function getStringNumber($amount)
 	{
 		 if($amount <=0)
         {
@@ -201,6 +201,28 @@ function get_string_number($amount)
         $textnumber = str_replace("mươi một", "mươi mốt", $textnumber);
         $textnumber = str_replace("mười năm", "mười lăm", $textnumber);
         return ucfirst($textnumber."đồng chẵn");
+}
+
+function NumberFormatToCurrency($number){
+    $number = abs($number);
+    $CI =& get_instance();
+    $decimals_system_decide = true;
+    if ($CI->config->item('number_of_decimals') !== NULL && $CI->config->item('number_of_decimals')!= ''){
+        $decimals = (int)$CI->config->item('number_of_decimals');
+        $decimals_system_decide = false;
+    }
+    $thousands_separator = $CI->config->item('thousands_separator') ? $CI->config->item('thousands_separator') : ',';
+    $decimal_point = $CI->config->item('decimal_point') ? $CI->config->item('decimal_point') : '.';
+    if($number >= 0){
+        $ret = number_format($number, $decimals, $decimal_point, $thousands_separator);
+   }
+   else{
+        $ret = '<span style="white-space:nowrap;">-</span>'.number_format(abs($number), $decimals, $decimal_point, $thousands_separator);
+   }
+    if ($decimals_system_decide && $decimals >=2){
+       return preg_replace('/(?<=\d{2})0+$/', '', $ret);
+    }
+    else  return $ret;
 }
 
 

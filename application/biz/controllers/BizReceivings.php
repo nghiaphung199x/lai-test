@@ -195,6 +195,8 @@ class BizReceivings extends Receivings
 
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['mode']);
+                echo 'mode: '.$data[''];
+                echo '<br/>type: '.$typeOfView;die;
 		$data['pdf_block_html'] = $this->load->view('receivings/partials/' . $typeOfView, $data, TRUE);
 
 		$this->load->view("receivings/receipt",$data);
@@ -202,12 +204,14 @@ class BizReceivings extends Receivings
 
 	protected function 	getTypeOfOrder($mode = '')
 	{
+            echo 'mode: '.$mode;
 		$typeOfView = 'receive';
 		
 		if($mode == 'transfer')
 		{
 			$typeOfView = 'move_inventory';
 		}
+                if($mode =='return')$typeOfView = 'return';
 		return $typeOfView;
 	}
 	

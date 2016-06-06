@@ -7,7 +7,7 @@ class BizCustomers extends Customers
 	function __construct()
 	{
 		parent::__construct();
-
+		$this->lang->load('quotes_contract');
 		if( $this->Employee->has_module_action_permission(
 			$this->module_id,
 			'view_scope_location',
@@ -282,5 +282,379 @@ class BizCustomers extends Customers
 			$person_data['first_name'].' '.$person_data['last_name'],'person_id'=>-1));
 		}
 	}
+	
+	/*
+	 get the width for the add/edit form
+	 */
+	
+	function get_form_width() {
+		return 750;
+	}
+	
+	/**
+	 * SMS Brandname
+	 */
+	function manage_sms() {
+		$config['total_rows'] = $this->Customer->count_all_sms();
+		
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$config['base_url'] = site_url('customers/sorting_sms');
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['controller_name'] = $this->_controller_name;
+		$data['form_width'] = $this->get_form_width();
+		$data['per_page'] = $config['per_page'];
+		$data['total_rows'] = $config['total_rows'];
+		$data['manage_table'] = get_sms_manage_table($this->Customer->get_all_sms($data['per_page']), $this);
+		
+		$this->load->view("customers/manage_sms", $data);
+	}
+	
+	function sorting_sms() {
+		$per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$config['total_rows'] = $this->Customer->count_all_sms();
+		$table_data = $this->Customer->get_all_sms($per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'id', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'DESC');
+	
+		$config['base_url'] = site_url('customers/sorting_sms');
+		$config['per_page'] = $per_page;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['manage_table'] = get_sms_manage_table_data_rows($table_data, $this);
+		$data['total_rows'] = $config['total_rows'];
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
+	}
+	
+	function search_sms() {
+		$this->check_action_permission('search');
+		$search = $this->input->post('search');
+		$per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$search_data = $this->Customer->search_sms($search, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'id', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
+		$config['base_url'] = site_url("customers/search_sms");
+		$config['total_rows'] = $this->Customer->search_count_sms($search);
+		$config['per_page'] = $per_page;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['manage_table'] = get_sms_manage_table_data_rows($search_data, $this);
+		$data['total_rows'] = $config['total_rows'];
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
+	}
+	
+	function view_sms($id = -1,$redirect=0) {
+		$data['info_sms'] = $this->Customer->get_info_sms($id);
+		$data['redirect']= $redirect;
+		$this->load->view("customers/form_sms", $data);
+	}
+	
+	function save_sms($id = -1) {
+		$sms_data = array(
+				'title' => $this->input->post('sms_title'),
+				'message' => $this->input->post('sms_message'),
+				'number_char' => $this->input->post('sms_num_char'),
+				'number_message' => $this->input->post('sms_num_mess'),
+		);
+		$redirect=$this->input->post('redirect');
+		
+		if ($this->Customer->save_sms($sms_data, $id)) {
+			if ($id == -1) {
+				echo (json_encode(array('success' => true, 'message' => lang('customers_sms_msg_new'). ' (' . $sms_data['title'] . ')'. lang('customers_sms_msg_success') .' !', 'id' => $sms_data['id'],'redirect'=> $redirect)));	
+			} else { //previous customer
+				echo (json_encode(array('success' => true, 'message' => lang('customers_sms_msg_update') . ' (' . $sms_data['title'] . ') '. lang('customers_sms_msg_success') .' !', 'id' => $sms_data['id'],'redirect'=> $redirect)));
+			}
+		} else {//failure
+			echo json_encode(array('success' => false, 'message' => lang('customers_sms_msg_error'), 'id' => -1));
+		}
+	}
+	
+	function delete_sms() {
+		$sms_to_delete = $this->input->post('ids');
+		if ($this->Customer->delete_sms_list($sms_to_delete)) {
+			echo json_encode(array('success' => true, 'message' => lang('customers_sms_delete_msg_frs').' ' . count($sms_to_delete) . ' ' . lang('customers_sms_delete_msg_ed')));
+		} else {
+			echo json_encode(array('success' => false, 'message' => lang('customers_sms_delete_error')));
+		}
+	}
+	
+	function suggest_sms() {
+		$suggestions = $this->Customer->get_search_suggestions_sms($this->input->get('term'), 100);
+		echo json_encode($suggestions);
+	}
+	function clear_state_sms()
+	{
+		redirect('customers/manage_sms');
+	}
+	
+	function send_sms() {
+		$sms_to_send = $this->input->post('ids');
+		$data['list_sms'] = $this->Customer->get_all_sms();
+		$this->load->view("customers/send_sms", $data);
+	}
+	
+	function get_number_sms(){
+		$max_id_sms = $this->Customer->get_table_number_sms();
+		$sms = $this->Customer->get_info_id_max_of_table_number_sms($max_id_sms['id']);
+		echo json_encode(array("quantity_sms" => $sms['quantity_sms']));
+	}
+	
+	function do_send_sms()
+	{
+            $check = $this->input->get("type_send");
+		$customer_ids = $this->input->post('customer_ids');
+		$sms_id = $this->input->post('sms_id');
+		$info_sms = $this->Customer->get_info_sms($sms_id);
+		$message = $info_sms->message;
+		
+		$max_id_table_number_sms = $this->Customer->get_table_number_sms();
+		$info_max_id = $this->Customer->get_info_id_max_of_table_number_sms($max_id_table_number_sms['id']);
+		if($info_max_id['quantity_sms'] > 0){
+                    if($check >0){
+                        if(isset($_SESSION['sms_tmp'])&&$_SESSION['sms_tmp'] !=NULL){
+                            foreach ($_SESSION['sms_tmp'] as $person_data) {
+                                $id_cus = $person_data['person_id'];
+                                $number_sms++;
+                                $new_keyword = rand(100000, 999999);
+                                 $new_message = preg_replace('/\[[a-zA-Z]{2,6}\]/', $new_keyword, $message);
+                                $info_cus = $this->Customer->get_info_person_by_id($id_cus);
+                                $mobile = '84' . substr($info_cus['phone_number'], 1, strlen($info_cus['phone_number']));
+
+                                $getdata = http_build_query(array(
+                                                'username' => $this->config->item('config_user_sms'),
+                                                'password' => $this->config->item('config_user_pass'),
+                                                'source_addr' => $this->config->item('config_brand_name'),
+                                                'dest_addr' => $mobile,
+                                                'message' => $new_message,
+                                ));
+                                $opts = array(
+                                                'http' => array(
+                                                                'method' => 'GET',
+                                                                'content' => $getdata
+                                                )
+                                );
+//                                $context = stream_context_create($opts);
+//                                $result = file_get_contents('http://sms.vnet.vn:8082/api/sent?' . $getdata, false, $context);
+                                sleep(1);
+                                echo json_encode(array("success" => true, "message" => 'Đã gửi thành công khác hàng'));
+                                continue;
+                                if ($result) {
+                                        $data_insert = array(
+                                            'id_cus' => $id_cus,
+                                            'mobile' => $mobile,
+                                            'content_message' => $new_message,
+                                            'equals' => $result,
+                                            'date_send' => date('Y-m-d H:i:s'),
+                                        );
+                                        $this->Customer->save_message($data_insert);
+                                        if($result > 0){
+                                                $data_update_table_number_sms = array(
+                                                                'quantity_sms' => ($info_max_id['quantity_sms'] - $info_sms->number_message),
+                                                );
+                                                $this->Customer->update_number_sms($max_id_table_number_sms['id'],$data_update_table_number_sms);
+                                                $this->Customer->update_month_sms($month_data);
+                                        }
+                                        $is_success = true;
+                                }
+                                else echo 'error message';
+                            }
+                        }
+                    }else{
+			foreach ($customer_ids as $id_cus) {
+				$info_cus = $this->Customer->get_info($id_cus);
+				$mobile = '84' . substr($info_cus->phone_number, 1, strlen($info_cus->phone_number));
+				$getdata = http_build_query(array(
+						'username' => $this->config->item('user_sms'),
+						'password' => $this->config->item('pass_sms'),
+						'source_addr' => $this->config->item('brandname'),
+						'dest_addr' => $mobile,
+						'message' => $message,
+				));
+				$opts = array(
+						'http' => array(
+								'method' => 'GET',
+								'content' => $getdata
+						)
+				);
+				$context = stream_context_create($opts);
+				$result = file_get_contents('http://sms.vnet.vn:8082/api/sent?' . $getdata, false, $context);
+				if ($result) {
+					$data_insert = array(
+							'id_cus' => $id_cus,
+							'mobile' => $mobile,
+							'content_message' => $message,
+							'equals' => $result,
+							'date_send' => date('Y-m-d H:i:s'),
+					);
+					$this->Customer->save_message($data_insert);
+					if($result > 0){
+						$data_update_table_number_sms = array(
+								'quantity_sms' => ($info_max_id['quantity_sms'] - $info_sms->number_message),
+						);
+						$this->Customer->update_number_sms($max_id_table_number_sms['id'],$data_update_table_number_sms);
+					}
+					echo json_encode(array("success" => true, "message" => lang('customers_sms_send_sms_success')));
+				} else {
+					echo json_encode(array("success" => false, "message" => lang('customers_sms_send_sms_unsuccess')));
+				}
+			}
+                    }
+		}else{
+			echo json_encode(array("success" => false, "message" => lang('customers_sms_send_sms_not_enough')));
+		}
+		
+	}
+        
+        function manage_sms_tmp(){
+                $config['total_rows'] = count($_SESSION['sms_tmp']);
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$config['base_url'] = site_url('customers/sorting_sms');
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['controller_name'] = $this->_controller_name;
+		$data['form_width'] = $this->get_form_width();
+		$data['per_page'] = $config['per_page'];
+//		$data['manage_table'] = get_sms_manage_table($_SESSION['sms_tmp']['list_person_id'],$this->Customer->get_all_sms_tmp($data['per_page']), $this);
+		$this->load->view("customers/manage_sms_tmp", $data);
+        }
+        
+        function delete_sms_tmp_all(){
+                unset($_SESSION['sms_tmp']);
+                echo json_encode(array('success' => true, 'message' => ' Đã xóa! SMS!'));
+        }
+        
+        function delete_sms_tmp_id(){
+            $sms_to_delete = $this->input->post('ids');
+            if(in_array($sms_to_delete, $_SESSION['sms_tmp'][$sms_to_delete])){
+                unset($_SESSION['sms_tmp'][$sms_to_delete]);
+                echo json_encode(array('success' => true, 'message' => ' Xóa khỏi danh sách tạm thành công!'));
+            }else{
+                echo json_encode(array('success' => false, 'message' => 'Lỗi! Không xóa được, vui lòng thử lại!'));
+            }
+        }
+        
+        function send_sms_list(){
+            $data['list_sms'] = $this->Customer->get_all_sms();
+            $this->load->view("customers/send_sms_list",$data);
+        }
+        
+        function save_list_send_sms($item_ids="") {
+		$item_ids = explode('~', $item_ids);
+//                var_dump($item_ids);die;
+		foreach ($item_ids as $item) {
+			$info_cus = $this->Customer->get_info_person_by_id($item);
+			if (isset($_SESSION['sms_tmp'][$item])) {
+                            echo '1';
+				continue;
+			} else {
+                            echo '2';
+				$_SESSION['sms_tmp'][$info_cus['person_id']] = array(
+						'person_id' => $item,
+						'name' => $info_cus['first_name'] . " " . $info_cus['last_name'],
+						'phone_number' => $info_cus['phone_number'],
+				);
+			}
+		}
+		redirect('customers');
+	}
+	
+	function quotes_contract()
+	{
+		$config['base_url'] = site_url('customers/quotes_contract_sorting');
+		$config['total_rows'] = $this->Customer->count_all_quotes_contract();
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['controller_name'] = $this->_controller_name;
+		$data['per_page'] = $config['per_page'];
+		$data['total_rows'] = $config['total_rows'];
+		
+		$data['manage_table'] = get_quotes_contract_manage_table($this->Customer->get_all_quotes_contract($data['per_page']), $this);
+		$this->load->view('customers/manage_quotes_contract', $data);
+	}
+	
+	function quotes_contract_sorting()
+	{
+		$this->check_action_permission('search');
+		$search = $this->input->post('search');
+		$cat = $this->input->post('cat');
+		$per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		if ($search || $cat) {
+			$config['total_rows'] = $this->Customer->search_count_all_quotes_contract($search, $cat);
+			$table_data = $this->Customer->search_quotes_contract($search, $cat, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'id_quotes_contract', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
+		} else {
+			$config['total_rows'] = $this->Customer->count_all_quotes_contract();
+			$table_data = $this->Customer->get_all_quotes_contract($per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'id_quotes_contract', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
+		}
+		$config['base_url'] = site_url('customers/quotes_contract_sorting');
+		$config['per_page'] = $per_page;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['manage_table'] = get_quotes_contract_manage_table_data_rows($table_data, $this);
+		$data['total_rows'] = $config['total_rows'];
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
+	}
+	
+	function quotes_contract_delete() {
+		$this->check_action_permission('delete');
+		$id = $this->input->post("ids");
+		if ($this->Customer->delete_list_quotes_contract($id)) {
+			echo json_encode(array('success' => true, 'message' => lang('common_delete_success'). ' ' . count($id) . '' . lang('customers_quotes_contract_menu_link') ));
+		} else {
+			echo json_encode(array('success' => false, 'message' => lang('common_error')));
+		}
+	}
+	
+	function clear_state_quotes_contract()
+	{
+		redirect('customers/quotes_contract');
+	}
+	
+	function quotes_contract_search() {
+		$this->check_action_permission('search');
+		$search = $this->input->post('search');
+		$cat = $this->input->post('cat');
+		$per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$search_data = $this->Customer->search_quotes_contract($search, $cat, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'id_quotes_contract', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
+		$config['base_url'] = site_url('quotes_contract/search');
+		$config['total_rows'] = $this->Customer->search_count_all_quotes_contract($search, $cat);
+		$config['per_page'] = $per_page;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['total_rows'] = $config['total_rows'];
+		$data['manage_table'] = get_quotes_contract_manage_table_data_rows($search_data, $this);
+	
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
+	}
+	
+	function quotes_contract_view($id = -1) {
+		$this->check_action_permission('add_update');
+		$data = array();
+		$data['info_quotes_contract'] = $this->Customer->get_info_quotes_contract($id);
+		$this->load->view("customers/form_quotes_contract", $data);
+	}
+	
+	function quotes_contract_save($id = -1) {
+		$title = $this->input->post("title_quotes_contract");
+		$cat = $this->input->post("cat_quotes_contract");
+		$content = $this->input->post("content_quotes_contract");
+		$data = array(
+				"title_quotes_contract" => $title,
+				"content_quotes_contract" => $content,
+				"cat_quotes_contract" => $cat
+		);
+		
+		if ($this->Customer->save_quotes_contract($data, $id)) {
+			if ($id == -1) {
+				echo json_encode(array('success' => true, 'message' => lang('common_add_success'), 'id' => $title));
+			} else { //previous item
+				echo json_encode(array('success' => true, 'message' => lang('common_update_success'), 'id' => $title));
+			}
+		} else {//failure
+			echo json_encode(array('success' => false, 'message' => lang('common_error')));
+		}
+	}
+	
+	function quotes_contract_suggest() {
+		$suggestions = $this->Customer->get_search_suggestions_quotes_contract($this->input->get('term'), 100);
+		echo json_encode($suggestions);
+	}
+        
 }
 ?>
