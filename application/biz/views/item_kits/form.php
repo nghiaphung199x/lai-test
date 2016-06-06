@@ -65,7 +65,7 @@
 						$measuresBox = array();
 						$measures = $this->Measure->getAvailableMeasuresByItemId($item_kit_item->item_id);
 						if( empty($measures) ) {
-							$measuresBox['-1'] = 'Chưa thiết lập';
+							$measuresBox['-1'] = lang('common_not_set');
 						} else {
 							foreach ($measures as $measure) {
 								$measuresBox[$measure['id']] = $measure['name'];

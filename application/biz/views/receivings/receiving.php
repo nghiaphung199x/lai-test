@@ -132,7 +132,7 @@
 								</td>
 								
 								<td class="text-center">
-										<a href="#" class="measure_item" id="measure_<?php echo $line; ?>" class="xeditable" data-type="select"  data-validate-number="true"  data-value="<?php echo $item['measure_id']; ?>" data-pk="2" data-source="<?php echo site_url("items/measures/" . $item['item_id']);?>" data-name="measure" data-url="<?php echo site_url('receivings/edit_item/'.$line); ?>" data-title="<?php echo lang('common_measure') ?>"><?php echo $item['measure']; ?></a>
+										<a id="measure_<?php echo $line; ?>" class="measure_item <?php echo empty($item['measure_id']) ? 'editable-disabled' : 'xeditable'; ?>" data-type="select"  data-validate-number="true"  data-value="<?php echo $item['measure_id']; ?>" data-pk="2" data-source="<?php echo site_url("items/measures/" . $item['item_id']);?>" data-name="measure" data-url="<?php echo site_url('receivings/edit_item/'.$line); ?>" data-title="<?php echo lang('common_measure') ?>"><?php echo $item['measure']; ?></a>
 								</td>
 																
 								<td class="text-center">
@@ -729,7 +729,7 @@ $(document).ready(function()
 		}
     });
 
-    $('.measure_item').editable({
+    $('.measure_item .xeditable').editable({
     	success: function(response, newValue) {
 			 last_focused_id = $(this).attr('id');
 			 $("#register_container").html(response);

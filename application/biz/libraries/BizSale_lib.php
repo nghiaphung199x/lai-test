@@ -153,7 +153,7 @@ class BizSale_lib extends Sale_lib
 			'is_serialized'=>$item_info->is_serialized,
 			'quantity'=>$quantity,
 			'measure_id'=>$item_info->measure_id,
-			'measure' => !empty($measure) ? $measure->name : 'Chua thiet lap',
+			'measure' => !empty($measure) ? $measure->name : lang('common_not_set'),
 			'cur_quantity' => $item_location_info->quantity,
         	 'discount'=>$discount,
 			'price'=>$price!=null ? $price:$price_to_use,
