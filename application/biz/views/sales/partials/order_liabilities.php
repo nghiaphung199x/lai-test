@@ -1,6 +1,6 @@
 <style type="text/css">
 	#pdf_content {
-		width: 70%;
+		width: 700px;
 		display: block;
 		overflow: hidden;
 		position: relative;
@@ -165,19 +165,18 @@
                 
 		<p>Họ tên khách hàng: <?php if ($customer) { ?> <span><?php echo $customer; ?></span> <?php } ?></p>
                 <p>Địa chỉ: <?php if ($customer_address_1) { ?> <span><?php echo $customer_address_1; ?></span> <?php } ?></p>
-                <p>Tiền khách đưa:<span>  <?php echo $this->config->item('round_cash_on_sales') && $is_sale_cash_payment ? to_currency_no_money(round_to_nearest_05($total)) : to_currency_no_money($total); ?>VNĐ</span> </p>
+                <p>Tiền khách đưa:<span>  <?php echo $this->config->item('round_cash_on_sales') && $is_sale_cash_payment ? to_currency_abs(round_to_nearest_05($total)) : to_currency_abs($total); ?></span> </p>
                 
 		<p>Tổng tiền còn nợ:<span><?php
                 if (isset($customer_balance_for_sale) && $customer_balance_for_sale !== FALSE && !$this->config->item('hide_store_account_balance_on_receipt')) {?>
-
-                          <?php echo to_currency_abs($customer_balance_for_sale); 
-                                              ?>
-            <?php } ?>
-                    </span>  </p>
+                    <?php echo to_currency_abs($customer_balance_for_sale);?>
+                <?php } ?>
+                    </span>  
+                </p>
 	</div>	
 	
 	<div>
-            <p>Số tiền viết bằng chữ: <span><?php echo get_string_number(to_currency_no_money(round_to_nearest_05($amount_change)));?></span></p>
+            <p>Số tiền viết bằng chữ: <span><?php echo getStringNumber(round_to_nearest_05($total));?></span></p>
 	</div>
 		<div id="policy"><?php echo $this->config->item('return_policy'); ?></div>
                 <div style="text-align: center;">
@@ -191,23 +190,23 @@
 	<div id="pdf_signature" class="w100 clb">
 		<div class="w20 fl">
 			<p><lable>Người lập phiếu</lable></p>
-			<p class="fontI">(ký, họ tên)<p>
+			<p class="fontI">(ký, họ tên)</p>
 		</div>
 		<div class="w20 fl">
 			<p><lable>Người nhận hàng</lable></p>
-			<p class="fontI">(ký, họ tên)<p>
+			<p class="fontI">(ký, họ tên)</p>
 		</div>
 		<div class="w20 fl">
 			<p><lable>Thủ kho</lable></p>
-			<p class="fontI">(ký, họ tên)<p>
+			<p class="fontI">(ký, họ tên)</p>
 		</div>
 		<div class="w20 fl">
 			<p><lable>Kế toán trưởng</lable></p>
-			<p class="fontI">(ký, họ tên)<p>
+			<p class="fontI">(ký, họ tên)</p>
 		</div>
 		<div class="w20 fl">
 			<p><lable>Giám đốc</lable></p>
-			<p class="fontI">(ký, họ tên)<p>
+			<p class="fontI">(ký, họ tên)</p>
 		</div>
 	</div>
 	<div id="pdf_footer" class="w100 clb">

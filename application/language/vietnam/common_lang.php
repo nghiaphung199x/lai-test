@@ -392,4 +392,10 @@ $lang['common_measure_converted'] = 'Đơn vị quy đổi';
 $lang['common_measure_converted_qty'] = 'Số lượng quy đổi';
 $lang['common_measure_converted_cost_percentage'] = 'Giá vốn sau khi quy đổi (%)';
 $lang['common_measure_converted_unit_percentage'] = 'Giá bán sau khi quy đổi (%)';
+
+$lang['common_delete_success'] = 'Đã xóa thành công';
+$lang['common_update_success'] = 'Đã cập nhật thành công';
+$lang['common_add_success'] = 'Đã thêm mới thành công';
+$lang['common_error'] = 'Lỗi ! Vui lòng kiểm tra lại';
+
 ?>

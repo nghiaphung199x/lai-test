@@ -185,7 +185,7 @@
 	</div>	
 	
 	<div>
-            <p>Số tiền viết bằng chữ: <span><?php echo get_string_number(to_currency_no_money(round_to_nearest_05($amount_change)));?></span></p>
+            <p>Số tiền viết bằng chữ: <span><?php echo getStringNumber(round_to_nearest_05($total));?></span></p>
 	</div>
     <?php if($this->config->item('return_policy')){?>
 		<div id="policy"><?php echo $this->config->item('return_policy'); ?></div>
