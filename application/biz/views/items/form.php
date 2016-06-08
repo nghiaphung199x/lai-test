@@ -1034,7 +1034,8 @@
 								<?php echo form_input(array(
 									'name'=>'measure_converted['. ($key + 1) .'][qty]',
 									'class'=>'form-control form-inps qty_converted',
-									'value'=> $measure_converted['qty_converted'])
+									'value'=> $measure_converted['qty_converted'],
+									'onchange'=>"measureCostConverted(this); measureUnitConverted(this);")
 								);?>
 							</div>
 						</div>
@@ -1044,7 +1045,7 @@
 							<div class="col-sm-9 col-md-9 col-lg-10">
 								<?php echo form_input(array(
 									'name'=>'measure_converted['. ($key + 1) .'][cost_price]',
-									'class'=>'form-control form-inps',
+									'class'=>'form-control form-inps percent_cost',
 									'value'=> $measure_converted['cost_price_percentage_converted'], 
 									'onchange' => 'measureCostConverted(this)'
 								));?>
@@ -1058,7 +1059,7 @@
 							<div class="col-sm-9 col-md-9 col-lg-10">
 								<?php echo form_input(array(
 									'name'=>'measure_converted['. ($key + 1) .'][unit_price]',
-									'class'=>'form-control form-inps',
+									'class'=>'form-control form-inps percent_price',
 									'value'=> $measure_converted['unit_price_percentage_converted'],
 									'onchange'=>"measureUnitConverted(this)"
 								));?>
@@ -1326,15 +1327,19 @@ function calculate_margin_price()
 }
 
 function measureUnitConverted(element){
+	var measureItem = $(element).closest('.measure_item');
 	var qtyConverted = $(element).closest('.measure_item').find('.qty_converted').val();
-	var number = Number(parseFloat($(element).val()) * qtyConverted * parseFloat($('#unit_price').val()) / 100).toLocaleString('en');
-	$(element).closest('.form-group').find('.unit_converted').html('('+ number +')');
+	var percentPrice = parseFloat($(measureItem).find('.percent_price').val());
+	var number = Number(percentPrice * qtyConverted * parseFloat($('#unit_price').val()) / 100).toLocaleString('en');
+	$(measureItem).find('.unit_converted').html('('+ number +')');
 }
 
 function measureCostConverted(element){
-	var qtyConverted = $(element).closest('.measure_item').find('.qty_converted').val();
-	var number = Number(parseFloat($(element).val()) * qtyConverted * parseFloat($('#cost_price').val()) / 100).toLocaleString('en');
-	$(element).closest('.form-group').find('.cost_converted').html('('+ number +')');
+	var measureItem = $(element).closest('.measure_item');
+	var qtyConverted = $(measureItem).find('.qty_converted').val();
+	var percentCost = parseFloat($(measureItem).find('.percent_cost').val());
+	var number = Number(percentCost * qtyConverted * parseFloat($('#cost_price').val()) / 100).toLocaleString('en');
+	$(measureItem).find('.cost_converted').html('('+ number +')');
 }
 
 
@@ -1732,7 +1737,7 @@ function cancelItemAddingFromSaleOrRecv()
 			<?php echo form_input(array(
 				'name'=>'measure_converted[___INDEX___][qty]',
 				'class'=>'form-control form-inps qty_converted',
-				'value'=> '')
+				'value'=> '', 'onchange'=>"measureCostConverted(this); measureUnitConverted(this);")
 			);?>
 		</div>
 	</div>
@@ -1742,7 +1747,7 @@ function cancelItemAddingFromSaleOrRecv()
 		<div class="col-sm-9 col-md-9 col-lg-10">
 			<?php echo form_input(array(
 				'name'=>'measure_converted[___INDEX___][cost_price]',
-				'class'=>'form-control form-inps',
+				'class'=>'form-control form-inps percent_cost',
 				'value'=> '100',
 				'onchange'=>"measureCostConverted(this)"
 			));?>
@@ -1755,7 +1760,7 @@ function cancelItemAddingFromSaleOrRecv()
 		<div class="col-sm-9 col-md-9 col-lg-10">
 			<?php echo form_input(array(
 				'name'=>'measure_converted[___INDEX___][unit_price]',
-				'class'=>'form-control form-inps',
+				'class'=>'form-control form-inps percent_price',
 				'value'=> '100',
 				'onchange'=>"measureUnitConverted(this)"
 			));?>

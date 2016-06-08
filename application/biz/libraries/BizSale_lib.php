@@ -128,12 +128,23 @@ class BizSale_lib extends Sale_lib
 
 		$today =  strtotime(date('Y-m-d'));
 		$price_to_use= $this->get_price_for_item($item_id);		
-		  		 
-  		$item_info = $this->CI->Item->get_info($item_id);
-  		$item_location_info = $this->CI->Item_location->get_info($item_id);
-		
-  		$measure = $this->CI->Measure->getInfo($item_info->measure_id);
-  		
+
+		$item_info = $this->CI->Item->get_info($item_id);
+		$item_location_info = $this->CI->Item_location->get_info($item_id);
+		$measure = $this->CI->Measure->getInfo($item_info->measure_id);
+
+		$saleId = $this->get_change_sale_id();
+		if ($saleId) {
+			$measureOnSale = $this->CI->Sale->getMeasureOnSaleItem($saleId, $item_id);
+			if($measureOnSale) {
+				$quantity = $measureOnSale->measure_qty;
+				if($measureOnSale->id != $measure->id) {
+					$price = $this->getPriceByMeasureConverted($item_id, (int) $measureOnSale->measure_id);
+				}
+				$measure = $measureOnSale;
+			}
+		}
+
 		$cost_price_to_use = ($item_location_info && $item_location_info->cost_price) ? $item_location_info->cost_price : $item_info->cost_price;
 				 
 		//array/cart records are identified by $insertkey and item_id is just another field.
@@ -152,10 +163,10 @@ class BizSale_lib extends Sale_lib
 			'allow_alt_description'=>$item_info->allow_alt_description,
 			'is_serialized'=>$item_info->is_serialized,
 			'quantity'=>$quantity,
-			'measure_id'=>$item_info->measure_id,
+			'measure_id'=>$measure->id,
 			'measure' => !empty($measure) ? $measure->name : lang('common_not_set'),
 			'cur_quantity' => $item_location_info->quantity,
-        	 'discount'=>$discount,
+			'discount'=>$discount,
 			'price'=>$price!=null ? $price:$price_to_use,
 			'tax_included'=> $item_info->tax_included,
 			)
