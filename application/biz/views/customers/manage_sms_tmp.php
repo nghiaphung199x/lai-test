@@ -2,14 +2,13 @@
 <script type="text/javascript">
 $(document).ready(function (){
     var table_columns = ["", "id", 'title','', ''];
-    enable_sorting("<?php echo site_url("$controller_name/sorting_sms"); ?>", table_columns, <?php echo $per_page; ?>);
     enable_select_all();
     enable_checkboxes();
     enable_row_selection();
 	enable_search('<?php echo site_url("$controller_name/suggest_sms");?>',<?php echo json_encode(lang("common_confirm_search"));?>);
     enable_delete(<?php echo json_encode('Bạn muốn xóa SMS này?'); ?>,<?php echo json_encode(lang($controller_name . "_none_selected")); ?>);
         $(".delete_sms_tmp").click(function(){
-        var id = $(this).attr("id");
+        var id = $(this).attr("data-id");
         var parent = $(this).parent().parent();
         var data = "ids=" + id;
         $.ajax({
@@ -57,18 +56,6 @@ $('.delete_all_sms_tmp').click(function(){
 			</form>	
 			
 		</div>
-		<div class="col-md-7">	
-			<div class="buttons-list">
-				<div class="pull-right-btn">
-					<?php if ($this->Employee->has_module_action_permission($controller_name, 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
-					<?php echo anchor("$controller_name/view_sms/-1/",
-						'<span class="">'.lang('customers_sms_new').'</span>',
-						array('id' => 'new-person-btn', 'class'=>'btn btn-primary btn-lg', 'title'=>lang('customers_sms_new')));
-					}	
-					?>
-				</div>
-			</div>				
-		</div>
 	</div>
 </div>
 <div class="container-fluid">
@@ -86,63 +73,6 @@ $('.delete_all_sms_tmp').click(function(){
 					<?php }  ?>    
 				</div>
 				</h3>
-                            <table class="mytable table_sms" cellspacing="0" style="width: 100%; margin: 0px !important;">
-                                     <thead>
-                                        <tr>
-                                            <th><input type='checkbox' id='sms_all' value=' '/><label for='sms_all'><span></span></label></th>
-                                            <th>Tên KH</th>
-                                            <th>Di động</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                <?php
-                                if(isset($_SESSION['sms_tmp']) && $_SESSION['sms_tmp']!=NULL){
-                                ?>
-                                    <tbody>
-                                        <?php
-                                        foreach ($_SESSION['sms_tmp'] as $value){
-                                            $i++;
-                                        ?>
-                                        <tr><td><input type='checkbox' id='sms_<?php echo $value['person_id'];?>' value=' '/><label for='sms_<?php echo $value['person_id'];?>'><span></span></label></td>
-                                            <td ><?php echo $value['name'];?></td>
-                                            <td ><?php echo $value['phone_number']?></td>
-                                            <td >
-                                                <a class="delete_sms_tmp a-menu" id="<?php echo $value['person_id'];?>">Xóa</a>
-                                            </td>
-                                        </tr>
-                                        <?php
-                                        }
-                                        ?>
-                                        <tr>
-                                            <td colspan="2">
-                                                <?php echo anchor("$controller_name/send_sms_list",
-                                                    'Gửi SMS',
-                                                    array(
-                                                        'class' => 'bulk_edit_inactive submit_button float_right', 
-                                                        'id'    =>'sendsms_list', 
-                                                        'title' =>'Gửi SMS',
-                                                        'style' => 'width: 50px !important;',
-                                                        'data-toggle'=> "modal",
-                                                        'data-target'=>"#myModal"
-                                                    ));
-//                                                ?>
-<!--                                                <a class="btn btn-primary btn-lg" title="<?php //echo (lang('customers_sms_send_sms'));?>" id="sendSMS" href="<?php echo current_url(). '#'; ?>"  data-toggle="modal" data-target="#myModal">
-                                                    <span class=""><?php //echo (lang('customers_sms_send_sms')); ?></span>
-                                                </a>-->
-                                            </td>
-                                            <td>
-                                                <a style="width: 65px !important;" class="delete_all_sms_tmp a-menu" id="0">Xóa tất cả</a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                <?php
-                                }else{
-                                    echo "<tr>";
-                                        echo "<td colspan='3' style='text-align: center'>Không có khách hàng nào</td>";
-                                    echo "</tr>";
-                                }
-                                ?>
-                                </table>
 			</div>
 			<div class="panel-body nopadding table_holder table-responsive" >
 				<?php echo $manage_table; ?>			
