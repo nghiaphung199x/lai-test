@@ -1,0 +1,2 @@
+ALTER TABLE `phppos_modules`
+ADD `main_menu` TINYINT(1) UNSIGNED NOT NULL DEFAULT '1';
