@@ -157,9 +157,13 @@ class BizConfig extends Config
 			'disable_quick_edit' => $this->input->post('disable_quick_edit')  ? 1 : 0,
 
 			'config_sales_receipt_pdf_size' => $this->input->post('config_sales_receipt_pdf_size'),
-                        'config_brand_name'=>   $this->input->post('brand_name'),
-                        'config_user_sms'=>   $this->input->post('user_sms'),
-                        'config_user_pass'=>   $this->input->post('user_pass'),
+			
+			'config_sms_brand_name'=>   $this->input->post('sms_brand_name'),
+			'config_sms_user'=>   $this->input->post('sms_user'),
+			'config_sms_pass'=>   $this->input->post('sms_pass'),
+			'config_sms_pass'=>   $this->input->post('sms_pass'),
+			'config_email_account' => $this->input->post('email_account'),
+			'config_email_pass' => $this->input->post('email_pass'),
 		);
 	
 		

@@ -24,123 +24,6 @@ class BizSales extends Sales
 		$this->_reload(array(), false);
 	}
 
-	function edit_item($line)
-	{
-		$data= array();
-	
-		$this->form_validation->set_rules('price', 'lang:common_price', 'numeric');
-		$this->form_validation->set_rules('cost_price', 'lang:common_price', 'numeric');
-		$this->form_validation->set_rules('quantity', 'lang:common_quantity', 'numeric');
-		$this->form_validation->set_rules('discount', 'lang:common_discount_percent', 'numeric');
-	
-		if($this->input->post("name"))
-		{
-			$variable = $this->input->post("name");
-			$$variable = $this->input->post("value");
-		}
-	
-		if (isset($discount) && $discount !== NULL && $discount == '')
-		{
-			$discount = 0;
-		}
-	
-		$can_edit = TRUE;
-	
-		if ($this->form_validation->run() != FALSE)
-		{
-			if ($this->config->item('do_not_allow_out_of_stock_items_to_be_sold'))
-			{
-				if (isset($quantity) && $this->sale_lib->is_kit_or_item($line) == 'item')
-				{
-					$current_item_id = $this->sale_lib->get_item_id($line);
-					$before_quantity = $this->sale_lib->get_quantity_at_line($line);
-						
-					if ($this->sale_lib->will_be_out_of_stock($current_item_id, isset($quantity) ? $quantity - $before_quantity : 0))
-					{
-						$can_edit = FALSE;
-					}
-				}
-				elseif (isset($quantity) && $this->sale_lib->is_kit_or_item($line) == 'kit')
-				{
-					$current_item_kit_id = $this->sale_lib->get_kit_id($line);
-					$before_quantity = $this->sale_lib->get_quantity_at_line($line);
-						
-					if ($this->sale_lib->will_be_out_of_stock_kit($current_item_kit_id, isset($quantity) ? $quantity - $before_quantity : 0))
-					{
-						$can_edit = FALSE;
-					}
-				}
-	
-				if (!$can_edit)
-				{
-					$data['error']=lang('sales_unable_to_add_item_out_of_stock');
-				}
-			}
-		}
-		else
-		{
-			$can_edit = FALSE;
-			$data['error']=lang('sales_error_editing_item');
-		}
-	
-		if($this->sale_lib->is_kit_or_item($line) == 'item')
-		{
-			if($this->sale_lib->out_of_stock($this->sale_lib->get_item_id($line)))
-			{
-				$data['warning'] = lang('sales_quantity_less_than_zero');
-			}
-				
-			if ($this->sale_lib->below_cost_price_item($line, isset($price) ? $price : NULL, isset($discount) ? $discount : NULL, isset($cost_price)  ? $cost_price : NULL))
-			{
-				if ($this->config->item('do_not_allow_below_cost'))
-				{
-					$can_edit = FALSE;
-					$data['error'] = lang('sales_selling_item_below_cost');
-				}
-				else
-				{
-					$data['warning'] = lang('sales_selling_item_below_cost');
-				}
-			}
-		}
-		elseif($this->sale_lib->is_kit_or_item($line) == 'kit')
-		{
-			if($this->sale_lib->out_of_stock_kit($this->sale_lib->get_kit_id($line)))
-			{
-				$data['warning'] = lang('sales_quantity_less_than_zero');
-			}
-	
-			if ($this->sale_lib->below_cost_price_item($line, isset($price) ? $price : NULL, isset($discount) ? $discount : NULL, isset($cost_price)  ? $cost_price : NULL))
-			{
-				if ($this->config->item('do_not_allow_below_cost'))
-				{
-					$can_edit = FALSE;
-					$data['error'] = lang('sales_selling_item_below_cost');
-				}
-				else
-				{
-					$data['warning'] = lang('sales_selling_item_below_cost');
-				}
-			}
-		}
-	
-		if ($can_edit)
-		{
-			$this->sale_lib->edit_item(
-				$line,
-				isset($description) ? $description : NULL,
-				isset($serialnumber) ? $serialnumber : NULL, 
-				isset($quantity) ? $quantity : NULL,
-				isset($discount) ? $discount : NULL,
-				isset($price) ? $price: NULL,
-				isset($cost_price) ? $cost_price: NULL,
-				isset($measure) ? $measure: NULL
-			);
-		}
-	
-		$this->_reload($data);
-	}
-	
 	function complete()
 	{
 		$this->load->helper('sale');
@@ -245,7 +128,7 @@ class BizSales extends Sales
 			$data['change_sale_date'] = date('Y-m-d H:i:s');
 		}
 		
-		 
+
 		$data['store_account_payment'] = ($sale_mode = $this->sale_lib->get_mode()) == 'store_account_payment' ? 1 : 0;
 		
 		//SAVE sale to database
@@ -360,8 +243,8 @@ class BizSales extends Sales
 		{
 			$this->sale_lib->clear_all();
 		}
-		 if($sale_mode=='sale')$data['type']='1';
-		 elseif($sale_mode=='return')$data['type']='0';
+                if($sale_mode=='sale')$data['type']='1';
+                elseif($sale_mode=='return')$data['type']='0';
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['payments'], $sale_mode);
 		$data['pdf_block_html'] = $this->load->view('sales/partials/' . $typeOfView, $data, TRUE);
@@ -594,6 +477,72 @@ class BizSales extends Sales
 		{
 			$this->_reload(array('success' => lang('sales_successfully_suspended_sale')));
 		}
+	}
+	function suspended()
+	{
+		$data = array();
+		$data['suspended_sales'] = $this->Sale->get_all_suspended();
+		$this->load->view('sales/suspended', $data);
+	}
+	
+	function sales_quotes($sale_id) 
+	{
+		$data = array();
+		$data['sale_id'] = $sale_id;
+		$data['quotes'] = $this->Customer->get_list_template_quotes_contract(2);
+		$this->load->view('sales/sales_quotes', $data);
+	}
+	
+	function do_make_quotes($sale_id) {
+		$id_quotes_contract = $this->input->post("sales_quotes_template");
+		$data['info_quotes_contract'] = $this->Customer->get_info_quotes_contract($id_quotes_contract);
+		$data['is_sale'] = FALSE;
+		$sale_info = $this->Sale->get_info($sale_id)->row_array();
+		$this->sale_lib->copy_entire_sale($sale_id);
+		$data['cart'] = $this->sale_lib->get_cart();
+		$data['payments'] = $this->sale_lib->get_payments();
+		$data['subtotal'] = $this->sale_lib->get_subtotal();
+		$data['taxes'] = $this->sale_lib->get_taxes($sale_id);
+		$data['total'] = $this->sale_lib->get_total($sale_id);
+		$data['receipt_title'] = lang('sales_receipt');
+		$data['comment'] = $this->Sale->get_comment($sale_id);
+		$data['show_comment_on_receipt'] = $this->Sale->get_comment_on_receipt($sale_id);
+		$data['transaction_time'] = date(get_date_format() . ' ' . get_time_format(), strtotime($sale_info['sale_time']));
+		$customer_id = $this->sale_lib->get_customer();
+		$emp_info = $this->Employee->get_info($sale_info['employee_id']);
+// 		$info_empss = $this->Employee->get_info($sale_info['employees_id']);
+// 		$data['employees_id'] = $info_empss->first_name . ' ' . $info_empss->last_name;
+// 		$data['phone_number1'] = $info_empss->phone_number;
+// 		$data['email1'] = $info_empss->email;
+		$data['payment_type'] = $sale_info['payment_type'];
+		$data['amount_change'] = $this->sale_lib->get_amount_due($sale_id) * -1;
+		$data['employee'] = $emp_info->first_name . ' ' . $emp_info->last_name;
+		$data['phone_number'] = $emp_info->phone_number;
+		$data['email'] = $emp_info->email;
+		$data['ref_no'] = $sale_info['cc_ref_no'];
+		$this->load->helper('string');
+		$data['payment_type'] = str_replace(array('<sup>VNĐ</sup><br />', ''), ' .VNĐ', $sale_info['payment_type']);
+		$data['amount_due'] = $this->sale_lib->get_amount_due();
+		
+		if ($customer_id != -1) {
+			$cust_info = $this->Customer->get_info($customer_id);
+			$data['customer'] = $cust_info->first_name . ' ' . $cust_info->last_name;
+			$data['cus_name'] = $cust_info->company_name == '' ? '' : $cust_info->company_name;
+			$data['code_tax'] = $cust_info->code_tax ? $cust_info->code_tax : '';
+			$data['address'] = $cust_info->address_1;
+			$data['account_number'] = $cust_info->account_number;
+		}
+		$data['sale_id'] = $sale_id;
+		$word = $this->input->post('sales_quotes_formality');
+		$cat_baogia = $this->input->post("sales_quotes_type");
+		$data['word'] = $word;
+		$data['cat_baogia'] = $cat_baogia;
+		if ($word == 0) {
+			$this->load->view("sales/report_quotes", $data);
+		} else {
+			
+		}
+		$this->sale_lib->clear_all();
 	}
 }
 ?>
