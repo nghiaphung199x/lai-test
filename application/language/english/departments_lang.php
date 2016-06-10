@@ -1,5 +1,5 @@
 <?php
-
+$lang['departments_manage'] = 'Manage Departments';
 $lang['departments_new'] = 'New Department';
 $lang['departments_update'] = 'Update Department';
 $lang['departments_confirm_delete'] = 'Are you sure you want to delete the selected departments?';

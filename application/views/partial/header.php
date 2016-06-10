@@ -178,6 +178,7 @@
 						<span class="text"><?php echo lang('common_dashboard'); ?></span>
 					</a></li>
 				<?php foreach($all_allowed_modules as $module) { ?>
+                    <?php if (empty($module->main_menu)) continue; ?>
 					<li <?php echo $module->module_id==$this->uri->segment(1)  ? 'class="active"' : ''; ?>>
 						<a tabindex = "-1" href="<?php echo site_url("$module->module_id");?>"  class="waves-effect waves-light">
 							<i class="icon ti-<?php echo $module->icon; ?>"></i>

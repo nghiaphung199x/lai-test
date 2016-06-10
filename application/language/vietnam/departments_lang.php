@@ -1,5 +1,5 @@
 <?php
-
+$lang['departments_manage'] = 'Quản lý phòng ban';
 $lang['departments_new'] = 'Tạo phòng ban mới';
 $lang['departments_update'] = 'Sửa thông tin phòng ban';
 $lang['departments_confirm_delete'] = 'Bạn có chắc chắn bạn muốn xóa các phòng ban được chọn?';

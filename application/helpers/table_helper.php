@@ -855,6 +855,7 @@ function get_departments_manage_table( $departments, $controller )
     $headers = array('<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
         'ID',
         lang('common_name'),
+        lang('common_employee'),
         lang('common_description'),
         '&nbsp;',
     );
@@ -893,6 +894,11 @@ function get_departments_manage_table_data_rows( $departments, $controller )
 
     foreach($departments->result() as $department)
     {
+        foreach ($departments->employees as $key => $department_employees) {
+            if ($department->department_id == $key) {
+                $department->employees = $department_employees;
+            }
+        }
         $table_data_rows .= get_department_data_row( $department, $controller );
     }
 
@@ -917,12 +923,24 @@ function get_department_data_row($department, $controller = null)
     $table_data_row='<tr>';
     $table_data_row.="<td width='50px'><input type='checkbox' id='department_$department->department_id' value='".$department->department_id."'/><label for='department_$department->department_id'><span></span></label></td>";
     $table_data_row.='<td width="50px">'.H($department->department_id).'</td>';
-    $table_data_row.='<td width="280px">' . $CI->Department->get_level_line($department, '&nbsp;', false, true) . ' ' . H($department->name) . '</td>';
+    $table_data_row.='<td width="280px">' . $CI->Department->get_level_line($department, '&nbsp;', false, true) . ' ' . H($department->name) . '<span type="button" class="badge bg-primary tip-left ml-10" data-toggle="dropdown" aria-expanded="false">'.count($department->employees).'</span></td>';
+    $table_data_row.='<td width="280px">'.get_department_data_row_employees($department->employees).'</td>';
     $table_data_row.='<td>'.H($department->description).'</td>';
     $table_data_row.='<td class="rightmost">'.anchor($controller_name."/view/$department->department_id/2	", lang('common_edit'),array('class'=>' ','title'=>lang($controller_name.'_update'))).'</td>';
 
     $table_data_row.='</tr>';
     return $table_data_row;
+}
+
+function get_department_data_row_employees($employees) {
+    $data_row = '<ul class="employees">';
+    if (!empty($employees)) {
+        foreach ($employees as $employee) {
+            $data_row .= '<li><a href="/employees/view/'.$employee->person_id.'/2">' . $employee->first_name . ' ' . $employee->last_name . '</a> - '.$employee->group_name.'</li>';
+        }
+    }
+    $data_row .= '</ul>';
+    return $data_row;
 }
 
 function get_sms_manage_table($sms, $controller) 
