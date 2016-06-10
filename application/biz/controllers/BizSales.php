@@ -465,5 +465,63 @@ class BizSales extends Sales
 			$this->_reload(array('success' => lang('sales_successfully_suspended_sale')));
 		}
 	}
+	function suspended()
+	{
+		$data = array();
+		$data['suspended_sales'] = $this->Sale->get_all_suspended();
+		$this->load->view('sales/suspended', $data);
+	}
+	
+	function do_make_quotes($sale_id) {
+		$id_quotes_contract = $this->input->post("sales_quotes_template");
+		$data['info_quotes_contract'] = $this->Customer->get_info_quotes_contract($id_quotes_contract);
+		$data['is_sale'] = FALSE;
+		$sale_info = $this->Sale->get_info($sale_id)->row_array();
+		$this->sale_lib->copy_entire_sale($sale_id);
+		$data['cart'] = $this->sale_lib->get_cart();
+		$data['payments'] = $this->sale_lib->get_payments();
+		$data['subtotal'] = $this->sale_lib->get_subtotal();
+		$data['taxes'] = $this->sale_lib->get_taxes($sale_id);
+		$data['total'] = $this->sale_lib->get_total($sale_id);
+		$data['receipt_title'] = lang('sales_receipt');
+		$data['comment'] = $this->Sale->get_comment($sale_id);
+		$data['show_comment_on_receipt'] = $this->Sale->get_comment_on_receipt($sale_id);
+		$data['transaction_time'] = date(get_date_format() . ' ' . get_time_format(), strtotime($sale_info['sale_time']));
+		$customer_id = $this->sale_lib->get_customer();
+		$emp_info = $this->Employee->get_info($sale_info['employee_id']);
+// 		$info_empss = $this->Employee->get_info($sale_info['employees_id']);
+// 		$data['employees_id'] = $info_empss->first_name . ' ' . $info_empss->last_name;
+// 		$data['phone_number1'] = $info_empss->phone_number;
+// 		$data['email1'] = $info_empss->email;
+		$data['payment_type'] = $sale_info['payment_type'];
+		$data['amount_change'] = $this->sale_lib->get_amount_due($sale_id) * -1;
+		$data['employee'] = $emp_info->first_name . ' ' . $emp_info->last_name;
+		$data['phone_number'] = $emp_info->phone_number;
+		$data['email'] = $emp_info->email;
+		$data['ref_no'] = $sale_info['cc_ref_no'];
+		$this->load->helper('string');
+		$data['payment_type'] = str_replace(array('<sup>VNĐ</sup><br />', ''), ' .VNĐ', $sale_info['payment_type']);
+		$data['amount_due'] = $this->sale_lib->get_amount_due();
+		
+		if ($customer_id != -1) {
+			$cust_info = $this->Customer->get_info($customer_id);
+			$data['customer'] = $cust_info->first_name . ' ' . $cust_info->last_name;
+			$data['cus_name'] = $cust_info->company_name == '' ? '' : $cust_info->company_name;
+			$data['code_tax'] = $cust_info->code_tax ? $cust_info->code_tax : '';
+			$data['address'] = $cust_info->address_1;
+			$data['account_number'] = $cust_info->account_number;
+		}
+		$data['sale_id'] = $sale_id;
+		$word = $this->input->post('sales_quotes_formality');
+		$cat_baogia = $this->input->post("sales_quotes_type");
+		$data['word'] = $word;
+		$data['cat_baogia'] = $cat_baogia;
+		if ($word == 0) {
+			$this->load->view("sales/report_quotes", $data);
+		} else {
+			
+		}
+		$this->sale_lib->clear_all();
+	}
 }
 ?>

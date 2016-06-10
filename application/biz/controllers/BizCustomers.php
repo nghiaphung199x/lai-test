@@ -397,7 +397,7 @@ class BizCustomers extends Customers
 	
 	function do_send_sms()
 	{
-            $check = $this->input->get("type_send");
+        $check = $this->input->get("type_send");
 		$customer_ids = $this->input->post('customer_ids');
 		$sms_id = $this->input->post('sms_id');
 		$info_sms = $this->Customer->get_info_sms($sms_id);
@@ -417,9 +417,9 @@ class BizCustomers extends Customers
                                 $mobile = '84' . substr($info_cus['phone_number'], 1, strlen($info_cus['phone_number']));
 
                                 $getdata = http_build_query(array(
-                                                'username' => $this->config->item('config_user_sms'),
-                                                'password' => $this->config->item('config_user_pass'),
-                                                'source_addr' => $this->config->item('config_brand_name'),
+                                                'username' => $this->config->item('config_sms_user'),
+                                                'password' => $this->config->item('config_sms_pass'),
+                                                'source_addr' => $this->config->item('config_sms_brand_name'),
                                                 'dest_addr' => $mobile,
                                                 'message' => $new_message,
                                 ));
@@ -460,9 +460,9 @@ class BizCustomers extends Customers
 				$info_cus = $this->Customer->get_info($id_cus);
 				$mobile = '84' . substr($info_cus->phone_number, 1, strlen($info_cus->phone_number));
 				$getdata = http_build_query(array(
-						'username' => $this->config->item('user_sms'),
-						'password' => $this->config->item('pass_sms'),
-						'source_addr' => $this->config->item('brandname'),
+						'username' => $this->config->item('config_sms_user'),
+						'password' => $this->config->item('config_sms_pass'),
+						'source_addr' => $this->config->item('config_sms_brand_name'),
 						'dest_addr' => $mobile,
 						'message' => $message,
 				));

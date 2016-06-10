@@ -881,7 +881,7 @@ function get_quotes_contract_data_row($quotes_contract, $controller) {
 	$CI = & get_instance();
 	$controller_name=str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
 	$table_data_row = '<tr>';
-	$table_data_row .= "<td width='5%'><input type='checkbox' id='person_$quotes_contract->id_quotes_contract' value='" . $quotes_contract->id_quotes_contract . "'/><label for='quotes_contract_$quotes_contract->id_quotes_contract'><span></span></label></td>";
+	$table_data_row .= "<td width='5%'><input type='checkbox' id='person_$quotes_contract->id_quotes_contract' value='" . $quotes_contract->id_quotes_contract . "' data-type='".$quotes_contract->cat_quotes_contract."'/><label for='quotes_contract_$quotes_contract->id_quotes_contract'><span></span></label></td>";
 	$table_data_row .= "<td width='15%'>$quotes_contract->id_quotes_contract</td>";
 	$table_data_row .= "<td width='41%'>$quotes_contract->title_quotes_contract</td>";
 	$table_data_row .= "<td width='35%'>" . ($quotes_contract->cat_quotes_contract == 1 ? lang('customers_quotes_contract_type_contract') : lang('customers_quotes_contract_type_quotes')) . "</td>";
