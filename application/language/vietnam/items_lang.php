@@ -1,6 +1,6 @@
 <?php
 
-
+$lang['items_manage_measures'] = 'Quản lý đơn vị tính';
 $lang['items_retrive_item_info']='Lấy mục Thông tin';
 
 $lang['items_amazon']='Amazon';
@@ -172,7 +172,7 @@ $lang['items_tag_successful_error'] = 'Bạn không thể thêm mới nhóm';
 $lang['items_add_tag'] = 'Thêm mới';
 $lang['items_please_enter_tags_name'] = 'Vui lòng nhập tên';
 $lang['items_tags_delete_confirmation'] = 'Bạn có chắc chắn muốn xóa?';
-$lang['items_please_enter_tag_name'] = 'Vui lòng nhập tên';
+$lang['items_please_enter_measure_name'] = $lang['items_please_enter_tags_name'] = 'Vui lòng nhập tên';
 $lang['items_tag_delete_confirmation'] = 'Bạn có chắc chắn muốn xóa?';
 $lang['items_for_current_search'] = 'Tìm kiếm các mặt hàng tồn kho';
 $lang['items_increase_decrease_percent'] = 'Tăng / Giảm Phần trăm';

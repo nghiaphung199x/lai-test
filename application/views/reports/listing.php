@@ -5,7 +5,7 @@
 		<div class="panel">
 			<div class="panel-body">
 				<div class="list-group parent-list">
-					
+
 					<?php
 					if ($this->Employee->has_module_action_permission('reports', 'view_categories', $this->Employee->get_logged_in_employee_info()->person_id))
 					{

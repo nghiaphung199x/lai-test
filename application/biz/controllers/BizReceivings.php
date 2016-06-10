@@ -5,6 +5,68 @@ class BizReceivings extends Receivings
 {
 	protected $_prefixDocument = 'REC#';
 
+	function edit_item($line)
+	{
+		$data= array();
+	
+		$this->form_validation->set_rules('price', 'lang:common_price', 'numeric');
+		$this->form_validation->set_rules('quantity', 'lang:common_quantity', 'numeric');
+		$this->form_validation->set_rules('quantity_received', 'lang:receivings_qty_received', 'numeric');
+		$this->form_validation->set_rules('discount', 'lang:common_discount_percent', 'numeric');
+	
+		$description = NULL;
+		$serialnumber = NULL;
+		$price = NULL;
+		$quantity = NULL;
+		$discount = NULL;
+		$expire_date = NULL;
+		$quantity_received = NULL;
+		
+		$measure = NULL;
+	
+		if($this->input->post("name"))
+		{
+			$variable = $this->input->post("name");
+			$$variable = $this->input->post("value");
+		}
+	
+		if ($discount !== NULL && $discount == '')
+		{
+			$discount = 0;
+		}
+	
+		if ($quantity !==NULL && $quantity == '')
+		{
+			$quantity = 0;
+		}
+	
+		if ($quantity_received !== NULL && $quantity_received == '')
+		{
+			$quantity_received = 0;
+		}
+	
+		if ($this->form_validation->run() != FALSE)
+		{
+			$this->receiving_lib->edit_item(
+					$line,
+					$description,
+					$serialnumber,
+					$expire_date,
+					$quantity,
+					$quantity_received,
+					$discount,
+					$price,
+					$measure
+			);
+		}
+		else
+		{
+			$data['error']=lang('receivings_error_editing_item');
+		}
+	
+		$this->_reload($data);
+	}
+	
 	function complete()
 	{
 		$data['cart']=$this->receiving_lib->get_cart();

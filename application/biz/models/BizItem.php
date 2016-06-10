@@ -407,5 +407,26 @@ class BizItem extends Item
 		return $suggestions;
 	
 	}
+	
+	/*
+	 Get an item id given an item number or product_id or additional item number
+	 */
+	function getMeasureName($itemId)
+	{
+		if (!$itemId)
+		{
+			return false;
+		}
+		$this->db->select('measures.name as measure_name');
+		$this->db->from('items');
+		$this->db->join('measures', 'measures.id = items.measure_id','left');
+		$this->db->where('item_id',$itemId);
+		$query = $this->db->get();
+		if($query->num_rows() >= 1)
+		{
+			return $query->row()->measure_name;
+		}
+		return false;
+	}
 }
 ?>

@@ -317,7 +317,21 @@
 					</div>
 
 					<div class="panel-body form-group">
-					
+
+                        <div class="form-group">
+                            <?php echo form_label(lang('employees_department').' :', 'department_id', array('class'=>'col-sm-3 col-md-3 col-lg-2 col-sm-3 col-md-3 col-lg-2 control-label')); ?>
+                            <div class="col-sm-9 col-md-9 col-lg-10">
+                                <?php echo form_dropdown('department_id', $departments, $person_info->department_id, 'class="form-control" id="department_id"'); ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <?php echo form_label(lang('employees_group').' :', 'group_id', array('class'=>'col-sm-3 col-md-3 col-lg-2 col-sm-3 col-md-3 col-lg-2 control-label')); ?>
+                            <div class="col-sm-9 col-md-9 col-lg-10">
+                                <?php echo form_dropdown('group_id', $groups, $person_info->group_id, 'class="form-control" id="group_id"'); ?>
+                            </div>
+                        </div>
+
 						<ul id="permission_list" class="list-unstyled">
 						<?php
 						foreach($all_modules->result() as $module)
@@ -326,13 +340,13 @@
 							'name' => 'permissions[]',
 							'id' => 'permissions'.$module->module_id,
 							'value' => $module->module_id,
-							'checked' => $this->Employee->has_module_permission($module->module_id,$person_info->person_id),
+							'checked' => $this->Employee->has_module_permission($module->module_id,$person_info->person_id, false),
 							'class' => 'module_checkboxes '
 							);
 							
 							if ($logged_in_employee_id != 1)
 							{
-								if(($current_employee_editing_self && $checkbox_options['checked']) || !$this->Employee->has_module_permission($module->module_id,$logged_in_employee_id))
+								if(($current_employee_editing_self && $checkbox_options['checked']) || !$this->Employee->has_module_permission($module->module_id,$logged_in_employee_id, false))
 								{
 									$checkbox_options['disabled'] = 'disabled';
 									
@@ -360,12 +374,12 @@
 								'class' => 'module_action_checkboxes',
 								'id' => 'permissions_actions'.$module_action->module_id."|".$module_action->action_id,
 								'value' => $module_action->module_id."|".$module_action->action_id,
-								'checked' => $this->Employee->has_module_action_permission($module->module_id, $module_action->action_id, $person_info->person_id)
+								'checked' => $this->Employee->has_module_action_permission($module->module_id, $module_action->action_id, $person_info->person_id, false)
 								);
 			
 								if ($logged_in_employee_id != 1)
 								{
-									if(($current_employee_editing_self && $checkbox_options['checked']) || (!$this->Employee->has_module_action_permission($module->module_id,$module_action->action_id,$logged_in_employee_id)))
+									if(($current_employee_editing_self && $checkbox_options['checked']) || (!$this->Employee->has_module_action_permission($module->module_id,$module_action->action_id,$logged_in_employee_id, false)))
 									{
 										$checkbox_options['disabled'] = 'disabled';
 										

@@ -472,6 +472,14 @@ class BizSales extends Sales
 		$this->load->view('sales/suspended', $data);
 	}
 	
+	function sales_quotes($sale_id) 
+	{
+		$data = array();
+		$data['sale_id'] = $sale_id;
+		$data['quotes'] = $this->Customer->get_list_template_quotes_contract(2);
+		$this->load->view('sales/sales_quotes', $data);
+	}
+	
 	function do_make_quotes($sale_id) {
 		$id_quotes_contract = $this->input->post("sales_quotes_template");
 		$data['info_quotes_contract'] = $this->Customer->get_info_quotes_contract($id_quotes_contract);

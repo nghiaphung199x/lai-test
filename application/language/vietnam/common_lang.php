@@ -26,6 +26,7 @@ $lang['common_you_are_using_phppos']='Bạn đang sử dụng phiên bản';
 $lang['common_please_visit_my']='Hãy tới thăm';
 $lang['common_website']='trang web của LifeTek POS';
 $lang['common_fields_required_message']='Các trường màu đỏ là cần nhập';
+$lang['common_fields_required_alert']='Trường cần nhập thông tin';
 $lang['common_learn_about_project']='để biết những thông tin mới nhất về sản phẩm';
 $lang['common_searched_for']='Tìm kiếm cho';
 $lang['common_first_name_required']='Tên riêng cần phải nhập.';
@@ -385,10 +386,16 @@ $lang['common_refund_money'] = 'Tiền trả lại khách';
 $lang['common_sales_balance_total'] = 'Tổng nợ tất cả';
 $lang['common_total_money'] = 'Tổng tiền';
 
+$lang['common_measure_convert'] = 'Chuyển đổi đơn vị';
+$lang['common_measure'] = 'Đơn vị tính';
+$lang['common_measure_converted'] = 'Đơn vị quy đổi';
+$lang['common_measure_converted_qty'] = 'Số lượng quy đổi';
+$lang['common_measure_converted_cost_percentage'] = 'Giá vốn sau khi quy đổi (%)';
+$lang['common_measure_converted_unit_percentage'] = 'Giá bán sau khi quy đổi (%)';
+
 $lang['common_delete_success'] = 'Đã xóa thành công';
 $lang['common_update_success'] = 'Đã cập nhật thành công';
 $lang['common_add_success'] = 'Đã thêm mới thành công';
 $lang['common_error'] = 'Lỗi ! Vui lòng kiểm tra lại';
-
 
 ?>

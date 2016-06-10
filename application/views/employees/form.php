@@ -36,7 +36,7 @@
 			<?php 	$current_employee_editing_self = $this->Employee->get_logged_in_employee_info()->person_id == $person_info->person_id;
 					echo form_open('employees/save/'.(!isset($is_clone) ? $person_info->person_id: ''),array('id'=>'employee_form','class'=>'form-horizontal'));
 			?>
-			
+
 			
 			<div class="panel panel-piluku">
 				<div class="panel-heading">
@@ -272,7 +272,7 @@
 							?>
 						</div>
 					</div>
-					
+
 					<?php if (count($locations) == 1) { ?>
 						<?php
 							echo form_hidden('locations[]', current(array_keys($locations)));
@@ -317,7 +317,7 @@
 					</div>
 
 					<div class="panel-body form-group">
-					
+
 						<ul id="permission_list" class="list-unstyled">
 						<?php
 						foreach($all_modules->result() as $module)

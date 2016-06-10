@@ -770,6 +770,161 @@ function get_expenses_data_row($expense,$controller)
 	return $table_data_row;
 }
 
+/*
+Gets the html table to manage groups.
+*/
+function get_groups_manage_table( $groups, $controller )
+{
+    $table='<table class="tablesorter table table-hover" id="sortable_table">';
+
+    $headers = array('<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
+        'ID',
+        lang('common_name'),
+        lang('common_description'),
+        '&nbsp;',
+    );
+
+    $table.='<thead><tr>';
+    $count = 0;
+    foreach($headers as $header)
+    {
+        $count++;
+
+        if ($count == 1)
+        {
+            $table.="<th class='leftmost'>$header</th>";
+        }
+        elseif ($count == count($headers))
+        {
+            $table.="<th class='rightmost'>$header</th>";
+        }
+        else
+        {
+            $table.="<th>$header</th>";
+        }
+    }
+    $table.='</tr></thead><tbody>';
+    $table.=get_groups_manage_table_data_rows( $groups, $controller );
+    $table.='</tbody></table>';
+    return $table;
+}
+
+/*
+Gets the html data rows for the group.
+*/
+function get_groups_manage_table_data_rows( $groups, $controller )
+{
+    $table_data_rows = '';
+
+    foreach($groups->result() as $group)
+    {
+        $table_data_rows .= get_group_data_row( $group, $controller );
+    }
+
+    if($groups->num_rows() == 0)
+    {
+        $table_data_rows.="<tr><td colspan='5'><span class='col-md-12 text-center text-warning' >".lang('groups_no_groups_to_display')."</span></td></tr>";
+    }
+
+    return $table_data_rows;
+}
+
+function get_group_data_row($group, $controller = null)
+{
+    $CI =& get_instance();
+    $controller_name=str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
+
+    $table_data_row='<tr>';
+    $table_data_row.="<td width='50px'><input type='checkbox' id='group_$group->group_id' value='".$group->group_id."'/><label for='group_$group->group_id'><span></span></label></td>";
+    $table_data_row.='<td width="50px">'.H($group->group_id).'</td>';
+    $table_data_row.='<td width="150px">'.H($group->name).'</td>';
+    $table_data_row.='<td>'.H($group->description).'</td>';
+    $table_data_row.='<td class="rightmost">'.anchor($controller_name."/view/$group->group_id/2	", lang('common_edit'),array('class'=>' ','title'=>lang($controller_name.'_update'))).'</td>';
+
+    $table_data_row.='</tr>';
+    return $table_data_row;
+}
+
+/*
+Gets the html table to manage departments.
+*/
+function get_departments_manage_table( $departments, $controller )
+{
+    $table='<table class="tablesorter table table-hover" id="sortable_table">';
+
+    $headers = array('<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
+        'ID',
+        lang('common_name'),
+        lang('common_description'),
+        '&nbsp;',
+    );
+
+    $table.='<thead><tr>';
+    $count = 0;
+    foreach($headers as $header)
+    {
+        $count++;
+
+        if ($count == 1)
+        {
+            $table.="<th class='leftmost'>$header</th>";
+        }
+        elseif ($count == count($headers))
+        {
+            $table.="<th class='rightmost'>$header</th>";
+        }
+        else
+        {
+            $table.="<th>$header</th>";
+        }
+    }
+    $table.='</tr></thead><tbody>';
+    $table.=get_departments_manage_table_data_rows( $departments, $controller );
+    $table.='</tbody></table>';
+    return $table;
+}
+
+/*
+Gets the html data rows for the department.
+*/
+function get_departments_manage_table_data_rows( $departments, $controller )
+{
+    $table_data_rows = '';
+
+    foreach($departments->result() as $department)
+    {
+        $table_data_rows .= get_department_data_row( $department, $controller );
+    }
+
+    if($departments->num_rows() == 0)
+    {
+        $table_data_rows.="<tr><td colspan='5'><span class='col-md-12 text-center text-warning' >".lang('departments_no_departments_to_display')."</span></td></tr>";
+    }
+
+    return $table_data_rows;
+}
+
+function get_department_data_row($department, $controller = null)
+{
+    $CI =& get_instance();
+
+    if (!class_exists('Department')) {
+        $CI->load->model('Department');
+    }
+
+    $controller_name=str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
+
+    $table_data_row='<tr>';
+    $table_data_row.="<td width='50px'><input type='checkbox' id='department_$department->department_id' value='".$department->department_id."'/><label for='department_$department->department_id'><span></span></label></td>";
+    $table_data_row.='<td width="50px">'.H($department->department_id).'</td>';
+    $table_data_row.='<td width="280px">' . $CI->Department->get_level_line($department, '&nbsp;', false, true) . ' ' . H($department->name) . '</td>';
+    $table_data_row.='<td>'.H($department->description).'</td>';
+    $table_data_row.='<td class="rightmost">'.anchor($controller_name."/view/$department->department_id/2	", lang('common_edit'),array('class'=>' ','title'=>lang($controller_name.'_update'))).'</td>';
+
+    $table_data_row.='</tr>';
+    return $table_data_row;
+}
+
 function get_sms_manage_table($sms, $controller) 
 {
 	$CI = & get_instance();
@@ -889,4 +1044,5 @@ function get_quotes_contract_data_row($quotes_contract, $controller) {
 	$table_data_row.='</tr>';
 	return $table_data_row;
 }
+
 ?>
