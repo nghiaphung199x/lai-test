@@ -3,6 +3,80 @@ require_once (APPPATH.'/libraries/Sale_lib.php');
 
 class BizSale_lib extends Sale_lib
 {
+	function copy_entire_sale($sale_id, $is_receipt = false)
+	{
+		$this->empty_cart();
+		$this->delete_customer(false);
+		$sale_taxes = $this->get_taxes($sale_id);
+	
+		foreach($this->CI->Sale->get_sale_items($sale_id)->result() as $row)
+		{
+			$item_info = $this->CI->Item->get_info($row->item_id);
+			$price_to_use = $row->item_unit_price;
+				
+			//If we have tax included, but we don't have any taxes for sale, pretend that we do have taxes so the right price shows up
+			if ($item_info->tax_included && empty($sale_taxes) && !$is_receipt)
+			{
+				$this->CI->load->helper('items');
+	
+				$price_to_use = get_price_for_item_including_taxes($row->item_id, $row->item_unit_price);
+			}
+			elseif($item_info->tax_included)
+			{
+				$this->CI->load->helper('items');
+	
+				$price_to_use = get_price_for_item_including_taxes($row->line, $row->item_unit_price,$sale_id);
+			}
+			$this->add_item(
+				$row->item_id,
+				$row->quantity_purchased,
+				$row->discount_percent,
+				$price_to_use,
+				$row->item_cost_price, 
+				$row->description,
+				$row->serialnumber, 
+				TRUE, 
+				$row->line, 
+				FALSE, $sale_id);
+		}
+	
+		foreach($this->CI->Sale->get_sale_item_kits($sale_id)->result() as $row)
+		{
+			$item_kit_info = $this->CI->Item_kit->get_info($row->item_kit_id);
+			$price_to_use = $row->item_kit_unit_price;
+	
+			//If we have tax included, but we don't have any taxes for sale, pretend that we do have taxes so the right price shows up
+			if ($item_kit_info->tax_included && empty($sale_taxes) && !$is_receipt)
+			{
+				$this->CI->load->helper('item_kits');
+				$price_to_use = get_price_for_item_kit_including_taxes($row->item_kit_id, $row->item_kit_unit_price);
+			}
+			elseif ($item_kit_info->tax_included)
+			{
+				$this->CI->load->helper('item_kits');
+				$price_to_use = get_price_for_item_kit_including_taxes($row->line, $row->item_kit_unit_price,$sale_id);
+			}
+	
+			$this->add_item_kit('KIT '.$row->item_kit_id,$row->quantity_purchased,$row->discount_percent,$price_to_use,$row->item_kit_cost_price,$row->description, TRUE, $row->line, FALSE);
+		}
+		foreach($this->CI->Sale->get_sale_payments($sale_id)->result() as $row)
+		{
+			$this->add_payment($row->payment_type,$row->payment_amount, $row->payment_date, $row->truncated_card, $row->card_issuer, $row->auth_code, $row->ref_no, $row->cc_token, $row->acq_ref_data, $row->process_data, $row->entry_method, $row->aid, $row->tvr, $row->iad, $row->tsi, $row->arc, $row->cvm, $row->tran_type, $row->application_label);
+				
+		}
+		$this->update_register_cart_data();
+	
+		$customer_info = $this->CI->Sale->get_customer($sale_id);
+		$this->set_customer($customer_info->person_id, false);
+	
+		$this->set_comment($this->CI->Sale->get_comment($sale_id));
+		$this->set_comment_on_receipt($this->CI->Sale->get_comment_on_receipt($sale_id));
+	
+		$this->set_sold_by_employee_id($this->CI->Sale->get_sold_by_employee_id($sale_id));
+		$this->set_deleted_taxes($this->CI->Sale->get_deleted_taxes($sale_id));
+	
+	}
+	
 	function edit_item($line,$description = NULL,$serialnumber = NULL,$quantity = NULL,$discount = NULL,$price = NULL, $cost_price = NULL, $measureId = NULL)
 	{
 		$items = $this->get_cart();
@@ -52,7 +126,19 @@ class BizSale_lib extends Sale_lib
 		return $itemObj->unit_price * $convertedValue->qty_converted * $convertedValue->unit_price_percentage_converted / 100;
 	}
 	
-	function add_item($item_id,$quantity=1,$discount=0,$price=null,$cost_price = null, $description=null,$serialnumber=null, $force_add = FALSE, $line = FALSE, $update_register_cart_data = TRUE)
+	function add_item(
+			$item_id,
+			$quantity=1,
+			$discount=0,
+			$price=null,
+			$cost_price = null,
+			$description=null,
+			$serialnumber=null,
+			$force_add = FALSE,
+			$line = FALSE,
+			$update_register_cart_data = TRUE,
+			$saleId = 0
+	)
 	{			
 		$store_account_item_id = $this->CI->Item->get_store_account_item_id();
 		
@@ -133,7 +219,6 @@ class BizSale_lib extends Sale_lib
 		$item_location_info = $this->CI->Item_location->get_info($item_id);
 		$measure = $this->CI->Measure->getInfo($item_info->measure_id);
 
-		$saleId = $this->get_change_sale_id();
 		if ($saleId) {
 			$measureOnSale = $this->CI->Sale->getMeasureOnSaleItem($saleId, $item_id);
 			if($measureOnSale) {

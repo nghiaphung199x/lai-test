@@ -63,22 +63,13 @@ $(document).ready(function(){
     $('#send_sms_form').validate({
         submitHandler:function(form)
         {
-            if (submitting) return;
-            var selected_cutomer_ids=get_selected_values();
-            for(k=0;k<selected_cutomer_ids.length;k++)
-            {
-                $(form).append("<input type='hidden' name='customer_ids[]' value='"+selected_cutomer_ids[k]+"' />");
-            }
-            
-            submitting = true;
             $(form).ajaxSubmit({
-                success:function(response)
-                {
+                success:function(response){
+                    console.log(response);
                     submitting = false;
-                    show_feedback(response.success ? 'success' : 'error',response.message, response.success ? <?php echo json_encode(lang('common_success')); ?>  : <?php echo json_encode(lang('common_error')); ?>);
-                          
-                },
-                dataType:'json'
+                    show_feedback(response.success ? 'success' : 'error',response.message, response.success ? <?php //echo json_encode(lang('common_success')); ?>  : <?php //echo json_encode(lang('common_error')); ?>);      
+                }
+                dataType:'json',
             });
         },
         errorLabelContainer: "#error_message_box",
