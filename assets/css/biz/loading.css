@@ -60,6 +60,8 @@
 }
 /*=============================== END MASK LOADING*/
 
+a, a:HOVER {cursor: pointer; text-decoration: none}
+
 #dTableA .icon-success {color: #449d44; font-size: 18px;}
 
 #search_form select {

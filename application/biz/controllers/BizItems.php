@@ -359,6 +359,7 @@ class BizItems extends Items
 		$data['tags'] = implode(',',$this->Tag->get_tags_for_item($item_id));
 	
 		$data['measures'] = array();
+		$data['measures']['-1'] = '--- Chọn Đơn Vị Tính ---';
 		$measures = $this->Measure->get_all();
 		foreach($measures as $key=>$measure)
 		{

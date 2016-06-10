@@ -151,7 +151,7 @@
 				<div class="form-group">
 					<?php echo form_label(lang('common_measure').' :', 'measures',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
 					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_dropdown('measure_id', $measures, $item_info->measure_id, 'class="form-control form-inps" id ="measure_id"');?>
+						<?php echo form_dropdown('measure_id', $measures, $item_info->measure_id, 'class="form-control form-inps" id ="measure_id" onchange="rebuildDropBox();"');?>
 						<?php // if ($this->Employee->has_module_action_permission('items', 'manage_tags', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
 								<div>
 									<?php echo anchor("items/manage_measures",lang('items_manage_measures'),array('target' => '_blank', 'title'=>lang('items_manage_measures')));?>
@@ -1024,7 +1024,7 @@
 						<div class="form-group">
 							<?php echo form_label(lang('common_measure_converted').' :', 'measures',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
 							<div class="col-sm-9 col-md-9 col-lg-10">
-								<?php echo form_dropdown('measure_converted['. ($key + 1) .'][id]', $measures, $measure_converted['measure_converted_id'], 'class="form-control form-inps"');?>
+								<?php echo form_dropdown('measure_converted['. ($key + 1) .'][id]', $measures, $measure_converted['measure_converted_id'], 'class="form-control form-inps" onchange="rebuildDropBox();"');?>
 							</div>
 						</div>
 						
@@ -1034,7 +1034,8 @@
 								<?php echo form_input(array(
 									'name'=>'measure_converted['. ($key + 1) .'][qty]',
 									'class'=>'form-control form-inps qty_converted',
-									'value'=> $measure_converted['qty_converted'])
+									'value'=> $measure_converted['qty_converted'],
+									'onchange'=>"measureCostConverted(this); measureUnitConverted(this);")
 								);?>
 							</div>
 						</div>
@@ -1044,7 +1045,7 @@
 							<div class="col-sm-9 col-md-9 col-lg-10">
 								<?php echo form_input(array(
 									'name'=>'measure_converted['. ($key + 1) .'][cost_price]',
-									'class'=>'form-control form-inps',
+									'class'=>'form-control form-inps percent_cost',
 									'value'=> $measure_converted['cost_price_percentage_converted'], 
 									'onchange' => 'measureCostConverted(this)'
 								));?>
@@ -1058,7 +1059,7 @@
 							<div class="col-sm-9 col-md-9 col-lg-10">
 								<?php echo form_input(array(
 									'name'=>'measure_converted['. ($key + 1) .'][unit_price]',
-									'class'=>'form-control form-inps',
+									'class'=>'form-control form-inps percent_price',
 									'value'=> $measure_converted['unit_price_percentage_converted'],
 									'onchange'=>"measureUnitConverted(this)"
 								));?>
@@ -1325,24 +1326,55 @@ function calculate_margin_price()
 	$('#unit_price').val(margin_price);
 }
 
+function rebuildDropBox()
+{
+	var measuresSelected = $('#measure_id').val();
+	$('.measure_item select').each(function(){
+		measuresSelected += ',' + $(this).val();
+	});
+	$('#measure_id option').each(function(){
+		if( measuresSelected.indexOf($(this).val()) > -1 && $(this).val() != $('#measure_id').val() )
+		{
+			$(this).remove();
+		}
+	});
+	
+	measuresSelected = measuresSelected.split(',');
+	$('.measure_item select').each(function(){
+		var current = $(this).val();
+		$(this).find('option').each(function(){
+			if( measuresSelected.indexOf($(this).val()) > -1 && $(this).val() != current )
+			{
+				$(this).remove();
+			}
+		});
+	});
+}
+
 function measureUnitConverted(element){
+	var measureItem = $(element).closest('.measure_item');
 	var qtyConverted = $(element).closest('.measure_item').find('.qty_converted').val();
-	var number = Number(parseFloat($(element).val()) * qtyConverted * parseFloat($('#unit_price').val()) / 100).toLocaleString('en');
-	$(element).closest('.form-group').find('.unit_converted').html('('+ number +')');
+	var percentPrice = parseFloat($(measureItem).find('.percent_price').val());
+	var number = Number(percentPrice * qtyConverted * parseFloat($('#unit_price').val()) / 100).toLocaleString('en');
+	$(measureItem).find('.unit_converted').html('('+ number +')');
 }
 
 function measureCostConverted(element){
-	var qtyConverted = $(element).closest('.measure_item').find('.qty_converted').val();
-	var number = Number(parseFloat($(element).val()) * qtyConverted * parseFloat($('#cost_price').val()) / 100).toLocaleString('en');
-	$(element).closest('.form-group').find('.cost_converted').html('('+ number +')');
+	var measureItem = $(element).closest('.measure_item');
+	var qtyConverted = $(measureItem).find('.qty_converted').val();
+	var percentCost = parseFloat($(measureItem).find('.percent_cost').val());
+	var number = Number(percentCost * qtyConverted * parseFloat($('#cost_price').val()) / 100).toLocaleString('en');
+	$(measureItem).find('.cost_converted').html('('+ number +')');
 }
 
 
 $(document).ready(function()
 {
+	rebuildDropBox();
 	$('#add_more_measure #add_more').click(function(){
 		var html = '<div class="measure_item">' + $('#measure_item_tmp').html().replace(/___INDEX___/g, ($('#measure_items .measure_item').length + 1)) + '</div>';
 		$('#measure_items').append(html);
+		rebuildDropBox();
 	});
 	$('#convert_measure').change(function(){
 		if($(this).is(':checked')) {
@@ -1722,7 +1754,7 @@ function cancelItemAddingFromSaleOrRecv()
 	<div class="form-group">
 		<?php echo form_label(lang('common_measure_converted').' :', 'measures',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
 		<div class="col-sm-9 col-md-9 col-lg-10">
-			<?php echo form_dropdown('measure_converted[___INDEX___][id]', $measures, null, 'class="form-control form-inps"');?>
+			<?php echo form_dropdown('measure_converted[___INDEX___][id]', $measures, null, 'class="form-control form-inps measures_available" onchange="rebuildDropBox();"');?>
 		</div>
 	</div>
 	
@@ -1732,7 +1764,7 @@ function cancelItemAddingFromSaleOrRecv()
 			<?php echo form_input(array(
 				'name'=>'measure_converted[___INDEX___][qty]',
 				'class'=>'form-control form-inps qty_converted',
-				'value'=> '')
+				'value'=> '', 'onchange'=>"measureCostConverted(this); measureUnitConverted(this);")
 			);?>
 		</div>
 	</div>
@@ -1742,7 +1774,7 @@ function cancelItemAddingFromSaleOrRecv()
 		<div class="col-sm-9 col-md-9 col-lg-10">
 			<?php echo form_input(array(
 				'name'=>'measure_converted[___INDEX___][cost_price]',
-				'class'=>'form-control form-inps',
+				'class'=>'form-control form-inps percent_cost',
 				'value'=> '100',
 				'onchange'=>"measureCostConverted(this)"
 			));?>
@@ -1755,7 +1787,7 @@ function cancelItemAddingFromSaleOrRecv()
 		<div class="col-sm-9 col-md-9 col-lg-10">
 			<?php echo form_input(array(
 				'name'=>'measure_converted[___INDEX___][unit_price]',
-				'class'=>'form-control form-inps',
+				'class'=>'form-control form-inps percent_price',
 				'value'=> '100',
 				'onchange'=>"measureUnitConverted(this)"
 			));?>

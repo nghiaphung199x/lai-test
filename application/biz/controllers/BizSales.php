@@ -10,6 +10,19 @@ class BizSales extends Sales
 		parent::__construct();
 		$this->load->helper('sale');
 	}
+	
+	function change_sale($sale_id)
+	{
+		$this->check_action_permission('edit_sale');
+		$this->sale_lib->clear_all();
+		$this->sale_lib->set_change_sale_id($sale_id);
+		$this->sale_lib->copy_entire_sale($sale_id);
+		if ($this->Location->get_info_for_key('enable_credit_card_processing'))
+		{
+			$this->sale_lib->change_credit_card_payments_to_partial();
+		}
+		$this->_reload(array(), false);
+	}
 
 	function complete()
 	{

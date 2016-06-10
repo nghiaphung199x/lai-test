@@ -83,7 +83,7 @@ class BizReceiving_lib extends Receiving_lib
 			'is_serialized'=>$this->CI->Item->get_info($item_id)->is_serialized,
 			'quantity'=>$quantity,
 			'measure_id'=>$cur_item_info->measure_id,
-			'measure' => !empty($measure) ? $measure->name : 'Chua thiet lap',
+			'measure' => !empty($measure) ? $measure->name : lang('common_not_set'),
 			'cur_quantity' => $cur_item_location_info->quantity,
 			'quantity_received' => $quantity_received,
 			'discount'=>$discount,

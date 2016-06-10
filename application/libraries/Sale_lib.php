@@ -782,7 +782,7 @@ class Sale_lib
 			'is_serialized'=>$item_info->is_serialized,
 			'quantity'=>$quantity,
 			'cur_quantity' => $item_location_info->quantity,
-        	 'discount'=>$discount,
+			'discount'=>$discount,
 			'price'=>$price!=null ? $price:$price_to_use,
 			'tax_included'=> $item_info->tax_included,
 			)

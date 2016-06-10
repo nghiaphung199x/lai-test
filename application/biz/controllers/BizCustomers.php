@@ -22,6 +22,7 @@ class BizCustomers extends Customers
 		) {
 			$this->_scopeOfView = 'view_scope_all';
 		}
+                $this->load->helper('my_table_helper');
 	}
 	function index($offset=0)
 	{
@@ -417,12 +418,15 @@ class BizCustomers extends Customers
 		if($info_max_id['quantity_sms'] > 0){
                     if($check >0){
                         if(isset($_SESSION['sms_tmp'])&&$_SESSION['sms_tmp'] !=NULL){
+                            $this->update_info_list_tmp($_SESSION['sms_tmp']);
                             foreach ($_SESSION['sms_tmp'] as $person_data) {
                                 $id_cus = $person_data['person_id'];
                                 $number_sms++;
                                 $new_keyword = rand(100000, 999999);
                                  $new_message = preg_replace('/\[[a-zA-Z]{2,6}\]/', $new_keyword, $message);
                                 $info_cus = $this->Customer->get_info_person_by_id($id_cus);
+                                //check numberfone
+                                if(!isset($info_cus['phone_number'])||$info_cus['phone_number']=='')continue;
                                 $mobile = '84' . substr($info_cus['phone_number'], 1, strlen($info_cus['phone_number']));
 
                                 $getdata = http_build_query(array(
@@ -438,11 +442,9 @@ class BizCustomers extends Customers
                                                                 'content' => $getdata
                                                 )
                                 );
-//                                $context = stream_context_create($opts);
-//                                $result = file_get_contents('http://sms.vnet.vn:8082/api/sent?' . $getdata, false, $context);
+                                $context = stream_context_create($opts);
+                                $result = file_get_contents('http://sms.vnet.vn:8082/api/sent?' . $getdata, false, $context);
                                 sleep(1);
-                                echo json_encode(array("success" => true, "message" => 'Đã gửi thành công khác hàng'));
-                                continue;
                                 if ($result) {
                                         $data_insert = array(
                                             'id_cus' => $id_cus,
@@ -453,6 +455,8 @@ class BizCustomers extends Customers
                                         );
                                         $this->Customer->save_message($data_insert);
                                         if($result > 0){
+                                                echo json_encode(array("success" => true, "message" => 'Đã gửi thành công khác hàng'));
+                                                $this->delete_customer_from_list_sms($id_cus);
                                                 $data_update_table_number_sms = array(
                                                                 'quantity_sms' => ($info_max_id['quantity_sms'] - $info_sms->number_message),
                                                 );
@@ -519,7 +523,7 @@ class BizCustomers extends Customers
 		$data['controller_name'] = $this->_controller_name;
 		$data['form_width'] = $this->get_form_width();
 		$data['per_page'] = $config['per_page'];
-//		$data['manage_table'] = get_sms_manage_table($_SESSION['sms_tmp']['list_person_id'],$this->Customer->get_all_sms_tmp($data['per_page']), $this);
+                $data['manage_table'] = get_customer_manage_table($_SESSION['sms_tmp'], $this);
 		$this->load->view("customers/manage_sms_tmp", $data);
         }
         
@@ -562,6 +566,28 @@ class BizCustomers extends Customers
 		}
 		redirect('customers');
 	}
+        
+        function update_info_list_tmp(&$list_customer=array()){
+            $info = '';
+            if(isset($list_customer)&&count($list_customer)>0){
+                foreach ($list_customer as $person_id => $person_info){
+                    $info = $this->Customer->get_info_person_by_id($person_id);
+                    if($info['first_name'] . " " . $info['last_name'] != $person_info['name'])
+                            $list_customer[$person_id]['name'] = $info_cus['first_name'] . " " . $info_cus['last_name'];
+                    
+                    if($info['phone_number']!=$person_info['phone_number'])
+                         $list_customer[$person_id]['phone_number'] = $info['phone_number'];
+                }
+            }
+        }
+        
+        function delete_customer_from_list_sms($id){
+            if($id>0){
+                unset($_SESSION['sms_tmp'][$id]);
+                return $id;
+            }
+            return 0;
+        }
 	
 	function quotes_contract()
 	{

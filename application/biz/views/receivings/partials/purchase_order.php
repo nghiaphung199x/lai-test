@@ -1,3 +1,5 @@
+<?php
+?>
 <style type="text/css">
 	#pdf_content {
 		width: 700px;
@@ -193,7 +195,7 @@
 		</div>
 	</div>
 	<div id="pdf_title" class="clb">
-		<p>Phiếu nhập kho</p>
+		<p>Đơn đặt hàng</p>
 	</div>
 
 	<div id="pdf_customer">

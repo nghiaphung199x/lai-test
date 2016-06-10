@@ -2,14 +2,21 @@
 require_once (APPPATH . "models/Sale.php");
 class BizSale extends Sale
 {
-	function get_all_materials() {
-		$this->db->from('sales');
-		$this->db->where('deleted', 0);
-		$this->db->where('quotes_contract', 1);
-		$this->db->order_by('sale_id', 'desc');
-		return $this->db->get();
+	function getMeasureOnSaleItem($saleId, $ItemId)
+	{
+		$this->db->from('sales_items');
+		$this->db->join('measures', 'measures.id = sales_items.measure_id', 'left');
+		$this->db->where('sale_id', $saleId);
+		$this->db->where('item_id', $ItemId);
+		$result = $this->db->get();
+		if($result->num_rows() > 0)
+		{
+			$row = $result->result();
+			return $row[0];
+		}
+		
+		return FALSE;
 	}
-
 	function save ($items,$customer_id,$employee_id, $sold_by_employee_id, $comment,$show_comment_on_receipt,$payments,$sale_id=false, $suspended = 0, $change_sale_date=false,$balance=0, $store_account_payment = 0)
 	{
 		if ($this->config->item('test_mode'))
@@ -805,6 +812,14 @@ class BizSale extends Sale
 		LEFT OUTER JOIN ".$this->db->dbprefix('categories')." ON  ".$this->db->dbprefix('categories').'.id='.$this->db->dbprefix('item_kits').'.category_id'."
 				$where
 				GROUP BY sale_id, item_kit_id, line) ORDER BY sale_id, line");
+	}
+	
+	function get_all_materials() {
+		$this->db->from('sales');
+		$this->db->where('deleted', 0);
+		$this->db->where('quotes_contract', 1);
+		$this->db->order_by('sale_id', 'desc');
+		return $this->db->get();
 	}
 }
 ?>
