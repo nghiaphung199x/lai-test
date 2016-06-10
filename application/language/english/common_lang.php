@@ -372,4 +372,13 @@ $lang['common_delete_success'] = 'Delete successfully';
 $lang['common_update_success'] = 'Update successfully';
 $lang['common_add_success'] = 'Add new successfully';
 $lang['common_error'] = 'Error ! Please recheck it';
+
+$lang['customers_type'] = 'Customer type';
+$lang['customers_position'] = 'Position';
+$lang['customers_birth_date'] = 'Birth date';
+$lang['customers_sex'] = 'Sex';
+$lang['customers_family_info'] = 'Husband/Wife/Children';
+$lang['customers_company_birth_date'] = 'Company birth date';
+$lang['customers_company_manage_name'] = 'Director';
+$lang['customers_code_tax'] = 'Tax code';
 ?>

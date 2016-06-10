@@ -398,4 +398,13 @@ $lang['common_update_success'] = 'Đã cập nhật thành công';
 $lang['common_add_success'] = 'Đã thêm mới thành công';
 $lang['common_error'] = 'Lỗi ! Vui lòng kiểm tra lại';
 
+$lang['customers_type'] = 'Loại khách hàng';
+$lang['customers_position'] = 'Chức vụ';
+$lang['customers_birth_date'] = 'Ngày sinh';
+$lang['customers_sex'] = 'Giới tính';
+$lang['customers_family_info'] = 'Chồng/Vợ/Con';
+$lang['customers_company_birth_date'] = 'Sinh nhật công ty';
+$lang['customers_company_manage_name'] = 'Giám đốc';
+$lang['customers_code_tax'] = 'Mã số thuế';
+
 ?>

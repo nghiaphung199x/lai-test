@@ -399,10 +399,15 @@ class BizCustomer extends Customer
 		return $query->result();
 	}
 	function get_info_person_by_id($id) {
-            $this->db->where('person_id', $id);
-            $query = $this->db->get('people');
-            return $query->row_array();
-        }
+		$this->db->where('person_id', $id);
+		$query = $this->db->get('people');
+		return $query->row_array();
+	}
+		
+	function get_Customer_type() {
+		$query = $this->db->get('customer_type');
+		return $query->result_array();
+	}
 
 }
 ?>
