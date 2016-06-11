@@ -101,6 +101,19 @@
 		<div class="col-md-7">	
 			<div class="buttons-list">
 				<div class="pull-right-btn">
+
+                    <?php if ($this->Employee->has_module_action_permission('groups', 'search', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+                    <?php echo anchor('/groups',
+                                      '<span class="">'.lang('groups_manage').'</span>',
+                                      array('target' => '_blank', 'id' => 'new-person-btn', 'class'=>'btn btn-primary btn-lg', 'title' => lang('groups_manage')));?>
+                    <?php endif; ?>
+
+                    <?php if ($this->Employee->has_module_action_permission('departments', 'search', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+                    <?php echo anchor('/departments',
+                                      '<span class="">'.lang('departments_manage').'</span>',
+                                      array('target' => '_blank', 'id' => 'new-person-btn', 'class'=>'btn btn-primary btn-lg', 'title' => lang('departments_manage')));?>
+                    <?php endif; ?>
+
 					<?php if ($this->Employee->has_module_action_permission($controller_name, 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
 					<?php echo anchor("$controller_name/view/-1/",
 						'<span class="">'.lang($controller_name.'_new').'</span>',

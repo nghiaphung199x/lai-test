@@ -218,8 +218,16 @@ $lang['config_disable_margin_calculator'] = 'Khóa tính năng, tính giá t
 $lang['config_disable_quick_edit'] = 'Tắt tính năng sửa nhanh trên trang quản lý';
 $lang['config_sales_receipt_pdf_size'] = 'Chọn kích thước giấy in';
 $lang['common_total_money'] = 'Tổng tiền';
+
 $lang['config_brand_name'] = 'Tên Brandname';
-$lang['config_user_sms'] = 'Tài khoản SMS';
-$lang['config_user_pass'] = 'Mật khẩu SMS';
-$lang['config_sms_email'] = 'Sms và email';
+$lang['config_sms_user'] = 'Tài khoản SMS';
+$lang['config_sms_pass'] = 'Mật khẩu SMS';
+$lang['config_sms_email_title'] = 'Sms và email';
+$lang['config_email_account'] = 'Email';
+$lang['config_email_pass'] = 'Mật khẩu';
+$lang['config_email_pass_again'] = 'Nhập lại mật khẩu';
+$lang['config_email_account_invalid'] = 'Địa chỉ Email không hợp lệ!';
+$lang['config_email_pass_required'] = 'Mật khẩu email không được để trống!';
+$lang['config_email_pass_err_dupplicate'] = 'Mật khẩu không trùng khớp. Vui lòng nhập lại !';
+
 ?>

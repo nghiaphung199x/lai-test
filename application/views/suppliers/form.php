@@ -283,6 +283,7 @@
 //validation and submit handling
 $(document).ready(function()
 {
+	date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
 	$(".override_default_tax_checkbox").change(function()
 	{
 		$(this).parent().parent().next().toggleClass('hidden')

@@ -22,6 +22,7 @@ class BizCustomers extends Customers
 		) {
 			$this->_scopeOfView = 'view_scope_all';
 		}
+                $this->load->helper('my_table_helper');
 	}
 	function index($offset=0)
 	{
@@ -136,7 +137,8 @@ class BizCustomers extends Customers
 			'state'=>$this->input->post('state'),
 			'zip'=>$this->input->post('zip'),
 			'country'=>$this->input->post('country'),
-			'comments'=>$this->input->post('comments')
+			'comments'=>$this->input->post('comments'),
+			'birth_date' => date('Y-m-d', strtotime($this->input->post('birth_date'))),
 		);
 		
 		
@@ -147,6 +149,14 @@ class BizCustomers extends Customers
 			'taxable'=>$this->input->post('taxable')=='' ? 0:1,
 			'tax_certificate' => $this->input->post('tax_certificate'),
 			'override_default_tax'=> $this->input->post('override_default_tax') ? $this->input->post('override_default_tax') : 0,
+			
+			'type_customer'=> $this->input->post('customer_type') ? $this->input->post('customer_type') : 0,
+			'position'=> $this->input->post('position'),
+			'sex'=> $this->input->post('sex') ? $this->input->post('sex') : 1,
+			'family_info'=> $this->input->post('family_info'),
+			'company_birth_date' => date('Y-m-d', strtotime($this->input->post('company_birth_date'))),
+			'company_manage_name' => $this->input->post('company_manage_name'),
+			'code_tax' => $this->input->post('code_tax'),
 		);
 
 		if($customer_id == -1)
@@ -397,7 +407,7 @@ class BizCustomers extends Customers
 	
 	function do_send_sms()
 	{
-            $check = $this->input->get("type_send");
+        $check = $this->input->get("type_send");
 		$customer_ids = $this->input->post('customer_ids');
 		$sms_id = $this->input->post('sms_id');
 		$info_sms = $this->Customer->get_info_sms($sms_id);
@@ -408,18 +418,21 @@ class BizCustomers extends Customers
 		if($info_max_id['quantity_sms'] > 0){
                     if($check >0){
                         if(isset($_SESSION['sms_tmp'])&&$_SESSION['sms_tmp'] !=NULL){
+                            $this->update_info_list_tmp($_SESSION['sms_tmp']);
                             foreach ($_SESSION['sms_tmp'] as $person_data) {
                                 $id_cus = $person_data['person_id'];
                                 $number_sms++;
                                 $new_keyword = rand(100000, 999999);
                                  $new_message = preg_replace('/\[[a-zA-Z]{2,6}\]/', $new_keyword, $message);
                                 $info_cus = $this->Customer->get_info_person_by_id($id_cus);
+                                //check numberfone
+                                if(!isset($info_cus['phone_number'])||$info_cus['phone_number']=='')continue;
                                 $mobile = '84' . substr($info_cus['phone_number'], 1, strlen($info_cus['phone_number']));
 
                                 $getdata = http_build_query(array(
-                                                'username' => $this->config->item('config_user_sms'),
-                                                'password' => $this->config->item('config_user_pass'),
-                                                'source_addr' => $this->config->item('config_brand_name'),
+                                                'username' => $this->config->item('config_sms_user'),
+                                                'password' => $this->config->item('config_sms_pass'),
+                                                'source_addr' => $this->config->item('config_sms_brand_name'),
                                                 'dest_addr' => $mobile,
                                                 'message' => $new_message,
                                 ));
@@ -429,11 +442,9 @@ class BizCustomers extends Customers
                                                                 'content' => $getdata
                                                 )
                                 );
-//                                $context = stream_context_create($opts);
-//                                $result = file_get_contents('http://sms.vnet.vn:8082/api/sent?' . $getdata, false, $context);
+                                $context = stream_context_create($opts);
+                                $result = file_get_contents('http://sms.vnet.vn:8082/api/sent?' . $getdata, false, $context);
                                 sleep(1);
-                                echo json_encode(array("success" => true, "message" => 'Đã gửi thành công khác hàng'));
-                                continue;
                                 if ($result) {
                                         $data_insert = array(
                                             'id_cus' => $id_cus,
@@ -444,6 +455,8 @@ class BizCustomers extends Customers
                                         );
                                         $this->Customer->save_message($data_insert);
                                         if($result > 0){
+                                                echo json_encode(array("success" => true, "message" => 'Đã gửi thành công khác hàng'));
+                                                $this->delete_customer_from_list_sms($id_cus);
                                                 $data_update_table_number_sms = array(
                                                                 'quantity_sms' => ($info_max_id['quantity_sms'] - $info_sms->number_message),
                                                 );
@@ -460,9 +473,9 @@ class BizCustomers extends Customers
 				$info_cus = $this->Customer->get_info($id_cus);
 				$mobile = '84' . substr($info_cus->phone_number, 1, strlen($info_cus->phone_number));
 				$getdata = http_build_query(array(
-						'username' => $this->config->item('user_sms'),
-						'password' => $this->config->item('pass_sms'),
-						'source_addr' => $this->config->item('brandname'),
+						'username' => $this->config->item('config_sms_user'),
+						'password' => $this->config->item('config_sms_pass'),
+						'source_addr' => $this->config->item('config_sms_brand_name'),
 						'dest_addr' => $mobile,
 						'message' => $message,
 				));
@@ -510,7 +523,7 @@ class BizCustomers extends Customers
 		$data['controller_name'] = $this->_controller_name;
 		$data['form_width'] = $this->get_form_width();
 		$data['per_page'] = $config['per_page'];
-//		$data['manage_table'] = get_sms_manage_table($_SESSION['sms_tmp']['list_person_id'],$this->Customer->get_all_sms_tmp($data['per_page']), $this);
+                $data['manage_table'] = get_customer_manage_table($_SESSION['sms_tmp'], $this);
 		$this->load->view("customers/manage_sms_tmp", $data);
         }
         
@@ -553,6 +566,28 @@ class BizCustomers extends Customers
 		}
 		redirect('customers');
 	}
+        
+        function update_info_list_tmp(&$list_customer=array()){
+            $info = '';
+            if(isset($list_customer)&&count($list_customer)>0){
+                foreach ($list_customer as $person_id => $person_info){
+                    $info = $this->Customer->get_info_person_by_id($person_id);
+                    if($info['first_name'] . " " . $info['last_name'] != $person_info['name'])
+                            $list_customer[$person_id]['name'] = $info_cus['first_name'] . " " . $info_cus['last_name'];
+                    
+                    if($info['phone_number']!=$person_info['phone_number'])
+                         $list_customer[$person_id]['phone_number'] = $info['phone_number'];
+                }
+            }
+        }
+        
+        function delete_customer_from_list_sms($id){
+            if($id>0){
+                unset($_SESSION['sms_tmp'][$id]);
+                return $id;
+            }
+            return 0;
+        }
 	
 	function quotes_contract()
 	{
@@ -654,6 +689,49 @@ class BizCustomers extends Customers
 	function quotes_contract_suggest() {
 		$suggestions = $this->Customer->get_search_suggestions_quotes_contract($this->input->get('term'), 100);
 		echo json_encode($suggestions);
+	}
+	
+	/*
+	 Loads the customer edit form
+	 */
+	function view($customer_id=-1,$redirect_code=0)
+	{
+		$this->check_action_permission('add_update');
+		$this->load->model('Tier');
+		$tiers = array();
+		$tiers_result = $this->Tier->get_all()->result_array();
+	
+		if (count($tiers_result) > 0)
+		{
+			$tiers[0] = lang('common_none');
+			foreach($tiers_result as $tier)
+			{
+				$tiers[$tier['id']]=$tier['name'];
+			}
+		}
+	
+		$data['controller_name']=$this->_controller_name;
+		$data['tiers']=$tiers;
+		$data['person_info']=$this->Customer->get_info($customer_id);
+		$this->load->model('Customer_taxes');
+		$data['customer_tax_info']=$this->Customer_taxes->get_info($customer_id);
+		
+		$customer_typers = array();
+		$customer_typers_result = $data['type_customers'] = $this->Customer->get_Customer_type();
+		
+		if (count($customer_typers_result) > 0)
+		{
+			$customer_typers[0] = lang('common_none');
+			foreach($customer_typers_result as $type)
+			{
+				$customer_typers[$type['customer_type_id']] = $type['name'];
+			}
+		}
+		$data['type_customers'] = $customer_typers;
+		$data['sex'] = array('1'=>'Nam', '2'=>'Nữ');
+		
+		$data['redirect_code']=$redirect_code;
+		$this->load->view("customers/form",$data);
 	}
         
 }

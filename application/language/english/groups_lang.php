@@ -1,5 +1,5 @@
 <?php
-
+$lang['groups_manage'] = 'Manage Groups';
 $lang['groups_new'] = 'New Group';
 $lang['groups_update'] = 'Update Group';
 $lang['groups_confirm_delete'] = 'Are you sure you want to delete the selected groups?';

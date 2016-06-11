@@ -398,4 +398,21 @@ $lang['common_update_success'] = 'Đã cập nhật thành công';
 $lang['common_add_success'] = 'Đã thêm mới thành công';
 $lang['common_error'] = 'Lỗi ! Vui lòng kiểm tra lại';
 
+$lang['customers_sms_tmp_code'] = 'Mã khách hàng';
+$lang['customers_sms_tmp_name'] = 'Tên khách hàng';
+$lang['customers_sms_tmp_phonenumber'] = 'Số điện thoại';
+$lang['customers_sms_send_list'] = 'Gửi tin nhắn';
+$lang['customers_sms_del_list'] = 'Xóa toàn bộ';
+$lang['customers_no_sms'] = 'Không có khách hàng trong danh sách gửi tin nhắn';
+$lang['module_customers_sms_tmp'] = 'danh sách gửi sms';
+$lang['customers_sms_tmp_menu_link'] = 'Quản lý danh sách gửi sms';
+
+$lang['customers_type'] = 'Loại khách hàng';
+$lang['customers_position'] = 'Chức vụ';
+$lang['customers_birth_date'] = 'Ngày sinh';
+$lang['customers_sex'] = 'Giới tính';
+$lang['customers_family_info'] = 'Chồng/Vợ/Con';
+$lang['customers_company_birth_date'] = 'Sinh nhật công ty';
+$lang['customers_company_manage_name'] = 'Giám đốc';
+$lang['customers_code_tax'] = 'Mã số thuế';
 ?>

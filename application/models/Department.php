@@ -306,7 +306,8 @@ class Department extends CI_Model
      * @param mixed $department
      * @return string
      * */
-    public function get_level_line($department, $char = '&nbsp;', $start_item = false, $multiplication = true) {
+    public function get_level_line($department, $char = '&nbsp;', $start_item = false, $multiplication = true)
+    {
         $line = '';
         if (empty($department->path)) {
             return $line;
@@ -329,6 +330,25 @@ class Department extends CI_Model
             $line .= $char;
         }
         return $line;
+    }
+
+    public function get_employees($department_ids, $limit = 10000, $offset = 0, $col = 'last_name', $order = 'asc')
+    {
+        $order_by = '';
+        if (!$this->config->item('speed_up_search_queries')) {
+            $order_by = "ORDER BY " . $col . " " . $order;
+        }
+        $people = $this->db->dbprefix('people');
+        $employees = $this->db->dbprefix('employees');
+        $groups = $this->db->dbprefix('groups');
+        $query = sprintf('SELECT %s.*, %s.*, %s.name AS group_name FROM %s JOIN %s ON (%s.person_id = %s.person_id) JOIN %s ON (%s.group_id = %s.group_id) WHERE %s.deleted = 0 AND department_id IN (%s) %s LIMIT %s, %s',
+                         $people, $employees, $groups, $employees, $people, $employees, $people, $groups, $groups, $employees, $employees, implode(',', $department_ids), $order_by, $offset, $limit);
+        $data = $this->db->query($query);
+        $department_employees = array();
+        foreach ($data->result() as $employee) {
+            $department_employees[$employee->department_id][] = $employee;
+        }
+        return $department_employees;
     }
 }
 
