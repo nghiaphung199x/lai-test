@@ -24,6 +24,7 @@ $lang['sales_select_customer']='Chọn khách hàng (Không bắt buộc)';
 $lang['sales_select_customer_required']='Chọn khách hàng (Bắt buộc)';
 
 $lang['sales_start_typing_customer_name']='Nhập tên khách hàng...';
+$lang['sales_start_typing_deliverer_name']='Nhập tên nhân viên giao hàng...';
 
 $lang['sales_tax']='Thuế';
 

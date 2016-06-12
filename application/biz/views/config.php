@@ -958,6 +958,19 @@ $this->load->helper('demo');
 					<?php echo lang("config_suspended_sales_layaways_info"); ?>
 				</div>
 				<div class="panel-body">
+				
+					<div class="form-group">	
+						<?php echo form_label(lang('common_show_warning_modal_order_sale').' :', 'show_warning_modal_order_sale',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+						<?php echo form_checkbox(array(
+							'name'=>'show_warning_modal_order_sale',
+							'id'=>'show_warning_modal_order_sale',
+							'value'=>'1',
+							'checked'=>$this->config->item('show_warning_modal_order_sale')));?>
+							<label for="show_warning_modal_order_sale"><span></span></label>
+						</div>
+					</div>
+				
 					<div class="form-group">	
 						<?php echo form_label(lang('common_hide_layaways_sales_in_reports').' :', 'hide_layaways_sales_in_reports',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
 						<div class="col-sm-9 col-md-9 col-lg-10">

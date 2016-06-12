@@ -11,6 +11,39 @@ class BizSales extends Sales
 		$this->load->helper('sale');
 	}
 	
+	public function set_sale_delivery_date()
+	{
+		$delivery_date = $this->input->post("delivery_date");
+		
+		$this->sale_lib->set_delivery_date($delivery_date);
+		
+		$this->_reload($data);
+	}
+	
+	function deliverer_search()
+	{
+		//allow parallel searchs to improve performance.
+		session_write_close();
+		$suggestions = $this->Employee->get_search_suggestions($this->input->get('term'),100);
+		echo json_encode($suggestions);
+	}
+	
+	function select_deliverer()
+	{
+		$data = array();
+		$deliverer_id = $this->input->post("deliverer");
+			
+		if ($this->Employee->exists($deliverer_id))
+		{
+			$this->sale_lib->set_deliverer($deliverer_id);
+		} else
+		{
+			$data['error']=lang('sales_unable_to_add_customer');
+		}
+		$this->_reload($data);
+	}
+	
+	
 	function change_sale($sale_id)
 	{
 		$this->check_action_permission('edit_sale');
@@ -131,8 +164,11 @@ class BizSales extends Sales
 
 		$data['store_account_payment'] = ($sale_mode = $this->sale_lib->get_mode()) == 'store_account_payment' ? 1 : 0;
 		
+		$extraData['deliverer'] = $this->sale_lib->get_deliverer();
+		$extraData['delivery_date'] = $this->sale_lib->get_delivery_date();
+		
 		//SAVE sale to database
-		$sale_id_raw = $this->Sale->save($data['cart'], $customer_id, $employee_id, $sold_by_employee_id, $data['comment'],$data['show_comment_on_receipt'],$data['payments'], $suspended_change_sale_id, 0, $data['change_sale_date'], $data['balance'], $data['store_account_payment']); 
+		$sale_id_raw = $this->Sale->save($data['cart'], $customer_id, $employee_id, $sold_by_employee_id, $data['comment'],$data['show_comment_on_receipt'],$data['payments'], $suspended_change_sale_id, 0, $data['change_sale_date'], $data['balance'], $data['store_account_payment'], $extraData); 
 		$data['sale_id']=$this->config->item('sale_prefix').' '.$sale_id_raw;
 		$data['sale_id_raw']=$sale_id_raw;
 		
@@ -458,8 +494,23 @@ class BizSales extends Sales
 		}
 		
 		$sale_id = $this->sale_lib->get_suspended_sale_id();
+		
+		$extraData['deliverer'] = $this->sale_lib->get_deliverer();
+		$extraData['delivery_date'] = $this->sale_lib->get_delivery_date();
+		
 		//SAVE sale to database
-		$sale_id = $this->Sale->save($data['cart'], $customer_id,$employee_id, $sold_by_employee_id, $comment,$show_comment_on_receipt,$data['payments'], $sale_id, $suspend_type,$this->config->item('change_sale_date_when_suspending') ? date('Y-m-d H:i:s') : FALSE, $data['balance']);
+		$sale_id = $this->Sale->save(
+				$data['cart'],
+				$customer_id,
+				$employee_id,
+				$sold_by_employee_id,
+				$comment,
+				$show_comment_on_receipt,
+				$data['payments'],
+				$sale_id,
+				$suspend_type,
+				$this->config->item('change_sale_date_when_suspending') ? date('Y-m-d H:i:s') : FALSE,
+				$data['balance'], 0 , $extraData);
 		
 		$data['sale_id']=$this->config->item('sale_prefix').' '.$sale_id;
 		if ($data['sale_id'] == $this->config->item('sale_prefix').' -1')
@@ -543,6 +594,178 @@ class BizSales extends Sales
 			
 		}
 		$this->sale_lib->clear_all();
+	}
+	function _reload($data=array(), $is_ajax = true)
+	{
+		$data['is_tax_inclusive'] = $this->_is_tax_inclusive();
+		if ($data['is_tax_inclusive'] && count($this->sale_lib->get_deleted_taxes()) > 0)
+		{
+			$this->sale_lib->clear_deleted_taxes();
+		}
+	
+		$person_info = $this->Employee->get_logged_in_employee_info();
+		$modes = array('sale'=>lang('sales_sale'),'return'=>lang('sales_return'));
+	
+		if($this->config->item('customers_store_accounts'))
+		{
+			$modes['store_account_payment'] = lang('sales_store_account_payment');
+		}
+		$data['cart']=$this->sale_lib->get_cart();
+		$data['modes']= $modes;
+		$data['mode']=$this->sale_lib->get_mode();
+		$data['items_in_cart'] = $this->sale_lib->get_items_in_cart();
+		$data['subtotal']=$this->sale_lib->get_subtotal();
+		$data['taxes']=$this->sale_lib->get_taxes();
+		$data['total']=$this->sale_lib->get_total();
+		$data['line_for_flat_discount_item'] = $this->sale_lib->get_line_for_flat_discount_item();
+		$data['discount_all_percent'] = $this->sale_lib->get_discount_all_percent();
+		$data['discount_all_fixed'] = $this->sale_lib->get_discount_all_fixed();
+		$data['items_module_allowed'] = $this->Employee->has_module_permission('items', $person_info->person_id);
+		$data['comment'] = $this->sale_lib->get_comment();
+		$data['show_comment_on_receipt'] = $this->sale_lib->get_comment_on_receipt();
+		$data['email_receipt'] = $this->sale_lib->get_email_receipt();
+		$data['payments_total']=$this->sale_lib->get_payments_totals_excluding_store_account();
+		$data['selected_payment'] = $this->sale_lib->get_selected_payment();
+		$data['amount_due']=$this->sale_lib->get_amount_due();
+		$data['payments']=$this->sale_lib->get_payments();
+		$data['change_sale_date_enable'] = $this->sale_lib->get_change_sale_date_enable();
+		$data['change_sale_date'] = $this->sale_lib->get_change_sale_date();
+		$data['selected_tier_id'] = $this->sale_lib->get_selected_tier_id();
+		$data['is_over_credit_limit'] = false;
+		$data['fullscreen'] = $this->session->userdata('fullscreen');
+		$data['redeem'] = $this->sale_lib->get_redeem();
+		$data['deliverer'] = $this->Employee->get_info($this->sale_lib->get_deliverer());
+		$data['delivery_date'] = $this->sale_lib->get_delivery_date();
+		
+		$customer_id=$this->sale_lib->get_customer();
+	
+		if ($customer_id!=-1)
+		{
+			$cust_info=$this->Customer->get_info($customer_id);
+		}
+	
+	
+		$data['prompt_for_card'] = $this->sale_lib->get_prompt_for_card();
+		$data['cc_processor_class_name'] = $this->_get_cc_processor() ? strtoupper(get_class($this->_get_cc_processor())) : '';
+	
+		if ($this->config->item('select_sales_person_during_sale'))
+		{
+			$employees = array('' => lang('common_not_set'));
+				
+			foreach($this->Employee->get_all()->result() as $employee)
+			{
+				if ($this->Employee->is_employee_authenticated($employee->person_id, $this->Employee->get_logged_in_employee_current_location_id()))
+				{
+					$employees[$employee->person_id] = $employee->first_name.' '.$employee->last_name;
+				}
+			}
+			$data['employees'] = $employees;
+			$data['selected_sold_by_employee_id'] = $this->sale_lib->get_sold_by_employee_id();
+		}
+	
+		$tiers = array();
+	
+		$tiers[0] = lang('common_none');
+		foreach($this->Tier->get_all()->result() as $tier)
+		{
+			$tiers[$tier->id]=$tier->name;
+		}
+	
+		$data['tiers'] = $tiers;
+	
+		if ($this->Location->get_info_for_key('enable_credit_card_processing'))
+		{
+			$data['payment_options']=array(
+					lang('common_cash') => lang('common_cash'),
+					lang('common_check') => lang('common_check'),
+					lang('common_credit') => lang('common_credit'),
+					lang('common_giftcard') => lang('common_giftcard'));
+	
+			if($this->config->item('customers_store_accounts') && $this->sale_lib->get_mode() != 'store_account_payment')
+			{
+				$data['payment_options']=array_merge($data['payment_options'],	array(lang('common_store_account') => lang('common_store_account')
+				));
+			}
+	
+	
+			if ($this->config->item('enable_customer_loyalty_system') && $this->config->item('loyalty_option') == 'advanced' && count(explode(":",$this->config->item('spend_to_point_ratio'),2)) == 2 &&  isset($cust_info) && $cust_info->points >=1 && $this->sale_lib->get_payment_amount(lang('common_points')) <=0)
+			{
+				$data['payment_options']=array_merge($data['payment_options'],	array(lang('common_points') => lang('common_points')));
+			}
+		}
+		else
+		{
+			$data['payment_options']=array(
+					lang('common_cash') => lang('common_cash'),
+					lang('common_check') => lang('common_check'),
+					lang('common_giftcard') => lang('common_giftcard'),
+					lang('common_debit') => lang('common_debit'),
+					lang('common_credit') => lang('common_credit')
+			);
+	
+			if($this->config->item('customers_store_accounts') && $this->sale_lib->get_mode() != 'store_account_payment')
+			{
+				$data['payment_options']=array_merge($data['payment_options'],	array(lang('common_store_account') => lang('common_store_account')
+				));
+			}
+	
+			if ($this->config->item('enable_customer_loyalty_system') && $this->config->item('loyalty_option') == 'advanced' && count(explode(":",$this->config->item('spend_to_point_ratio'),2)) == 2 &&  isset($cust_info) && $cust_info->points >=1 && $this->sale_lib->get_payment_amount(lang('common_points')) <=0)
+			{
+				$data['payment_options']=array_merge($data['payment_options'],	array(lang('common_points') => lang('common_points')));
+			}
+	
+		}
+	
+		foreach($this->Appconfig->get_additional_payment_types() as $additional_payment_type)
+		{
+			$data['payment_options'][$additional_payment_type] = $additional_payment_type;
+		}
+	
+		$deleted_payment_types = $this->config->item('deleted_payment_types');
+		$deleted_payment_types = explode(',',$deleted_payment_types);
+	
+		foreach($deleted_payment_types as $deleted_payment_type)
+		{
+			foreach($data['payment_options'] as $payment_option)
+			{
+				if ($payment_option == $deleted_payment_type)
+				{
+					unset($data['payment_options'][$payment_option]);
+				}
+			}
+		}
+			
+		if($customer_id!=-1)
+		{
+			$data['customer']=$cust_info->first_name.' '.$cust_info->last_name.($cust_info->company_name==''  ? '' :' ('.$cust_info->company_name.')');
+			$data['customer_email']=$cust_info->email;
+			$data['customer_balance'] = $cust_info->balance;
+			$data['customer_credit_limit'] = $cust_info->credit_limit;
+			$data['is_over_credit_limit'] = $this->sale_lib->is_over_credit_limit();
+			$data['customer_id']=$customer_id;
+			$data['customer_cc_token'] = $cust_info->cc_token;
+			$data['customer_cc_preview'] = $cust_info->cc_preview;
+			$data['save_credit_card_info'] = $this->sale_lib->get_save_credit_card_info();
+			$data['use_saved_cc_info'] = $this->sale_lib->get_use_saved_cc_info();
+			$data['avatar']=$cust_info->image_id ?  site_url('app_files/view/'.$cust_info->image_id) : base_url()."assets/img/user.png"; //can be changed to  base_url()."img/avatar.png" if it is required
+				
+			$data['points'] = to_currency_no_money($cust_info->points);
+			$data['sales_until_discount'] = $this->config->item('number_of_sales_for_discount') - $cust_info->current_sales_for_discount;
+		}
+		$data['customer_required_check'] = (!$this->config->item('require_customer_for_sale') || ($this->config->item('require_customer_for_sale') && isset($customer_id) && $customer_id!=-1));
+		$data['suspended_sale_customer_required_check'] = (!$this->config->item('require_customer_for_suspended_sale') || ($this->config->item('require_customer_for_suspended_sale') && isset($customer_id) && $customer_id!=-1));
+		$data['payments_cover_total'] = $this->_payments_cover_total();
+	
+		$data['discount_editable_placement'] = $this->agent->is_mobile() && !$this->agent->is_tablet() ? 'top' : 'left';
+	
+		if ($is_ajax)
+		{
+			$this->load->view("sales/register",$data);
+		}
+		else
+		{
+			$this->load->view("sales/register_initial",$data);
+		}
 	}
 }
 ?>

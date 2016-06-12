@@ -2,6 +2,25 @@
 require_once (APPPATH . "models/Sale.php");
 class BizSale extends Sale
 {
+	public function getInfo($sale_id)
+	{
+		$this->db->from('sales');
+		$this->db->where('sale_id',$sale_id);
+		$result = $this->db->get()->result_array();
+		
+		if (isset($result[0])) {
+			return $result[0];
+		}
+		return null;
+	}
+	
+	public function getWarningOrder($intervalDays = 7)
+	{
+		$query = "select * from " . $this->db->dbprefix('sales') . " WHERE location_id = ". $this->Employee->get_logged_in_employee_current_location_id() ." AND delivery_date IS NOT NULL AND DATE(delivery_date) >= CURRENT_DATE() AND DATE(delivery_date) <= CURRENT_DATE() + INTERVAL ". $intervalDays ." DAY";
+		$query = $this->db->query($query);
+		return $query->result_array();
+	}
+	
 	function getMeasureOnSaleItem($saleId, $ItemId)
 	{
 		$this->db->from('sales_items');
@@ -17,7 +36,19 @@ class BizSale extends Sale
 		
 		return FALSE;
 	}
-	function save ($items,$customer_id,$employee_id, $sold_by_employee_id, $comment,$show_comment_on_receipt,$payments,$sale_id=false, $suspended = 0, $change_sale_date=false,$balance=0, $store_account_payment = 0)
+	function save (
+			$items,
+			$customer_id,
+			$employee_id,
+			$sold_by_employee_id, 
+			$comment,
+			$show_comment_on_receipt,
+			$payments,
+			$sale_id=false,
+			$suspended = 0,
+			$change_sale_date=false,
+			$balance=0,
+			$store_account_payment = 0, $extraData = array())
 	{
 		if ($this->config->item('test_mode'))
 		{
@@ -82,8 +113,9 @@ class BizSale extends Sale
 			'store_account_payment' => $store_account_payment,
 			'tier_id' => $tier_id ? $tier_id : NULL,
 			'deleted_taxes' =>  $deleted_taxes? serialize($deleted_taxes) : NULL,
+			'deliverer' => $extraData['deliverer'],
+			'delivery_date' => isset($extraData['delivery_date']) ? date('Y-m-d H:i:s', strtotime($extraData['delivery_date'])) : date('Y-m-d H:i:s'),
 		);
-			
 		if ($suspended == 1) //Layaway
 		{
 			$sales_data['was_layaway'] = 1;

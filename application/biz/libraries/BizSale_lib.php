@@ -3,6 +3,64 @@ require_once (APPPATH.'/libraries/Sale_lib.php');
 
 class BizSale_lib extends Sale_lib
 {
+	function clear_all()
+	{
+		$this->clear_mode();
+		$this->empty_cart();
+		$this->clear_comment();
+		$this->clear_show_comment_on_receipt();
+		$this->clear_change_sale_date();
+		$this->clear_change_sale_date_enable();
+		$this->clear_email_receipt();
+		$this->empty_payments();
+		$this->delete_customer(false);
+		$this->delete_suspended_sale_id();
+		$this->delete_change_sale_id();
+		$this->delete_partial_transactions();
+		$this->clear_save_credit_card_info();
+		$this->clear_use_saved_cc_info();
+		$this->clear_prompt_for_card();
+		$this->clear_selected_tier_id();
+		$this->clear_deleted_taxes();
+		$this->clear_cc_info();
+		$this->clear_sold_by_employee_id();
+		$this->clear_selected_payment();
+		$this->clear_invoice_no();
+		$this->clear_redeem();
+		$this->clear_deliverer();
+		$this->clear_delivery_date();
+	}
+	
+	public function clear_delivery_date()
+	{
+		$this->CI->session->unset_userdata('sale_delivery_date');
+	}
+	
+	public function set_delivery_date($delivery_date)
+	{
+		$this->CI->session->set_userdata('sale_delivery_date', $delivery_date);
+	}
+	
+	public function get_delivery_date()
+	{
+		return $this->CI->session->userdata('sale_delivery_date');
+	}
+	
+	public function clear_deliverer()
+	{
+		$this->CI->session->unset_userdata('sale_deliverer_id');
+	}
+	
+	public function set_deliverer($deliverer_id)
+	{
+		$this->CI->session->set_userdata('sale_deliverer_id', $deliverer_id);
+	}
+	
+	public function get_deliverer()
+	{
+		return $this->CI->session->userdata('sale_deliverer_id');
+	}
+	
 	function copy_entire_sale($sale_id, $is_receipt = false)
 	{
 		$this->empty_cart();
@@ -74,7 +132,11 @@ class BizSale_lib extends Sale_lib
 	
 		$this->set_sold_by_employee_id($this->CI->Sale->get_sold_by_employee_id($sale_id));
 		$this->set_deleted_taxes($this->CI->Sale->get_deleted_taxes($sale_id));
-	
+		
+		$saleInfo = $this->CI->Sale->getInfo($sale_id);
+		
+		$this->set_deliverer($saleInfo['deliverer']);
+		$this->set_delivery_date($saleInfo['delivery_date']);
 	}
 	
 	function edit_item($line,$description = NULL,$serialnumber = NULL,$quantity = NULL,$discount = NULL,$price = NULL, $cost_price = NULL, $measureId = NULL)
