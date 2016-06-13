@@ -5,6 +5,7 @@ $lang['module_customers']='Khách hàng';
 $lang['module_customers_desc']='Thêm, Sửa, Xóa, và Tìm kiếm khách hàng';
 $lang['module_customers_sms']='SMS Brandname';
 $lang['module_customers_quotes_contract']='mẫu báo giá, hợp đồng';
+$lang['module_customers_mail']='Mail';
 
 $lang['module_suppliers']='Nhà cung cấp';
 $lang['module_suppliers_desc']='Thêm, Sửa, Xóa, và Tìm kiếm các nhà cung cấp';

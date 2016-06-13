@@ -88,4 +88,14 @@ $lang['customers_sms_delete_msg_frs'] = 'Đã xóa';
 $lang['customers_sms_delete_msg_ed'] = 'SMS !';
 $lang['customers_sms_delete_msg_confrim'] = 'Bạn muốn xóa SMS này?';
 
+$lang['common_no_mail_to_display'] = 'Không có dữ liệu mail';
+$lang['customers_mail_new'] = 'Thêm mới mail';
+$lang['customers_mail_edit'] = 'Sửa mail';
+$lang['customers_manage_mail_replate_info'] = 'Thông tin các từ thay thế';
+$lang['customers_manage_mail_title'] = 'Tiêu đề gửi mail';
+$lang['customers_manage_mail_content'] = 'Nội dung gửi mail';
+$lang['customers_mail_menu_link'] = 'Quản lý mail';
+$lang['customers_mail_delete_msg_confrim'] = 'Bạn muốn xóa Email này?';
+
+
 ?>

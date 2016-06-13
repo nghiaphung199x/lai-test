@@ -733,6 +733,142 @@ class BizCustomers extends Customers
 		$data['redirect_code']=$redirect_code;
 		$this->load->view("customers/form",$data);
 	}
-        
+	
+	function manage_mail() {
+	
+		$config['total_rows'] = $this->Customer->count_all_mail();
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$config['base_url'] = site_url('customers/sorting_mail');
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['controller_name'] = $this->_controller_name;
+		$data['per_page'] = $config['per_page'];
+		$data['total_rows'] = $config['total_rows'];
+		
+		$data['manage_table'] = get_mail_manage_table($this->Customer->get_all_mail($data['per_page']), $this);
+		$this->load->view("customers/manage_mail", $data);
+	}
+	
+	function sorting_mail() {
+		$per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+	
+		$config['total_rows'] = $this->Customer->count_all_mail();
+		$table_data = $this->Customer->get_all_mail($per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'mail_title', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'asc');
+	
+		$config['base_url'] = site_url('customers/sorting_mail');
+		$config['per_page'] = $per_page;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['manage_table'] = get_mail_manage_table_data_rows($table_data, $this);
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
+	}
+	
+	function create_mail() {
+		$this->load->helper('ckeditor');
+		$this->load->view("customers/create_mail", $data);
+	}
+	
+	/**
+	 * Function edit/add mail template
+	 */
+	function view_mail($mail_id = -1) {
+		$config['global_xss_filtering'] = FALSE;
+		$this->form_validation->set_rules('inhoud', 'inhoud', 'xss|clean');
+		$data['mail_info'] = $this->Customer->get_info_mail($mail_id);
+		$this->load->helper('ckeditor');
+	
+		//Ckeditor's configuration
+		$data['ckeditor'] = array(
+				//ID of the textarea that will be replaced
+				'id' => 'mail_content',
+				'path' => 'assets/js/biz/ckeditor/',
+				'value' => isset($_POST['mail_content']) ? $_POST['mail_content'] : '',
+				//Optionnal values
+				'config' => array(
+						'toolbar' => "Full", //Using the Full toolbar
+						'width' => "100%", //Setting a custom width
+						'height' => '200px', //Setting a custom height
+				),
+				//Replacing styles from the "Styles tool"
+				'styles' => array(
+						//Creating a new style named "style 1"
+						'style 1' => array(
+								'name' => 'Blue Title',
+								'element' => 'h2',
+								'styles' => array(
+										'color' => 'Blue',
+										'font-weight' => 'bold'
+								)
+						),
+						//Creating a new style named "style 2"
+						'style 2' => array(
+								'name' => 'Red Title',
+								'element' => 'h2',
+								'styles' => array(
+										'color' => 'Red',
+										'font-weight' => 'bold',
+										'text-decoration' => 'underline'
+								)
+						)
+				)
+		);
+	
+	
+		$this->load->view("customers/create_mail", $data);
+	}
+	
+	function save_mail($mail_id = -1) {
+	
+		$mail_data = array(
+				'mail_title' => $this->input->post('mail_title'),
+				'mail_content' => $this->input->post('mail_content')
+		);
+		//print_r($mail_data);die;
+		if ($this->Customer->save_mail($mail_data, $mail_id)) {
+			if ($mail_id == -1) {
+				echo json_encode(array('success' => true, 'message' => 'Đã thêm mail mới: ' .
+						$mail_data['mail_title'], 'mail_title' => $mail_data['mail_title']));
+			} else { //previous customer
+				echo json_encode(array('success' => true, 'message' => 'Đã cập nhật email: ' .
+						$mail_data['mail_title'], 'mail_title' => $mail_data['mail_title']));
+			}
+		} else {//failure
+			echo json_encode(array('success' => false, 'message' => 'Lỗi khi thêm email mới ', 'mail_id' => -1));
+		}
+	}
+	
+	function delete_mail() {
+		$check = true;
+		$mails_to_delete = $this->input->post('ids');
+		$list_mail_template = array();
+		$list_mail_template[] = $this->config->item('mail_template_birthday');
+		$list_mail_template[] = $this->config->item('mail_template_contact');
+		$list_mail_template[] = $this->config->item('mail_template_calendar');
+		$title_mail = array();
+		foreach ($list_mail_template as $key => $value) {
+			$info_mail = $this->Customer->get_info_mail($value);
+			$title_mail[] = $info_mail->mail_title;
+			foreach ($mails_to_delete as $key1 => $value1) {
+				if ($value == $value1) {
+					$check = false;
+				}
+			}
+		}
+		if ($check) {
+			if ($this->Customer->delete_mail_list($mails_to_delete)) {
+				echo json_encode(array('success' => true, 'message' => ' Đã xóa!' . count($mails_to_delete) . ' email!'));
+			} else {
+				echo json_encode(array('success' => false, 'message' => 'Lỗi! Không xóa được, vui lòng thử lại!'));
+			}
+		} else {
+			$msg = "<br>(";
+			for ($i = 0; $i < count($title_mail); $i++) {
+				$msg .= $title_mail[$i] . "), ";
+			}
+			echo json_encode(array('success' => false, 'message' => 'Lỗi! Không được xóa mail tempalte config tự động!' . substr($msg, 0, strlen($msg) - 2) . ")"));
+		}
+	}
+	
 }
 ?>
+
