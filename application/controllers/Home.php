@@ -45,10 +45,9 @@ class Home extends Secure_area
 			$data['month_sale'] = $this->sales_widget();
 		}
 		
-		$data['show_warning_orders_modal'] = ($current_location && $this->config->item('show_warning_modal_order_sale')) ? true : false;
 		$data['warning_orders'] = $this->Sale->getWarningOrder();
 		
-		$data['show_warning_orders_modal'] = $data['show_warning_orders_modal'] && !empty($data['warning_orders']);
+		$data['show_warning_orders_modal'] = (!$choose_location && $this->config->item('show_warning_modal_order_sale') && !empty($data['warning_orders'])) ? true : false;
 		
 		$this->load->helper('demo');
 		$data['can_show_mercury_activate'] = (!is_on_demo_host() && !$this->config->item('mercury_activate_seen')) && !$this->Location->get_info_for_key('enable_credit_card_processing');		
