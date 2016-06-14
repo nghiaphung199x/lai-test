@@ -25,11 +25,11 @@ class BizCustomer extends Customer
 						WHERE deleted =0 $order_by 
 						LIMIT  ".$offset.",".$limit;
 
-		if($extra['scope_of_view'] == 'view_scope_owner') {
+		if(isset($extra['scope_of_view']) && $extra['scope_of_view'] == 'view_scope_owner') {
 			$query = "SELECT *  FROM ".$people." STRAIGHT_JOIN ".$customers." ON ".$people.".person_id = ".$customers.".person_id
 						WHERE deleted = 0 AND ". $customers .".created_by = ". $this->Employee->get_logged_in_employee_info()->person_id ."
 						$order_by LIMIT  ".$offset.",".$limit;
-		} elseif($extra['scope_of_view'] == 'view_scope_location') {
+		} elseif(isset($extra['scope_of_view']) && $extra['scope_of_view'] == 'view_scope_location') {
 			$query = "SELECT *  FROM ".$people." STRAIGHT_JOIN ".$customers." ON ".$people.".person_id = ".$customers.".person_id
 						WHERE deleted = 0 AND ". $customers .".created_location_id = ". $this->Employee->get_logged_in_employee_current_location_id() ."
 						$order_by LIMIT  ".$offset.",".$limit;
@@ -476,6 +476,10 @@ class BizCustomer extends Customer
 	function delete_mail_list($mail_ids) {
 		$this->db->where_in('mail_id', $mail_ids);
 		return $this->db->update('mail_template', array('deleted' => 1));
+	}
+	
+	function add_mail_history($data) {
+		$this->db->insert("mail_history", $data);
 	}
 }
 ?>

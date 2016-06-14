@@ -172,8 +172,8 @@
 				  }
 			 },
 			 messages: {
-				  mail_title: "Bạn phải nhập tiêu đề",
-				  mail_content: "Bạn phải nhập nội dung",
+				  mail_title: <?php echo lang('customers_mail_required_title');?>,
+				  mail_content: <?php echo lang('customers_mail_required_content');?>,
 			 }
 		});
 

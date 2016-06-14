@@ -1124,4 +1124,64 @@ function get_mail_data_row($mail, $controller) {
     return $table_data_row;
 }
 
+function get_mail_manage_table_temp($mail, $controller) {
+	$CI = & get_instance();
+	$table = '<table class="tablesorter table table-hover" id="sortable_table">';
+
+	$headers = array(
+			'Tên KH',
+			'Email',
+	        '&nbsp');
+	
+	$table.='<thead><tr>';
+
+    $count = 0;
+    foreach ($headers as $header) {
+        $count++;
+
+        if ($count == 1) {
+            $table.="<th class='leftmost'>$header</th>";
+        } elseif ($count == count($headers)) {
+            $table.="<th class='rightmost'>$header</th>";
+        } else {
+            $table.="<th>$header</th>";
+        }
+    }
+    $table.='</tr></thead><tbody>';
+    $table.=get_mail_manage_table_data_rows_temp($mail, $controller);
+    $table.='</tbody></table>';
+    return $table;
+}
+
+/*
+  Gets the html data rows for the mail.
+ */
+
+function get_mail_manage_table_data_rows_temp($mail, $controller) {
+    $CI = & get_instance();
+    $table_data_rows = '';
+
+    foreach ($mail as $key => $value ) {
+        $table_data_rows.=get_mail_data_row_temp($key, $value, $controller);
+    }
+
+    if (count($mail) == 0) {
+        $table_data_rows.="<tr><td colspan='4'><div class='col-md-12 text-center text-warning'>" . lang('common_no_mail_to_display') . "</div></tr></tr>";
+    }
+
+    return $table_data_rows;
+}
+
+function get_mail_data_row_temp($customer_id, $customer_info, $controller) {
+    $CI = & get_instance();
+	$controller_name = str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
+
+	$table_data_row = '<tr>';
+	$table_data_row.='<td>' . H($customer_info['name']) . '</a></td>';
+	$table_data_row.='<td>' . H($customer_info['email']) . '</td>';
+	$table_data_row.='<td class="rightmost">' . anchor($controller_name . "#", lang('common_delete'), array('title' => $customer_id, 'class' => 'delete_email_temp btn btn-primary btn-lg','data-id'=>$customer_id)) . '</td>';
+	$table_data_row.='</tr>';
+	return $table_data_row;
+}
+
 ?>

@@ -826,14 +826,14 @@ class BizCustomers extends Customers
 		//print_r($mail_data);die;
 		if ($this->Customer->save_mail($mail_data, $mail_id)) {
 			if ($mail_id == -1) {
-				echo json_encode(array('success' => true, 'message' => 'Đã thêm mail mới: ' .
+				echo json_encode(array('success' => true, 'message' => lang('common_add_success') .
 						$mail_data['mail_title'], 'mail_title' => $mail_data['mail_title']));
 			} else { //previous customer
-				echo json_encode(array('success' => true, 'message' => 'Đã cập nhật email: ' .
+				echo json_encode(array('success' => true, 'message' => lang('common_update_success') .
 						$mail_data['mail_title'], 'mail_title' => $mail_data['mail_title']));
 			}
 		} else {//failure
-			echo json_encode(array('success' => false, 'message' => 'Lỗi khi thêm email mới ', 'mail_id' => -1));
+			echo json_encode(array('success' => false, 'message' => lang('common_error') , 'mail_id' => -1));
 		}
 	}
 	
@@ -856,19 +856,256 @@ class BizCustomers extends Customers
 		}
 		if ($check) {
 			if ($this->Customer->delete_mail_list($mails_to_delete)) {
-				echo json_encode(array('success' => true, 'message' => ' Đã xóa!' . count($mails_to_delete) . ' email!'));
+				echo json_encode(array('success' => true, 'message' => lang('common_detach') . count($mails_to_delete) . ' email!'));
 			} else {
-				echo json_encode(array('success' => false, 'message' => 'Lỗi! Không xóa được, vui lòng thử lại!'));
+				echo json_encode(array('success' => false, 'message' => lang('common_error')));
 			}
 		} else {
 			$msg = "<br>(";
 			for ($i = 0; $i < count($title_mail); $i++) {
 				$msg .= $title_mail[$i] . "), ";
 			}
-			echo json_encode(array('success' => false, 'message' => 'Lỗi! Không được xóa mail tempalte config tự động!' . substr($msg, 0, strlen($msg) - 2) . ")"));
+			echo json_encode(array('success' => false, 'message' => lang('customers_mail_delete_err_mail_auto') . substr($msg, 0, strlen($msg) - 2) . ")"));
 		}
 	}
 	
+	function send_mail() {
+		$data['list_mail'] = $this->Customer->get_all_mail();
+		$this->load->view("customers/send_mail", $data);
+	}
+	
+	/**
+	 * Function send email
+	 */
+	function do_send_mail() {
+		$check = $this->input->post("type_send");
+		$customer_ids = $this->input->post('customer_ids');
+		$mail_id = $this->input->post('mail_id');
+		$mail_info = $this->Customer->get_info_mail($mail_id);
+		$info_emp = $this->Employee->get_info($this->session->userdata('person_id'));
+		$list_email = array();
+		$send_success = array();
+		$send_fail = array();
+		$config = Array(
+				'protocol' => 'smtp',
+				'smtp_host' => 'ssl://smtp.googlemail.com',
+				'smtp_port' => 465,
+				'smtp_user' => $this->config->item('config_email_account'),
+				'smtp_pass' => $this->config->item('config_email_pass'),
+				'charset' => 'utf-8',
+				'mailtype' => 'html'
+		);
+		$this->load->library('email', $config);
+		$this->email->set_newline("\r\n");
+		$this->email->from($this->config->item('email'), $this->config->item('company'));
+		$this->email->subject($mail_info->mail_title);
+		
+		if ($check == 1) {
+			if (isset($_SESSION['mail']) && $_SESSION['mail'] != NULL) {
+				foreach ($_SESSION['mail'] as $mail) {
+					$list_email[] = $mail['email'];
+					if ($mail['email'] != "") {
+// 						$user_info = $this->Customer->get_info_person_by_id($mail['person_id']);
+						$user_info = $this->Customer->get_info($mail['person_id']);
+						
+						$user_info = (array) $user_info;
+						$user_info = get_object_vars($user_info);
+						
+// 						$info_contraccustomer = $this->Contractcustomers->get_info_contraccustomer_by_customer($mail['person_id']);
+						$info_contraccustomer = false;
+						$content = $mail_info->mail_content;
+						//Thong tin khach hang duoc gui mail
+						$content = str_replace('__FIRST_NAME__', $user_info['first_name'], $content);
+						$content = str_replace('__LAST_NAME__', $user_info['last_name'], $content);
+						$content = str_replace('__PHONE_NUMBER__', $user_info['phone_number'], $content);
+						$content = str_replace('__EMAIL__', $user_info['email'], $content);
+						$content = str_replace('__COMPANY_CUSTOMER__', $user_info['company_name'], $content);
+						//Thong tin chu ky cong ty gui mail
+						$content = str_replace('__NAME_COMPANY__', '<b>' . $this->config->item('company') . '</b>', $content);
+						$content = str_replace('__ADDRESS_COMPANY__', $this->config->item('address'), $content);
+						$content = str_replace('__EMAIL_COMPANY__', $this->config->item('email'), $content);
+						$content = str_replace('__FAX_COMPANY__', $this->config->item('fax'), $content);
+						$content = str_replace('__WEBSITE_COMPANY__', $this->config->item('website'), $content);
+						//Thong tin nhan vien
+						$content = str_replace('__FIRST_NAME_EMPLOYEE__', '<b>' . $info_emp->first_name . '</b>', $content);
+						$content = str_replace('__LAST_NAME_EMPLOYEE__', $info_emp->last_name, $content);
+						$content = str_replace('__PHONE_NUMBER_EMPLOYEE__', $info_emp->phone_number, $content);
+						$content = str_replace('__EMAIL_EMPLOYEE__', $info_emp->email, $content);
+						//Thong tin hop dong
+						if ($info_contraccustomer) {
+							$content = str_replace('__NAME_CONTRACT__', '<b>' . $info_contraccustomer['name'] . '</b>', $content);
+							$content = str_replace('__NUMBER_CONTRACT__', $info_contraccustomer['number_contract'], $content);
+							$content = str_replace('__START_DATE__', date('d-m-Y', strtotime($info_contraccustomer['start_date'])), $content);
+							$content = str_replace('__EXPIRATION_DATE__', date('d-m-Y', strtotime($info_contraccustomer['end_date'])), $content);
+						} else {
+							$content = str_replace('__NAME_CONTRACT__', '', $content);
+							$content = str_replace('__NUMBER_CONTRACT__', '', $content);
+							$content = str_replace('__START_DATE__', '', $content);
+							$content = str_replace('__EXPIRATION_DATE__', '', $content);
+						}
+						$this->email->message($content);
+						$this->email->to($mail['email']);
+						if ($this->email->send()) {
+							$send_success[] = $mail['email'];
+							$data_history = array(
+									'person_id' => $mail['person_id'],
+									'employee_id' => $this->session->userdata('person_id'),
+									'title' => $mail_info->mail_title,
+									'content' => $content,
+									'time' => date('Y-m-d H:i:s'),
+									'status' => 1,
+							);
+							$this->Customer->add_mail_history($data_history);
+							unset($_SESSION['mail'][$mail['person_id']]);
+						} else {
+							$send_fail[] = $mail['email'];
+							$data_history = array(
+									'person_id' => $mail['person_id'],
+									'employee_id' => $this->session->userdata('person_id'),
+									'title' => $mail_info->mail_title,
+									'content' => $content,
+									'time' => date('Y-m-d H:i:s'),
+									'status' => 0,
+							);
+							$this->Customer->add_mail_history($data_history);
+							show_error($this->email->print_debugger());
+							unset($_SESSION['mail'][$mail['person_id']]);
+							unset($_SESSION['mail_total']);
+						}
+					}
+				}
+			}
+		} else {
+			foreach ($customer_ids as $cust) {
+				$info_cus = $this->Customer->get_info($cust);
+// 				$info_contraccustomer = $this->Contractcustomers->get_info_contraccustomer_by_customer($info_cus->person_id);
+				$info_contraccustomer = false;
+				if ($info_cus->email != "") {
+					$this->email->message($mail_info->mail_content);
+					$content = $mail_info->mail_content;
+					//Thong tin khach hang duoc gui mail
+					$content = str_replace('__FIRST_NAME__', $info_cus->first_name, $content);
+					$content = str_replace('__LAST_NAME__', $info_cus->last_name, $content);
+					$content = str_replace('__PHONE_NUMBER__', $info_cus->phone_number, $content);
+					$content = str_replace('__EMAIL__', $info_cus->email, $content);
+					$content = str_replace('__COMPANY_CUSTOMER__', $info_cus->company_name, $content);
+					//Thong tin chu ky cong ty gui mail
+					$content = str_replace('__NAME_COMPANY__', '<b>' . $this->config->item('company') . '</b>', $content);
+					$content = str_replace('__ADDRESS_COMPANY__', $this->config->item('address'), $content);
+					$content = str_replace('__EMAIL_COMPANY__', $this->config->item('email'), $content);
+					$content = str_replace('__FAX_COMPANY__', $this->config->item('fax'), $content);
+					$content = str_replace('__WEBSITE_COMPANY__', $this->config->item('website'), $content);
+					//Thong tin nhan vien
+					$content = str_replace('__FIRST_NAME_EMPLOYEE__', '<b>' . $info_emp->first_name . '</b>', $content);
+					$content = str_replace('__LAST_NAME_EMPLOYEE__', $info_emp->last_name, $content);
+					$content = str_replace('__PHONE_NUMBER_EMPLOYEE__', $info_emp->phone_number, $content);
+					$content = str_replace('__EMAIL_EMPLOYEE__', $info_emp->email, $content);
+					//Thong tin hop dong
+					if ($info_contraccustomer) {
+						$content = str_replace('__NAME_CONTRACT__', '<b>' . $info_contraccustomer['name'] . '</b>', $content);
+						$content = str_replace('__NUMBER_CONTRACT__', $info_contraccustomer['number_contract'], $content);
+						$content = str_replace('__START_DATE__', date('d-m-Y', strtotime($info_contraccustomer['start_date'])), $content);
+						$content = str_replace('__EXPIRATION_DATE__', date('d-m-Y', strtotime($info_contraccustomer['end_date'])), $content);
+					} else {
+						$content = str_replace('__NAME_CONTRACT__', '', $content);
+						$content = str_replace('__NUMBER_CONTRACT__', '', $content);
+						$content = str_replace('__START_DATE__', '', $content);
+						$content = str_replace('__EXPIRATION_DATE__', '', $content);
+					}
+					$this->email->message($content);
+					$this->email->to($info_cus->email);
+					if ($this->email->send()) {
+						$send_success[] = $info_cus->email;
+						$data_history = array(
+								'person_id' => $cust,
+								'employee_id' => $this->session->userdata('person_id'),
+								'title' => $mail_info->mail_title,
+								'content' => $content,
+								'time' => date('Y-m-d H:i:s'),
+								'status' => 1,
+						);
+						$this->Customer->add_mail_history($data_history);
+					} else {
+						$send_fail[] = $info_cus->email;
+						$data_history = array(
+								'person_id' => $cust,
+								'employee_id' => $this->session->userdata('person_id'),
+								'title' => $mail_info->mail_title,
+								'content' => $content,
+								'time' => date('Y-m-d H:i:s'),
+								'status' => 0,
+						);
+						$this->Customer->add_mail_history($data_history);
+						show_error($this->email->print_debugger());
+					}
+				}
+			}
+		}
+	
+		if (empty($send_success)) {
+			echo json_encode(array('success' => false, 'message' => lang('customers_mail_not_send: ')));
+		} else if (empty($send_fail)) {
+			echo json_encode(array(
+					'success' => true,
+					'message' => lang('customers_mail_send_success')));
+		} else {
+			$list_success = '';
+			foreach ($send_success as $s) {
+				$list .= $s . ', ';
+			}
+			$list_fail = '';
+			foreach ($send_fail as $s) {
+				$list .= $s . ', ';
+			}
+			echo json_encode(array('success' => true, 'message' => lang('customers_mail_send_success') . $list_success)) .
+			json_encode(array('success' => false, 'message' => lang('customers_mail_not_send: ') . $list_fail));
+		}
+	}
+	
+	function save_list_send_mail($item_ids) {
+		$item_ids = explode('~', $item_ids);
+		$_SESSION['mail_total'] = count($item_ids);
+		foreach ($item_ids as $item) {
+			$info_cus = $this->Customer->get_info_person_by_id($item);
+			if (isset($_SESSION['mail'][$item])) {
+				continue;
+			} else {
+				$_SESSION['mail'][$info_cus['person_id']] = array(
+						'person_id' => $item,
+						'name' => $info_cus['first_name'] . " " . $info_cus['last_name'],
+						'email' => $info_cus['email'],
+				);
+			}
+		}
+		redirect('customers');
+	}
+	
+	function manage_mail_temp() {
+		$mailData = isset($_SESSION['mail']) ? $_SESSION['mail'] : array();
+		$config['total_rows'] = count($mailData);
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+		$config['base_url'] = site_url('customers/sorting_mail');
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['controller_name'] = $this->_controller_name;
+		$data['per_page'] = $config['per_page'];
+		$data['total_rows'] = $config['total_rows'];
+
+		$data['manage_table'] = get_mail_manage_table_temp($mailData, $this);
+		$this->load->view("customers/manage_email_temp", $data);
+	}
+	
+	function remove_mail_list() {
+        $person_id = isset($_POST['ids']) ? $_POST['ids'] : '0';
+        if ($person_id == 0) {
+            unset($_SESSION['mail']);
+            unset($_SESSION['mail_total']);
+        } else {
+            unset($_SESSION['mail'][$person_id]);
+            $_SESSION['mail_total'] = count($_SESSION['mail_total']) - 1;
+            echo count($_SESSION['mail']);
+        }
+    }
 }
 ?>
 
