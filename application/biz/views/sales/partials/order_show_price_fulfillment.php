@@ -1,34 +1,37 @@
 <style type="text/css">
 	#pdf_content {
-		width: 700px;
 		display: block;
 		overflow: hidden;
 		position: relative;
-		padding: 20px;
-		font-size: 12px;
+                height: auto; width: 255px;
+                font-family: Arial;
+		font-size: 8px !important;
 	}
-	#pdf_logo img {
-		max-height: 70px;
+	#pdf_logo  {
+		text-align: center;
+                width: 255px;
 	}
 	#company_name {
 		text-transform: uppercase;
 		font-weight: bold;
-		color: #002FC2
+		color: #002FC2;
+                width: 255px;
+                text-align: center;
+                font-size: 8px;
 	}
 	#pdf_content span {
 		color: #002FC2;
 	}
 	#pdf_title {
-		width: 100%;
+		width: 255px;
 		text-align: center;
 		text-transform: uppercase;
 		font-weight: bold;
-		font-size: 16px;
-		margin-top: 12px;
+		font-size: 8px;
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
-		font-size: 12px;
+		font-size: 8px;
 		margin: 10px 0;
 	}
 	#pdf_tbl_items tboby {
@@ -44,20 +47,33 @@
 
 	#pdf_tbl_items th, #pdf_tbl_items td {
 		border: 1px solid #000;
-		padding: 3px;
+		padding: 3px 0px;
+                font-weight: normal;
+                line-height: normal !important;
+                font-size: 7px !important;;
 	}
+        #pdf_tbl_items th{
+            font-size: 7px !important; 
+        }
 
 	#pdf_signature {
-		min-height: 150px;
+		min-height: 50px;
+                width: 255px;
 	}
+        #pdf_signature p{
+            min-height: 50px !important;
+            margin-top: 10px;
+        }
 	#pdf_signature div {
 		text-align: center;
 	}
 	#pdf_signature lable {
-		font-size: 14px;
+		font-size: 11px;
 		font-weight: bold;
 	}
-
+        .text-left{
+            text-align: left;
+        }
 	.fl {
 		float: left;
 	}
@@ -74,14 +90,12 @@
 	.w20 {
 		width: 20%;
 	}
-
 	.w100 {
 		width: 100%;
 	}
 	.pb20 {
 		padding-bottom: 20px;
 	}
-
 	.pt20 {
 		padding-top: 20px;
 	}
@@ -91,39 +105,47 @@
 	}
 	#pdf_footer {
 		text-align: center;
+                margin-top: 10px;
 	}
 	#pdf_content table td, #pdf_content table th {
 		text-align: right;
 		height: auto !important;
 	}
 	p {
-		margin: 3px 0;
+		margin: 2px 0;
 	}
 	.w150px {
-		width: 150px;
+		width: 255px;
 	}
 	.fontI {
 		font-style: italic;
 	}
         .border-bottom{
-            border-bottom: 1px dotted rgb(0, 0, 0) !important;
+                border-bottom: 1px dotted rgb(0, 0, 0) !important;
         }
         .border-left{
-            border-left: none !important;
+                border-left: none !important;
         }
         .border-right{
-            border-right: none!important;
+                border-right: none!important;
         }
         .border-top{
-            border-top: none !important;
+                border-top: none !important;
         }
         #policy{
-            font-weight: bold;
-            text-align: center;
-            font-size: 1.3em;
-            margin-top: 10px; 
+                font-weight: bold;
+                text-align: center;
+                font-size: 8px;
+                margin-top: 10px; 
         }
-        
+        .text-center{
+            direction: rtl !important;
+            text-align: center !important;
+        }
+        .text-bold{
+            font-weight: bold !important;
+        }
+
 </style>
 <div id="pdf_content">
 	<div id="pdf_header">
@@ -167,8 +189,8 @@
 					<th>STT</th>
 					<th><?php echo lang('common_item_name'); ?></th>
 					<th><?php echo lang('common_price').' ('.$this->config->item('currency_symbol').')'; ?></th>
-					<th><?php echo lang('common_quantity'); ?></th>
-					<th><?php echo lang('common_total').' ('.$this->config->item('currency_symbol').')'; ?></th>
+					<th><?php echo lang('common_quantity_a8'); ?></th>
+					<th><?php echo lang('common_unit_total').' ('.$this->config->item('currency_symbol').')'; ?></th>
 				</tr>
 
 				<?php
@@ -217,9 +239,9 @@
 					<tr>
 						<td><?php echo $stt; ?></td>
 						<td><?php echo $item['name']; ?><?php if ($item_number_for_receipt){ ?> - <?php echo $item_number_for_receipt; ?><?php } ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
-                                                <td><?php echo to_currency_no_money($item['price']); ?></td>
+                                                <td><?php echo NumberFormatToCurrency($item['price']); ?></td>
                                                 <td><?php echo to_quantity(abs($item['quantity'])); ?></td>
-                                                <td><?php echo to_currency_no_money(abs($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100)); ?></td>
+                                                <td><?php echo NumberFormatToCurrency(abs($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100)); ?></td>
 					</tr>
 					<?php if (!$item['description']=="" ||(isset($item['serialnumber']) && $item['serialnumber'] !="") ) {?>
 					<tr>
@@ -245,34 +267,25 @@
 				 	}
 					?>
 					<tr>
-						<td colspan="4"><?php echo lang('common_tax'); ?></td>
-                                                <td><?php echo to_currency_no_money($total_tax); ?></td>
+						<td colspan="5"><?php echo lang('common_tax').': '; 
+                                                echo NumberFormatToCurrency($total_tax); ?></td>
 					</tr>
 				<?php }else {?>
 					<?php foreach($taxes as $name=>$value) { ?>
 						<tr>
-							<td colspan="4"><?php echo $name; ?></td>
-							<td><?php echo to_currency_no_money($value); ?></td>
+							<td colspan="5"><?php echo $name.': '; 
+                                                        echo NumberFormatToCurrency($value); ?></td>
 						</tr>
 					<?php }; ?>
 				<?php } ?>
 
 				
 				<tr>
-                                    <td class="border-bottom" colspan="6"><?php echo lang('common_total').': '; echo $this->config->item('round_cash_on_sales') && $is_sale_cash_payment ? to_currency_no_money(round_to_nearest_05($total)) : to_currency_no_money($total); ?></td>
+                                    <td class="border-bottom border-top " colspan="6"><?php echo lang('common_total').': '; echo $this->config->item('round_cash_on_sales') && $is_sale_cash_payment ? NumberFormatToCurrency(round_to_nearest_05($total)) : NumberFormatToCurrency($total); ?></td>
 				</tr>
 
 				<?php foreach($payments as $payment_id => $payment) { ?>
 				<tr>
-					<!--<td colspan="3"><?php //echo (isset($show_payment_times) && $show_payment_times) ?  date(get_date_format().' '.get_time_format(), strtotime($payment['payment_date'])) : lang('common_payment'); ?></td>-->
-                                    <td colspan="3" class="border-right"><?php 
-                                        if(isset($show_payment_times) && $show_payment_times){
-                                            //echo date(get_date_format().' '.get_time_format(), strtotime($payment['payment_date']));
-                                        }
-                                        
-                                        
-                                        
-                                        //echo (isset($show_payment_times) && $show_payment_times) ?  date(get_date_format().' '.get_time_format(), strtotime($payment['payment_date'])) : lang('common_payment'); ?></td>
 					<td><?php if (($is_integrated_credit_sale || sale_has_partial_credit_card_payment()) && ($payment['payment_type'] == lang('common_credit') ||  $payment['payment_type'] == lang('sales_partial_credit'))) { ?>
 						<?php echo $payment['card_issuer']. ': '.$payment['truncated_card']; ?>
 					<?php } else { ?>
@@ -295,54 +308,54 @@
 
 				<?php if ($amount_change >= 0) {?>
 					<tr>
-						<td colspan="4"><?php echo lang('common_change_due'); ?></td>
-						<td><?php echo $this->config->item('round_cash_on_sales')  && $is_sale_cash_payment ?  to_currency(round_to_nearest_05($amount_change)) : to_currency($amount_change); ?></td>
+						<td colspan="5"><?php echo lang('common_change_due').': '; 
+                                                echo $this->config->item('round_cash_on_sales')  && $is_sale_cash_payment ?  to_currency(round_to_nearest_05($amount_change)) : to_currency($amount_change); ?></td>
 					</tr>
 				<?php } else { ?>
 					<tr>
-						<td colspan="4"><?php echo lang('common_amount_due'); ?></td>
-						<td><?php echo $this->config->item('round_cash_on_sales')  && $is_sale_cash_payment ?  to_currency(round_to_nearest_05($amount_change * -1)) : to_currency($amount_change * -1); ?></td>
+						<td colspan="5"><?php echo lang('common_amount_due').': '; 
+                                                echo $this->config->item('round_cash_on_sales')  && $is_sale_cash_payment ?  to_currency(round_to_nearest_05($amount_change * -1)) : to_currency($amount_change * -1); ?></td>
 					</tr>
 				<?php } ?>
 
 				<?php if (isset($customer_balance_for_sale) && $customer_balance_for_sale !== FALSE && !$this->config->item('hide_store_account_balance_on_receipt')) {?>
 					<tr>
-						<td colspan="4"><?php echo lang('sales_customer_account_balance'); ?></td>
-						<td><?php echo to_currency($customer_balance_for_sale); ?></td>
+						<td colspan="5"><?php echo lang('sales_customer_account_balance').': '; 
+                                                echo to_currency($customer_balance_for_sale); ?></td>
 					</tr>
 				<?php } ?>
 
 				<?php if ($this->config->item('enable_customer_loyalty_system') && isset($sales_until_discount) && !$this->config->item('hide_sales_to_discount_on_receipt') && $this->config->item('loyalty_option') == 'simple') {?>
 					<tr>
-						<td colspan="4"><?php echo lang('common_sales_until_discount'); ?></td>
-						<td><?php echo $sales_until_discount <= 0 ? lang('sales_redeem_discount_for_next_sale') : to_quantity($sales_until_discount); ?></td>
+						<td colspan="5"><?php echo lang('common_sales_until_discount').': '; 
+                                                echo $sales_until_discount <= 0 ? lang('sales_redeem_discount_for_next_sale') : to_quantity($sales_until_discount); ?></td>
 					</tr>
 				<?php } ?>
 				<?php if ($this->config->item('enable_customer_loyalty_system') && isset($customer_points) && !$this->config->item('hide_points_on_receipt') && $this->config->item('loyalty_option') == 'advanced') {?>
 					<tr>
-						<td colspan="4"><?php echo lang('common_points'); ?></td>
-						<td><?php echo to_quantity($customer_points); ?></td>
+						<td colspan="5"><?php echo lang('common_points').': '; 
+                                                echo to_quantity($customer_points); ?></td>
 					</tr>
 				<?php } ?>
 
 				<?php if ($ref_no) { ?>
 					<tr>
-						<td colspan="4"><?php echo lang('sales_ref_no'); ?></td>
-						<td><?php echo lang('sales_ref_no'); ?></td>
+						<td colspan="5"><?php echo lang('sales_ref_no').': '; 
+                                                echo lang('sales_ref_no'); ?></td>
 					</tr>
 				<?php }
 
 				if (isset($auth_code) && $auth_code) { ?>
 					<tr>
-						<td colspan="4"><?php echo lang('sales_auth_code'); ?></td>
-						<td><?php echo $auth_code; ?></td>
+						<td colspan="5"><?php echo lang('sales_auth_code').': '; 
+                                                echo $auth_code; ?></td>
 					</tr>
 				<?php } ?>
 			</tbody>
 		</table>
 	</div>
 	<div>
-		<p>Số tiền viết bằng chữ: <span>.................................................................................</span></p>
+            <p>Số tiền viết bằng chữ: <span><?php echo getStringNumber($total)?></span></p>
 	</div>
         <?php if($this->config->item('return_policy')){?>
 		<div id="policy"><?php echo $this->config->item('return_policy'); ?></div>
