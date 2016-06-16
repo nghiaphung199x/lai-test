@@ -190,9 +190,9 @@
 						<td><?php echo $item['name']; ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
                                                 <td><?php echo $authenticated_locations[$current_logged_in_location_id];?></td>
                                                 <td><?php echo $transfer_to_location?></td>
-                                                <td><?php echo to_currency_no_money(abs($item['price'])); ?></td>
+                                                <td><?php echo NumberFormatToCurrency(abs($item['price'])); ?></td>
 						<td><?php echo to_quantity_abs($item['quantity']); ?></td>
-                                                <td><?php echo to_currency_no_money(abs($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100)); ?></td>
+                                                <td><?php echo NumberFormatToCurrency(abs($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100)); ?></td>
 					</tr>
 					<?php if (!$item['description']=="" ||(isset($item['serialnumber']) && $item['serialnumber'] !="") ) {?>
 					<tr>
@@ -211,7 +211,7 @@
                                         <tr>
                                             <td colspan="6" style="text-align: right;"> Tổng</td>
                                             <td><?php echo $sum_quantity;?></td>
-                                            <td><?php echo to_currency_no_money($sum_money)?></td>
+                                            <td><?php echo NumberFormatToCurrency($sum_money)?></td>
                                         </tr>
 				<?php if ($this->config->item('charge_tax_on_recv')) {?>
 					<?php if ($this->config->item('group_all_taxes_on_receipt')) { ?>
@@ -221,12 +221,12 @@
 								$total_tax+=$value;
 						 	} ?>
 						 	<tr>
-								<td colspan="8"><?php echo lang('common_tax').': '; echo to_currency_abs($total_tax); ?></td>
+								<td colspan="8"><?php echo lang('common_tax').': '; echo NumberFormatToCurrency(abs($total_tax)); ?></td>
 							</tr>
 					<?php }else {?>
 							<?php foreach($taxes as $name=>$value) { ?>
 								<tr>
-									<td colspan="8"><?php echo $name.': '; echo to_currency_abs($value); ?></td>
+									<td colspan="8"><?php echo $name.': '; echo NumberFormatToCurrency(abs($value)); ?></td>
 								</tr>
 							<?php } ?>
 					<?php } ?>
@@ -234,25 +234,14 @@
 
 				<tr>
 					<td colspan="8"><?php echo lang('common_total').': '; 
-                                        echo to_currency_abs($total); ?></td>
+                                        echo NumberFormatToCurrency(abs($total)); ?></td>
 				</tr>
-				<tr>
-					<td colspan="8"><?php echo lang('common_payment').': ';  echo $payment_type; ?></td>
-				</tr>
-
-				<?php if(isset($amount_change)) { ?>
-					<tr>
-                                            <td colspan="8"><?php echo lang('common_amount_tendered').': '; echo to_currency_no_money(abs($amount_tendered)); ?></td>
-					</tr>
-					<tr>
-						<td colspan="8"><?php echo lang('common_change_due').': ';  echo $amount_change; ?></td>
-					</tr>
-				<?php } ?>
+				
 			</tbody>
 		</table>
 	</div>
 	<div>
-		<p>Số tiền viết bằng chữ: <span>.................................................................................</span></p>
+            <p>Số tiền viết bằng chữ: <span><?php echo getStringNumber($total)?></span></p>
 	</div>
 
 	<div class="clb">

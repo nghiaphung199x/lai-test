@@ -195,8 +195,6 @@ class BizReceivings extends Receivings
 
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['mode']);
-                echo 'mode: '.$data[''];
-                echo '<br/>type: '.$typeOfView;die;
 		$data['pdf_block_html'] = $this->load->view('receivings/partials/' . $typeOfView, $data, TRUE);
 
 		$this->load->view("receivings/receipt",$data);
