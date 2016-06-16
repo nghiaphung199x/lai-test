@@ -195,8 +195,6 @@ class BizReceivings extends Receivings
 
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['mode']);
-                echo 'mode: '.$data[''];
-                echo '<br/>type: '.$typeOfView;die;
 		$data['pdf_block_html'] = $this->load->view('receivings/partials/' . $typeOfView, $data, TRUE);
 
 		$this->load->view("receivings/receipt",$data);
@@ -204,7 +202,6 @@ class BizReceivings extends Receivings
 
 	protected function 	getTypeOfOrder($mode = '')
 	{
-            echo 'mode: '.$mode;
 		$typeOfView = 'receive';
 		
 		if($mode == 'transfer')
@@ -212,6 +209,7 @@ class BizReceivings extends Receivings
 			$typeOfView = 'move_inventory';
 		}
                 if($mode =='return')$typeOfView = 'return';
+                if($mode=='purchase_order')$typeOfView = 'purchase_order';
 		return $typeOfView;
 	}
 	
@@ -226,6 +224,7 @@ class BizReceivings extends Receivings
 		$data['subtotal']=$this->receiving_lib->get_subtotal($receiving_id);
 		$data['taxes']=$this->receiving_lib->get_taxes($receiving_id);
 		$data['total']=$this->receiving_lib->get_total($receiving_id);
+                $data['mode'] = $this->receiving_lib->get_mode();
 		$data['receipt_title']=lang('receivings_receipt');
 		$data['transaction_time']= date(get_date_format().' '.get_time_format(), strtotime($receiving_info['receiving_time']));
 		$supplier_id=$this->receiving_lib->get_supplier();
@@ -273,7 +272,10 @@ class BizReceivings extends Receivings
 
 			$data['mode'] = 'transfer';
 		}
-	
+                if($receiving_info['suspended']>0){
+                    if($receiving_info['suspended']==1) $data['mode']= 'purchase_order';
+                }
+                
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['mode']);
 		$data['pdf_block_html'] = $this->load->view('receivings/partials/' . $typeOfView, $data, TRUE);

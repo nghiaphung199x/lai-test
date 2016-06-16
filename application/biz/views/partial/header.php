@@ -154,6 +154,7 @@
 		<div class="left-bar hidden-print" >
 			<div class="admin-logo" style="<?php echo isset($location_color) && $location_color ? 'background-color: '.$location_color.' !important': ''; ?>">
 				<div class="logo-holder pull-left">
+					<a href="<?php echo site_url('home'); ?>">
 					<?php echo img(
 					array(
 						'src' => $this->Appconfig->get_logo_image(),
@@ -161,11 +162,8 @@
 						'id'=>'header-logo',
 
 					)); ?>
-				</div>
-				<!-- logo-holder -->
-				<?php  
-
-				?>			
+					</a>
+				</div>		
 			</div>
 			<!-- admin-logo -->
 

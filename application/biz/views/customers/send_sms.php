@@ -16,7 +16,7 @@
 					<?php 
 						echo form_open('customers/do_send_sms',array('id'=>'send_sms_form','class'=>'form-horizontal'));
 					?>
-					<ul id="error_message_box"></ul>
+					<ul id="error_message_box" class="text-danger"></ul>
 				
 					<div class="form-group">	
 						<?php echo form_label(lang('customers_sms_list_sms').' :', 'list_sms',array('class'=>'col-sm-4 col-md-4 col-lg-4 control-label')); ?>

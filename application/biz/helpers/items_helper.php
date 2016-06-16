@@ -26,19 +26,21 @@ function qtyToString($itemId, $qty) {
 	$measures = $CI->ItemMeasures->getMeasuresByItemId($itemId);
 	$itemInfo = $CI->Item->get_info($itemId);
 	
-	$convertedQtyToString = '';
+	$measure = $CI->Measure->getInfo($itemInfo->measure_id);
+	$convertedQtyToString = to_quantity($qty) . ' ' . $measure->name . ', ';
+	
 	$convertedQty = getItemConvertedQty($qty['quantity'], $itemInfo->measure_id, $measures);
 	
 	if( !empty($convertedQty) ) {
 		foreach ($convertedQty as $convertedMeasureId => $convertedMeasureQty)
 		{
 			$measure = $CI->Measure->getInfo($convertedMeasureId);
-			$convertedQtyToString .= to_quantity($convertedMeasureQty) . ' ' . $measure->name . ', ';
+			if ($measure && $convertedMeasureId != $itemInfo->measure_id) {
+				$convertedQtyToString .= to_quantity($convertedMeasureQty) . ' ' . $measure->name . ', ';
+			}
 		}
-	} else {
-		$measure = $CI->Measure->getInfo($itemInfo->measure_id);
-		$convertedQtyToString = to_quantity($qty) . ' ' . $measure->name . ', ';
 	}
+	
 	return rtrim(trim($convertedQtyToString), ",");
 }
 

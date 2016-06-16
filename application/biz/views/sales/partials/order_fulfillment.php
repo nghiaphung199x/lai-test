@@ -3,31 +3,31 @@
 		display: block;
 		overflow: hidden;
 		position: relative;
-                height: auto; width: 280px;
+                height: auto; width: 255px;
                 font-family: Arial;
-		font-size: 10px !important;
+		font-size: 8px !important;
 	}
 	#pdf_logo  {
 		text-align: center;
-                width: 280px;
+                width: 255px;
 	}
 	#company_name {
 		text-transform: uppercase;
 		font-weight: bold;
 		color: #002FC2;
-                width: 280px;
+                width: 255px;
                 text-align: center;
-                font-size: 10px;
+                font-size: 8px;
 	}
 	#pdf_content span {
 		color: #002FC2;
 	}
 	#pdf_title {
-		width: 280px;
+		width: 255px;
 		text-align: center;
 		text-transform: uppercase;
 		font-weight: bold;
-		font-size: 10px;
+		font-size: 8px;
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
@@ -47,12 +47,18 @@
 
 	#pdf_tbl_items th, #pdf_tbl_items td {
 		border: 1px solid #000;
-		padding: 3px;
+		padding: 3px 0px;
+                font-weight: normal;
+                line-height: normal !important;
+                font-size: 7px !important;;
 	}
+        #pdf_tbl_items th{
+            font-size: 7px !important; 
+        }
 
 	#pdf_signature {
 		min-height: 50px;
-                width: 280px;
+                width: 255px;
 	}
         #pdf_signature p{
             min-height: 50px !important;
@@ -65,7 +71,9 @@
 		font-size: 11px;
 		font-weight: bold;
 	}
-
+        .text-left{
+            text-align: left;
+        }
 	.fl {
 		float: left;
 	}
@@ -104,10 +112,10 @@
 		height: auto !important;
 	}
 	p {
-		margin: 3px 0;
+		margin: 2px 0;
 	}
 	.w150px {
-		width: 280px;
+		width: 255px;
 	}
 	.fontI {
 		font-style: italic;
@@ -127,8 +135,8 @@
         #policy{
                 font-weight: bold;
                 text-align: center;
-                font-size: 10px;
-                margin-top: 15px; 
+                font-size: 8px;
+                margin-top: 10px; 
         }
         .text-center{
             direction: rtl !important;
@@ -183,18 +191,17 @@
                 </p>
 	</div>	
 	<div class="w100 clb">
-            <table id="pdf_tbl_items" class="w100" style="border-collapse: collapse; width: 280px; font-size: 8px; margin-top: 10px; ">
+            <table id="pdf_tbl_items" class="w100" style="border-collapse: collapse; margin-top: 10px; ">
 			<tbody>
 				<tr>
-					<th style="border: 1px solid #000000; padding: 2px; line-height: normal !important;">STT</th>
-                                        <th style="border: 1px solid #000000; padding: 2px;line-height: normal !important;" class="text-center">Mã MH</th>
-					<th style="border: 1px solid #000000; padding: 2px;line-height: normal !important;" ><?php echo lang('common_item_name'); ?></th>
-                                        <th style="border: 1px solid #000000; padding: 2px;line-height: normal !important;"  class="text-center"><?php echo lang('common_unit_report')?></th>
-                                        <th style="border: 1px solid #000000; padding: 2px;line-height: normal !important;" ><?php echo SL; ?></th>
-					<th style="border: 1px solid #000000; padding: 2px;line-height: normal !important;" ><?php echo lang('common_unit_sales').' ('.$this->config->item('currency_symbol').')'; ?></th>
-                                        <th style="border: 1px solid #000000; padding: 2px;line-height: normal !important;"  class="text-center"><?php echo lang('common_unit_discount').' %';?></th>
-                                        <th style="border: 1px solid #000000; padding: 2px;line-height: normal !important;"  class="text-center"><?php echo lang('reports_taxes') .' %'?></th>
-					<th style="border: 1px solid #000000; padding: 2px;line-height: normal !important;"><?php echo lang('common_unit_total').' ('.$this->config->item('currency_symbol').')'; ?></th>
+					<th >STT</th>
+                                        <th class="text-center">Mã MH</th>
+					<th ><?php echo lang('common_item_name'); ?></th>
+                                        <th  ><?php echo SL; ?></th>
+					<th ><?php echo lang('common_unit_sales').' ('.$this->config->item('currency_symbol').')'; ?></th>
+                                        <th  class="text-center"><?php echo lang('common_unit_discount_a8').' %';?></th>
+                                        <th  class="text-center"><?php echo lang('reports_taxes') .' %'?></th>
+					<th ><?php echo lang('common_unit_total').' ('.$this->config->item('currency_symbol').')'; ?></th>
 				</tr>
 				<?php
 					if ($discount_item_line = $this->sale_lib->get_line_for_flat_discount_item())
@@ -245,8 +252,7 @@
 					<tr>
 						<td><?php echo $stt; ?></td>
                                                 <td><?php echo H($item['product_id']);?></td>
-						<td><?php echo $item['name']; ?><?php if ($item_number_for_receipt){ ?> - <?php echo $item_number_for_receipt; ?><?php } ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
-                                                <td></td>
+                                                <td class="text-left"><?php echo $item['name']; ?><?php if ($item_number_for_receipt){ ?> - <?php echo $item_number_for_receipt; ?><?php } ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
                                                 <td><?php echo to_quantity(abs($item['quantity'])); ?></td>
                                                 <td><?php echo NumberFormatToCurrency($item['price']); ?></td>
                                                 <td><?php echo to_quantity($item['discount']);?></td>

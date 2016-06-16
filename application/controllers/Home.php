@@ -15,6 +15,7 @@ class Home extends Secure_area
 		$this->load->model('Employee');
 		$this->load->model('Giftcard');
 		$this->load->model('Sale');
+		$this->load->helper('sale');
 	}
 	
 	function index($choose_location=0)
@@ -43,6 +44,10 @@ class Home extends Secure_area
 		{	
 			$data['month_sale'] = $this->sales_widget();
 		}
+		
+		$data['warning_orders'] = $this->Sale->getWarningOrder();
+		
+		$data['show_warning_orders_modal'] = (!$choose_location && $this->config->item('show_warning_modal_order_sale') && !empty($data['warning_orders'])) ? true : false;
 		
 		$this->load->helper('demo');
 		$data['can_show_mercury_activate'] = (!is_on_demo_host() && !$this->config->item('mercury_activate_seen')) && !$this->Location->get_info_for_key('enable_credit_card_processing');		

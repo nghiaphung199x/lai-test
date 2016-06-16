@@ -1,3 +1,5 @@
+<?php
+?>
 <style type="text/css">
 	#pdf_content {
 		width: 700px;
@@ -7,6 +9,9 @@
 		padding: 20px;
 		font-size: 12px;
 	}
+        #table-responsive{
+            max-width: 700px;
+        }
 	#pdf_logo img {
 		max-height: 70px;
 	}
@@ -130,6 +135,41 @@
         .text-bold{
             font-weight: bold !important;
         }
+        table th, table td{
+            line-height: normal !important;
+        }
+
+    /* Medium Devices, Desktops */
+    @media only screen and (max-width : 992px) {
+
+    }
+
+    /* Small Devices, Tablets */
+    @media only screen and (max-width : 768px) {
+        .table-responsive{
+               max-width: 700px;
+            }
+    }
+    @media only screen and (max-width : 767px) and (max-width: 481px) {
+        .table-responsive{
+               max-width: 700px;
+            }
+    }
+
+    /* Extra Small Devices, Phones */ 
+    @media only screen and (max-width : 480px) {
+        .table-responsive{
+                max-width: 300px;
+            } 
+    }
+
+    /* Custom, iPhone Retina */ 
+    @media only screen and (max-width : 320px) {
+        .table-responsive{
+                max-width: 284px;
+            } 
+    }
+        /*@media screen and (min-device-width: 481px) and (max-device-width: 768px)*/
 
 </style>
 <div id="pdf_content">
@@ -155,7 +195,7 @@
 		</div>
 	</div>
 	<div id="pdf_title" class="clb">
-                <p>PHIẾU XUẤT CHI NHÁNH Số : <span><?php if(preg_match('/([0-9]+)/', $receiving_id,$number_receiving)) echo($number_receiving[1]);else echo $receiving_id; ?></span></p>
+		<p>Đơn đặt hàng</p>
 	</div>
 
 	<div id="pdf_customer">
@@ -169,34 +209,32 @@
 					<th>STT</th>
                                         <th class="text-center">Mã MH</th>
 					<th><?php echo lang('common_item_name'); ?></th>
-                                        <th>Kho chuyển</th>
-                                        <th>Kho nhận</th>
-					<th><?php echo lang('common_price'); ?></th>
+                                        <th class="text-center"><?php echo lang('common_unit_report')?></th>
 					<th><?php echo lang('common_quantity'); ?></th>
+                                        <th><?php echo lang('common_unit_sales').' ('.$this->config->item('currency_symbol').')'; ?></th>
+					<th class="text-center"><?php echo lang('common_unit_discount').' %';?></th>
 					<th><?php echo lang('common_unit_total').' ('.$this->config->item('currency_symbol').')'; ?></th>
 				</tr>
-				<?php $stt = 0; 
-                                $sum_quantity = 0;
-                                $sum_money  = 0;
+				<?php $stt = 0;
+                                $total_money = 0;
                                 ?>
-				<?php foreach(array_reverse($cart, true) as $line=>$item) { 
-                                    $sum_quantity +=abs($item['quantity']);
-                                    $sum_money += abs($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100);
-                                    ?>
-					<?php $stt ++; ?>
+				<?php foreach(array_reverse($cart, true) as $line=>$item) { ?>
+					<?php $stt ++;
+                                        $total_money +=(abs($item['price'])*abs($item['quantity'])-abs($item['price'])*abs($item['quantity'])*$item['discount']/100);
+                                        ?>
 					<tr>
 						<td><?php echo $stt; ?></td>
                                                 <td><?php echo H($item['product_id']);?></td>
 						<td><?php echo $item['name']; ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
-                                                <td><?php echo $authenticated_locations[$current_logged_in_location_id];?></td>
-                                                <td><?php echo $transfer_to_location?></td>
-                                                <td><?php echo NumberFormatToCurrency(abs($item['price'])); ?></td>
+                                                <td></td>
 						<td><?php echo to_quantity_abs($item['quantity']); ?></td>
-                                                <td><?php echo NumberFormatToCurrency(abs($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100)); ?></td>
+                                                <td><?php echo NumberFormatToCurrency(abs($item['price'])); ?></td>
+						<td><?php echo to_quantity($item['discount']);?></td>
+                                                <td><?php echo NumberFormatToCurrency(abs($item['price']*abs($item['quantity'])-$item['price']*abs($item['quantity'])*$item['discount']/100)); ?></td>
 					</tr>
 					<?php if (!$item['description']=="" ||(isset($item['serialnumber']) && $item['serialnumber'] !="") ) {?>
 					<tr>
-						<td colspan="5">
+						<td colspan="8">
 							<?php if(!$item['description']==""){ ?>
 								<div class="invoice-desc"><?php echo $item['description']; ?></div>
 							<?php } ?>
@@ -208,38 +246,50 @@
 					</tr>
 					<?php } ?>
 				<?php } ?>
+
                                         <tr>
-                                            <td colspan="6" style="text-align: right;"> Tổng</td>
-                                            <td><?php echo $sum_quantity;?></td>
-                                            <td><?php echo NumberFormatToCurrency($sum_money)?></td>
+                                            <td class="border-bottom text-bold" colspan="9"><?php 
+                                            echo lang('common_total_money').': '; echo NumberFormatToCurrency(abs($total_money)); ?></td>
                                         </tr>
-				<?php if ($this->config->item('charge_tax_on_recv')) {?>
+				<?php if ($this->config->item('charge_tax_on_recv')) {
+                                    ?>
 					<?php if ($this->config->item('group_all_taxes_on_receipt')) { ?>
 						<?php  $total_tax = 0;
 							foreach($taxes as $name=>$value) 
 							{
-								$total_tax+=$value;
+								$total_tax+=abs($value);
 						 	} ?>
 						 	<tr>
-								<td colspan="8"><?php echo lang('common_tax').': '; echo NumberFormatToCurrency(abs($total_tax)); ?></td>
+								<td colspan="8"  class="border-bottom border-top text-bold"><?php echo '1111111'.lang('common_tax').': '; 
+                                                                echo NumberFormatToCurrency(abs($total_tax)); ?></td>
 							</tr>
 					<?php }else {?>
-							<?php foreach($taxes as $name=>$value) { ?>
+							<?php foreach($taxes as $name=>$value) { 
+                                                            ?>
 								<tr>
-									<td colspan="8"><?php echo $name.': '; echo NumberFormatToCurrency(abs($value)); ?></td>
+                                                                    <td colspan="8"  class="border-bottom border-top text-bold"><?php echo $name.': ';  echo NumberFormatToCurrency(abs($value)); ?></td>
 								</tr>
 							<?php } ?>
 					<?php } ?>
 				<?php } ?>
 
 				<tr>
-					<td colspan="8"><?php echo lang('common_total').': '; 
-                                        echo NumberFormatToCurrency(abs($total)); ?></td>
+                                    <td colspan="8" class="border-bottom border-top text-bold"><?php echo lang('common_total').': '; echo NumberFormatToCurrency(abs($total)); ?></td>
 				</tr>
-				
+
+				<?php if(isset($amount_change)) { ?>
+					<tr>
+                                            <td colspan="8" class="border-bottom border-top text-bold"><?php echo lang('common_amount_tendered').': ';  echo NumberFormatToCurrency(abs($amount_tendered)); ?></td>
+					</tr>
+					<tr>
+						<td colspan="8" class="border-bottom border-top text-bold"><?php echo lang('common_change_due').': ';  echo $amount_change; ?></td>
+					</tr>
+				<?php } ?>
+                                        <tr ><td colspan="9" style="border-left: none;border-right: none; border-bottom: none;"></td></tr>
 			</tbody>
 		</table>
 	</div>
+    <div id="policy"><?php echo $this->config->item('return_policy'); ?></div>
 	<div>
             <p>Số tiền viết bằng chữ: <span><?php echo getStringNumber($total)?></span></p>
 	</div>
@@ -249,21 +299,19 @@
 			<p>Ngày ..... tháng ..... năm .......</p>
 		</div>
 	</div>
-	<div id="pdf_signature" class="w100">
-		<table class="w100">
+	<div id="pdf_signature" class="w100 table-responsive">
+		<table class="w100 table">
 			<tr>
+				<th>Người lập phiếu</th>
+				<th>Người nhận hàng</th>
 				<th>Thủ kho</th>
-				<th>Người vận chuyển</th>
-				<th>Người nhận</th>
 				<th>Kế toán trưởng</th>
-                                <th>Giám đốc</th>
 			</tr>
 			<tr>
 				<td><p class="fontI">(ký, họ tên)</p></td>
 				<td><p class="fontI">(ký, họ tên)</p></td>
 				<td><p class="fontI">(ký, họ tên)</p></td>
 				<td><p class="fontI">(ký, họ tên)</p></td>
-                                <td><p class="fontI">(ký, họ tên)</p></td>
 			</tr>
 		</table>
 	</div>

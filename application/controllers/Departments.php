@@ -33,6 +33,13 @@ class Departments extends Secure_area implements Idata_controller
             $config['total_rows'] = $this->Department->count_all();
             $table_data = $this->Department->get_all($data['per_page'], $params['offset'], $params['order_col'], $params['order_dir']);
         }
+        $department_ids = array();
+        foreach ($table_data->result() as $department) {
+            $department_ids[] = $department->department_id;
+        }
+
+        $table_data->employees = $this->Department->get_employees($department_ids);
+
         $this->load->library('pagination');
         $this->pagination->initialize($config);
         $data['pagination'] = $this->pagination->create_links();

@@ -16,7 +16,7 @@
 					<?php 
 						echo form_open('customers/do_send_sms',array('id'=>'send_sms_form','class'=>'form-horizontal'));
 					?>
-					<ul id="error_message_box"></ul>
+					<ul id="error_message_box" class="text-danger"></ul>
 				
 					<div class="form-group">	
 						<?php echo form_label(lang('customers_sms_list_sms').' :', 'list_sms',array('class'=>'col-sm-4 col-md-4 col-lg-4 control-label')); ?>
@@ -63,22 +63,13 @@ $(document).ready(function(){
     $('#send_sms_form').validate({
         submitHandler:function(form)
         {
-            if (submitting) return;
-            var selected_cutomer_ids=get_selected_values();
-            for(k=0;k<selected_cutomer_ids.length;k++)
-            {
-                $(form).append("<input type='hidden' name='customer_ids[]' value='"+selected_cutomer_ids[k]+"' />");
-            }
-            
-            submitting = true;
             $(form).ajaxSubmit({
-                success:function(response)
-                {
+                success:function(response){
+                    console.log(response);
                     submitting = false;
-                    show_feedback(response.success ? 'success' : 'error',response.message, response.success ? <?php echo json_encode(lang('common_success')); ?>  : <?php echo json_encode(lang('common_error')); ?>);
-                          
-                },
-                dataType:'json'
+                    show_feedback(response.success ? 'success' : 'error',response.message, response.success ? <?php //echo json_encode(lang('common_success')); ?>  : <?php //echo json_encode(lang('common_error')); ?>);      
+                }
+                dataType:'json',
             });
         },
         errorLabelContainer: "#error_message_box",

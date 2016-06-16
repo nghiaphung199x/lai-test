@@ -1,8 +1,3 @@
---DELETE FROM `phppos_permissions_actions` WHERE `module_id` IN ('groups', 'departments');
---DELETE FROM `phppos_permissions` WHERE `module_id` IN ('groups', 'departments');
---DELETE FROM `phppos_modules_actions` WHERE `module_id` IN ('groups', 'departments');
---DELETE FROM `phppos_modules` WHERE `module_id` IN ('groups', 'departments');
-
 INSERT INTO `phppos_modules` (`name_lang_key`, `desc_lang_key`, `sort`, `icon`, `module_id`) VALUES
 ('module_departments', 'module_departments_desc', 300, 'location-pin', 'departments'),
 ('module_groups', 'module_groups_desc', 100, 'user', 'groups');
