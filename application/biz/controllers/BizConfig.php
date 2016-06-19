@@ -73,6 +73,7 @@ class BizConfig extends Config
 			'track_cash' => $this->input->post('track_cash') ? 1 : 0,
 			'number_of_items_per_page'=>$this->input->post('number_of_items_per_page'),
 			'additional_payment_types' => $this->input->post('additional_payment_types'),
+			'show_warning_modal_order_sale' => $this->input->post('show_warning_modal_order_sale') ? 1 : 0,
 			'hide_layaways_sales_in_reports' => $this->input->post('hide_layaways_sales_in_reports') ? 1 : 0,
 			'hide_store_account_payments_in_reports' => $this->input->post('hide_store_account_payments_in_reports') ? 1 : 0,
 			'change_sale_date_when_suspending' => $this->input->post('change_sale_date_when_suspending') ? 1 : 0,
@@ -157,9 +158,13 @@ class BizConfig extends Config
 			'disable_quick_edit' => $this->input->post('disable_quick_edit')  ? 1 : 0,
 
 			'config_sales_receipt_pdf_size' => $this->input->post('config_sales_receipt_pdf_size'),
-                        'config_brand_name'=>   $this->input->post('brand_name'),
-                        'config_user_sms'=>   $this->input->post('user_sms'),
-                        'config_user_pass'=>   $this->input->post('user_pass'),
+			
+			'config_sms_brand_name'=>   $this->input->post('sms_brand_name'),
+			'config_sms_user'=>   $this->input->post('sms_user'),
+			'config_sms_pass'=>   $this->input->post('sms_pass'),
+			'config_sms_pass'=>   $this->input->post('sms_pass'),
+			'config_email_account' => $this->input->post('email_account'),
+			'config_email_pass' => $this->input->post('email_pass'),
 		);
 	
 		

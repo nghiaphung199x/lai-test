@@ -3,31 +3,31 @@
 		display: block;
 		overflow: hidden;
 		position: relative;
-                height: auto; width: 280px;
+                height: auto; width: 255px;
                 font-family: Arial;
-		font-size: 10px !important;
+		font-size: 8px !important;
 	}
 	#pdf_logo  {
 		text-align: center;
-                width: 280px;
+                width: 255px;
 	}
 	#company_name {
 		text-transform: uppercase;
 		font-weight: bold;
 		color: #002FC2;
-                width: 280px;
+                width: 255px;
                 text-align: center;
-                font-size: 10px;
+                font-size: 8px;
 	}
 	#pdf_content span {
 		color: #002FC2;
 	}
 	#pdf_title {
-		width: 280px;
+		width: 255px;
 		text-align: center;
 		text-transform: uppercase;
 		font-weight: bold;
-		font-size: 10px;
+		font-size: 8px;
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
@@ -47,12 +47,18 @@
 
 	#pdf_tbl_items th, #pdf_tbl_items td {
 		border: 1px solid #000;
-		padding: 3px;
+		padding: 3px 0px;
+                font-weight: normal;
+                line-height: normal !important;
+                font-size: 7px !important;;
 	}
+        #pdf_tbl_items th{
+            font-size: 7px !important; 
+        }
 
 	#pdf_signature {
 		min-height: 50px;
-                width: 280px;
+                width: 255px;
 	}
         #pdf_signature p{
             min-height: 50px !important;
@@ -65,7 +71,9 @@
 		font-size: 11px;
 		font-weight: bold;
 	}
-
+        .text-left{
+            text-align: left;
+        }
 	.fl {
 		float: left;
 	}
@@ -104,10 +112,10 @@
 		height: auto !important;
 	}
 	p {
-		margin: 3px 0;
+		margin: 2px 0;
 	}
 	.w150px {
-		width: 280px;
+		width: 255px;
 	}
 	.fontI {
 		font-style: italic;
@@ -127,8 +135,8 @@
         #policy{
                 font-weight: bold;
                 text-align: center;
-                font-size: 10px;
-                margin-top: 15px; 
+                font-size: 8px;
+                margin-top: 10px; 
         }
         .text-center{
             direction: rtl !important;
@@ -173,7 +181,7 @@
                 
 		<p>Họ tên khách hàng: <?php if ($customer) { ?> <span><?php echo $customer; ?></span> <?php } ?></p>
                 <p>Địa chỉ: <?php if ($customer_address_1) { ?> <span><?php echo $customer_address_1; ?></span> <?php } ?></p>
-                <p>Tiền khách đưa:<span>  <?php echo $this->config->item('round_cash_on_sales') && $is_sale_cash_payment ? to_currency_no_money(round_to_nearest_05($total)) : to_currency_no_money($total); ?>VNĐ</span> </p>
+                <p>Tiền khách đưa:<span>  <?php echo $this->config->item('round_cash_on_sales') && $is_sale_cash_payment ? NumberFormatToCurrency(round_to_nearest_05($total)) : NumberFormatToCurrency($total); ?>VNĐ</span> </p>
                 
 		<p>Tổng tiền còn nợ:<span><?php
                 if (isset($customer_balance_for_sale) && $customer_balance_for_sale !== FALSE && !$this->config->item('hide_store_account_balance_on_receipt')) {?>

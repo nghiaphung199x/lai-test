@@ -24,6 +24,7 @@ $lang['sales_select_customer']='Chọn khách hàng (Không bắt buộc)';
 $lang['sales_select_customer_required']='Chọn khách hàng (Bắt buộc)';
 
 $lang['sales_start_typing_customer_name']='Nhập tên khách hàng...';
+$lang['sales_start_typing_deliverer_name']='Nhập tên nhân viên giao hàng...';
 
 $lang['sales_tax']='Thuế';
 
@@ -285,4 +286,13 @@ $lang['sales_item_tiers'] = 'Cấp khách hàng';
 $lang['sales_update_customer'] = 'Cập nhật khách hàng';
 $lang['sales_discount_percent'] = 'Phần trăm giảm giá';
 $lang['sales_close_register'] = 'Đóng Đăng ký';
+
+$lang['sales_quotes_title'] = 'Báo giá khách hàng';
+$lang['sales_quotes_formality'] = 'Hình thức báo giá';
+$lang['sales_quotes_type'] = 'Loại báo giá';
+$lang['sales_quotes_template'] = 'Mẫu báo giá';
+$lang['sales_quotes_type_title'] = 'Báo giá';
+$lang['sales_contract_type_title'] = 'Hợp đồng';
+$lang['sales_contract_error_selected'] = 'Vui lòng chọn mẫu Báo giá để thực hiện!';
+
 ?>

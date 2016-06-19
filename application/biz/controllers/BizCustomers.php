@@ -137,7 +137,8 @@ class BizCustomers extends Customers
 			'state'=>$this->input->post('state'),
 			'zip'=>$this->input->post('zip'),
 			'country'=>$this->input->post('country'),
-			'comments'=>$this->input->post('comments')
+			'comments'=>$this->input->post('comments'),
+			'birth_date' => date('Y-m-d', strtotime($this->input->post('birth_date'))),
 		);
 		
 		
@@ -148,6 +149,14 @@ class BizCustomers extends Customers
 			'taxable'=>$this->input->post('taxable')=='' ? 0:1,
 			'tax_certificate' => $this->input->post('tax_certificate'),
 			'override_default_tax'=> $this->input->post('override_default_tax') ? $this->input->post('override_default_tax') : 0,
+			
+			'type_customer'=> $this->input->post('customer_type') ? $this->input->post('customer_type') : 0,
+			'position'=> $this->input->post('position'),
+			'sex'=> $this->input->post('sex') ? $this->input->post('sex') : 1,
+			'family_info'=> $this->input->post('family_info'),
+			'company_birth_date' => date('Y-m-d', strtotime($this->input->post('company_birth_date'))),
+			'company_manage_name' => $this->input->post('company_manage_name'),
+			'code_tax' => $this->input->post('code_tax'),
 		);
 
 		if($customer_id == -1)
@@ -398,7 +407,7 @@ class BizCustomers extends Customers
 	
 	function do_send_sms()
 	{
-            $check = $this->input->get("type_send");
+        $check = $this->input->get("type_send");
 		$customer_ids = $this->input->post('customer_ids');
 		$sms_id = $this->input->post('sms_id');
 		$info_sms = $this->Customer->get_info_sms($sms_id);
@@ -421,9 +430,9 @@ class BizCustomers extends Customers
                                 $mobile = '84' . substr($info_cus['phone_number'], 1, strlen($info_cus['phone_number']));
 
                                 $getdata = http_build_query(array(
-                                                'username' => $this->config->item('config_user_sms'),
-                                                'password' => $this->config->item('config_user_pass'),
-                                                'source_addr' => $this->config->item('config_brand_name'),
+                                                'username' => $this->config->item('config_sms_user'),
+                                                'password' => $this->config->item('config_sms_pass'),
+                                                'source_addr' => $this->config->item('config_sms_brand_name'),
                                                 'dest_addr' => $mobile,
                                                 'message' => $new_message,
                                 ));
@@ -464,9 +473,9 @@ class BizCustomers extends Customers
 				$info_cus = $this->Customer->get_info($id_cus);
 				$mobile = '84' . substr($info_cus->phone_number, 1, strlen($info_cus->phone_number));
 				$getdata = http_build_query(array(
-						'username' => $this->config->item('user_sms'),
-						'password' => $this->config->item('pass_sms'),
-						'source_addr' => $this->config->item('brandname'),
+						'username' => $this->config->item('config_sms_user'),
+						'password' => $this->config->item('config_sms_pass'),
+						'source_addr' => $this->config->item('config_sms_brand_name'),
 						'dest_addr' => $mobile,
 						'message' => $message,
 				));
@@ -680,6 +689,49 @@ class BizCustomers extends Customers
 	function quotes_contract_suggest() {
 		$suggestions = $this->Customer->get_search_suggestions_quotes_contract($this->input->get('term'), 100);
 		echo json_encode($suggestions);
+	}
+	
+	/*
+	 Loads the customer edit form
+	 */
+	function view($customer_id=-1,$redirect_code=0)
+	{
+		$this->check_action_permission('add_update');
+		$this->load->model('Tier');
+		$tiers = array();
+		$tiers_result = $this->Tier->get_all()->result_array();
+	
+		if (count($tiers_result) > 0)
+		{
+			$tiers[0] = lang('common_none');
+			foreach($tiers_result as $tier)
+			{
+				$tiers[$tier['id']]=$tier['name'];
+			}
+		}
+	
+		$data['controller_name']=$this->_controller_name;
+		$data['tiers']=$tiers;
+		$data['person_info']=$this->Customer->get_info($customer_id);
+		$this->load->model('Customer_taxes');
+		$data['customer_tax_info']=$this->Customer_taxes->get_info($customer_id);
+		
+		$customer_typers = array();
+		$customer_typers_result = $data['type_customers'] = $this->Customer->get_Customer_type();
+		
+		if (count($customer_typers_result) > 0)
+		{
+			$customer_typers[0] = lang('common_none');
+			foreach($customer_typers_result as $type)
+			{
+				$customer_typers[$type['customer_type_id']] = $type['name'];
+			}
+		}
+		$data['type_customers'] = $customer_typers;
+		$data['sex'] = array('1'=>'Nam', '2'=>'Nữ');
+		
+		$data['redirect_code']=$redirect_code;
+		$this->load->view("customers/form",$data);
 	}
         
 }

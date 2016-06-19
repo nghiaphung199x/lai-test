@@ -36,10 +36,14 @@ $lang['common_confirm_search']='Bạn đã lựa chọn một hoặc nhiều hà
 $lang['common_no_persons_to_display']='Không có thông tin để hiện thị';
 $lang['common_return_policy']='Thông tin chính sách';
 
+$lang['common_delivery_date']='Ngày giao hàng';
+$lang['common_deliverer']='Nhân viên giao hàng';
+$lang['common_warning_orders_modal'] = 'Danh sách đơn đặt hàng sắp đến hạn';
 
 $lang['common_inv']='Hàng tồn kho';
 $lang['common_det']='Chi tiết';
 $lang['common_mailing_lists'] = 'Danh sách gửi thư';
+$lang['common_show_warning_modal_order_sale'] = 'Cảnh báo các đơn đặt hàng quá hạn';
 
 $lang['common_cumulative'] = 'Tích lũy?';
 $lang['common_barcode_sheet'] = 'Bảng mã vạch';
@@ -407,4 +411,12 @@ $lang['customers_no_sms'] = 'Không có khách hàng trong danh sách gửi tin 
 $lang['module_customers_sms_tmp'] = 'danh sách gửi sms';
 $lang['customers_sms_tmp_menu_link'] = 'Quản lý danh sách gửi sms';
 
+$lang['customers_type'] = 'Loại khách hàng';
+$lang['customers_position'] = 'Chức vụ';
+$lang['customers_birth_date'] = 'Ngày sinh';
+$lang['customers_sex'] = 'Giới tính';
+$lang['customers_family_info'] = 'Chồng/Vợ/Con';
+$lang['customers_company_birth_date'] = 'Sinh nhật công ty';
+$lang['customers_company_manage_name'] = 'Giám đốc';
+$lang['customers_code_tax'] = 'Mã số thuế';
 ?>
