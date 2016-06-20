@@ -97,19 +97,6 @@ a, a:HOVER {cursor: pointer; text-decoration: none}
 	text-align: left !important;
 }
 
-tr.delivery_expire {
-background-color: #fb5d5d !important;
-}
-
-tr.delivery_warning_lv1 {
-background-color: #fbed5d !important;
-}
-
-tr.delivery_warning_lv2 {
-background-color: #5de0fb !important;
-}
-
-
 #do_count_actions select {
 	padding: 9px 5px 10px;
 }

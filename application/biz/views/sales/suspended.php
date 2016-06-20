@@ -1,8 +1,19 @@
 <?php $this->load->view("partial/header");
 	$controller_name="items";
  ?>
-												
-
+<style type="text/css">
+	tr.delivery_warning_lv1 {
+		background-color: #<?php echo $this->config->item('color_warning_level1'); ?> !important;
+	}
+	
+	tr.delivery_warning_lv2 {
+		background-color: #<?php echo $this->config->item('color_warning_level2'); ?> !important;
+	}
+	
+	tr.delivery_warning_lv3 {
+		background-color: #<?php echo $this->config->item('color_warning_level3'); ?> !important;
+	}
+</style>
 	<div class="container-fluid">
 		<div class="row manage-table">
 			<div class="panel panel-piluku">
