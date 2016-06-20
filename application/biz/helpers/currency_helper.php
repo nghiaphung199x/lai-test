@@ -225,5 +225,30 @@ function NumberFormatToCurrency($number){
     else  return $ret;
 }
 
+function format_quantity($quantity) {
+	$arr = explode(".", $quantity);
+	if ($arr[1] < 10) {
+		if ($arr[1] != 0) {
+			if (substr($arr[1], strlen($arr[1]) - 1, strlen($arr[1])) == 0) {
+				return number_format($quantity, 1);
+			} else {
+				return number_format($quantity, 2);
+			}
+		} else {
+			return number_format($quantity);
+		}
+	} else {
+		if ($arr[1] > 0) {
+			if (substr($arr[1], strlen($arr[1]) - 1, strlen($arr[1])) == 0) {
+				return number_format($quantity, 1);
+			} else {
+				return number_format($quantity, 2);
+			}
+		} else {
+			return number_format($quantity);
+		}
+	}
+}
+
 
 ?>

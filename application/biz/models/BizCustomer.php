@@ -396,7 +396,7 @@ class BizCustomer extends Customer
 			$this->db->where("cat_quotes_contract", $cat);
 		}
 		$query = $this->db->get("quotes_contract");
-		return $query->result();
+		return $query->result_array();
 	}
 	function get_info_person_by_id($id) {
 		$this->db->where('person_id', $id);

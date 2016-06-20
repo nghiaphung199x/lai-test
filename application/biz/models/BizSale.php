@@ -821,5 +821,22 @@ class BizSale extends Sale
 		$this->db->order_by('sale_id', 'desc');
 		return $this->db->get();
 	}
+	
+	function get_info_sale_order($sale_id) {
+		$this->db->from('sales');
+		$this->db->where('sale_id', $sale_id);
+		return $this->db->get()->row();
+	}
+	
+	function get_sale_item_by_sale_item($sale_id, $item_id) {
+		$this->db->where("sale_id", $sale_id);
+		$this->db->where("item_id", $item_id);
+		$query = $this->db->get("sales_items");
+		return $query->row();
+	}
+	
+	function insert_sale_material($data) {
+		$this->db->insert("sales_materials", $data);
+	}
 }
 ?>

@@ -19,3 +19,10 @@ CREATE TABLE IF NOT EXISTS `phppos_mail_history` (
   `status` tinyint(4) NOT NULL COMMENT '0: Chưa gửi ; 1: Đã gửi',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `phppos_sales_materials` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sale_id` int(11) NOT NULL COMMENT 'mã đơn hàng để báo giá cho khách hàng',
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'tên file',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='save file báo giá qua email';
