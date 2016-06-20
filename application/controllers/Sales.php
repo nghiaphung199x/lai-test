@@ -1738,7 +1738,6 @@ class Sales extends Secure_area
 		$data['is_over_credit_limit'] = false;
 		$data['fullscreen'] = $this->session->userdata('fullscreen');
 		$data['redeem'] = $this->sale_lib->get_redeem();
-		$data['get_deliverer'] = $this->sale_lib->get_redeem();
 		
 		$customer_id=$this->sale_lib->get_customer();
 		

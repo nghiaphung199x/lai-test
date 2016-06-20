@@ -270,6 +270,9 @@ class BizReceivings extends Receivings
 			$transfer_to_location = $this->Location->get_info($receiving_info['transfer_to_location_id']);
 			$data['transfer_to_location'] = $transfer_to_location->name;
 
+			$transfer_from_location = $this->Location->get_info($receiving_info['location_id']);
+			$data['transfer_from_location'] = $transfer_from_location->name;
+
 			$data['mode'] = 'transfer';
 		}
                 if($receiving_info['suspended']>0){
