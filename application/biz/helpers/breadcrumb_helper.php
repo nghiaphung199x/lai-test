@@ -52,6 +52,21 @@ function create_breadcrumb()
   				$return.=create_current_page_url(lang('customers_sms_edit'));
 			}
 		}
+		elseif($ci->uri->segment(2) == 'manage_mail')
+		{
+			$return.=create_current_page_url(lang('module_customers_mail'));
+		}
+		elseif($ci->uri->segment(2) == 'view_mail')
+		{
+			if ($ci->uri->segment(3) == -1)
+			{
+  				$return.=create_current_page_url(lang('customers_mail_new'));
+			}
+			else
+			{
+  				$return.=create_current_page_url(lang('customers_mail_edit'));
+			}
+		}
   	}
 	elseif($ci->uri->segment(1) == 'items')
 	{

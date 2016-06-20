@@ -57,8 +57,8 @@
 								echo lang('common_layaway'); 
 							?>
 							<?php } else { ?>
-								<?php echo anchor('/sales/sales_quotes/'. $suspended_sale['sale_id'], lang('Báo giá'), array('id' => 'make_sales_quotes','class' => 'btn btn-primary', 'data-toggle'=>"modal",'data-target'=>"#myModal"));?>
-								<?php echo anchor('/sales/sales_contract/'. $suspended_sale['sale_id'], lang('Hợp đồng'), array('id' => 'make_sales_contract','class' => 'btn btn-primary', 'data-toggle'=>"modal",'data-target'=>"#myModal"));?>
+								<?php echo anchor('/sales/report_quotes/'. $suspended_sale['sale_id'], lang('module_customers_quotes'), array('id' => 'make_sales_quotes','class' => 'btn btn-primary', 'data-toggle'=>"modal",'data-target'=>"#myModal"));?>
+								<?php echo anchor('/sales/report_contract/'. $suspended_sale['sale_id'], lang('module_customers_contract'), array('id' => 'make_sales_contract','class' => 'btn btn-primary', 'data-toggle'=>"modal",'data-target'=>"#myModal"));?>
 							<?php }?>
 						</td>
 						<td>
