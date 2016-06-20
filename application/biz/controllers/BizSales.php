@@ -826,7 +826,7 @@ class BizSales extends Sales
 	            $this->load->library('email', $config);
 	            $this->email->set_newline("\r\n");
 	            $this->email->from($this->config->item('email'), $this->config->item('company'));
-	            $this->email->to('phuongnc.tb@gmail.com');
+	            $this->email->to($cust_info->email);
 	            $this->email->subject($this->config->item('company') . " xin trân trọng gửi tới quý khách thư báo giá");
 	            $content = "<p>Dear anh/chị:" . $data['customer'] . "</p>";
 	            $content .= "<p>Dựa vào nhu cầu của Quý khách hàng.</p>";

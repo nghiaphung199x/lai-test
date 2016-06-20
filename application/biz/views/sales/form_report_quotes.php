@@ -97,7 +97,7 @@ $(document).ready(function(){
         },
         messages: 
         {			
-        	quotes_id: <?php echo json_encode(lang('customers_mail_selected_template')); ?>,
+        	quotes_id: <?php echo json_encode(lang('sales_contract_error_selected')); ?>,
         }
     });    
 });
