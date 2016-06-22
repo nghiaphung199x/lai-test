@@ -2,7 +2,7 @@
 	<div class="modal-content customer-recent-sales">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label=<?php echo json_encode(lang('common_close')); ?>><span aria-hidden="true" class="ti-close"></span></button>
-			<h4 class="modal-title"> <?php echo lang('sales_quotes_title'); ?></h4>
+			<h4 class="modal-title"> <?php echo lang('sales_contract_title'); ?></h4>
 		</div>
 		<div class="modal-body ">
 			<div class="row" id="form">
@@ -14,19 +14,19 @@
 				</div>
 				<div class="col-md-12">
 					<?php 
-						echo form_open('sales/do_make_quotes/'.$sale_id,array('id'=>'form_make_quotes','class'=>'form-horizontal'));
+						echo form_open('sales/do_make_contract/'.$sale_id,array('id'=>'form_make_contract','class'=>'form-horizontal'));
 					?>
 					<ul id="error_message_box" class="text-danger"></ul>
 				
 					<div class="form-group">	
-						<?php echo form_label(lang('sales_quotes_template').' :', 'list_quotes',array('class'=>'required col-sm-4 col-md-4 col-lg-4 control-label')); ?>
+						<?php echo form_label(lang('sales_contract_template').' :', 'list_contract',array('class'=>'required col-sm-4 col-md-4 col-lg-4 control-label')); ?>
 						<div class='form_field'>
-					        <select name="quotes_id" id="quotes_id">
-					            <option value="">--Chọn Template---</option>
+					        <select name="contract_id" id="contract_id">
+					            <option value="0">--Chọn Template---</option>
 					            <?php
-					            foreach ($list_quotes as $quotes){
+					            foreach ($list_contract as $contract){
 					            ?>    
-					            <option value="<?php echo $quotes['id_quotes_contract']?>"><?php echo $quotes['title_quotes_contract'];?></option>
+					            <option value="<?php echo $contract['id_quotes_contract']?>"><?php echo $contract['title_quotes_contract'];?></option>
 					            <?php
 					            }
 					            ?>
@@ -34,14 +34,14 @@
 					   </div>
 				 	</div>
 					<div class="form-group">
-						<?php echo form_label(lang('sales_quotes_type').' :', 'list_quotes_type',array('class'=>'col-sm-4 col-md-4 col-lg-4 control-label')); ?>
+						<?php echo form_label(lang('sales_contract_type').' :', 'list_contract_type',array('class'=>'col-sm-4 col-md-4 col-lg-4 control-label')); ?>
 						<div class='form_field'>
-					        <select name="quotes_type" id="quotes_type">
+					        <select name="contract_type" id="contract_type">
 					            <option value="1">Word</option>
 					            <!-- <option value="2">Excel</option> -->
 					            <option value="3">Email</option>
 					        </select>
-					        <span id="quotes_customer_email" style="display: none;">( <?php echo($email); ?> )</span>
+					        <span id="contract_customer_email" style="display: none;">( <?php echo($email); ?> )</span>
 					   </div>
 					</div>
 					
@@ -65,22 +65,21 @@
 </div>
 
 <script type='text/javascript'>
+//validation and submit handling
 $(document).ready(function(){
-    setTimeout(function(){$(":input:visible:first","#form_make_quotes").focus();},100);
-
-    $("#form_make_quotes").submit(function(){
-    	if ($("#quotes_id").val() ==0){
-        	bootbox.alert("<?php echo lang('sales_quotes_error_selected'); ?>");
+    setTimeout(function(){$(":input:visible:first","#form_make_contract").focus();},100);
+    $("#form_make_contract").submit(function(){
+    	if ($("#contract_id").val() ==0){
+        	bootbox.alert("<?php echo lang('sales_contract_error_selected'); ?>");
             return false;
         }
     });
-    
-    $("#quotes_type").change(function() {
-    	var type = $("#quotes_type").val();
+    $("#contract_type").change(function() {
+    	var type = $("#contract_type").val();
     	if (type == 3) {
-        	$("#quotes_customer_email").show();
+        	$("#contract_customer_email").show();
     	} else {
-    		$("#quotes_customer_email").hide();
+    		$("#contract_customer_email").hide();
     	}
 	});
 });
