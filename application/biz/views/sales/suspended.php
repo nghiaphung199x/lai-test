@@ -1,8 +1,19 @@
 <?php $this->load->view("partial/header");
 	$controller_name="items";
  ?>
-												
-
+<style type="text/css">
+	tr.delivery_warning_lv1 {
+		background-color: #<?php echo $this->config->item('color_warning_level1'); ?> !important;
+	}
+	
+	tr.delivery_warning_lv2 {
+		background-color: #<?php echo $this->config->item('color_warning_level2'); ?> !important;
+	}
+	
+	tr.delivery_warning_lv3 {
+		background-color: #<?php echo $this->config->item('color_warning_level3'); ?> !important;
+	}
+</style>
 	<div class="container-fluid">
 		<div class="row manage-table">
 			<div class="panel panel-piluku">
@@ -20,8 +31,10 @@
 					<th><?php echo lang('common_date'); ?></th>
 					<th><?php echo lang('common_type'); ?></th>
 					<th><?php echo lang('sales_customer'); ?></th>
-					<th><?php echo lang('reports_items'); ?></th>
-					<th><?php echo lang('common_comments'); ?></th>
+					
+					<th><?php echo lang('common_delivery_date'); ?></th>
+					<th><?php echo lang('common_deliverer'); ?></th>
+					
 					<th><?php echo lang('common_unsuspend'); ?></th>
 					<th><?php echo lang('sales_receipt'); ?></th>
 					<th><?php echo lang('common_email_receipt'); ?></th>
@@ -35,7 +48,7 @@
 				foreach ($suspended_sales as $suspended_sale)
 				{
 				?>
-					<tr>
+					<tr class="<?php echo getStatusOfDelivery($suspended_sale['delivery_date']) ?>">
 						<td><?php echo ($this->config->item('sale_prefix') ? $this->config->item('sale_prefix') : 'POS' ). ' '.$suspended_sale['sale_id'];?></td>
 						<td><?php echo date(get_date_format(). ' @ '.get_time_format(),strtotime($suspended_sale['sale_time']));?></td>
 						<td width="15%">
@@ -69,8 +82,10 @@
 							}
 							?>
 						</td>
-						<td><?php echo $suspended_sale['items'];?></td>
-						<td><?php echo $suspended_sale['comment'];?></td>
+						<td><?php echo $suspended_sale['delivery_date']; ?></td>
+						<td><?php 
+						$deliverer = $this->Employee->get_info($suspended_sale['deliverer']);
+						echo $deliverer ? $deliverer->first_name . ' ' . $deliverer->last_name : '';?></td>
 						<td>
 							<?php 
 							echo form_open('sales/unsuspend');

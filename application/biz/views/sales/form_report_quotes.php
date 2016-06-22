@@ -97,7 +97,7 @@ $(document).ready(function(){
         	quotes_id: "required"
         },
         messages: 
-        {			
+        {
         	quotes_id: <?php echo json_encode(lang('sales_contract_error_selected')); ?>,
         }
     });

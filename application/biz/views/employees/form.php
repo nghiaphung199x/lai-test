@@ -332,7 +332,7 @@
                             </div>
                         </div>
 
-						<ul id="permission_list" class="list-unstyled">
+						<ul id="permission_list" class="list-unstyled hide">
 						<?php
 						foreach($all_modules->result() as $module)
 						{

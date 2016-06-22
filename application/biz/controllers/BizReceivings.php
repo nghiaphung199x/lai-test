@@ -195,8 +195,6 @@ class BizReceivings extends Receivings
 
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['mode']);
-                echo 'mode: '.$data[''];
-                echo '<br/>type: '.$typeOfView;die;
 		$data['pdf_block_html'] = $this->load->view('receivings/partials/' . $typeOfView, $data, TRUE);
 
 		$this->load->view("receivings/receipt",$data);
@@ -271,6 +269,9 @@ class BizReceivings extends Receivings
 		{
 			$transfer_to_location = $this->Location->get_info($receiving_info['transfer_to_location_id']);
 			$data['transfer_to_location'] = $transfer_to_location->name;
+
+			$transfer_from_location = $this->Location->get_info($receiving_info['location_id']);
+			$data['transfer_from_location'] = $transfer_from_location->name;
 
 			$data['mode'] = 'transfer';
 		}

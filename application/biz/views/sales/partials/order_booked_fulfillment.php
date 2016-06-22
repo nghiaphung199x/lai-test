@@ -3,31 +3,31 @@
 		display: block;
 		overflow: hidden;
 		position: relative;
-                height: auto; width: 280px;
+                height: auto; width: 255px;
                 font-family: Arial;
-		font-size: 10px !important;
+		font-size: 8px !important;
 	}
 	#pdf_logo  {
 		text-align: center;
-                width: 280px;
+                width: 255px;
 	}
 	#company_name {
 		text-transform: uppercase;
 		font-weight: bold;
 		color: #002FC2;
-                width: 280px;
+                width: 255px;
                 text-align: center;
-                font-size: 10px;
+                font-size: 8px;
 	}
 	#pdf_content span {
 		color: #002FC2;
 	}
 	#pdf_title {
-		width: 280px;
+		width: 255px;
 		text-align: center;
 		text-transform: uppercase;
 		font-weight: bold;
-		font-size: 10px;
+		font-size: 8px;
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
@@ -47,12 +47,18 @@
 
 	#pdf_tbl_items th, #pdf_tbl_items td {
 		border: 1px solid #000;
-		padding: 3px;
+		padding: 3px 0px;
+                font-weight: normal;
+                line-height: normal !important;
+                font-size: 7px !important;;
 	}
+        #pdf_tbl_items th{
+            font-size: 7px !important; 
+        }
 
 	#pdf_signature {
 		min-height: 50px;
-                width: 280px;
+                width: 255px;
 	}
         #pdf_signature p{
             min-height: 50px !important;
@@ -65,7 +71,9 @@
 		font-size: 11px;
 		font-weight: bold;
 	}
-
+        .text-left{
+            text-align: left;
+        }
 	.fl {
 		float: left;
 	}
@@ -104,10 +112,10 @@
 		height: auto !important;
 	}
 	p {
-		margin: 3px 0;
+		margin: 2px 0;
 	}
 	.w150px {
-		width: 280px;
+		width: 255px;
 	}
 	.fontI {
 		font-style: italic;
@@ -127,8 +135,8 @@
         #policy{
                 font-weight: bold;
                 text-align: center;
-                font-size: 10px;
-                margin-top: 15px; 
+                font-size: 8px;
+                margin-top: 10px; 
         }
         .text-center{
             direction: rtl !important;
@@ -173,19 +181,18 @@
 		
 	</div>	
 	<div class="w100 clb">
-		<table id="pdf_tbl_items" class="w100" style="border-collapse: collapse; width: 280px; font-size: 8px; margin-top: 10px; ">
+		<table id="pdf_tbl_items" class="w100" style="border-collapse: collapse; margin-top: 10px; ">
 			<tbody>
 				<tr>
-					<th style="border: 1px solid #000000; padding: 2px; line-height: normal !important;" >STT</th>
-					<th style="border: 1px solid #000000; padding: 2px; line-height: normal !important;" >Mã MH</th>
-					<th style="border: 1px solid #000000; padding: 2px; line-height: normal !important;" ><?php echo lang('common_item_name'); ?></th>
-                                        <th style="border: 1px solid #000000; padding: 2px; line-height: normal !important;"  class="text-center"><?php echo lang('common_unit_report')?></th>
-					<th style="border: 1px solid #000000; padding: 2px; line-height: normal !important;" ><?php echo lang('common_quantity'); ?></th>
-                                        <th style="border: 1px solid #000000; padding: 2px; line-height: normal !important;" ><?php echo lang('common_unit_sales').' ('.$this->config->item('currency_symbol').')'; ?></th>
+					<th >STT</th>
+					<th   >Mã MH</th>
+					<th   ><?php echo lang('common_item_name'); ?></th>
+					<th   ><?php echo lang('common_quantity_a8'); ?></th>
+                                        <th   ><?php echo lang('common_unit_sales').' ('.$this->config->item('currency_symbol').')'; ?></th>
 					
-					<th style="border: 1px solid #000000; padding: 2px; line-height: normal !important;" >Chiết khấu (%)</th>
-                                        <th style="border: 1px solid #000000; padding: 2px; line-height: normal !important;"  class="text-center"><?php echo lang('reports_taxes') .' %'?></th>
-					<th style="border: 1px solid #000000; padding: 2px; line-height: normal !important;" ><?php echo lang('common_unit_total').' ('.$this->config->item('currency_symbol').')'; ?></th>
+					<th   ><?php echo lang('common_unit_discount_a8').' %';?></th>
+                                        <th    class="text-center"><?php echo lang('reports_taxes') .' %'?></th>
+					<th   ><?php echo lang('common_unit_total').' ('.$this->config->item('currency_symbol').')'; ?></th>
 				</tr>
 
 				<?php
@@ -199,13 +206,14 @@
 				$number_of_items_sold = 0;
 				$stt = 0;
                                 $total_money = 0;
-				foreach($sales_items as $line => $item)
-				{
-                                    $total_money +=($item['item_unit_price']*$item['quantity_purchased']-$item['item_unit_price']*$item['quantity_purchased']*$item['discount_percent']/100);
+                                $amount_money = 0;
+				foreach(array_reverse($cart, true) as $line => $item)
+                                {
+                                    $total_money +=($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100);
 					$stt ++;
 					 if ($item['name'] != lang('sales_store_account_payment') && $item['name'] != lang('common_discount'))
 					 {
-				 		 $number_of_items_sold = $number_of_items_sold + $item['quantity_purchased'];
+				 		 $number_of_items_sold = $number_of_items_sold + $item['quantity'];
 					 }
 					 
 					$item_number_for_receipt = false;
@@ -235,14 +243,13 @@
 
 					<tr>
 						<td><?php echo $stt; ?></td>
-						<td><?php echo $item['item_number']; ?></td>
+                                                <td><?php echo H($item['product_id']);?></td>
 						<td><?php echo $item['name']; ?><?php if ($item_number_for_receipt){ ?> - <?php echo $item_number_for_receipt; ?><?php } ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
-                                                <td></td>
-						<td><?php echo to_quantity(abs($item['quantity_purchased'])); ?></td>
-                                                <td><?php echo to_currency_no_money($item['item_unit_price']); ?></td>
-						<td><?php echo $item['discount_percent']; ?></td>
+                                                <td><?php echo to_quantity($item['quantity']); ?></td>
+                                                <td><?php echo NumberFormatToCurrency($item['price']); ?></td>
+						<td><?php echo to_quantity($item['discount']);?></td>
                                                 <td><?php echo to_quantity($item['tax_included']);?></td>
-						<td><?php echo to_currency_no_money(abs($item['item_unit_price']*$item['quantity_purchased']-$item['pritem_unit_priceice']*$item['quantity_purchased']*$item['discount_percent']/100)); ?></td>
+                                                <td><?php echo NumberFormatToCurrency($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100); ?></td>
 					</tr>
 					<?php if (!$item['description']=="" ||(isset($item['serialnumber']) && $item['serialnumber'] !="") ) {?>
 					<tr>
@@ -256,7 +263,6 @@
 							<?php } ?>
 						</td>
 					</tr>
-                                        
 					<?php } ?>
 				<?php } ?>
                                         <tr>
@@ -307,16 +313,6 @@
 					<?php }?>
 				<?php }?>
 
-				<?php if ($amount_change >= 0) {?>
-					<tr>
-                                            <td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('common_change_due').': ';  echo $this->config->item('round_cash_on_sales')  && $is_sale_cash_payment ? to_currency_no_money(round_to_nearest_05($amount_change)) : to_currency($amount_change); ?></td>
-					</tr>
-				<?php } else { ?>
-					<tr>
-                                            <td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('common_amount_due').': ';  echo $this->config->item('round_cash_on_sales')  && $is_sale_cash_payment ? to_currency_no_money(round_to_nearest_05($amount_change * -1)) : to_currency($amount_change * -1); ?></td>
-					</tr>
-				<?php } ?>
-
 				<?php if (isset($customer_balance_for_sale) && $customer_balance_for_sale !== FALSE && !$this->config->item('hide_store_account_balance_on_receipt')) {?>
 					<tr>
                                             <td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('sales_customer_account_balance').': ';  echo to_currency_no_money($customer_balance_for_sale); ?></td>
@@ -350,7 +346,7 @@
 		</table>
 	</div>
 	<div>
-		<p>Số tiền viết bằng chữ: <span>.................................................................................</span></p>
+            <p>Số tiền viết bằng chữ: <span><?php echo getStringNumber($total)?></span></p>
 	</div>
         <?php if($this->config->item('return_policy')){?>
 		<div id="policy"><?php echo $this->config->item('return_policy'); ?></div>

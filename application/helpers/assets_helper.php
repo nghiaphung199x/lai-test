@@ -103,6 +103,7 @@ function get_js_files()
 			array('path' => 'assets/js/bootstrap-editable.min.js'),
 			array('path' => 'assets/js/core.js'),
 			array('path' => 'assets/js/stacktable.js'),
+			array('path' => 'assets/js/biz/jscolor.js'),
 		);
 	}
 
