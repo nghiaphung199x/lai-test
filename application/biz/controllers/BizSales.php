@@ -490,6 +490,9 @@ class BizSales extends Sales
 		$data = array();
 		$data['sale_id'] = $sale_id;
 		$data['list_quotes'] = $this->Customer->get_list_template_quotes_contract(2);
+		$customer_id = $this->sale_lib->get_customer();
+		$cust_info = $this->Customer->get_info($customer_id);
+		$data['email'] = $cust_info->email;
 		
 		$this->load->view('sales/form_report_quotes', $data);
 	}

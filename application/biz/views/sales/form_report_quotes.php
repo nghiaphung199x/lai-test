@@ -36,11 +36,12 @@
 					<div class="form-group">
 						<?php echo form_label(lang('sales_quotes_type').' :', 'list_quotes_type',array('class'=>'required col-sm-4 col-md-4 col-lg-4 control-label')); ?>
 						<div class='form_field'>
-					        <select name="quotes_type">
+					        <select name="quotes_type" id="quotes_type">
 					            <option value="1">Word</option>
-					            <option value="2">Excel</option>
+					            <!-- <option value="2">Excel</option> -->
 					            <option value="3">Email</option>
 					        </select>
+					        <span id="quotes_customer_email" style="display: none;">( <?php echo($email); ?> )</span>
 					   </div>
 					</div>
 					
@@ -99,6 +100,15 @@ $(document).ready(function(){
         {			
         	quotes_id: <?php echo json_encode(lang('sales_contract_error_selected')); ?>,
         }
-    });    
+    });
+
+    $("#quotes_type").change(function() {
+    	var type = $("#quotes_type").val();
+    	if (type == 3) {
+        	$("#quotes_customer_email").show();
+    	} else {
+    		$("#quotes_customer_email").hide();
+    	}
+	});
 });
 </script>
