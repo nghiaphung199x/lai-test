@@ -24,6 +24,9 @@ $lang['module_attribute_sets_desc']='Add, Update, Delete, and Search attribute s
 $lang['module_attribute_groups']='Attribute groups';
 $lang['module_attribute_groups_desc']='Add, Update, Delete, and Search attribute groups';
 
+$lang['module_attributes']='Attribute';
+$lang['module_attributes_desc']='Add, Update, Delete, and Search attribute';
+
 $lang['module_sales']='Sales';
 $lang['module_sales_desc']='Process sales and returns';
 
@@ -59,6 +62,7 @@ $lang['module_action_search_groups'] = 'Search Groups';
 $lang['module_action_search_departments'] = 'Search Departments';
 $lang['module_action_search_attribute_sets'] = 'Search Attribute sets';
 $lang['module_action_search_attribute_groups'] = 'Search Attribute groups';
+$lang['module_action_search_attributes'] = 'Search Attribute';
 $lang['module_action_search_item_kits'] = 'Search Item Kits';
 $lang['module_action_search_suppliers'] = 'Search suppliers';
 $lang['module_see_cost_price'] = 'See cost price';

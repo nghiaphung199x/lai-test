@@ -24,6 +24,9 @@ $lang['module_attribute_sets_desc']='Thêm, Sửa, Xóa và Tìm kiếm Bộ thu
 $lang['module_attribute_groups']='Nhóm thuộc tính';
 $lang['module_attribute_groups_desc']='Thêm, Sửa, Xóa và Tìm kiếm Nhóm thuộc tính';
 
+$lang['module_attributes']='Thuộc tính';
+$lang['module_attributes_desc']='Thêm, Sửa, Xóa và Tìm kiếm Thuộc tính';
+
 $lang['module_sales']='Bán hàng';
 $lang['module_sales_desc']='Xử lý bán hàng và trả hàng';
 
@@ -59,6 +62,7 @@ $lang['module_action_search_groups'] = 'Tìm kiếm nhóm';
 $lang['module_action_search_departments'] = 'Tìm kiếm phòng ban';
 $lang['module_action_search_attribute_sets'] = 'Tìm kiếm bộ thuộc tính';
 $lang['module_action_search_attribute_groups'] = 'Tìm kiếm nhóm thuộc tính';
+$lang['module_action_search_attributes'] = 'Tìm kiếm thuộc tính';
 $lang['module_action_search_item_kits'] = 'Tìm kiếm gói sản phẩm';
 $lang['module_action_search_suppliers'] = 'Tìm kiếm nhà cung cấp';
 $lang['module_see_cost_price'] = 'Xem giá nhập';
