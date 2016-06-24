@@ -24,6 +24,7 @@
                         )); ?>
                     </div>
                 </div>
+
                 <div class="form-group">
                     <?php echo form_label(lang('attribute_groups_field_description'), 'attribute_group_description', array('class' => '')); ?>
                     <div class="cl">
@@ -36,6 +37,7 @@
                         )); ?>
                     </div>
                 </div>
+
                 <div class="clear">
                     <div class="btn-group">
                         <a class="btn btn-default" href="<?php echo site_url('attribute_groups'); ?>"><?php echo lang('attribute_groups_btn_list'); ?></a>

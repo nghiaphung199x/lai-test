@@ -22,6 +22,7 @@ $lang['attribute_sets_select_all_message'] = 'Chọn tất cả';
 
 $lang['attribute_sets_root'] = 'Không thuộc bộ thuộc tính nào';
 $lang['attribute_sets_field_name'] = 'Tên bộ thuộc tính';
+$lang['attribute_sets_field_code'] = 'Mã bộ thuộc tính';
 $lang['attribute_sets_field_description'] = 'Mô tả bộ thuộc tính';
 $lang['attribute_sets_field_parent'] = 'Thuộc bộ thuộc tính';
 $lang['attribute_sets_required'] = 'Cần tạo ít nhất một bộ thuộc tính';

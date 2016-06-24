@@ -113,7 +113,7 @@ class Attributes extends Secure_area implements Idata_controller
     {
         $data = array();
         $data['entity'] = $this->Attribute->get_info($attribute_id);
-        $data['parents'] = $this->Attribute->get_all()->result();
+        $data['attribute_types'] = $this->Attribute->get_types();
         $data['all_modules'] = $this->Module->get_all_modules();
         $data['controller_name'] = $this->_controller_name;
         $data['logged_in_employee_id'] = $this->Employee->get_logged_in_employee_info()->person_id;

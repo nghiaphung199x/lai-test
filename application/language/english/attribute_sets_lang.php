@@ -22,6 +22,7 @@ $lang['attribute_sets_select_all_message'] = 'Select all';
 
 $lang['attribute_sets_root'] = 'Not belong to any attribute_set';
 $lang['attribute_sets_field_name'] = 'Name';
+$lang['attribute_sets_field_code'] = 'Code';
 $lang['attribute_sets_field_description'] = 'Description';
 $lang['attribute_sets_field_parent'] = 'Belong to attribute_set';
 $lang['attribute_sets_required'] = 'At least one attribute_set is required';

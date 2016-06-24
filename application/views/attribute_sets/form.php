@@ -24,6 +24,20 @@
                         )); ?>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <?php echo form_label(lang('attribute_sets_field_code'), 'attribute_set_code', array('class' => '')); ?>
+                    <div class="cl">
+                        <?php echo form_input(array(
+                                'name' => 'attribute_set[code]',
+                                'id' => 'attribute_set_code',
+                                'title' => lang('common_fields_required_alert'),
+                                'class' => 'form-control form-inps',
+                                'value' => $entity->code
+                        )); ?>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <?php echo form_label(lang('attribute_sets_field_description'), 'attribute_set_description', array('class' => '')); ?>
                     <div class="cl">
@@ -36,6 +50,7 @@
                         )); ?>
                     </div>
                 </div>
+
                 <div class="clear">
                     <div class="btn-group">
                         <a class="btn btn-default" href="<?php echo site_url('attribute_sets'); ?>"><?php echo lang('attribute_sets_btn_list'); ?></a>

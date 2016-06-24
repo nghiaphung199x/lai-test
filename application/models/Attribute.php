@@ -2,6 +2,35 @@
 
 class Attribute extends CI_Model
 {
+
+    /*
+        Defines types
+    */
+    const ATTRIBUTE_TYPE_TEXT = 1;
+    const ATTRIBUTE_TYPE_NUMBER = 2;
+    const ATTRIBUTE_TYPE_TEXTAREA = 3;
+    const ATTRIBUTE_TYPE_SELECT = 4;
+    const ATTRIBUTE_TYPE_CHECKBOX = 5;
+    const ATTRIBUTE_TYPE_RADIO = 6;
+    const ATTRIBUTE_TYPE_EDITOR = 7;
+    const ATTRIBUTE_TYPE_FILE = 8;
+
+    /*
+        Get all types
+    */
+    public function get_types() {
+        $attribute_types = array();
+        $attribute_types[self::ATTRIBUTE_TYPE_TEXT] = lang('attributes_type_text');
+        $attribute_types[self::ATTRIBUTE_TYPE_NUMBER] = lang('attributes_type_number');
+        $attribute_types[self::ATTRIBUTE_TYPE_TEXTAREA] = lang('attributes_type_textarea');
+        $attribute_types[self::ATTRIBUTE_TYPE_SELECT] = lang('attributes_type_select');
+        $attribute_types[self::ATTRIBUTE_TYPE_CHECKBOX] = lang('attributes_type_checkbox');
+        $attribute_types[self::ATTRIBUTE_TYPE_RADIO] = lang('attributes_type_radio');
+        $attribute_types[self::ATTRIBUTE_TYPE_EDITOR] = lang('attributes_type_editor');
+        $attribute_types[self::ATTRIBUTE_TYPE_FILE] = lang('attributes_type_file');
+        return $attribute_types;
+    }
+
     /*
         Determines if a given id is an attribute
     */
@@ -68,6 +97,10 @@ class Attribute extends CI_Model
 
         if ($query->num_rows() == 1) {
             $cache[$id] = $query->row();
+            /* Extract all options */
+            if (!empty($cache[$id]->options)) {
+                $cache[$id]->options = @unserialize($cache[$id]->options);
+            }
             return $cache[$id];
         } else {
             /* Get empty base parent object */
@@ -79,6 +112,11 @@ class Attribute extends CI_Model
             /* Append those fields to base parent object, we have a complete empty object */
             foreach ($fields as $field) {
                 $attribute_obj->$field = '';
+            }
+
+            /* Extract all options */
+            if (!empty($attribute_obj)) {
+                $attribute_obj->options = @unserialize($attribute_obj->options);
             }
 
             return $attribute_obj;
@@ -102,6 +140,14 @@ class Attribute extends CI_Model
     function save($data, $id = false)
     {
         $success = false;
+        if (isset($data['options'])) {
+            foreach ($data['options'] as $key => $option) {
+                if (empty($option['label']) || empty($option['value'])) {
+                    unset($data['options'][$key]);
+                }
+            }
+            $data['options'] = serialize($data['options']);
+        }
 
         /* Insert Attribute */
         if (!$id) {
