@@ -260,6 +260,14 @@ function get_items_manage_table($items,$controller)
 	$has_cost_price_permission = $CI->Employee->has_module_action_permission('items','see_cost_price', $CI->Employee->get_logged_in_employee_info()->person_id);
 	$table='<table class="table tablesorter table-hover" id="sortable_table">';	
 
+	$totalQtyAllLoc = 0;
+	$totalQty = 0;
+	
+	foreach($items->result() as $item)
+	{
+		$totalQtyAllLoc += (int) $CI->Item->getTotalInAllLocation($item->item_id);
+		$totalQty += (int) $item->quantity;
+	}
 
 	if ($has_cost_price_permission)
 	{
@@ -314,7 +322,13 @@ function get_items_manage_table($items,$controller)
 		}
 		else
 		{
-			$table.="<th><span>$header</span></th>";		
+			if ($header == lang('items_quantity')) {
+				$table.="<th><span class='hr-lbl'>$header</span><span title='$totalQty total items' class='badge bg-primary tip-left'>$totalQty</span></th>";
+			} elseif ($header == lang('items_total_quantity')) {
+				$table.="<th><span class='hr-lbl'>$header</span><span title='$totalQtyAllLoc total items' class='badge bg-primary tip-left'>$totalQtyAllLoc</span></th>";
+			} else {
+				$table.="<th><span class='hr-lbl'>$header</span></th>";
+			}
 		}
 	}
 	$table.='</tr></thead><tbody>';
@@ -345,6 +359,28 @@ function get_items_manage_table_data_rows($items,$controller)
 	return $table_data_rows;
 }
 
+/*
+ Gets the html data rows for the items.
+ */
+function get_items_manage_table_data_rows_with_array($items,$controller)
+{
+	$CI =& get_instance();
+	$table_data_rows='';
+
+	foreach($items as $item)
+	{
+		$item->total_quantity = $CI->Item->getTotalInAllLocation($item->item_id);
+		$table_data_rows.=get_item_data_row($item,$controller);
+	}
+
+	if(count($items)==0)
+	{
+		$table_data_rows.="<tr><td colspan='12'><span class='col-md-12 text-center text-warning' >".lang('items_no_items_to_display')."</span></td></tr>";
+	}
+
+	return $table_data_rows;
+}
+
 function get_item_data_row($item,$controller)
 {
 	$CI =& get_instance();
@@ -360,13 +396,13 @@ function get_item_data_row($item,$controller)
 
 	if($CI->config->item('highlight_low_inventory_items_in_items_module') && $item->quantity !== NULL && ($item->quantity<=0 || $item->quantity <= $reorder_level))
 	{
-		$low_inventory_class = "text-danger";
+		$low_inventory_class = "text-danger low-inventory";
 	}
 	$controller_name=str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
 
 	$avatar_url=$item->image_id ?  site_url('app_files/view/'.$item->image_id) : base_url('assets/assets/images/avatar-default.jpg');
 
-	$table_data_row='<tr>';
+	$table_data_row='<tr class="'. $low_inventory_class .'">';
 	$table_data_row.="<td><input type='checkbox' id='item_$item->item_id' value='".$item->item_id."'/><label for='item_$item->item_id'><span></span></label></td>";
 	$table_data_row.='<td>'.$item->item_id.'</td>';
 	$table_data_row.='<td>'.H($item->item_number).'</td>';
@@ -1059,127 +1095,6 @@ function get_quotes_contract_data_row($quotes_contract, $controller) {
 	$table_data_row .= "<td width='41%'>$quotes_contract->title_quotes_contract</td>";
 	$table_data_row .= "<td width='35%'>" . ($quotes_contract->cat_quotes_contract == 1 ? lang('customers_quotes_contract_type_contract') : lang('customers_quotes_contract_type_quotes')) . "</td>";
 	$table_data_row .= '<td width="5%" class="rightmost">' . anchor($controller_name . "/quotes_contract_view/$quotes_contract->id_quotes_contract/2", lang('common_edit'), array('title' => lang('customers_quotes_contract_update'), 'class' => '')) . '</td>';
-	$table_data_row.='</tr>';
-	return $table_data_row;
-}
-
-function get_mail_manage_table($mail, $controller) {
-	$CI = & get_instance();
-	$table = '<table class="tablesorter table table-hover" id="sortable_table">';
-
-	$headers = array('<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
-			'Tiêu đề',
-			'Nội dung',
-			'&nbsp');
-	$table.='<thead><tr>';
-
-    $count = 0;
-    foreach ($headers as $header) {
-        $count++;
-
-        if ($count == 1) {
-            $table.="<th class='leftmost'>$header</th>";
-        } elseif ($count == count($headers)) {
-            $table.="<th class='rightmost'>$header</th>";
-        } else {
-            $table.="<th>$header</th>";
-        }
-    }
-    $table.='</tr></thead><tbody>';
-    $table.=get_mail_manage_table_data_rows($mail, $controller);
-    $table.='</tbody></table>';
-    return $table;
-}
-
-/*
-  Gets the html data rows for the mail.
- */
-
-function get_mail_manage_table_data_rows($mail, $controller) {
-    $CI = & get_instance();
-    $table_data_rows = '';
-
-    foreach ($mail->result() as $m) {
-        $table_data_rows.=get_mail_data_row($m, $controller);
-    }
-
-    if ($mail->num_rows() == 0) {
-        $table_data_rows.="<tr><td colspan='4'><div class='col-md-12 text-center text-warning'>" . lang('common_no_mail_to_display') . "</div></tr></tr>";
-    }
-
-    return $table_data_rows;
-}
-
-function get_mail_data_row($mail, $controller) {
-    $CI = & get_instance();
-    $controller_name = str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
-
-    $table_data_row = '<tr>';
-    $table_data_row.="<td><input type='checkbox' id='mail_$mail->mail_id' value='" . $mail->mail_id . "'/><label for='sms_$mail->mail_id'><span></span></label></td>";
-    $table_data_row.='<td>' . $mail->mail_title . '</a></td>';
-    $table_data_row.='<td>' . substr($mail->mail_content, 0, 20) . '...</td>';
-    $table_data_row.='<td class="rightmost">' . anchor($controller_name . "/view_mail/$mail->mail_id", lang('common_edit'), array('title' => ' Sửa mail')) . '</td>';
-    $table_data_row.='</tr>';
-
-    return $table_data_row;
-}
-
-function get_mail_manage_table_temp($mail, $controller) {
-	$CI = & get_instance();
-	$table = '<table class="tablesorter table table-hover" id="sortable_table">';
-
-	$headers = array(
-			'Tên KH',
-			'Email',
-	        '&nbsp');
-	
-	$table.='<thead><tr>';
-
-    $count = 0;
-    foreach ($headers as $header) {
-        $count++;
-
-        if ($count == 1) {
-            $table.="<th class='leftmost'>$header</th>";
-        } elseif ($count == count($headers)) {
-            $table.="<th class='rightmost'>$header</th>";
-        } else {
-            $table.="<th>$header</th>";
-        }
-    }
-    $table.='</tr></thead><tbody>';
-    $table.=get_mail_manage_table_data_rows_temp($mail, $controller);
-    $table.='</tbody></table>';
-    return $table;
-}
-
-/*
-  Gets the html data rows for the mail.
- */
-
-function get_mail_manage_table_data_rows_temp($mail, $controller) {
-    $CI = & get_instance();
-    $table_data_rows = '';
-
-    foreach ($mail as $key => $value ) {
-        $table_data_rows.=get_mail_data_row_temp($key, $value, $controller);
-    }
-
-    if (count($mail) == 0) {
-        $table_data_rows.="<tr><td colspan='4'><div class='col-md-12 text-center text-warning'>" . lang('common_no_mail_to_display') . "</div></tr></tr>";
-    }
-
-    return $table_data_rows;
-}
-
-function get_mail_data_row_temp($customer_id, $customer_info, $controller) {
-    $CI = & get_instance();
-	$controller_name = str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
-
-	$table_data_row = '<tr>';
-	$table_data_row.='<td>' . H($customer_info['name']) . '</a></td>';
-	$table_data_row.='<td>' . H($customer_info['email']) . '</td>';
-	$table_data_row.='<td class="rightmost">' . anchor($controller_name . "#", lang('common_delete'), array('title' => $customer_id, 'class' => 'delete_email_temp btn btn-primary btn-lg','data-id'=>$customer_id)) . '</td>';
 	$table_data_row.='</tr>';
 	return $table_data_row;
 }

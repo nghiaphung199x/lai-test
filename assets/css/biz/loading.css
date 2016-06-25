@@ -105,8 +105,14 @@ a, a:HOVER {cursor: pointer; text-decoration: none}
 	cursor: pointer;
 }
 
-#sortable_table tr th.headerSortUp span, #sortable_table tr th.headerSortDown span {
-	padding: 0 10px;
+#low_inventory{
+	padding: 10px;
+	cursor: pointer;
+}
+
+#low_inventory.selected {
+	border-radius: 20px;
+	background-color: orange;
 }
 
 .tablesorter .headerSortUp{
