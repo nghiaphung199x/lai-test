@@ -108,17 +108,14 @@ class MY_Loader extends CI_Loader
 		{
 			foreach ($this->_ci_model_paths as $mod_path)
 			{
-				if ( ! file_exists($mod_path.'models/'.$path.$model.'.php') && ! file_exists($mod_path.'biz/models/'.$path.$model.'.php'))
-				{
-					continue;
-				}
-				
 				if($mod_path == APPPATH && file_exists(BIZ_MODEL_PATH.'/'.$path.ucfirst(BIZ_PREFIX).$model.'.php'))
 				{
 					$model = ucfirst(BIZ_PREFIX).$model;
 					require_once(BIZ_MODEL_PATH.'/'.$path.$model.'.php');
-				} else {
+				} elseif(file_exists($mod_path.'models/'.$path.$model.'.php')) {
 					require_once($mod_path.'models/'.$path.$model.'.php');	
+				} else {
+					continue;
 				}
 				
 				if ( ! class_exists($model, FALSE))

@@ -5,12 +5,22 @@ $lang['module_customers']='Khách hàng';
 $lang['module_customers_desc']='Thêm, Sửa, Xóa, và Tìm kiếm khách hàng';
 $lang['module_customers_sms']='SMS Brandname';
 $lang['module_customers_quotes_contract']='mẫu báo giá, hợp đồng';
+$lang['module_customers_mail']='Mail';
+$lang['module_customers_mail_tmp']='Danh sách gửi mail tạm';
+$lang['module_customers_quotes']='Báo giá';
+$lang['module_customers_contract']='Hợp đồng';
 
 $lang['module_suppliers']='Nhà cung cấp';
 $lang['module_suppliers_desc']='Thêm, Sửa, Xóa, và Tìm kiếm các nhà cung cấp';
 
 $lang['module_employees']='Nhân viên';
 $lang['module_employees_desc']='Thêm, Sửa, Xóa, và Tìm kiếm nhân viên';
+
+$lang['module_groups']='Nhóm';
+$lang['module_groups_desc']='Thêm, Sửa, Xóa và Tìm kiếm nhóm';
+
+$lang['module_departments']='Phòng ban';
+$lang['module_departments_desc']='Thêm, Sửa, Xóa và Tìm kiếm phòng';
 
 $lang['module_sales']='Bán hàng';
 $lang['module_sales_desc']='Xử lý bán hàng và trả hàng';
@@ -39,9 +49,12 @@ $lang['module_locations_desc']='Thêm, Sửa, Xóa, và Tìm kiếm điểm b
 
 $lang['module_action_add_update'] = 'Thêm mới, Sửa';
 $lang['module_action_delete'] = 'Xóa';
+$lang['module_action_search'] = 'Tìm kiếm nhóm';
 $lang['module_action_search_customers'] = 'Tìm kiếm khách hàng';
 $lang['module_action_search_items'] = 'Tìm kiếm sản phẩm, hàng hóa, dịch vụ';
 $lang['module_action_search_giftcards'] = 'Tìm kiếm thẻ quà tặng';
+$lang['module_action_search_groups'] = 'Tìm kiếm nhóm';
+$lang['module_action_search_departments'] = 'Tìm kiếm phòng ban';
 $lang['module_action_search_item_kits'] = 'Tìm kiếm gói sản phẩm';
 $lang['module_action_search_suppliers'] = 'Tìm kiếm nhà cung cấp';
 $lang['module_see_cost_price'] = 'Xem giá nhập';

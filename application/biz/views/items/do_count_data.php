@@ -58,6 +58,7 @@
 						<tr class="register-items-header">
 							<th><?php echo lang('common_item');?></th>
 							<th><?php echo lang('items_count');?></th>
+							<th><?php echo lang('common_measure'); ?></th>
 							<th><?php echo lang('items_actual_on_hand');?></th>
 							<th><?php echo lang('common_comments');?></th>
 							<?php if ($count_info->status == 'open') { ?>
@@ -65,13 +66,16 @@
 							<?php } ?>
 						</tr>
 					</thead>
-				
 					<tbody class="register-item-content">
 						<?php foreach($items_counted as $counted_item) { ?>
 							<tr class="register-item-details">
 								<td><a href="<?php echo site_url('home/view_item_modal').'/'.$counted_item['item_id']; ?>" data-toggle="modal" class="register-item-name count-items" data-target="#myModal"><?php echo H($counted_item['name']).' ('.H($counted_item['category']).')'; ?></a></td>
 								<td class="text-center"><a href="#" id="count" class="xeditable" data-type="text" data-pk="<?php echo $counted_item['item_id']; ?>" data-name="quantity" data-url="<?php echo site_url('items/edit_count_item'); ?>" data-title="<?php echo H(lang('items_edit_count')); ?>"><?php echo to_quantity($counted_item['count']); ?></a></td>
-								<td class="text-center"><?php echo to_quantity($counted_item['actual_quantity']);?></td>
+								<td class="text-center"><?php 
+									$measure = $this->Measure->getInfo($counted_item['measure_id']);
+									echo $measure->name;
+								?></td>
+								<td class="text-center"><?php echo qtyToString($counted_item['item_id'], $counted_item['actual_quantity']);?></td>
 								<td class="text-center"><a href="#" id="comment" class="xeditable" data-type="text" data-pk="<?php echo $counted_item['item_id']; ?>" data-name="comment" data-url="<?php echo site_url('items/edit_count_item'); ?>" data-title="<?php echo H(lang('items_edit_comment')); ?>"><?php echo $counted_item['comment'] ? H($counted_item['comment']): 'None'; ?></a></td></a></td>
 								<?php if ($count_info->status == 'open') { ?>
 									<td class="text-center"><?php echo anchor('items/delete_inventory_count_item/'.$counted_item['item_id'], 'Delete Count Item',array('class' =>'text-danger'));?></td>

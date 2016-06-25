@@ -26,6 +26,7 @@ $lang['common_you_are_using_phppos']='You are using 4Biz by LifeTek Version';
 $lang['common_please_visit_my']='Please visit our';
 $lang['common_website']='website';
 $lang['common_fields_required_message']='Fields in red are required';
+$lang['common_fields_required_alert']='Field is required';
 $lang['common_learn_about_project']='to learn the latest information about the project';
 $lang['common_searched_for']='Searched for';
 $lang['common_first_name_required']='The first name is a required field.';
@@ -366,4 +367,18 @@ $lang['common_items_duplicate_exists'] = 'A similar item name already exists. Do
 $lang['common_closed'] = 'Closed';
 $lang['common_items_sold'] = 'Number of items sold';
 $lang['common_built_on'] = 'Built on';
+
+$lang['common_delete_success'] = 'Delete successfully';
+$lang['common_update_success'] = 'Update successfully';
+$lang['common_add_success'] = 'Add new successfully';
+$lang['common_error'] = 'Error ! Please recheck it';
+
+$lang['customers_type'] = 'Customer type';
+$lang['customers_position'] = 'Position';
+$lang['customers_birth_date'] = 'Birth date';
+$lang['customers_sex'] = 'Sex';
+$lang['customers_family_info'] = 'Husband/Wife/Children';
+$lang['customers_company_birth_date'] = 'Company birth date';
+$lang['customers_company_manage_name'] = 'Director';
+$lang['customers_code_tax'] = 'Tax code';
 ?>

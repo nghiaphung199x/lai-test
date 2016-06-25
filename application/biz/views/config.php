@@ -940,7 +940,8 @@ $this->load->helper('demo');
 						<div class="col-sm-9 col-md-9 col-lg-10">
 							<?php echo form_dropdown('config_sales_receipt_pdf_size', array(
 								'a4'   => 'A4', 
-								'a5'  => 'A5'
+								'a5'  => 'A5',
+                                                                'a8'    =>  'A8'
 							),
 							$this->config->item('config_sales_receipt_pdf_size'), 'class="form-control" id="config_sales_receipt_pdf_size"');
 							?>
@@ -958,6 +959,123 @@ $this->load->helper('demo');
 					<?php echo lang("config_suspended_sales_layaways_info"); ?>
 				</div>
 				<div class="panel-body">
+				
+					<div class="form-group">	
+						<?php echo form_label(lang('common_show_warning_modal_order_sale').' :', 'show_warning_modal_order_sale',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+						<?php echo form_checkbox(array(
+							'name'=>'show_warning_modal_order_sale',
+							'id'=>'show_warning_modal_order_sale',
+							'value'=>'1',
+							'checked'=>$this->config->item('show_warning_modal_order_sale')));?>
+							<label for="show_warning_modal_order_sale"><span></span></label>
+						</div>
+					</div>
+					
+					<div class="form-group" id="warning_order_sale_config">
+						<div class="col-sm-3 col-md-3 col-lg-2"></div>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+							<div class="col-md-12">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="day_warning_level1" class="col-sm-6 control-label">Thời gian cảnh báo level1:</label>
+										<div class="col-sm-6">
+											<?php echo form_dropdown('day_warning_level1', array(
+											'0'    => 'Quá hạn ',
+											'1'    => '1 Ngày',
+											'2'  => '2 Ngày',
+											'3'  => '3 Ngày',
+											'4'  => '4 Ngày',
+											'5'  => '5 Ngày',
+											'6'  => '6 Ngày',
+											'7'  => '7 Ngày',
+											),
+											$this->config->item('day_warning_level1'), 'class="form-control" id="day_warning_level1"'); ?>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="color_warning_level1" class="col-sm-6 control-label">Màu sắc:</label>
+										<div class="col-sm-6">
+											<?php echo form_input(array(
+											'class'=>'form-control form-inps jscolor',
+											'name'=>'color_warning_level1',
+											'id'=>'color_warning_level1',
+											'value'=>$this->config->item('color_warning_level1')));?>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-12">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="day_warning_level2" class="col-sm-6 control-label">Thời gian cảnh báo level2:</label>
+										<div class="col-sm-6">
+											<?php echo form_dropdown('day_warning_level2', array(
+											'0'    => 'Quá hạn ',
+											'1'    => '1 Ngày',
+											'2'  => '2 Ngày',
+											'3'  => '3 Ngày',
+											'4'  => '4 Ngày',
+											'5'  => '5 Ngày',
+											'6'  => '6 Ngày',
+											'7'  => '7 Ngày',
+											),
+											$this->config->item('day_warning_level2'), 'class="form-control" id="day_warning_level2"'); ?>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="color_warning_level2" class="col-sm-6 control-label">Màu sắc:</label>
+										<div class="col-sm-6">
+											<?php echo form_input(array(
+											'class'=>'form-control form-inps jscolor',
+											'name'=>'color_warning_level2',
+											'id'=>'color_warning_level2',
+											'value'=>$this->config->item('color_warning_level2')));?>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-12">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="day_warning_level3" class="col-sm-6 control-label">Thời gian cảnh báo level3:</label>
+										<div class="col-sm-6">
+											<?php echo form_dropdown('day_warning_level3', array(
+											'0'    => 'Quá hạn ',
+											'1'    => '1 Ngày',
+											'2'  => '2 Ngày',
+											'3'  => '3 Ngày',
+											'4'  => '4 Ngày',
+											'5'  => '5 Ngày',
+											'6'  => '6 Ngày',
+											'7'  => '7 Ngày',
+											),
+											$this->config->item('day_warning_level3'), 'class="form-control" id="day_warning_level3"'); ?>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="color_warning_level3" class="col-sm-6 control-label">Màu sắc:</label>
+										<div class="col-sm-6">
+											<?php echo form_input(array(
+											'class'=>'form-control form-inps jscolor',
+											'name'=>'color_warning_level3',
+											'id'=>'color_warning_level3',
+											'value'=>$this->config->item('color_warning_level3')));?>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				
 					<div class="form-group">	
 						<?php echo form_label(lang('common_hide_layaways_sales_in_reports').' :', 'hide_layaways_sales_in_reports',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
 						<div class="col-sm-9 col-md-9 col-lg-10">
@@ -1629,33 +1747,66 @@ $this->load->helper('demo');
 			</div>
 		</div>
                 
-                <div class="col-md-12">
+		<div class="col-md-12">
 			<div class="panel panel-piluku">
 				<div class="panel-heading">
-					<?php echo lang("config_sms_email"); ?>
+					<?php echo lang("config_sms_email_title"); ?>
 				</div>
 				<div class="panel-body">
 					<div class="form-group">	
-						<?php echo form_label(lang('config_brand_name').' :', 'brand_name',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<?php echo form_label(lang('config_brand_name').' :', 'sms_brand_name',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
 						<div class="col-sm-9 col-md-9 col-lg-10">
-						<input type="text" data-index="<?php echo $tier->id; ?>" class="user_sms form-control" name="brand_name" value="<?php echo H($this->config->item('config_brand_name')); ?>" />
+						<input type="text" data-index="<?php echo $tier->id; ?>" class="form-control" name="sms_brand_name" value="<?php echo H($this->config->item('config_sms_brand_name')); ?>" />
 						</div>
 					</div>
-                                    <div class="form-group">	
-						<?php echo form_label(lang('config_user_sms').' :', 'user_sms',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+                    <div class="form-group">	
+						<?php echo form_label(lang('config_sms_user').' :', 'sms_user',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
 						<div class="col-sm-9 col-md-9 col-lg-10">
-                                                    <input type="text" data-index="<?php echo $tier->id; ?>" class="user_sms form-control" name="user_sms" value="<?php echo H($this->config->item('config_user_sms')); ?>" />
+							<input type="text" data-index="<?php echo $tier->id; ?>" class="form-control" name="sms_user" value="<?php echo H($this->config->item('config_sms_user')); ?>" />
 						</div>
 					</div>
-                                    <div class="form-group">	
-						<?php echo form_label(lang('config_user_pass').' :', 'user_pass',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+					<div class="form-group">	
+						<?php echo form_label(lang('config_sms_pass').' :', 'sms_pass',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
 						<div class="col-sm-9 col-md-9 col-lg-10">
-                                                    <input type="password" data-index="<?php echo $tier->id; ?>" class="user_pass form-control" name="user_pass" value="<?php echo H($this->config->item('config_user_pass')); ?>" />
+							<input type="password" data-index="<?php echo $tier->id; ?>" class="form-control" name="sms_pass" value="<?php echo H($this->config->item('config_sms_pass')); ?>" />
 						</div>
 					</div>
-                                </div>
-                        </div>
-                </div>
+					<div class="form-group">	
+						<?php echo form_label(lang('config_email_account').' :', 'email_account',array('class'=>'required col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+							<?php echo form_input(array(
+							'class'=>'valid form-control form-inps',
+							'type' => 'text',
+							'name'=>'email_account',
+							'id'=>'email_account',
+							'value'=>$this->config->item('config_email_account')));?>
+						</div>
+					</div>
+					<div class="form-group">	
+						<?php echo form_label(lang('config_email_pass').' :', 'email_pass',array('class'=>'required col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+							<?php echo form_input(array(
+							'class'=>'valid form-control form-inps',
+							'type' => 'password',
+							'name'=>'email_pass',
+							'id'=>'email_pass',
+							'value'=>$this->config->item('config_email_pass')));?>
+						</div>
+					</div>
+					<div class="form-group">	
+						<?php echo form_label(lang('config_email_pass_again').' :', 'email_pass_again',array('class'=>'required col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+							<?php echo form_input(array(
+							'class'=>'valid form-control form-inps',
+							'type' => 'password',
+							'name'=>'email_pass_again',
+							'id'=>'email_pass_again',
+							'value'=>$this->config->item('config_email_pass')));?>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<?php echo form_close(); ?>	
 	</div>
 </div>
@@ -1664,6 +1815,22 @@ $this->load->helper('demo');
 //validation and submit handling
 $(document).ready(function()
 {	
+	if($('#show_warning_modal_order_sale').is(':checked'))
+	{
+		$('#warning_order_sale_config').show();
+	} else {
+		$('#warning_order_sale_config').hide();
+	}
+	
+	$('#show_warning_modal_order_sale').change(function(){
+		if($(this).is(':checked'))
+		{
+			$('#warning_order_sale_config').show();
+		} else {
+			$('#warning_order_sale_config').hide();
+		}
+	});
+	
 	$(".delete_tier").click(function()
 	{
 		$("#config_form").append('<input type="hidden" name="tiers_to_delete[]" value="'+$(this).data('tier-id')+'" />');
@@ -1777,6 +1944,11 @@ $(document).ready(function()
 		{
     		company: "required",
     		sale_prefix: "required",
+    		email_account: "email",
+    		email_pass: "required",
+    		email_pass_again: {
+                equalTo: "#email_pass"
+            },
 			return_policy:
 			{
 				required: true
@@ -1786,6 +1958,12 @@ $(document).ready(function()
 		{
      		company: <?php echo json_encode(lang('config_company_required')); ?>,
      		sale_prefix: <?php echo json_encode(lang('config_sale_prefix_required')); ?>,
+     		email_account: <?php echo json_encode(lang('config_email_account_required')); ?>,
+     		email_pass: <?php echo json_encode(lang('config_email_pass_required')); ?>,
+     		email_pass_again: 
+         	{
+             	'equalTo': <?php echo json_encode(lang('config_email_pass_err_dupplicate')); ?>,
+			},
 			return_policy:
 			{
 				required:<?php echo json_encode(lang('config_return_policy_required')); ?>

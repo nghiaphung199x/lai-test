@@ -26,6 +26,7 @@ $lang['common_you_are_using_phppos']='Bạn đang sử dụng phiên bản';
 $lang['common_please_visit_my']='Hãy tới thăm';
 $lang['common_website']='trang web của LifeTek POS';
 $lang['common_fields_required_message']='Các trường màu đỏ là cần nhập';
+$lang['common_fields_required_alert']='Trường cần nhập thông tin';
 $lang['common_learn_about_project']='để biết những thông tin mới nhất về sản phẩm';
 $lang['common_searched_for']='Tìm kiếm cho';
 $lang['common_first_name_required']='Tên riêng cần phải nhập.';
@@ -35,10 +36,14 @@ $lang['common_confirm_search']='Bạn đã lựa chọn một hoặc nhiều hà
 $lang['common_no_persons_to_display']='Không có thông tin để hiện thị';
 $lang['common_return_policy']='Thông tin chính sách';
 
+$lang['common_delivery_date']='Ngày giao hàng';
+$lang['common_deliverer']='Nhân viên giao hàng';
+$lang['common_warning_orders_modal'] = 'Danh sách đơn đặt hàng sắp đến hạn';
 
 $lang['common_inv']='Hàng tồn kho';
 $lang['common_det']='Chi tiết';
 $lang['common_mailing_lists'] = 'Danh sách gửi thư';
+$lang['common_show_warning_modal_order_sale'] = 'Cảnh báo các đơn đặt hàng quá hạn';
 
 $lang['common_cumulative'] = 'Tích lũy?';
 $lang['common_barcode_sheet'] = 'Bảng mã vạch';
@@ -384,4 +389,34 @@ $lang['common_saled'] = 'Đã thanh toán';
 $lang['common_refund_money'] = 'Tiền trả lại khách';
 $lang['common_sales_balance_total'] = 'Tổng nợ tất cả';
 $lang['common_total_money'] = 'Tổng tiền';
+
+$lang['common_measure_convert'] = 'Chuyển đổi đơn vị';
+$lang['common_measure'] = 'Đơn vị tính';
+$lang['common_measure_converted'] = 'Đơn vị quy đổi';
+$lang['common_measure_converted_qty'] = 'Số lượng quy đổi';
+$lang['common_measure_converted_cost_percentage'] = 'Giá vốn sau khi quy đổi (%)';
+$lang['common_measure_converted_unit_percentage'] = 'Giá bán sau khi quy đổi (%)';
+
+$lang['common_delete_success'] = 'Đã xóa thành công';
+$lang['common_update_success'] = 'Đã cập nhật thành công';
+$lang['common_add_success'] = 'Đã thêm mới thành công';
+$lang['common_error'] = 'Lỗi ! Vui lòng kiểm tra lại';
+
+$lang['customers_sms_tmp_code'] = 'Mã khách hàng';
+$lang['customers_sms_tmp_name'] = 'Tên khách hàng';
+$lang['customers_sms_tmp_phonenumber'] = 'Số điện thoại';
+$lang['customers_sms_send_list'] = 'Gửi tin nhắn';
+$lang['customers_sms_del_list'] = 'Xóa toàn bộ';
+$lang['customers_no_sms'] = 'Không có khách hàng trong danh sách gửi tin nhắn';
+$lang['module_customers_sms_tmp'] = 'danh sách gửi sms';
+$lang['customers_sms_tmp_menu_link'] = 'Quản lý danh sách gửi sms';
+
+$lang['customers_type'] = 'Loại khách hàng';
+$lang['customers_position'] = 'Chức vụ';
+$lang['customers_birth_date'] = 'Ngày sinh';
+$lang['customers_sex'] = 'Giới tính';
+$lang['customers_family_info'] = 'Chồng/Vợ/Con';
+$lang['customers_company_birth_date'] = 'Sinh nhật công ty';
+$lang['customers_company_manage_name'] = 'Giám đốc';
+$lang['customers_code_tax'] = 'Mã số thuế';
 ?>

@@ -95,6 +95,9 @@ $this->load->helper('demo');
 							<th class="item_name_heading" ><?php echo lang('sales_item_name'); ?></th>
 							<th class="sales_price"><?php echo lang('common_price'); ?></th>
 							<th class="sales_quantity"><?php echo lang('common_quantity'); ?></th>
+							
+							<th class="sales_measure"><?php echo lang('common_measure'); ?></th>
+							
 							<th class="sales_discount"><?php echo lang('common_discount_percent'); ?></th>
 							<th><?php echo lang('common_total'); ?></th>
 						</tr>
@@ -135,6 +138,11 @@ $this->load->helper('demo');
 								<td class="text-center">
 										<a href="#" id="quantity_<?php echo $line;?>" class="xeditable" data-type="text"  data-validate-number="true"  data-pk="1" data-name="quantity" data-url="<?php echo site_url('sales/edit_item/'.$line); ?>" data-title="<?php echo lang('common_quantity') ?>"><?php echo to_quantity($item['quantity']); ?></a>
 								</td>
+								
+								<td class="text-center">
+										<a id="measure_<?php echo $line; ?>" class="measure_item <?php echo empty($item['measure_id']) ? 'editable-disabled' : 'xeditable'; ?>" data-type="select"  data-validate-number="true"  data-value="<?php echo $item['measure_id']; ?>" data-pk="2" data-source="<?php echo site_url("items/measures/" . $item['item_id']);?>" data-name="measure" data-url="<?php echo site_url('sales/edit_item/'.$line); ?>" data-title="<?php echo lang('common_measure') ?>"><?php echo $item['measure']; ?></a>
+								</td>
+								
 								<td class="text-center">
 									<?php if ($line != $line_for_flat_discount_item && $this->Employee->has_module_action_permission('sales', 'give_discount', $this->Employee->get_logged_in_employee_info()->person_id)){ ?>
 											<a href="#" id="discount_<?php echo $line;?>" class="xeditable" data-type="text"  data-validate-number="true"  data-pk="1" data-name="discount" data-value="<?php echo to_quantity($item['discount']); ?>" data-url="<?php echo site_url('sales/edit_item/'.$line); ?>" data-title="<?php echo lang('common_discount_percent') ?>"><?php echo to_quantity($item['discount']); ?>%</a>						
@@ -699,6 +707,39 @@ $this->load->helper('demo');
 
 	<?php 
 		}  ?>
+		<div class="register-right">
+		<div class="customer-form deliverer">
+				<div class="input-group contacts">
+						<span class="input-group-addon">
+							<?php echo anchor("employees/view/-1","<i class='ion-person-add'></i>", array('class'=>'none','title'=>lang('common_new_customer'), 'id' => 'new-customer','tabindex' => '-1')); ?>
+						</span>
+						<input type="text" id="deliverer" name="deliverer" class="add-customer-input" placeholder="<?php echo lang('sales_start_typing_deliverer_name');?>">
+					</div>
+					<?php if($deliverer) {?>
+					<div>
+						Nhân viên giao hàng: <?php echo $deliverer->first_name . ' ' . $deliverer->last_name ?>
+					</div>
+					<?php } ?>
+			</div>
+			
+			<div class="customer-form delivery_date">
+				<div><span>Ngày giao hàng/dịch vụ</span></div>
+				<div class="input-group date" data-date="<?php echo $item_info->start_date ? date(get_date_format(), strtotime($item_info->start_date)) : ''; ?>">
+							<span class="input-group-addon bg">
+	                           <i class="ion ion-ios-calendar-outline"></i>
+	                       	</span>
+							<?php echo form_input(array(
+				        'name'=>'delivery_date',
+				        'id'=>'delivery_date',
+						'class'=>'form-control datepicker',
+				        'value'=> strlen($delivery_date) ? date(get_date_format(), strtotime($delivery_date)) : date(get_date_format(), strtotime('now')))
+				    );?> 
+			    </div>
+		    </div>
+		    
+		    
+		</div>
+		
 			<div class="comment-block">
 				<div class="side-heading"><label id="comment_label" for="comment"><?php echo lang('common_comments'); ?> : </label></div>
 				<?php echo form_textarea(array('name'=>'comment', 'id' => 'comment', 'value'=>$comment,'rows'=>'2', 'class'=>'form-control')); ?>
@@ -903,7 +944,13 @@ $this->load->helper('demo');
 	var submitting = false;
 	
 	$(document).ready(function(){
-	
+		date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
+
+
+		$("#delivery_date").on("dp.change", function(e) {
+				$.post('<?php echo site_url("sales/set_sale_delivery_date");?>', {delivery_date: $('#delivery_date').val()});
+	      });
+		
 		$( "#keyboard_toggle" ).click(function(e) {
 			e.preventDefault();
 			$( "#keyboardhelp" ).toggle();
@@ -932,6 +979,13 @@ $this->load->helper('demo');
     	success: function(response, newValue) {
 			 last_focused_id = $(this).attr('id');
  			 $("#register_container").html(response);
+		}
+    });
+
+    $('.measure_item .xeditable').editable({
+    	success: function(response, newValue) {
+			 last_focused_id = $(this).attr('id');
+			 $("#register_container").html(response);
 		}
     });
 
@@ -1044,7 +1098,7 @@ $this->load->helper('demo');
 		});
 
 		// Customer form script
-		$('#item,#customer').click(function()
+		$('#item,#customer, #deliverer').click(function()
 		{
 			$(this).attr('value','');
 		});
@@ -1182,6 +1236,41 @@ $this->load->helper('demo');
 				$("#change_sale_date_picker").hide();
 			}
 		});
+		if($( "#deliverer" ).length) {
+			$('#deliverer').blur(function()
+			{
+				$(this).attr('value',<?php echo json_encode(lang('sales_start_typing_deliverer_name')); ?>);
+			});
+			
+			$( "#deliverer" ).autocomplete({
+		 		source: '<?php echo site_url("sales/deliverer_search");?>',
+				delay: 150,
+		 		autoFocus: false,
+		 		minLength: 0,
+		 		select: function( event, ui ) 
+		 		{
+		 			$.post('<?php echo site_url("sales/select_deliverer");?>', {deliverer: ui.item.value }, function(response)
+					{
+						$("#register_container").html(response);
+					});
+		 		},
+			}).data("ui-autocomplete")._renderItem = function (ul, item) {
+		         return $("<li class='customer-badge suggestions'></li>")
+		             .data("item.autocomplete", item)
+			           .append('<a class="suggest-item"><div class="avatar">' +
+									'<img src="' + item.avatar + '" alt="">' +
+								'</div>' +
+								'<div class="details">' +
+									'<div class="name">' + 
+										item.label +
+									'</div>' + 
+									'<span class="email">' +
+										item.subtitle + 
+									'</span>' +
+								'</div></a>')
+		             .appendTo(ul);
+		     };
+		}
 		
 		$('#comment').change(function() 
 		{

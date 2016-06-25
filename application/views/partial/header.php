@@ -126,6 +126,13 @@
 				});
 				
 			});
+
+            /* Validate Form Fields: Begin */
+            var $form_validate = $('.form-validate');
+            if ($form_validate.size() > 0) {
+                $form_validate.validate();
+            }
+            /* Validate Form Fields: End */
 			
 			<?php
 			//If we are using on browser close (NULL or ""; both false) then we want to keep session alive
@@ -170,7 +177,8 @@
 						<i class="icon ti-dashboard"></i>
 						<span class="text"><?php echo lang('common_dashboard'); ?></span>
 					</a></li>
-				<?php foreach($allowed_modules->result() as $module) { ?>
+				<?php foreach($all_allowed_modules as $module) { ?>
+                    <?php if (empty($module->main_menu)) continue; ?>
 					<li <?php echo $module->module_id==$this->uri->segment(1)  ? 'class="active"' : ''; ?>>
 						<a tabindex = "-1" href="<?php echo site_url("$module->module_id");?>"  class="waves-effect waves-light">
 							<i class="icon ti-<?php echo $module->icon; ?>"></i>

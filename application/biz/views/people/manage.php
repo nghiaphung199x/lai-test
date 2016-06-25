@@ -14,7 +14,7 @@
 				enable_checkboxes();
 				enable_row_selection();
 				enable_search('<?php echo site_url("$controller_name");?>',<?php echo json_encode(lang("common_confirm_search"));?>);
-				enable_email('<?php echo site_url("$controller_name/mailto")?>');
+				
 				enable_delete(<?php echo json_encode(lang($controller_name."_confirm_delete"));?>,<?php echo json_encode(lang($controller_name."_none_selected"));?>);
 				enable_cleanup(<?php echo json_encode(lang($controller_name."_confirm_cleanup"));?>);
 
@@ -33,6 +33,7 @@
 
 					$(this).attr('href','<?php echo site_url("$controller_name/mailing_labels");?>/'+selected.join('~'));
 				});
+
 				$('#sendSMS').click(function(){
 					var selected = get_selected_values();
 					if (selected.length == 0 || selected.length >1)
@@ -42,6 +43,16 @@
 					}
 
 					$(this).attr('href','<?php echo site_url("$controller_name/send_sms");?>/'+selected['0']);
+				});
+				$('#sendMail').click(function(){
+					var selected = get_selected_values();
+					$(this).attr('href','<?php echo site_url("$controller_name/send_mail");?>');
+				});				
+				$('#sendToMailTemp').click(function()
+				{
+					var selected = get_selected_values();
+					
+					$(this).attr('href','<?php echo site_url("$controller_name/save_list_send_mail");?>/'+selected.join('~'));
 				});
 		}); 
 </script>
@@ -55,15 +66,18 @@
 			<span class=""><?php echo (lang('customers_sms_send_sms')); ?></span>
 		</a>
 		<?php } ?>
-		<a class="btn btn-primary btn-lg disabled email email_inactive" title="<?php echo lang("common_email");?>" id="email" href="<?php echo current_url(). '#'; ?>" >
+		<?php if ($controller_name =='customers') { ?>
+		<?php echo anchor("$controller_name/save_list_send_mail",
+			'<span class="">'.lang('customers_mail_add_mail_temp').'</span>'
+			,array('id'=>'sendToMailTemp', 'class'=>'btn btn-primary btn-lg','title'=>lang("customers_mail_add_mail_temp"))); ?>
+		<?php } ?>
+		
+		<?php if ($controller_name =='customers') { ?>
+		<a class="btn btn-primary btn-lg" title="<?php echo lang("common_email");?>" id="sendMail" href="<?php echo current_url(). '#'; ?>" data-toggle="modal" data-target="#myModal">
 			<span class=""><?php echo lang('common_email'); ?></span>
 		</a>
+		<?php } ?>
 		
-		<a class="btn btn-primary btn-lg labels" title="<?php echo lang("common_mailing_labels");?>" id="labels" href="<?php echo current_url(). '#'; ?>" >
-			<span class=""><?php echo lang('common_mailing_labels'); ?></span>
-		</a>
-		
-
 		<?php if ($this->Employee->has_module_action_permission($controller_name, 'delete', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
 		<?php echo anchor("$controller_name/delete",
 			'<span class="">'.lang('common_delete').'</span>'
@@ -101,6 +115,23 @@
 		<div class="col-md-7">	
 			<div class="buttons-list">
 				<div class="pull-right-btn">
+					<?php 
+					$page = $this->router->fetch_class();
+					if($page == 'employees') {
+					?>
+	                    <?php if ($this->Employee->has_module_action_permission('groups', 'search', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+	                    <?php echo anchor('/groups',
+	                                      '<span class="">'.lang('groups_manage').'</span>',
+	                                      array('target' => '_blank', 'id' => 'new-person-btn', 'class'=>'btn btn-primary btn-lg', 'title' => lang('groups_manage')));?>
+	                    <?php endif; ?>
+	
+	                    <?php if ($this->Employee->has_module_action_permission('departments', 'search', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+	                    <?php echo anchor('/departments',
+	                                      '<span class="">'.lang('departments_manage').'</span>',
+	                                      array('target' => '_blank', 'id' => 'new-person-btn', 'class'=>'btn btn-primary btn-lg', 'title' => lang('departments_manage')));?>
+	                    <?php endif; ?>
+	               <?php }?>
+
 					<?php if ($this->Employee->has_module_action_permission($controller_name, 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
 					<?php echo anchor("$controller_name/view/-1/",
 						'<span class="">'.lang($controller_name.'_new').'</span>',
@@ -124,11 +155,29 @@
 							<li>
 								<?php if ($controller_name =='customers') {  
 								?>
-								<?php echo anchor("$controller_name/quotes_contract",
-									'<span class="">'.lang('quotes_contract_menu_link').'</span>',
-									array('class'=>'hidden-xs','title'=>lang('quotes_contract_menu_link')));
+								<?php echo anchor("$controller_name/manage_mail",
+									'<span class="">'.lang('customers_mail_menu_link').'</span>',
+									array('class'=>'hidden-xs','title'=>lang('customers_mail_menu_link')));
 								} ?>
 							</li>
+							<li>
+								<?php if ($controller_name =='customers') { ?>
+								<?php echo anchor("$controller_name/quotes_contract",
+									'<span class="">'.lang('customers_quotes_contract_menu_link').'</span>',
+									array('class'=>'hidden-xs','title'=>lang('customers_quotes_contract_menu_link')));
+								} ?>
+							</li>
+							
+							<li>
+								<?php if ($controller_name =='customers') { ?>
+								<?php $totalMailTemp = isset($_SESSION["mail_total"]) ? $_SESSION["mail_total"] : 0;?>
+								<?php echo anchor("$controller_name/manage_mail_temp",
+									'<span class="">'.lang('module_customers_mail_tmp').'</span>'.'<span class="badge bg-primary tip-left total-mail-temp">'.$totalMailTemp.'</span>',
+									array('class'=>'hidden-xs','title'=>lang('module_customers_mail_tmp'),'data-toggle'=>"modal", 'data-target'=>"#myModal")
+									);
+								} ?>
+							</li>
+		
 							<li>
 								<?php if ($controller_name =='customers' || $controller_name == 'suppliers') {  
 								?>

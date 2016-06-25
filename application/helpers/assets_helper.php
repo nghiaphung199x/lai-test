@@ -25,6 +25,7 @@ function get_css_files()
 		array('path' =>'assets/css/invoice.css'),
 		array('path' =>'assets/css/toastr.css'),
 		array('path' =>'assets/css/style.css'),
+		array('path' =>'assets/css/extended_style.css'),
 		array('path' =>'assets/css/custom.css'),
 		array('path' =>'assets/css/bootstrap-select.css'),
 		array('path' =>'assets/css/select2.css'),
@@ -102,6 +103,7 @@ function get_js_files()
 			array('path' => 'assets/js/bootstrap-editable.min.js'),
 			array('path' => 'assets/js/core.js'),
 			array('path' => 'assets/js/stacktable.js'),
+			array('path' => 'assets/js/biz/jscolor.js'),
 		);
 	}
 

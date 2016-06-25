@@ -4,7 +4,8 @@
 	top: 0;
 	width:100%;
 	height:100%;
-	background-color:#202020;
+	/* background-color:#202020; */
+	background-color: rgba(255, 255, 255, 0.6);
 	z-index:9999;
 	opacity: 0.8;
 }
@@ -18,11 +19,13 @@
 }
 
 .mask .ajax_spinner > div {
-  width: 18px;
-  height: 18px;
-  background-color: #fff;
-
-  border-radius: 100%;
+  /* width: 18px;
+  height: 18px; */
+  width: 8px;
+  height: 70px;
+  /* background-color: #fff; */
+	background-color: #489ee7;
+  /* border-radius: 100%; */
   display: inline-block;
   -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
   animation: bouncedelay 1.4s infinite ease-in-out;
@@ -57,6 +60,8 @@
 }
 /*=============================== END MASK LOADING*/
 
+a, a:HOVER {cursor: pointer; text-decoration: none}
+
 #dTableA .icon-success {color: #449d44; font-size: 18px;}
 
 #search_form select {
@@ -70,6 +75,26 @@
 
 #search_form .clear-block {
   padding-left: 22px;
+}
+
+.register .register-right .customer-form .input-group #deliverer {
+  width: 100%;
+  background-color: #FFF;
+  -moz-border-radius: 0px 3px 3px 0px;
+  -webkit-border-radius: 0px 3px 3px 0px;
+  border-radius: 0px 3px 3px 0px;
+  color: #000;
+  font-size: 14px;
+  font-weight: 300;
+  display: block;
+  float: left;
+  border: 1px solid #D7DCE5;
+  border-left-width: 0px !important;
+  height: 40px !important;
+}
+
+.register .register-right .delivery_date, .register .register-right .deliverer {
+	text-align: left !important;
 }
 
 #do_count_actions select {

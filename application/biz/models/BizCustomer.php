@@ -25,11 +25,11 @@ class BizCustomer extends Customer
 						WHERE deleted =0 $order_by 
 						LIMIT  ".$offset.",".$limit;
 
-		if($extra['scope_of_view'] == 'view_scope_owner') {
+		if(isset($extra['scope_of_view']) && $extra['scope_of_view'] == 'view_scope_owner') {
 			$query = "SELECT *  FROM ".$people." STRAIGHT_JOIN ".$customers." ON ".$people.".person_id = ".$customers.".person_id
 						WHERE deleted = 0 AND ". $customers .".created_by = ". $this->Employee->get_logged_in_employee_info()->person_id ."
 						$order_by LIMIT  ".$offset.",".$limit;
-		} elseif($extra['scope_of_view'] == 'view_scope_location') {
+		} elseif(isset($extra['scope_of_view']) && $extra['scope_of_view'] == 'view_scope_location') {
 			$query = "SELECT *  FROM ".$people." STRAIGHT_JOIN ".$customers." ON ".$people.".person_id = ".$customers.".person_id
 						WHERE deleted = 0 AND ". $customers .".created_location_id = ". $this->Employee->get_logged_in_employee_current_location_id() ."
 						$order_by LIMIT  ".$offset.",".$limit;
@@ -396,13 +396,90 @@ class BizCustomer extends Customer
 			$this->db->where("cat_quotes_contract", $cat);
 		}
 		$query = $this->db->get("quotes_contract");
-		return $query->result();
+		return $query->result_array();
 	}
 	function get_info_person_by_id($id) {
-            $this->db->where('person_id', $id);
-            $query = $this->db->get('people');
-            return $query->row_array();
-        }
+		$this->db->where('person_id', $id);
+		$query = $this->db->get('people');
+		return $query->row_array();
+	}
+		
+	function get_Customer_type() {
+		$query = $this->db->get('customer_type');
+		return $query->result_array();
+	}
+	
+	function count_all_mail() {
+		$this->db->from('mail_template');
+		$this->db->where('deleted', 0);
+		return $this->db->count_all_results();
+	}
 
+	function get_all_mail_template() {
+		$this->db->where("deleted", 0);
+		$this->db->order_by("mail_title", "ASC");
+		$query = $this->db->get("mail_template");
+		return $query->result_array();
+	}
+	
+	function get_all_mail($limit = 10000, $offset = 0, $col = 'mail_id', $order = 'asc') {
+		$this->db->from('mail_template');
+		$this->db->where('deleted', 0);
+		$this->db->order_by($col, $order);
+		$this->db->limit($limit);
+		$this->db->offset($offset);
+		return $this->db->get();
+	}
+	
+	function get_info_mail($mail_id) {
+		$this->db->from('mail_template');
+		$this->db->where('mail_id', $mail_id);
+		$query = $this->db->get();
+		if ($query->num_rows() == 1) {
+			return $query->row();
+		} else {
+			//Get empty base parent object, as $customer_id is NOT an customer
+			$mail_obj = parent::get_info(-1);
+	
+			//Get all the fields from customer table
+			$fields = $this->db->list_fields('mail_template');
+	
+			//append those fields to base parent object, we we have a complete empty object
+			foreach ($fields as $field) {
+				$mail_obj->$field = '';
+			}
+	
+			return $mail_obj;
+		}
+	}
+	
+	function save_mail(&$mail_data, $mail_id = false) {
+		if (!$mail_id or ! $this->exists_mail($mail_id)) {
+			if ($this->db->insert('mail_template', $mail_data)) {
+				$mail_data['$mail_id'] = $this->db->insert_id();
+	
+				return true;
+			}
+			return false;
+		}
+	
+		$this->db->where('mail_id', $mail_id);
+		return $this->db->update('mail_template', $mail_data);
+	}
+	function exists_mail($mail_id) {
+		$this->db->from('mail_template');
+		$this->db->where('mail_template.mail_id', $mail_id);
+		$query = $this->db->get();
+		return ($query->num_rows() == 1);
+	}
+	
+	function delete_mail_list($mail_ids) {
+		$this->db->where_in('mail_id', $mail_ids);
+		return $this->db->update('mail_template', array('deleted' => 1));
+	}
+	
+	function add_mail_history($data) {
+		$this->db->insert("mail_history", $data);
+	}
 }
 ?>
