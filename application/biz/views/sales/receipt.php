@@ -46,9 +46,7 @@
 							<?php }	?>
 							</form>		
 						</li>
-					<li style="padding-right: 0px;">
-						<button class="btn btn-primary btn-lg hidden-print" id="fufillment_sheet_button" onclick="window.open('<?php echo site_url("sales/receipt/$sale_id_raw?fulfillment=1&type=".$type); ?>', 'blank');" > <?php echo lang('sales_fulfillment_sheet'); ?></button>
-					</li>
+					
 					<li style="padding-right: 0px;">
 						<button class="btn btn-primary btn-lg hidden-print gift_receipt" id="gift_receipt_button" onclick="toggle_gift_receipt()" > <?php echo lang('sales_gift_receipt'); ?> </button>
 					</li>
