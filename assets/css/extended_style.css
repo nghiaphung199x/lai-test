@@ -26,3 +26,4 @@ label.error { font-weight: normal; color: red; }
 .mt-10 {margin-top: 10px;}
 .no-border {border:none !important;}
 .well {border-radius: 0px}
+.manage_buttons .form-control {margin-bottom: 0px !important; border: none !important; }
