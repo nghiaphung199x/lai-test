@@ -306,15 +306,15 @@ function get_items_manage_table($items,$controller)
 		
 		if ($count == 1)
 		{
-			$table.="<th class='leftmost'>$header</th>";
+			$table.="<th class='leftmost'><span>$header</span></th>";
 		}
 		elseif ($count == count($headers))
 		{
-			$table.="<th class='rightmost'>$header</th>";
+			$table.="<th class='rightmost'><span>$header</span></th>";
 		}
 		else
 		{
-			$table.="<th>$header</th>";		
+			$table.="<th><span>$header</span></th>";		
 		}
 	}
 	$table.='</tr></thead><tbody>';
