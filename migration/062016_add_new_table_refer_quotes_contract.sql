@@ -10,4 +10,4 @@ CREATE TABLE IF NOT EXISTS `phppos_quotes_contract` (
   `content_quotes_contract` text COLLATE utf8_unicode_ci,
   `cat_quotes_contract` tinyint(2) DEFAULT '0' COMMENT '1: Mẫu hợp đồng - 2: Mẫu báo giá',
   PRIMARY KEY (`id_quotes_contract`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

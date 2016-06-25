@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `phppos_customer_type` (
   `desc` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   `status_agent` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`customer_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `phppos_customers`
 ADD COLUMN `type_customer`  int(11) NULL;
