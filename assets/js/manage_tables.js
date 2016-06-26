@@ -121,6 +121,10 @@ function do_search(show_feedback,on_complete)
 				enable_row_selection();		
 				$('#sortable_table tbody :checkbox').click(checkbox_click);
 				$("#select_all").attr('checked',false);
+				
+				$('.item-tabs').removeClass('selected');
+				$('#all_items').addClass('selected');
+				
 			},
 			dataType: 'json'
 		});
