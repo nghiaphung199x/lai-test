@@ -254,7 +254,7 @@ function get_supplier_data_row($supplier,$controller)
 /*
 Gets the html table to manage items.
 */
-function get_items_manage_table($items,$controller)
+function get_items_manage_table($items,$controller, $withArray = false)
 {
 	$CI =& get_instance();
 	$has_cost_price_permission = $CI->Employee->has_module_action_permission('items','see_cost_price', $CI->Employee->get_logged_in_employee_info()->person_id);
@@ -263,10 +263,18 @@ function get_items_manage_table($items,$controller)
 	$totalQtyAllLoc = 0;
 	$totalQty = 0;
 	
-	foreach($items->result() as $item)
-	{
-		$totalQtyAllLoc += (int) $CI->Item->getTotalInAllLocation($item->item_id);
-		$totalQty += (int) $item->quantity;
+	if ($withArray) {
+		foreach($items as $item)
+		{
+			$totalQtyAllLoc += (int) $CI->Item->getTotalInAllLocation($item->item_id);
+			$totalQty += (int) $item->quantity;
+		}
+	} else {
+		foreach($items->result() as $item)
+		{
+			$totalQtyAllLoc += (int) $CI->Item->getTotalInAllLocation($item->item_id);
+			$totalQty += (int) $item->quantity;
+		}
 	}
 
 	if ($has_cost_price_permission)
@@ -332,7 +340,12 @@ function get_items_manage_table($items,$controller)
 		}
 	}
 	$table.='</tr></thead><tbody>';
-	$table.=get_items_manage_table_data_rows($items,$controller);
+	if ($withArray) {
+		$table.=get_items_manage_table_data_rows_with_array($items,$controller);
+	} else {
+		$table.=get_items_manage_table_data_rows($items,$controller);
+	}
+	
 	$table.='</tbody></table>';
 	return $table;
 }
