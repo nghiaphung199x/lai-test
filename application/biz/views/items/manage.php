@@ -305,11 +305,11 @@ $.post('<?php echo site_url("items/clear_select_inventory");?>', {select_invento
 			<div class="panel panel-piluku">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						<span id="all_items" class="selected item-tabs"><?php echo lang('common_list_of').' '.lang('module_'.$controller_name); ?></span>
-						<span title="<?php echo $total_rows; ?> total <?php echo $controller_name?>" class="badge bg-primary tip-left"><?php echo $total_rows; ?></span>
+						<span id="all_items" class="<?php echo !$low_inventory ? 'selected' : ''; ?> item-tabs"><?php echo lang('common_list_of').' '.lang('module_'.$controller_name); ?></span>
+						<span id="count_items" title="<?php echo $total_rows; ?> total <?php echo $controller_name?>" class="badge bg-primary tip-left"><?php echo $total_rows; ?></span>
 						
-						<span id="low_inventory" class="item-tabs"><?php echo lang('common_list_of_low_inventory'); ?></span>
-						<span title="<?php echo $countLowInventory; ?> total" class="badge bg-primary tip-left"><?php echo $countLowInventory; ?></span>
+						<span id="low_inventory" class="item-tabs <?php echo $low_inventory ? 'selected' : ''; ?>"><?php echo lang('common_list_of_low_inventory'); ?></span>
+						<span id="count_low_inventory" title="<?php echo $countLowInventory; ?> total" class="badge bg-primary tip-left"><?php echo $countLowInventory; ?></span>
 						
 						<div class="panel-options custom">
 						<?php if($pagination) {  ?>
@@ -356,7 +356,7 @@ var ITEM_LIST = {
 
 		$('#all_items').unbind('click').bind('click', function() {
 			if (!$(this).hasClass('selected')) {
-				window.location.href = '<?php echo site_url($controller_name.'/clear_state'); ?>';
+				window.location.href = '<?php echo site_url($controller_name.'/clear_low_inventory'); ?>';
 			}
 		});
 	},

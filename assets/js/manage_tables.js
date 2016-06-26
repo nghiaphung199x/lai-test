@@ -122,9 +122,12 @@ function do_search(show_feedback,on_complete)
 				$('#sortable_table tbody :checkbox').click(checkbox_click);
 				$("#select_all").attr('checked',false);
 				
-				$('.item-tabs').removeClass('selected');
-				$('#all_items').addClass('selected');
-				
+				if (typeof response.count_items !== 'undefined') {
+					$('span#count_items').text(response.count_items);
+				}
+				if (typeof response.count_low_inventory !== 'undefined') {
+					$('span#count_low_inventory').text(response.count_low_inventory);
+				}
 			},
 			dataType: 'json'
 		});
