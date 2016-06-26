@@ -428,5 +428,143 @@ class BizItem extends Item
 		}
 		return false;
 	}
+	
+	function getSearchAll($search, $category_id = FALSE, $limit=10000, $fields = 'all')
+	{
+		$current_location=$this->Employee->get_logged_in_employee_current_location_id();
+	
+		if (!$this->config->item('speed_up_search_queries'))
+		{
+			$this->db->distinct();
+		}
+		else
+		{
+			return $limit;
+		}
+	
+		$this->db->select('items.*,categories.name as category,
+		location_items.quantity as quantity,
+		location_items.reorder_level as location_reorder_level,
+		location_items.cost_price as location_cost_price,
+		location_items.unit_price as location_unit_price');
+		$this->db->from('items');
+	
+		if ($fields == $this->db->dbprefix('suppliers').'.company_name')
+		{
+			$this->db->join('suppliers', 'items.supplier_id = suppliers.person_id', 'left');
+		}
+	
+		if ($fields ==  $this->db->dbprefix('tags').'.name')
+		{
+			$this->db->join('items_tags', 'items_tags.item_id = items.item_id', 'left');
+			$this->db->join('tags', 'tags.id = items_tags.tag_id', 'left');
+		}
+	
+	
+		$this->db->join('categories', 'categories.id = items.category_id','left');
+		$this->db->join('location_items', 'location_items.item_id = items.item_id and location_id = '.$current_location, 'left');
+	
+		if ($fields == 'all')
+		{
+			if ($search)
+			{
+				if($this->config->item('supports_full_text') && !$this->config->item('legacy_search_method'))
+				{
+					if ($this->config->item('speed_up_search_queries'))
+					{
+						$this->db->where("MATCH (".$this->db->dbprefix('items').".name, ".$this->db->dbprefix('items').".item_number, product_id, description) AGAINST ('\"".$this->db->escape_str(escape_full_text_boolean_search($search).'*')."\"' IN BOOLEAN MODE".") and ".$this->db->dbprefix('items'). ".deleted=0", NULL, FALSE);
+					}
+					else
+					{
+						$this->db->join('additional_item_numbers', 'additional_item_numbers.item_id = items.item_id', 'left');
+						$this->db->join('items_tags', 'items_tags.item_id = items.item_id', 'left');
+						$this->db->join('tags', 'tags.id = items_tags.tag_id', 'left');
+						$this->db->where("(MATCH (".$this->db->dbprefix('items').".name, ".$this->db->dbprefix('items').".item_number, product_id, description) AGAINST ('\"".$this->db->escape_str(escape_full_text_boolean_search($search).'*')."\"' IN BOOLEAN MODE".") or MATCH(".$this->db->dbprefix('tags').".name) AGAINST ('\"".$this->db->escape_str(escape_full_text_boolean_search($search).'*')."\"' IN BOOLEAN MODE".") or MATCH(".$this->db->dbprefix('categories').".name) AGAINST ('\"".$this->db->escape_str(escape_full_text_boolean_search($search).'*')."\"' IN BOOLEAN MODE".") or MATCH(".$this->db->dbprefix('additional_item_numbers').".item_number) AGAINST ('\"".$this->db->escape_str(escape_full_text_boolean_search($search).'*')."\"' IN BOOLEAN MODE".")) and ".$this->db->dbprefix('items'). ".deleted=0", NULL, FALSE);
+					}
+				}
+				else
+				{
+					$search_terms_array=explode(" ", $this->db->escape_like_str($search));
+	
+					//to keep track of which search term of the array we're looking at now
+					$search_name_criteria_counter=0;
+					$sql_search_name_criteria = '';
+					//loop through array of search terms
+					foreach ($search_terms_array as $x)
+					{
+						$sql_search_name_criteria.=
+						($search_name_criteria_counter > 0 ? " AND " : "").
+						$this->db->dbprefix('items').".name LIKE '%".$this->db->escape_like_str($x)."%'";
+						$search_name_criteria_counter++;
+					}
+						
+					if ($this->config->item('speed_up_search_queries'))
+					{
+						$this->db->where("((".
+								$sql_search_name_criteria. ") or
+						item_number LIKE '%".$this->db->escape_like_str($search)."%' or ".
+								"product_id LIKE '%".$this->db->escape_like_str($search)."%' or ".
+								$this->db->dbprefix('items').".item_id LIKE '%".$this->db->escape_like_str($search)."%' or ".
+								$this->db->dbprefix('categories').".name LIKE '%".$this->db->escape_like_str($search)."%') and ".$this->db->dbprefix('items').".deleted=0");
+					}
+					else
+					{
+						$this->db->join('additional_item_numbers', 'additional_item_numbers.item_id = items.item_id', 'left');
+						$this->db->join('items_tags', 'items_tags.item_id = items.item_id', 'left');
+						$this->db->join('tags', 'tags.id = items_tags.tag_id', 'left');
+	
+						$this->db->where("((".
+								$sql_search_name_criteria. ") or ".
+								$this->db->dbprefix('items').".item_number LIKE '%".$this->db->escape_like_str($search)."%' or ".
+								"product_id LIKE '%".$this->db->escape_like_str($search)."%' or ".
+								$this->db->dbprefix('items').".item_id LIKE '%".$this->db->escape_like_str($search)."%' or ".
+								$this->db->dbprefix('tags').".name LIKE '%".$this->db->escape_like_str($search)."%' or ".
+								$this->db->dbprefix('additional_item_numbers').".item_number LIKE '%".$this->db->escape_like_str($search)."%' or ".
+								$this->db->dbprefix('categories').".name LIKE '%".$this->db->escape_like_str($search)."%'
+				
+						) and ".$this->db->dbprefix('items').".deleted=0");
+					}
+				}
+			}
+		}
+		else
+		{
+			if ($search)
+			{
+				//Exact Match fields
+				if ($fields == $this->db->dbprefix('items').'.item_id' || $fields == $this->db->dbprefix('items').'.reorder_level'
+						|| $fields == $this->db->dbprefix('location_items').'.quantity'
+						|| $fields == $this->db->dbprefix('items').'.cost_price' || $fields == $this->db->dbprefix('items').'.unit_price' || $fields == $this->db->dbprefix('items').'.promo_price' || $fields == $this->db->dbprefix('tags').'.name')
+				{
+					$this->db->where("$fields = ".$this->db->escape($search)." and ".$this->db->dbprefix('items').".deleted=0");
+				}
+				else
+				{
+					if($this->config->item('supports_full_text') && !$this->config->item('legacy_search_method'))
+					{
+						//Fulltext
+						$this->db->where("MATCH($fields) AGAINST ('\"".$this->db->escape_str(escape_full_text_boolean_search($search).'*')."\"' IN BOOLEAN MODE".") and ".$this->db->dbprefix('items').".deleted=0");
+					}
+					else
+					{
+						$this->db->like($fields,$search);
+						$this->db->where($this->db->dbprefix('items').".deleted=0");
+					}
+				}
+			}
+		}
+	
+		if ($category_id)
+		{
+			$this->db->where('categories.id', $category_id);
+		}
+	
+		if (!$search) //If we don't have a search make sure we filter out deleted items
+		{
+			$this->db->where('items.deleted', 0);
+		}
+	
+		return $this->db->get();
+	}
 }
 ?>

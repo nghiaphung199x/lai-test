@@ -594,15 +594,16 @@ class BizItems extends Items
 		if ($data['search'] || $data['category_id'])
 		{
 			$config['total_rows'] = $this->Item->search_count_all($data['search'], $data['category_id'],10000, $data['fields']);
+			$allItems = $this->Item->getSearchAll($data['search'], $data['category_id'],10000, $data['fields']);
 			$table_data = $this->Item->search($data['search'],$data['category_id'],$data['per_page'],$params['offset'],$params['order_col'],$params['order_dir'], $data['fields']);
 		}
 		else
 		{
 			$config['total_rows'] = $this->Item->count_all();
+			$allItems = $this->Item->get_all();
 			$table_data = $this->Item->get_all($data['per_page'],$params['offset'],$params['order_col'],$params['order_dir']);
 		}
 		
-		$allItems = $this->Item->get_all();
 		$countLowInventory = 0;
 		foreach($allItems->result() as $item)
 		{
@@ -735,10 +736,21 @@ class BizItems extends Items
 		$order_col = $this->input->post('order_col') ? $this->input->post('order_col') : 'name';
 		$order_dir = $this->input->post('order_dir') ? $this->input->post('order_dir'): 'asc';
 		$fields = $this->input->post('fields') ? $this->input->post('fields') : 'all';
-	
-		$items = array();
-		$allItems = $this->Item->get_all();
+		$per_page=$this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+		
+		$allItems=$this->Item->search(
+			$search, 
+			$category_id, 
+			$per_page,
+			$offset, 
+			$order_col,
+			$order_dir, 
+			$fields
+		);
+		
+		$countItems = 0;
 		$countLowInventory = 0;
+		$items = array();
 		foreach($allItems->result() as $item)
 		{
 			$reorder_level = $item->location_reorder_level ? $item->location_reorder_level : $item->reorder_level;
@@ -747,17 +759,49 @@ class BizItems extends Items
 				$items[] = $item;
 				$countLowInventory ++;
 			}
+			$countItems ++;
 		}
 		
-		$item_search_data = array('offset' => $offset, 'order_col' => $order_col, 'order_dir' => $order_dir, 'search' => $search,  'category_id' => $category_id, 'fields' => $fields);
-		$per_page=$this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
 		$config['base_url'] = site_url('items/search');
 		$config['per_page'] = $per_page ;
 		$this->load->library('pagination');
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->setTotalRows($countLowInventory)->create_links();
 		$data['manage_table']=get_items_manage_table_data_rows_with_array($items,$this);
-		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination'], 'count_items' => $countItems));
+	}
+	
+	function search()
+	{
+		$this->check_action_permission('search');
+		$search=$this->input->post('search');
+		$category_id = $this->input->post('category_id');
+		$offset = $this->input->post('offset') ? $this->input->post('offset') : 0;
+		$order_col = $this->input->post('order_col') ? $this->input->post('order_col') : 'name';
+		$order_dir = $this->input->post('order_dir') ? $this->input->post('order_dir'): 'asc';
+		$fields = $this->input->post('fields') ? $this->input->post('fields') : 'all';
+	
+		$item_search_data = array('offset' => $offset, 'order_col' => $order_col, 'order_dir' => $order_dir, 'search' => $search,  'category_id' => $category_id, 'fields' => $fields);
+		$this->session->set_userdata("item_search_data",$item_search_data);
+		$per_page=$this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+		$search_data=$this->Item->search($search, $category_id, $per_page,$this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'name' ,$this->input->post('order_dir') ? $this->input->post('order_dir'): 'asc', $fields);
+		$config['base_url'] = site_url('items/search');
+		$config['total_rows'] = $this->Item->search_count_all($search, $category_id,10000, $fields);
+		$config['per_page'] = $per_page ;
+	
+		$countLowInventory = 0;
+		foreach($search_data->result() as $item)
+		{
+			$reorder_level = $item->location_reorder_level ? $item->location_reorder_level : $item->reorder_level;
+			if($item->quantity !== NULL && ($item->quantity<=0 || $item->quantity <= $reorder_level))
+			{
+				$countLowInventory ++;
+			}
+		}
+		$this->load->library('pagination');$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['manage_table']=get_items_manage_table_data_rows($search_data,$this);
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination'], 'count_items' => $search_data->num_rows(), 'count_low_inventory' => $countLowInventory));
 	}
 }
 ?>
