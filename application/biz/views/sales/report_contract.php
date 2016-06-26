@@ -7,7 +7,7 @@
     header("Cache-Control: must-revaladate, post-check=0, pre-check=0");
     header('content-disposition: attachment; filename="' . $file_name . '"');
     ?>
-    <body style="font-size: 100% !important">        
+    <body style="font-size: 100% !important;">        
         <?php
         $arr_item = array();
         $arr_service = array();
@@ -225,6 +225,7 @@
         $content = str_replace('{MONTH}', $m, $content);
         $content = str_replace('{YEAR}', $y, $content);
         echo $content;
+        
         ?>
     </body>
 </html>

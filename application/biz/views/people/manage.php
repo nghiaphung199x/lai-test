@@ -192,9 +192,8 @@
 							
 							<li>
 								<?php if ($controller_name =='customers') { ?>
-								<?php $totalMailTemp = isset($_SESSION["mail_total"]) ? $_SESSION["mail_total"] : 0;?>
 								<?php echo anchor("$controller_name/manage_mail_temp",
-									'<span class="">'.lang('module_customers_mail_tmp').'</span>'.'<span class="badge bg-primary tip-left total-mail-temp">'.$totalMailTemp.'</span>',
+									'<span class="">'.lang('module_customers_mail_tmp').'</span>',
 									array('class'=>'hidden-xs','title'=>lang('module_customers_mail_tmp'),'data-toggle'=>"modal", 'data-target'=>"#myModal")
 									);
 								} ?>

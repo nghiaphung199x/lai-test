@@ -865,7 +865,7 @@ class BizSales extends Sales
             $content1 = str_replace('{YEAR}', $y, $content1);
             fwrite($fp, $content1);
             fclose($fp);
-            $file = APPPATH. 'excel_materials/' . $file_name;
+            $file = APPPATH . "/excel_materials/" . $file_name;
             
             if ($type == 3) {
 	            /* phan lam mail */
@@ -1196,12 +1196,13 @@ class BizSales extends Sales
 		}
 		$data['sale_id'] = $sale_id;
 		
-		$type = $this->input->post('quotes_type');
+		$type = $this->input->post('contract_type');
 		$data['word'] = $type;
 		$data['cat_baogia'] = '';
 		
 		if ($type == '1') {
 			$this->load->view("sales/report_contract", $data);
+			header("Refresh:0");
 		} elseif ($type == '3') {
 			$file_name = "HD_" . $sale_id . "_" . str_replace(" ", "", replace_character($data['customer'])) . "_" . date('dmYHis') . ".doc";
 			

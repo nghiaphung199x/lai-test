@@ -22,7 +22,7 @@
 						<?php echo form_label(lang('sales_quotes_template'), 'list_quotes',array('class'=>'required col-sm-4 col-md-4 col-lg-4 control-label')); ?>
 						<div class='form_field'>
 					        <select name="quotes_id" id="quotes_id">
-					            <option value="">--Chọn Template---</option>
+					            <option value="0">--Chọn Template---</option>
 					            <?php
 					            foreach ($list_quotes as $quotes){
 					            ?>    
@@ -68,7 +68,7 @@
 $(document).ready(function(){
     setTimeout(function(){$(":input:visible:first","#form_make_quotes").focus();},100);
 
-    $("#form_make_quotes").submit(function(){
+    $("#form_make_quotes").submit(function(e){
     	if ($("#quotes_id").val() ==0){
         	bootbox.alert("<?php echo lang('sales_quotes_error_selected'); ?>");
             return false;
@@ -78,7 +78,7 @@ $(document).ready(function(){
     $("#quotes_type").change(function() {
     	var type = $("#quotes_type").val();
     	if (type == 3) {
-        	$("#quotes_customer_email").show();
+        	//$("#quotes_customer_email").show();
     	} else {
     		$("#quotes_customer_email").hide();
     	}

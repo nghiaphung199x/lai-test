@@ -77,7 +77,7 @@ $(document).ready(function(){
     $("#contract_type").change(function() {
     	var type = $("#contract_type").val();
     	if (type == 3) {
-        	$("#contract_customer_email").show();
+        	//$("#contract_customer_email").show();
     	} else {
     		$("#contract_customer_email").hide();
     	}
