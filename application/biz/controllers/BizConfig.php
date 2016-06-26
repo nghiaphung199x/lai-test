@@ -42,6 +42,7 @@ class BizConfig extends Config
 		$batch_save_data=array(
 			'company'=>$this->input->post('company'),
 			'sale_prefix'=>$this->input->post('sale_prefix') ? $this->input->post('sale_prefix') : 'POS',
+			'receive_prefix'=>$this->input->post('receive_prefix') ? $this->input->post('receive_prefix') : 'REC',
 			'website'=>$this->input->post('website'),
 			'prices_include_tax' => $this->input->post('prices_include_tax') ? 1 : 0,
 			'default_tax_1_rate'=>$this->input->post('default_tax_1_rate'),		

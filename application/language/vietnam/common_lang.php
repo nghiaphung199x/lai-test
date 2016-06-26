@@ -16,7 +16,7 @@ $lang['common_city']='Thành phố';
 $lang['common_state']='Huyện/ Tỉnh';
 $lang['common_zip']='Mã vùng';
 $lang['common_country']='Quốc gia';
-
+$lang['common_list_of_low_inventory']='Sản phẩm dưới hạn mức tồn kho';
 $lang['common_edit']='Sửa';
 $lang['common_print_receipt']='In hóa đơn';
 $lang['common_search']='Tìm kiếm';

@@ -101,6 +101,31 @@ a, a:HOVER {cursor: pointer; text-decoration: none}
 	padding: 9px 5px 10px;
 }
 
+#sortable_table tr th {
+	cursor: pointer;
+}
+
+.item-tabs{
+	padding: 10px;
+	cursor: pointer;
+}
+
+#all_items.selected, #low_inventory.selected {
+	background-color: orange;
+}
+
+.tablesorter .headerSortUp{
+	background-repeat: no-repeat;
+    background-position: center right;
+	background-image: url("../../img/sort_desc.png");
+}
+
+.tablesorter .headerSortDown{
+	background-repeat: no-repeat;
+    background-position: center right;
+	background-image: url("../../img/sort_asc.png");
+}
+
 @media(min-width:768px) {
     
 }
