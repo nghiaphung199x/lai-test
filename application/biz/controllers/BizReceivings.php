@@ -3,12 +3,7 @@ require_once (APPPATH . "controllers/Receivings.php");
 
 class BizReceivings extends Receivings
 {
-	protected $_prefixDocument;
-
-	function __construct() {
-		parent::__construct();
-		$this->_prefixDocument = !empty($this->config->item('receive_prefix')) ? $this->config->item('receive_prefix') : 'REC';
-	}
+	protected $_prefixDocument = 'REC';
 	
 	function edit_item($line)
 	{
@@ -156,6 +151,9 @@ class BizReceivings extends Receivings
 
 		//SAVE receiving to database		
 		$receiving_id_raw = $this->Receiving->save($data['cart'], $supplier_id,$employee_id,$comment,$payment_type,$suspended_change_recv_id,0,$data['mode'], $data['change_receiving_date'],0, $location_id);
+		
+		$this->_prefixDocument = !empty($this->config->item('receive_prefix')) ? $this->config->item('receive_prefix') : $this->_prefixDocument;
+		
 		$data['receiving_id']=$this->_prefixDocument.$receiving_id_raw;
 		$data['receiving_id_raw']=$receiving_id_raw;
 		
@@ -264,6 +262,8 @@ class BizReceivings extends Receivings
 			$data['supplier_email'] = $supplier_info->email;
 				
 		}
+		$this->_prefixDocument = !empty($this->config->item('receive_prefix')) ? $this->config->item('receive_prefix') : $this->_prefixDocument;
+		
 		$data['receiving_id']=$this->_prefixDocument.$receiving_id;
 		$data['receiving_id_raw']=$receiving_id;
 	
