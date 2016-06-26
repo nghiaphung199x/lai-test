@@ -305,10 +305,10 @@ $.post('<?php echo site_url("items/clear_select_inventory");?>', {select_invento
 			<div class="panel panel-piluku">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						<?php echo lang('common_list_of').' '.lang('module_'.$controller_name); ?>
+						<span id="all_items" class="selected item-tabs"><?php echo lang('common_list_of').' '.lang('module_'.$controller_name); ?></span>
 						<span title="<?php echo $total_rows; ?> total <?php echo $controller_name?>" class="badge bg-primary tip-left"><?php echo $total_rows; ?></span>
 						
-						<span id="low_inventory">Sản phẩm dưới hạn mức đặt hàng</span>
+						<span id="low_inventory" class="item-tabs"><?php echo lang('common_list_of_low_inventory'); ?></span>
 						<span title="<?php echo $countLowInventory; ?> total" class="badge bg-primary tip-left"><?php echo $countLowInventory; ?></span>
 						
 						<div class="panel-options custom">
@@ -342,9 +342,8 @@ var ITEM_LIST = {
 	{
 		// TODO
 		$('#low_inventory').unbind('click').bind('click', function() {
-			if ($(this).hasClass('selected')) {
-				window.location.href = '<?php echo site_url($controller_name.'/clear_state'); ?>';
-			} else {
+			if (!$(this).hasClass('selected')) {
+				$('.item-tabs').removeClass('selected');
 				$('#sortable_table tbody').html('<img src="assets/img/ajax-loader.gif"  width="16" height="16" />');
 				var table_column_index = $('#sortable_table tr th.header').parent().children().index($('#sortable_table tr th.header'));
 				var sort_dir = $('#sortable_table tr th.headerSortDown').length == 1 ? 'desc' : 'asc';
@@ -352,6 +351,12 @@ var ITEM_LIST = {
 				$(this).addClass('selected');
 
 				$('#sortable_table thead span.badge').hide();
+			}
+		});
+
+		$('#all_items').unbind('click').bind('click', function() {
+			if (!$(this).hasClass('selected')) {
+				window.location.href = '<?php echo site_url($controller_name.'/clear_state'); ?>';
 			}
 		});
 	},

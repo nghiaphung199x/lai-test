@@ -3,6 +3,8 @@ $lang['config_info']='Thông tin cấu hình hệ thống';
 $lang['config_address']='Địa chỉ công ty';
 $lang['config_phone']='Số điện thoại công ty';
 $lang['config_prefix']='Tiếp đầu ngữ Mã Hóa đơn Bán hàng';
+$lang['config_receive_prefix']='Tiếp đầu ngữ Mã Hóa đơn nhập hàng';
+
 $lang['config_website']='Website';
 $lang['config_fax']='Fax';
 $lang['config_default_tax_rate']='Thuế mặc định %';

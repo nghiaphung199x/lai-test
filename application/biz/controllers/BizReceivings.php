@@ -3,8 +3,13 @@ require_once (APPPATH . "controllers/Receivings.php");
 
 class BizReceivings extends Receivings
 {
-	protected $_prefixDocument = 'REC#';
+	protected $_prefixDocument;
 
+	function __construct() {
+		parent::__construct();
+		$this->_prefixDocument = !empty($this->config->item('receive_prefix')) ? $this->config->item('receive_prefix') : 'REC';
+	}
+	
 	function edit_item($line)
 	{
 		$data= array();
@@ -151,10 +156,10 @@ class BizReceivings extends Receivings
 
 		//SAVE receiving to database		
 		$receiving_id_raw = $this->Receiving->save($data['cart'], $supplier_id,$employee_id,$comment,$payment_type,$suspended_change_recv_id,0,$data['mode'], $data['change_receiving_date'],0, $location_id);
-		$data['receiving_id']='RECV '.$receiving_id_raw;
+		$data['receiving_id']=$this->_prefixDocument.$receiving_id_raw;
 		$data['receiving_id_raw']=$receiving_id_raw;
 		
-		if ($data['receiving_id'] == 'RECV -1')
+		if ($data['receiving_id'] == $this->_prefixDocument . '-1')
 		{
 			$data['error_message'] = '';
 			$data['error_message'] .= '<span class="text-danger">'.lang('receivings_transaction_failed').'</span>';
@@ -188,7 +193,7 @@ class BizReceivings extends Receivings
 			$data['transfer_to_location'] = $transfer_to_location->name;
 		}
 
-		if ($data['receiving_id'] != 'RECV -1')
+		if ($data['receiving_id'] != $this->_prefixDocument . '-1')
 		{
 			$this->receiving_lib->clear_all();
 		}
@@ -259,7 +264,7 @@ class BizReceivings extends Receivings
 			$data['supplier_email'] = $supplier_info->email;
 				
 		}
-		$data['receiving_id']='RECV '.$receiving_id;
+		$data['receiving_id']=$this->_prefixDocument.$receiving_id;
 		$data['receiving_id_raw']=$receiving_id;
 	
 		$current_location = $this->Location->get_info($receiving_info['location_id']);

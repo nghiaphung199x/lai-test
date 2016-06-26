@@ -105,13 +105,12 @@ a, a:HOVER {cursor: pointer; text-decoration: none}
 	cursor: pointer;
 }
 
-#low_inventory{
+.item-tabs{
 	padding: 10px;
 	cursor: pointer;
 }
 
-#low_inventory.selected {
-	border-radius: 20px;
+#all_items.selected, #low_inventory.selected {
 	background-color: orange;
 }
 
