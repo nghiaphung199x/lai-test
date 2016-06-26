@@ -54,6 +54,17 @@
 					
 					$(this).attr('href','<?php echo site_url("$controller_name/save_list_send_mail");?>/'+selected.join('~'));
 				});
+				$('#check_list_send_sms').click(function()
+				{
+					var selected = get_selected_values();
+					if (selected.length == 0)
+					{
+						bootbox.alert(<?php echo json_encode(lang('common_must_select_customer_for_labels')); ?>);
+						return false;
+					}
+
+					$(this).attr('href','<?php echo site_url("$controller_name/save_list_send_sms");?>/'+selected.join('~'));
+				});
 		}); 
 </script>
 
@@ -70,6 +81,9 @@
 		<?php echo anchor("$controller_name/save_list_send_mail",
 			'<span class="">'.lang('customers_mail_add_mail_temp').'</span>'
 			,array('id'=>'sendToMailTemp', 'class'=>'btn btn-primary btn-lg','title'=>lang("customers_mail_add_mail_temp"))); ?>
+			<a class="btn btn-primary btn-lg check_list_send_sms" id="check_list_send_sms" href="<?php echo $controller_name.'/save_list_send_sms'; ?>" >
+				<span class=""><?php echo 'Danh sách sms tạm'; ?></span>
+			</a>
 		<?php } ?>
 		
 		<?php if ($controller_name =='customers') { ?>
@@ -150,6 +164,14 @@
 								<?php echo anchor("$controller_name/manage_sms/",
 									'<span class="">'.lang('customers_sms_menu_link').'</span>',
 									array('class'=>'hidden-xs','title'=>lang('customers_sms_menu_link')));
+								} ?>
+							</li>
+							<li>
+								<?php if ($controller_name =='customers') {  
+								?>
+								<?php echo anchor("$controller_name/manage_sms_tmp/",
+									'<span class="">'.lang('customers_sms_tmp_menu_link').'</span>',
+									array('class'=>'hidden-xs','title'=>lang('customers_sms_tmp_menu_link')));
 								} ?>
 							</li>
 							<li>

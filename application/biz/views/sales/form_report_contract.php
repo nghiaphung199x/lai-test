@@ -19,7 +19,7 @@
 					<ul id="error_message_box" class="text-danger"></ul>
 				
 					<div class="form-group">	
-						<?php echo form_label(lang('sales_contract_template').' :', 'list_contract',array('class'=>'required col-sm-4 col-md-4 col-lg-4 control-label')); ?>
+						<?php echo form_label(lang('sales_contract_template'), 'list_contract',array('class'=>'required col-sm-4 col-md-4 col-lg-4 control-label')); ?>
 						<div class='form_field'>
 					        <select name="contract_id" id="contract_id">
 					            <option value="0">--Chọn Template---</option>
@@ -34,7 +34,7 @@
 					   </div>
 				 	</div>
 					<div class="form-group">
-						<?php echo form_label(lang('sales_contract_type').' :', 'list_contract_type',array('class'=>'col-sm-4 col-md-4 col-lg-4 control-label')); ?>
+						<?php echo form_label(lang('sales_contract_type'), 'list_contract_type',array('class'=>'col-sm-4 col-md-4 col-lg-4 control-label')); ?>
 						<div class='form_field'>
 					        <select name="contract_type" id="contract_type">
 					            <option value="1">Word</option>
