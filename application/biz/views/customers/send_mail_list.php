@@ -19,7 +19,7 @@
 					<ul id="error_message_box" class="text-danger"></ul>
 				
 					<div class="form-group">	
-						<?php echo form_label(lang('customers_mail_list_mail').' :', 'list_mail',array('class'=>'col-sm-5 col-md-5 col-lg-4 control-label')); ?>
+						<?php echo form_label(lang('customers_mail_list_mail'), 'list_mail',array('class'=>'col-sm-5 col-md-5 col-lg-4 control-label')); ?>
 						<div class='form_field'>
 					        <select name="mail_id">
 					            <option value="">--Chọn mail---</option>

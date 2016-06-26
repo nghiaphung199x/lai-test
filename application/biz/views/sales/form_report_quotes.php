@@ -19,7 +19,7 @@
 					<ul id="error_message_box" class="text-danger"></ul>
 				
 					<div class="form-group">	
-						<?php echo form_label(lang('sales_quotes_template').' :', 'list_quotes',array('class'=>'required col-sm-4 col-md-4 col-lg-4 control-label')); ?>
+						<?php echo form_label(lang('sales_quotes_template'), 'list_quotes',array('class'=>'required col-sm-4 col-md-4 col-lg-4 control-label')); ?>
 						<div class='form_field'>
 					        <select name="quotes_id" id="quotes_id">
 					            <option value="">--Chọn Template---</option>
@@ -34,7 +34,7 @@
 					   </div>
 				 	</div>
 					<div class="form-group">
-						<?php echo form_label(lang('sales_quotes_type').' :', 'list_quotes_type',array('class'=>'col-sm-4 col-md-4 col-lg-4 control-label')); ?>
+						<?php echo form_label(lang('sales_quotes_type'), 'list_quotes_type',array('class'=>'col-sm-4 col-md-4 col-lg-4 control-label')); ?>
 						<div class='form_field'>
 					        <select name="quotes_type" id="quotes_type">
 					            <option value="1">Word</option>

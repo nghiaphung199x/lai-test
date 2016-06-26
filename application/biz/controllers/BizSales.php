@@ -283,6 +283,7 @@ class BizSales extends Sales
                 elseif($sale_mode=='return')$data['type']='0';
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['payments'], $sale_mode);
+                if($this->config->item('config_sales_receipt_pdf_size')=='a8'&&  !strpos($typeOfView, '_fulfillment'))$typeOfView.='_fulfillment';
 		$data['pdf_block_html'] = $this->load->view('sales/partials/' . $typeOfView, $data, TRUE);
 
 		$this->load->view("sales/receipt",$data);
@@ -451,6 +452,7 @@ class BizSales extends Sales
                 if(isset($sale_info)&&$sale_info['store_account_payment'] ==1)$sale_mode = 'store_account_payment';
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['payments'], $sale_mode, $sale_info['suspended'],$fulfillment);
+                if($this->config->item('config_sales_receipt_pdf_size')=='a8'&&  !strpos($typeOfView, '_fulfillment'))$typeOfView.='_fulfillment';
 		$data['pdf_block_html'] = $this->load->view('sales/partials/' . $typeOfView, $data, TRUE);
 		
 		$this->load->view("sales/receipt",$data);
