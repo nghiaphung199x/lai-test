@@ -825,6 +825,9 @@ class BizItems extends Items
 		$config['total_rows'] = $this->Item->search_count_all($search, $category_id,10000, $fields);
 		$config['per_page'] = $per_page ;
 	
+		$totalQty = 0;
+		$totalQtyAllLoc = 0;
+		
 		$countLowInventory = 0;
 		$items = array();
 		foreach($search_data->result() as $item)
@@ -835,6 +838,9 @@ class BizItems extends Items
 				$items[] = $item;
 				$countLowInventory ++;
 			}
+			
+			$totalQty += (int) $item->quantity;
+			$totalQtyAllLoc += (int) $this->Item->getTotalInAllLocation($item->item_id);
 		}
 		
 		if ($params['low_inventory'] === 1) {
@@ -845,7 +851,15 @@ class BizItems extends Items
 		
 		$this->load->library('pagination');$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
-		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination'], 'count_items' => $search_data->num_rows(), 'count_low_inventory' => $countLowInventory));
+		echo json_encode(array(
+			'manage_table' => $data['manage_table'], 
+			'pagination' => $data['pagination'], 
+			'count_items' => $search_data->num_rows(), 
+			'count_low_inventory' => $countLowInventory,
+			'totalQty' => $totalQty,
+			'totalQtyAllLoc' => $totalQtyAllLoc,
+			)
+		);
 	}
 }
 ?>

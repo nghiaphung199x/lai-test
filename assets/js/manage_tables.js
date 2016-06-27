@@ -128,6 +128,13 @@ function do_search(show_feedback,on_complete)
 				if (typeof response.count_low_inventory !== 'undefined') {
 					$('span#count_low_inventory').text(response.count_low_inventory);
 				}
+				
+				if (typeof response.totalQty !== 'undefined') {
+					$('span#totalQty').text(response.totalQty);
+				}
+				if (typeof response.totalQtyAllLoc !== 'undefined') {
+					$('span#totalQtyAllLoc').text(response.totalQtyAllLoc);
+				}
 			},
 			dataType: 'json'
 		});

@@ -331,9 +331,9 @@ function get_items_manage_table($items,$controller, $withArray = false)
 		else
 		{
 			if ($header == lang('items_quantity')) {
-				$table.="<th><span class='hr-lbl'>$header</span><span title='$totalQty total items' class='badge bg-primary tip-left'>$totalQty</span></th>";
+				$table.="<th><span class='hr-lbl'>$header</span><span id='totalQty' title='$totalQty total items' class='badge bg-primary tip-left'>$totalQty</span></th>";
 			} elseif ($header == lang('items_total_quantity')) {
-				$table.="<th><span class='hr-lbl'>$header</span><span title='$totalQtyAllLoc total items' class='badge bg-primary tip-left'>$totalQtyAllLoc</span></th>";
+				$table.="<th><span class='hr-lbl'>$header</span><span id='totalQtyAllLoc' title='$totalQtyAllLoc total items' class='badge bg-primary tip-left'>$totalQtyAllLoc</span></th>";
 			} else {
 				$table.="<th><span class='hr-lbl'>$header</span></th>";
 			}
