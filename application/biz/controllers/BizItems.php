@@ -777,6 +777,28 @@ class BizItems extends Items
 			$fields
 		);
 		
+		if ($search || $category_id)
+		{
+			$allItems=$this->Item->search(
+				$search, 
+				$category_id, 
+				$per_page,
+				$offset, 
+				$order_col,
+				$order_dir, 
+				$fields
+			);
+		}
+		else
+		{
+			$allItems = $this->Item->get_all(
+				$per_page,
+				$offset,
+				$order_col,
+				$order_dir
+			);
+		}
+		
 		$countItems = 0;
 		$countLowInventory = 0;
 		$items = array();
@@ -812,15 +834,37 @@ class BizItems extends Items
 	
 		$params = $this->session->userdata('item_search_data') ? $this->session->userdata('item_search_data') : array();
 		$item_search_data = array(
-				'offset' => $offset, 
-				'order_col' => $order_col, 
-				'order_dir' => $order_dir, 
-				'search' => $search,  
-				'category_id' => $category_id, 
-				'fields' => $fields, 'low_inventory' => $params['low_inventory']);
+			'offset' => $offset, 
+			'order_col' => $order_col, 
+			'order_dir' => $order_dir, 
+			'search' => $search,  
+			'category_id' => $category_id, 
+			'fields' => $fields, 'low_inventory' => $params['low_inventory']);
 		$this->session->set_userdata("item_search_data",$item_search_data);
 		$per_page=$this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
-		$search_data=$this->Item->search($search, $category_id, $per_page,$this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'name' ,$this->input->post('order_dir') ? $this->input->post('order_dir'): 'asc', $fields);
+		
+		if ($search || $category_id)
+		{
+			$search_data=$this->Item->search(
+				$search, 
+				$category_id, 
+				$per_page,
+				$this->input->post('offset') ? $this->input->post('offset') : 0, 
+				$this->input->post('order_col') ? $this->input->post('order_col') : 'name' ,
+				$this->input->post('order_dir') ? $this->input->post('order_dir'): 'asc', 
+				$fields
+			);
+		}
+		else
+		{
+			$search_data = $this->Item->get_all(
+				$per_page,
+				$this->input->post('offset') ? $this->input->post('offset') : 0,
+				$this->input->post('order_col') ? $this->input->post('order_col') : 'name' ,
+				$this->input->post('order_dir') ? $this->input->post('order_dir'): 'asc'
+			);
+		}
+		
 		$config['base_url'] = site_url('items/search');
 		$config['total_rows'] = $this->Item->search_count_all($search, $category_id,10000, $fields);
 		$config['per_page'] = $per_page ;
