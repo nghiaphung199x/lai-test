@@ -764,19 +764,6 @@ class BizItems extends Items
 		
 		$this->session->set_userdata("item_search_data",$item_search_data);
 		
-		
-		$params = $this->session->userdata('item_search_data') ? $this->session->userdata('item_search_data') : array();
-		
-		$allItems=$this->Item->search(
-			$search, 
-			$category_id, 
-			$per_page,
-			$offset, 
-			$order_col,
-			$order_dir, 
-			$fields
-		);
-		
 		if ($search || $category_id)
 		{
 			$allItems=$this->Item->search(
