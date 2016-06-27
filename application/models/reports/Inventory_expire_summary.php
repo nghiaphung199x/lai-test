@@ -34,7 +34,7 @@ class Inventory_expire_summary extends Report
 		}
 
 		$columns[] = array('data'=>lang('common_unit_price'), 'align'=> 'left');
-		$columns[] = array('data'=>lang('common_count'), 'align'=> 'left');
+		// $columns[] = array('data'=>lang('common_count'), 'align'=> 'left');
 		$columns[] = array('data'=>lang('reports_reorder_level'), 'align'=> 'left');
 		
 		return $columns;
@@ -45,7 +45,7 @@ class Inventory_expire_summary extends Report
 		$location_ids = self::get_selected_location_ids();
 		$location_ids_string = implode(',',$location_ids);
 		
-		$this->db->select('locations.name as location_name, items.name, SUM(quantity_purchased) as quantity_expiring,items.size,receivings_items.expire_date, categories.name as category, company_name, item_number, product_id, 
+		$this->db->select('locations.name as location_name, items.name, quantity_purchased as quantity_expiring,items.size,receivings_items.expire_date, categories.name as category, company_name, item_number, product_id, 
 		'.$this->db->dbprefix('receivings_items').'.item_unit_price as cost_price, 
 		IFNULL('.$this->db->dbprefix('location_items').'.unit_price, '.$this->db->dbprefix('items').'.unit_price) as unit_price,
 		SUM(quantity) as quantity, 
