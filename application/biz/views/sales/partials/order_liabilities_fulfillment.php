@@ -31,7 +31,7 @@
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
-		font-size: 12px;
+		font-size: 7px;
 		margin: 10px 0;
 	}
 	#pdf_tbl_items tboby {
@@ -50,10 +50,10 @@
 		padding: 3px 0px;
                 font-weight: normal;
                 line-height: normal !important;
-                font-size: 7px !important;;
+                font-size: 5px !important;;
 	}
         #pdf_tbl_items th{
-            font-size: 7px !important; 
+            font-size: 5px !important; 
         }
 
 	#pdf_signature {
@@ -139,11 +139,13 @@
                 margin-top: 10px; 
         }
         .text-center{
-            direction: rtl !important;
             text-align: center !important;
         }
         .text-bold{
             font-weight: bold !important;
+        }
+        .text-right{
+            text-align: right;
         }
 
 </style>

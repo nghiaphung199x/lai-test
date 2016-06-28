@@ -31,7 +31,7 @@
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
-		font-size: 8px;
+		font-size: 7px;
 		margin: 10px 0;
 	}
 	#pdf_tbl_items tboby {
@@ -50,10 +50,10 @@
 		padding: 3px 0px;
                 font-weight: normal;
                 line-height: normal !important;
-                font-size: 7px !important;;
+                font-size: 5px !important;;
 	}
         #pdf_tbl_items th{
-            font-size: 7px !important; 
+            font-size: 5px !important; 
         }
 
 	#pdf_signature {
@@ -139,11 +139,13 @@
                 margin-top: 10px; 
         }
         .text-center{
-            direction: rtl !important;
             text-align: center !important;
         }
         .text-bold{
             font-weight: bold !important;
+        }
+        .text-right{
+            text-align: right;
         }
 
 </style>
@@ -181,6 +183,7 @@
 		<p>Kho: <?php if ($this->Location->count_all() > 1) { ?><span><?php echo $this->Location->get_info_for_key('name', isset($override_location_id) ? $override_location_id : FALSE); ?></span><?php } ?></p>
 		<p>Địa chỉ kho: <span><?php echo nl2br($this->Location->get_info_for_key('address', isset($override_location_id) ? $override_location_id : FALSE)); ?></span></p>
                 <p> Tổng nợ cũ:  </p>
+                <p class="text-right">Đơn vị: <?php echo $this->config->item('currency_symbol')?></p>
 	</div>	
 	<div class="w100 clb">
 		<table id="pdf_tbl_items" class="w100">
@@ -188,9 +191,9 @@
 				<tr>
 					<th>STT</th>
 					<th><?php echo lang('common_item_name'); ?></th>
-					<th><?php echo lang('common_price').' ('.$this->config->item('currency_symbol').')'; ?></th>
+					<th><?php echo lang('common_price'); ?></th>
 					<th><?php echo lang('common_quantity_a8'); ?></th>
-					<th><?php echo lang('common_unit_total').' ('.$this->config->item('currency_symbol').')'; ?></th>
+					<th><?php echo lang('common_unit_total'); ?></th>
 				</tr>
 
 				<?php
@@ -237,7 +240,7 @@
 				?>
 
 					<tr>
-						<td><?php echo $stt; ?></td>
+                                            <td class="text-center"><?php echo $stt; ?></td>
 						<td><?php echo $item['name']; ?><?php if ($item_number_for_receipt){ ?> - <?php echo $item_number_for_receipt; ?><?php } ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
                                                 <td><?php echo NumberFormatToCurrency($item['price']); ?></td>
                                                 <td><?php echo to_quantity(abs($item['quantity'])); ?></td>
