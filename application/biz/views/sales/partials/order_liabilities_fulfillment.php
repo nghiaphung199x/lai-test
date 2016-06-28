@@ -3,19 +3,19 @@
 		display: block;
 		overflow: hidden;
 		position: relative;
-                height: auto; width: 255px;
+                height: auto; width: 245px;
                 font-family: Arial;
 		font-size: 8px !important;
 	}
 	#pdf_logo  {
 		text-align: center;
-                width: 255px;
+                width: 245px;
 	}
 	#company_name {
 		text-transform: uppercase;
 		font-weight: bold;
 		color: #002FC2;
-                width: 255px;
+                width: 245px;
                 text-align: center;
                 font-size: 8px;
 	}
@@ -23,7 +23,7 @@
 		color: #002FC2;
 	}
 	#pdf_title {
-		width: 255px;
+		width: 245px;
 		text-align: center;
 		text-transform: uppercase;
 		font-weight: bold;
@@ -58,7 +58,7 @@
 
 	#pdf_signature {
 		min-height: 50px;
-                width: 255px;
+                width: 245px;
 	}
         #pdf_signature p{
             min-height: 50px !important;
@@ -115,7 +115,7 @@
 		margin: 2px 0;
 	}
 	.w150px {
-		width: 255px;
+		width: 245px;
 	}
 	.fontI {
 		font-style: italic;
@@ -149,7 +149,6 @@
         }
 
 </style>
-
 <div id="pdf_content">
 	<div id="pdf_header">
 		<div>
