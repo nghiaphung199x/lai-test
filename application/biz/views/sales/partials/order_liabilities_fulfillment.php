@@ -3,35 +3,39 @@
 		display: block;
 		overflow: hidden;
 		position: relative;
-                height: auto; width: 255px;
+                height: auto; width: 245px;
                 font-family: Arial;
-		font-size: 8px !important;
+		font-size: 7px !important;
+                line-height: 17px !important;
 	}
 	#pdf_logo  {
 		text-align: center;
-                width: 255px;
+                width: 245px;
 	}
+        #pdf_logo img{
+            width: 110px;
+        }
 	#company_name {
 		text-transform: uppercase;
 		font-weight: bold;
 		color: #002FC2;
-                width: 255px;
+                width: 245px;
                 text-align: center;
-                font-size: 8px;
+                font-size: 7px;
 	}
 	#pdf_content span {
 		color: #002FC2;
 	}
 	#pdf_title {
-		width: 255px;
+		width: 245px;
 		text-align: center;
 		text-transform: uppercase;
 		font-weight: bold;
-		font-size: 8px;
+		font-size: 7px;
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
-		font-size: 12px;
+		font-size: 7px;
 		margin: 10px 0;
 	}
 	#pdf_tbl_items tboby {
@@ -58,7 +62,7 @@
 
 	#pdf_signature {
 		min-height: 50px;
-                width: 255px;
+                width: 245px;
 	}
         #pdf_signature p{
             min-height: 50px !important;
@@ -68,7 +72,7 @@
 		text-align: center;
 	}
 	#pdf_signature lable {
-		font-size: 11px;
+		font-size: 7px;
 		font-weight: bold;
 	}
         .text-left{
@@ -115,7 +119,7 @@
 		margin: 2px 0;
 	}
 	.w150px {
-		width: 255px;
+		width: 245px;
 	}
 	.fontI {
 		font-style: italic;
@@ -135,19 +139,20 @@
         #policy{
                 font-weight: bold;
                 text-align: center;
-                font-size: 8px;
+                font-size: 7px;
                 margin-top: 10px; 
         }
         .text-center{
-            direction: rtl !important;
             text-align: center !important;
         }
         .text-bold{
             font-weight: bold !important;
         }
+        .text-right{
+            text-align: right;
+        }
 
 </style>
-
 <div id="pdf_content">
 	<div id="pdf_header">
 		<div>

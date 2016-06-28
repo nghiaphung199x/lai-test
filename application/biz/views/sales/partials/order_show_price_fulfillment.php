@@ -3,35 +3,39 @@
 		display: block;
 		overflow: hidden;
 		position: relative;
-                height: auto; width: 255px;
+                height: auto; width: 245px;
                 font-family: Arial;
-		font-size: 8px !important;
+		font-size: 7px !important;
+                line-height: 17px !important;
 	}
 	#pdf_logo  {
 		text-align: center;
-                width: 255px;
+                width: 245px;
 	}
+        #pdf_logo img{
+            width: 110px;
+        }
 	#company_name {
 		text-transform: uppercase;
 		font-weight: bold;
 		color: #002FC2;
-                width: 255px;
+                width: 245px;
                 text-align: center;
-                font-size: 8px;
+                font-size: 7px;
 	}
 	#pdf_content span {
 		color: #002FC2;
 	}
 	#pdf_title {
-		width: 255px;
+		width: 245px;
 		text-align: center;
 		text-transform: uppercase;
 		font-weight: bold;
-		font-size: 8px;
+		font-size: 7px;
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
-		font-size: 8px;
+		font-size: 7px;
 		margin: 10px 0;
 	}
 	#pdf_tbl_items tboby {
@@ -58,7 +62,7 @@
 
 	#pdf_signature {
 		min-height: 50px;
-                width: 255px;
+                width: 245px;
 	}
         #pdf_signature p{
             min-height: 50px !important;
@@ -68,7 +72,7 @@
 		text-align: center;
 	}
 	#pdf_signature lable {
-		font-size: 11px;
+		font-size: 7px;
 		font-weight: bold;
 	}
         .text-left{
@@ -115,7 +119,7 @@
 		margin: 2px 0;
 	}
 	.w150px {
-		width: 255px;
+		width: 245px;
 	}
 	.fontI {
 		font-style: italic;
@@ -135,15 +139,17 @@
         #policy{
                 font-weight: bold;
                 text-align: center;
-                font-size: 8px;
+                font-size: 7px;
                 margin-top: 10px; 
         }
         .text-center{
-            direction: rtl !important;
             text-align: center !important;
         }
         .text-bold{
             font-weight: bold !important;
+        }
+        .text-right{
+            text-align: right;
         }
 
 </style>
@@ -181,6 +187,7 @@
 		<p>Kho: <?php if ($this->Location->count_all() > 1) { ?><span><?php echo $this->Location->get_info_for_key('name', isset($override_location_id) ? $override_location_id : FALSE); ?></span><?php } ?></p>
 		<p>Địa chỉ kho: <span><?php echo nl2br($this->Location->get_info_for_key('address', isset($override_location_id) ? $override_location_id : FALSE)); ?></span></p>
                 <p> Tổng nợ cũ:  </p>
+                <p class="text-right">Đơn vị: <?php echo $this->config->item('currency_symbol')?></p>
 	</div>	
 	<div class="w100 clb">
 		<table id="pdf_tbl_items" class="w100">
@@ -188,9 +195,9 @@
 				<tr>
 					<th>STT</th>
 					<th><?php echo lang('common_item_name'); ?></th>
-					<th><?php echo lang('common_price').' ('.$this->config->item('currency_symbol').')'; ?></th>
+					<th><?php echo lang('common_price'); ?></th>
 					<th><?php echo lang('common_quantity_a8'); ?></th>
-					<th><?php echo lang('common_unit_total').' ('.$this->config->item('currency_symbol').')'; ?></th>
+					<th><?php echo lang('common_unit_total'); ?></th>
 				</tr>
 
 				<?php
@@ -237,7 +244,7 @@
 				?>
 
 					<tr>
-						<td><?php echo $stt; ?></td>
+                                            <td class="text-center"><?php echo $stt; ?></td>
 						<td><?php echo $item['name']; ?><?php if ($item_number_for_receipt){ ?> - <?php echo $item_number_for_receipt; ?><?php } ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
                                                 <td><?php echo NumberFormatToCurrency($item['price']); ?></td>
                                                 <td><?php echo to_quantity(abs($item['quantity'])); ?></td>
