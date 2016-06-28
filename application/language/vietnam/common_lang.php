@@ -39,6 +39,7 @@ $lang['common_return_policy']='Thông tin chính sách';
 $lang['common_delivery_date']='Ngày giao hàng';
 $lang['common_deliverer']='Nhân viên giao hàng';
 $lang['common_warning_orders_modal'] = 'Danh sách đơn đặt hàng sắp đến hạn';
+$lang['common_warning_expire_item_modal'] = 'Danh sách mặt hàng sắp hết hạn';
 
 $lang['common_inv']='Hàng tồn kho';
 $lang['common_det']='Chi tiết';
