@@ -166,6 +166,9 @@ class BizConfig extends Config
 			'color_warning_level2' => $this->input->post('color_warning_level2'),
 			'day_warning_level3' => $this->input->post('day_warning_level3'),
 			'color_warning_level3' => $this->input->post('color_warning_level3'),
+				
+			'config_show_warning_expire_time' => (int) $this->input->post('config_show_warning_expire_time'),
+			'config_expire_time' => (int) $this->input->post('config_expire_time'),
 			
 			'config_sms_brand_name'=>   $this->input->post('sms_brand_name'),
 			'config_sms_user'=>   $this->input->post('sms_user'),

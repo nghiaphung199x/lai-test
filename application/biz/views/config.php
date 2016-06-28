@@ -959,7 +959,28 @@ $this->load->helper('demo');
 						</div>
 					</div>
 					
+					<div class="form-group">	
+						<?php echo form_label(lang('config_show_warning_expire_time').' :', 'config_show_warning_expire_time',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+						<?php echo form_checkbox(array(
+							'name'=>'config_show_warning_expire_time',
+							'id'=>'config_show_warning_expire_time',
+							'value'=>'1',
+							'checked'=>$this->config->item('config_show_warning_expire_time')));?>
+							<label for="config_show_warning_expire_time"><span></span></label>
+						</div>
+					</div>
 					
+					<div class="form-group" id="config_expire_time_row">	
+						<?php echo form_label(lang('config_expire_time') .':', 'config_expire_time',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+							<?php echo form_input(array(
+							'name'=>'config_expire_time',
+							'id'=>'config_expire_time',
+							'class'=>'form-control',
+							'value'=>$this->config->item('config_expire_time')));?>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -1832,6 +1853,22 @@ $(document).ready(function()
 	} else {
 		$('#warning_order_sale_config').hide();
 	}
+
+	if($('#config_show_warning_expire_time').is(':checked'))
+	{
+		$('#config_expire_time_row').show();
+	} else {
+		$('#config_expire_time_row').hide();
+	}
+
+	$('#config_show_warning_expire_time').change(function(){
+		if($(this).is(':checked')) {
+			
+			$('#config_expire_time_row').show();
+		} else {
+			$('#config_expire_time_row').hide();
+		}
+	});
 	
 	$('#show_warning_modal_order_sale').change(function(){
 		if($(this).is(':checked'))

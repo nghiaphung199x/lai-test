@@ -53,6 +53,20 @@ class Home extends Secure_area
 		
 		$data['show_warning_orders_modal'] = (!$choose_location && $this->config->item('show_warning_modal_order_sale') && !empty($data['warning_orders'])) ? true : false;
 		
+		$data['config_show_warning_expire_time'] = false;
+		if ($this->config->item('config_show_warning_expire_time')) {
+			$data['config_show_warning_expire_time'] = true;
+			$this->load->model('reports/Inventory_expire_summary');
+			$model = $this->Inventory_expire_summary;
+			$start_date = date('Y-m-d');
+			$end_date = date('Y-m-d', strtotime("+". (int) $this->config->item('config_expire_time') ." days"));
+			$model->setParams(array(
+				'start_date'=>$start_date,
+				'end_date' => $end_date));
+			$data['expire_data'] = $model->getData();
+			$data['config_show_warning_expire_time'] = count($data['expire_data']) ? true : false;
+		}
+		
 		$this->load->helper('demo');
 		$data['can_show_mercury_activate'] = (!is_on_demo_host() && !$this->config->item('mercury_activate_seen')) && !$this->Location->get_info_for_key('enable_credit_card_processing');		
 		$this->load->view("home",$data);

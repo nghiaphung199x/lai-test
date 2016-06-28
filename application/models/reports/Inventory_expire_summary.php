@@ -40,9 +40,14 @@ class Inventory_expire_summary extends Report
 		return $columns;
 	}
 	
-	public function getData()
+	public function getData($useCurrentLocation = false)
 	{
-		$location_ids = self::get_selected_location_ids();
+		if ($useCurrentLocation) {
+			$location_ids = array($CI->Employee->get_logged_in_employee_current_location_id());
+		} else {
+			$location_ids = self::get_selected_location_ids();
+		}
+			
 		$location_ids_string = implode(',',$location_ids);
 		
 		$this->db->select('locations.name as location_name, items.name, quantity_purchased as quantity_expiring,items.size,receivings_items.expire_date, categories.name as category, company_name, item_number, product_id, 

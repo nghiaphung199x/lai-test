@@ -25,6 +25,8 @@ $lang['config_automatically_email_receipt']='Tự động nhận Email';
 $lang['config_barcode_price_include_tax']='Bao gồm thuế trên mã vạch?';
 $lang['disable_confirmation_sale']='Vô hiệu xác nhận hoàn thành đơn hàng';
 
+$lang['config_show_warning_expire_time'] = 'Cảnh báo các sản phẩm hết hạn';
+$lang['config_expire_time'] = 'Thời gian cảnh bảo trước (ngày)';
 
 $lang['config_currency_symbol'] = 'Kí hiệu tiền tệ';
 $lang['config_backup_database'] = 'Backup cơ sở dữ liệu';
