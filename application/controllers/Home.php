@@ -54,7 +54,7 @@ class Home extends Secure_area
 		$data['show_warning_orders_modal'] = (!$choose_location && $this->config->item('show_warning_modal_order_sale') && !empty($data['warning_orders'])) ? true : false;
 		
 		$data['config_show_warning_expire_time'] = false;
-		if ($this->config->item('config_show_warning_expire_time')) {
+		if (!$choose_location && $this->config->item('config_show_warning_expire_time')) {
 			$data['config_show_warning_expire_time'] = true;
 			$this->load->model('reports/Inventory_expire_summary');
 			$model = $this->Inventory_expire_summary;
