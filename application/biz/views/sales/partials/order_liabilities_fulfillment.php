@@ -5,19 +5,23 @@
 		position: relative;
                 height: auto; width: 245px;
                 font-family: Arial;
-		font-size: 8px !important;
+		font-size: 7px !important;
+                line-height: 17px !important;
 	}
 	#pdf_logo  {
 		text-align: center;
                 width: 245px;
 	}
+        #pdf_logo img{
+            width: 110px;
+        }
 	#company_name {
 		text-transform: uppercase;
 		font-weight: bold;
 		color: #002FC2;
                 width: 245px;
                 text-align: center;
-                font-size: 8px;
+                font-size: 7px;
 	}
 	#pdf_content span {
 		color: #002FC2;
@@ -27,7 +31,7 @@
 		text-align: center;
 		text-transform: uppercase;
 		font-weight: bold;
-		font-size: 8px;
+		font-size: 7px;
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
@@ -50,10 +54,10 @@
 		padding: 3px 0px;
                 font-weight: normal;
                 line-height: normal !important;
-                font-size: 5px !important;;
+                font-size: 7px !important;;
 	}
         #pdf_tbl_items th{
-            font-size: 5px !important; 
+            font-size: 7px !important; 
         }
 
 	#pdf_signature {
@@ -68,7 +72,7 @@
 		text-align: center;
 	}
 	#pdf_signature lable {
-		font-size: 11px;
+		font-size: 7px;
 		font-weight: bold;
 	}
         .text-left{
@@ -135,7 +139,7 @@
         #policy{
                 font-weight: bold;
                 text-align: center;
-                font-size: 8px;
+                font-size: 7px;
                 margin-top: 10px; 
         }
         .text-center{
