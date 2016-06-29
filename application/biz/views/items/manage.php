@@ -265,7 +265,13 @@ $.post('<?php echo site_url("items/clear_select_inventory");?>', {select_invento
 							?>
 						</li>
 						<?php } ?>
-						
+						<li>
+							<?php echo anchor("$controller_name/history_transfer",
+								'<span class="">'.lang("items_history_transfer").'</span>',
+								array('class'=>'',
+								'title'=>lang('items_history_transfer')));
+							?>
+						</li>
 						</ul>
 					</div>
 				</div>

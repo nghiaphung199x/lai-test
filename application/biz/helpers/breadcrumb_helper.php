@@ -127,6 +127,9 @@ function create_breadcrumb()
 		}elseif($ci->uri->segment(2) == 'transfer_pending')
 		{
 			$return.=create_current_page_url(lang('items_transfer_pending'));
+		}elseif($ci->uri->segment(2) == 'history_transfer')
+		{
+			$return.=create_current_page_url(lang('items_history_transfer'));
 		}
 	}
 	elseif($ci->uri->segment(1) == 'item_kits')

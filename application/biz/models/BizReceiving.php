@@ -2,6 +2,47 @@
 require_once (APPPATH . "models/Receiving.php");
 class BizReceiving extends Receiving
 {
+	public function getHistoryTransfers ($search = array()) {
+		$location_id = $this->Employee->get_logged_in_employee_current_location_id();
+		$this->db->from('receivings');
+		$this->db->join('suppliers', 'receivings.supplier_id = suppliers.person_id', 'left');
+		$this->db->join('people', 'suppliers.person_id = people.person_id', 'left');
+		$this->db->where('receivings.deleted', 0);
+		$this->db->where('receivings.transfer_status', 'approved');
+		$this->db->where('receivings.transfer_to_location_id > 0');
+		$this->db->where('receivings.location_id > 0');
+		$this->db->where('transfer_to_location_id', $location_id);
+		
+		if (!empty($search['start_date'])) {
+			$this->db->where('receiving_time >= ', $search['start_date']);
+		}
+		
+		if (!empty($search['end_date'])) {
+			$this->db->where('receiving_time <= ', $search['end_date']);
+		}
+		
+		$this->db->order_by('receiving_id');
+		
+		$transferingList = $this->db->get()->result_array();
+		
+		for($k=0;$k<count($transferingList);$k++)
+		{
+			$item_names = array();
+			$this->db->select('name');
+			$this->db->from('items');
+			$this->db->join('receivings_items', 'receivings_items.item_id = items.item_id');
+			$this->db->where('receiving_id', $transferingList[$k]['receiving_id']);
+		
+			foreach($this->db->get()->result_array() as $row)
+			{
+				$item_names[] = $row['name'];
+			}
+				
+			$transferingList[$k]['items'] = implode(', ', $item_names);
+		}
+		
+		return $transferingList;
+	}
 	public function getAllTransferings()
 	{		
 		$location_id = $this->Employee->get_logged_in_employee_current_location_id();		

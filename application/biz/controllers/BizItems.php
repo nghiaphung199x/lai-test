@@ -12,6 +12,29 @@ class BizItems extends Items
 		$this->load->model('Measure');
 		$this->load->model('ItemMeasures');
 		$this->load->helper('items');
+		$this->load->model('Location');
+	}
+	
+	
+	public function history_transfer() {
+		$data = array();
+		if (empty($this->input->get('start_date'))) {
+			$data['start_date'] = date('d-m-Y', strtotime("-30 days"));
+			$search['start_date'] = date('Y-m-d', strtotime("-30 days"));
+		} else {
+			$data['start_date'] = $this->input->get('start_date_formatted');
+			$search['start_date'] = $this->input->get('start_date');
+		}
+		
+		if (empty($this->input->get('end_date'))) {
+			$data['end_date'] = date('d-m-Y');
+			$search['end_date'] = date('Y-m-d');
+		} else {
+			$data['end_date'] = $this->input->get('end_date_formatted');
+			$search['end_date'] = $this->input->get('end_date');
+		}
+		$data['history_transfers'] = $this->Receiving->getHistoryTransfers($search);
+		$this->load->view('items/history_transfers', $data);
 	}
 	
 	public function measures($item_id) {
