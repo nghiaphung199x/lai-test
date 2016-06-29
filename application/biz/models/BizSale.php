@@ -18,7 +18,12 @@ class BizSale extends Sale
 	{
 		$query = "select * from " . $this->db->dbprefix('sales') . " WHERE location_id = ". $this->Employee->get_logged_in_employee_current_location_id() ." AND delivery_date IS NOT NULL AND DATE(delivery_date) >= CURRENT_DATE() AND DATE(delivery_date) <= CURRENT_DATE() + INTERVAL ". $intervalDays ." DAY";
 		$query = $this->db->query($query);
-		return $query->result_array();
+		
+		if (!empty($query)) {
+			return $query->result_array();
+		}
+		
+		return null;
 	}
 	
 	function getMeasureOnSaleItem($saleId, $ItemId)

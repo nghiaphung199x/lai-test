@@ -49,7 +49,7 @@ class Home extends Secure_area
 		$warning_days_level2 = (int) $this->config->item('day_warning_level2');
 		$warning_days_level3 = (int) $this->config->item('day_warning_level3');
 		
-		$data['warning_orders'] = $this->Sale->getWarningOrder(max($warning_days_level1, $warning_days_level2, $warning_days_level3));
+		$data['warning_orders'] = !$choose_location ? $this->Sale->getWarningOrder(max($warning_days_level1, $warning_days_level2, $warning_days_level3)) : null;
 		
 		$data['show_warning_orders_modal'] = (!$choose_location && $this->config->item('show_warning_modal_order_sale') && !empty($data['warning_orders'])) ? true : false;
 		
