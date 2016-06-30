@@ -26,6 +26,7 @@ $lang['reports_supplier'] = 'Nhà cung cấp';
 $lang['reports_subtotal'] = 'Tổng chưa thuế';
 $lang['reports_total'] = 'Tổng có thuế';
 
+$lang['reports_total_qty_counted'] = 'Tổng số lượng';
 
 
 $lang['reports_report_input'] = 'Đầu vào';

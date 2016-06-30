@@ -23,6 +23,7 @@ class Detailed_inventory_count_report extends Report
 		$return['summary'][] = array('data'=>lang('common_status'), 'align'=> 'left');
 		$return['summary'][] = array('data'=>lang('common_employee'), 'align'=> 'left');
 		$return['summary'][] = array('data'=>lang('reports_number_items_counted'), 'align'=> 'left');
+		$return['summary'][] = array('data'=>lang('reports_total_qty_counted'), 'align'=> 'left');
 		$return['summary'][] = array('data'=>lang('reports_amount_over_under_from_actual_on_hand'), 'align'=> 'left');
 		$return['summary'][] = array('data'=>lang('common_comments'), 'align'=> 'left');		
 
