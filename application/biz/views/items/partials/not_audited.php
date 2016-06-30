@@ -36,7 +36,24 @@
           <?php } ?>
           </tbody>
 				</table>
+				
+				<div style="text-align: center;">
+					<button type="button" class="btn btn-primary btn-lg disabled">Xuất file excel</button>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<script>
+	$(document).ready(function(){
+		$('#dTableA').DataTable({
+			"sPaginationType": "bootstrap",
+			"bFilter": false,
+			"bInfo": false,
+			"iDisplayStart ": 10,
+		    "iDisplayLength": 10,
+		    "bLengthChange": false
+		});
+	});
+</script>

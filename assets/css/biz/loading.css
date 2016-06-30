@@ -126,7 +126,7 @@ a, a:HOVER {cursor: pointer; text-decoration: none}
 	background-image: url("../../img/sort_asc.png");
 }
 
-#warning_orders_modal .dataTables_paginate, #warning_expire_modal .dataTables_paginate {
+#NotAuditedLocationModal .dataTables_paginate, #warning_orders_modal .dataTables_paginate, #warning_expire_modal .dataTables_paginate {
 	float: none!important; 
 }
 
