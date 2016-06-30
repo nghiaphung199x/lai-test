@@ -130,6 +130,8 @@ a, a:HOVER {cursor: pointer; text-decoration: none}
 	float: none!important; 
 }
 
+#total_count_block {margin: 10px 20px;}
+
 @media(min-width:768px) {
     
 }

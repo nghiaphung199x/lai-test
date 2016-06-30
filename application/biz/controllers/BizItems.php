@@ -567,6 +567,18 @@ class BizItems extends Items
 		$data['count_info'] = $this->Inventory->get_count_info($count_id);
 	
 		$data['items_counted'] = $this->Inventory->get_items_counted($count_id,$config['per_page'], $offset);
+		
+		$totalItems = 0;
+		$totalQty = 0;
+		
+		foreach ($data['items_counted'] as $item) {
+			$totalQty += $item['count'];
+			$totalItems ++;
+		}
+		
+		$data['totalItems'] = $totalItems;
+		$data['totalQty'] = $totalQty;
+		
 		$data['mode'] = $this->session->userdata('count_mode') ? $this->session->userdata('count_mode') : 'scan_and_set';
 		$data['modes'] = array('scan_and_set' => lang('items_scan_and_set'), 'scan_and_add' => lang('items_scan_and_add') );
 		
@@ -578,6 +590,43 @@ class BizItems extends Items
 		$data['categories']['all'] = 'Tất cả';
 		$data['selected_category'] = 'all';
 		$this->load->view('items/do_count', $data);
+	}
+	
+	function _reload_inventory_counts($data = array())
+	{
+		$this->check_action_permission('count_inventory');
+	
+		$count_id = $this->session->userdata('current_count_id');
+		$config = array();
+	
+		$config['base_url'] = site_url("items/do_count/$count_id");
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+		$config['total_rows'] = $this->Inventory->get_number_of_items_counted($count_id);
+		$config['uri_segment'] = 4;
+		$data['per_page'] = $config['per_page'];
+		$data['count_info'] = $this->Inventory->get_count_info($count_id);
+	
+		$data['total_rows'] = $config['total_rows'];
+		$this->load->library('pagination');$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+	
+		$data['items_counted'] = $this->Inventory->get_items_counted($count_id,	$config['per_page']);
+	
+		$totalItems = 0;
+		$totalQty = 0;
+		
+		foreach ($data['items_counted'] as $item) {
+			$totalQty += $item['count'];
+			$totalItems ++;
+		}
+		
+		$data['totalItems'] = $totalItems;
+		$data['totalQty'] = $totalQty;
+		
+		$data['mode'] = $this->session->userdata('count_mode') ? $this->session->userdata('count_mode') : 'scan_and_set';
+		$data['modes'] = array('scan_and_set' => lang('items_scan_and_set'), 'scan_and_add' => lang('items_scan_and_add') );
+	
+		$this->load->view("items/do_count_data",$data);
 	}
 	
 	public function setCategory()
