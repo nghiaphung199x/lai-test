@@ -173,7 +173,15 @@ if ($this->config->item('automatically_print_duplicate_receipt_for_cc_transactio
 
 function print_receipt()
  {
- 	window.print();
+	var conten_pdf = document.getElementById('pdf_content').outerHTML;
+	var css = $('#receipt_wrapper style[type="text/css"]').html();
+	var html ='<style type="text/css">';
+	html += css ;
+	html +='</style>';
+	html+=conten_pdf;
+	newWin = window.open("");
+	newWin.document.write(html);
+	newWin.print();
  	<?php
  	if ($this->config->item('redirect_to_sale_or_recv_screen_after_printing_receipt'))
  	{
