@@ -42,6 +42,7 @@ $lang['attributes_updated_successful'] = 'Thông tin thuộc tính đã được
 $lang['attributes_btn_list'] = 'Danh sách thuộc tính';
 $lang['attributes_btn_save'] = 'Lưu thuộc tính';
 $lang['attributes_btn_delete'] = 'Xóa thuộc tính';
+$lang['attributes_error_adding_updating'] = 'Lỗi xảy ra khi lưu trữ đối tượng';
 
 $lang['attribute_field_required'] = 'Phải nhập';
 $lang['attribute_field_filterable'] = 'Có thể lọc';

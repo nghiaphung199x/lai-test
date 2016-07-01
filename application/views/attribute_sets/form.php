@@ -64,9 +64,78 @@
                 </div>
             </div>
         </div>
+        <div class="panel">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <?php echo lang('attribute_sets_attribute_information'); ?>
+                </h3>
+            </div>
+            <div class="panel-body bootstrap">
+                <div class="row">
+                    <div class="col-md-6">
+                        <?php if (!empty($attribute_groups)) :?>
+                            <?php foreach ($attribute_groups as $attribute_group) :?>
+                                <div class="form-group">
+                                    <p><i class="glyphicon glyphicon-list"></i> <strong><?php echo $attribute_group->name; ?></strong></p>
+                                    <ul class="sortable attribute-group" id="attribute_group_<?php echo $attribute_group->id; ?>">
+                                        <?php if (!empty($attributes_combined)) :?>
+                                        <?php foreach ($attributes_combined as $attribute_combined) :?>
+                                            <?php if ($attribute_combined->attribute_group_id == $attribute_group->id) :?>
+                                                <li>
+                                                    <input type="hidden" name="attribute[<?php echo $attribute_group->id; ?>][]" value="<?php echo $attribute_combined->id; ?>" />
+                                                    <?php echo $attribute_combined->name; ?>
+                                                </li>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </ul>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <?php if (!empty($attributes)) :?>
+                            <p><i class="glyphicon glyphicon-list"></i> <strong><?php echo lang('attribute_sets_all_attributes'); ?></strong></p>
+                            <ul id="attribute_group_0" class="sortable">
+                                <?php $is_exists = false; foreach ($attributes as $attribute) :?>
+                                <?php if (!empty($attributes_combined)) :?>
+                                    <?php foreach ($attributes_combined as $attribute_combined) :?>
+                                        <?php if ($attribute_combined->id == $attribute->id) :?>
+                                            <?php $is_exists = true; ?>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                                <?php if (!$is_exists) :?>
+                                <li>
+                                    <input type="hidden" name="attribute[0][]" value="<?php echo $attribute->id; ?>" />
+                                    <?php echo $attribute->name; ?>
+                                </li>
+                                <?php endif; ?>
+                                <?php endforeach; ?>
+                            </ul>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     <?php echo form_close(); ?>
 </div>
 <script type="text/javascript">
+    $(".sortable").sortable({
+        connectWith: ".sortable",
+        receive: function( event, ui ) {
+            $(".sortable").each(function() {
+                var id = $(this).attr("id").toString().replace("attribute_group_", "");
+                var $attributes = $(this).find("li");
+                $attributes.each(function() {
+                    var name = "attribute["+id+"][]";
+                    $(this).find("input[type=hidden]").attr("name", name);
+                });
+            });
+        }
+    });
     var submitting = false;
     setTimeout(function(){$(":input:visible:first","#form-attribute_set").focus();}, 100);
     $(".module_checkboxes").change(function()

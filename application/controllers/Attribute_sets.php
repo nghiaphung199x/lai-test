@@ -10,6 +10,8 @@ class Attribute_sets extends Secure_area implements Idata_controller
         parent::__construct('attribute_sets');
         $this->lang->load('attribute_sets');
         $this->lang->load('module');
+        $this->load->model('Attribute');
+        $this->load->model('Attribute_group');
         $this->load->model('Attribute_set');
     }
 
@@ -113,6 +115,13 @@ class Attribute_sets extends Secure_area implements Idata_controller
     {
         $data = array();
         $data['entity'] = $this->Attribute_set->get_info($attribute_set_id);
+        $data['attributes'] = $this->Attribute->get_all()->result();
+        $data['attributes_combined'] = $this->Attribute_set->get_attributes($attribute_set_id);
+        $data['attributes_group_combined'] = array();
+        foreach ($data['attributes_combined'] as $attribute) {
+            $data['attributes_group_combined'][$attribute->attribute_group_id][$attribute->id] = $attribute;
+        }
+        $data['attribute_groups'] = $this->Attribute_group->get_all()->result();
         $data['parents'] = $this->Attribute_set->get_all()->result();
         $data['all_modules'] = $this->Module->get_all_modules();
         $data['controller_name'] = $this->_controller_name;
@@ -158,6 +167,17 @@ class Attribute_sets extends Secure_area implements Idata_controller
                 $success_message = lang('attribute_sets_updated_successful') . ' [' . $data['name'] . ']';
                 $this->session->set_flashdata('manage_success_message', $success_message);
                 echo json_encode(array('success' => true, 'message' => $success_message, 'attribute_set_id' => $attribute_set_id, 'redirect_code' => $redirect_code));
+            }
+
+            /* Combine attributes */
+            $attribute_groups = $this->input->post('attribute');
+            $this->Attribute_set->clear_combined($data['attribute_set_id']);
+            foreach ($attribute_groups as $attribute_group_id => $attribute_ids) {
+                if (!empty($attribute_group_id)) {
+                    foreach ($attribute_ids as $attribute_id) {
+                        $this->Attribute_set->combine($data['attribute_set_id'], $attribute_group_id, $attribute_id);
+                    }
+                }
             }
         } else {
             /* Failure */

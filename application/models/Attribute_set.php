@@ -337,6 +337,25 @@ class Attribute_set extends CI_Model
 
         return $row;
     }
+
+    public function combine($attribute_set_id, $attribute_group_id, $attribute_id) {
+        $data = array(
+            'attribute_set_id' => $attribute_set_id,
+            'attribute_group_id' => $attribute_group_id,
+            'attribute_id' => $attribute_id
+        );
+        $this->db->insert('attribute_sets_combined', $data);
+    }
+
+    public function clear_combined($attribute_set_id) {
+        $this->db->delete('attribute_sets_combined', array('attribute_set_id' => $attribute_set_id));
+    }
+
+    public function get_attributes($attribute_set_id) {
+        $attribute_sets_combined = $this->db->dbprefix('attribute_sets_combined');
+        $attributes = $this->db->dbprefix('attributes');
+        return $this->db->query("SELECT * FROM " . $attribute_sets_combined . " AS ac INNER JOIN " . $attributes . " AS at ON (at.id = ac.attribute_id) WHERE attribute_set_id = " . $attribute_set_id)->result();
+    }
 }
 
 ?>

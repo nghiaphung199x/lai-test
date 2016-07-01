@@ -12,6 +12,8 @@ $lang['attribute_sets_cannot_be_deleted'] = 'Không thể xóa bộ thuộc tín
 $lang['attribute_sets_basic_information'] = 'Thông tin cơ bản bộ thuộc tính';
 $lang['attribute_sets_permission_information'] = 'Phân quyền truy cập cho bộ thuộc tính';
 $lang['attribute_sets_permission_desc'] = 'Tích vào các tính năng mà bạn muốn bộ thuộc tính truy cập';
+$lang['attribute_sets_attribute_information'] = 'Ghép nhóm thuộc tính';
+$lang['attribute_sets_all_attributes'] = 'Tất cả thuộc tính';
 
 $lang['attribute_sets_error_deleting_demo_admin'] = 'Bạn không thể xóa bộ thuộc tính trong bản demo';
 $lang['attribute_sets_duplicate_exists'] = 'Một tên bộ thuộc tính tương tự đã tồn tại. Bạn có muốn tiếp tục?';

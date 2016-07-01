@@ -42,6 +42,7 @@ $lang['attributes_option_label'] = 'Option label';
 $lang['attributes_option_value'] = 'Option value';
 $lang['attributes_option_add'] = 'Add option';
 $lang['attributes_option_remove'] = 'Remove';
+$lang['attributes_error_adding_updating'] = 'Error occurs when store entity';
 
 $lang['attribute_field_required'] = 'Is required';
 $lang['attribute_field_filterable'] = 'Is filterable';

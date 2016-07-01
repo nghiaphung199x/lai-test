@@ -27,3 +27,9 @@ label.error { font-weight: normal; color: red; }
 .no-border {border:none !important;}
 .well {border-radius: 0px}
 .manage_buttons .form-control {margin-bottom: 0px !important; border: none !important; }
+.left-bar .menu-parent > li a i, .side-bar .menu-parent > li a i {
+    top: 3px;
+    position: relative;
+}
+.sortable {padding: 10px; border: 1px dashed #ddd; background-color: #f8f8f8 }
+.sortable, .sortable li {list-style-type: none}

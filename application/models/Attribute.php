@@ -147,6 +147,8 @@ class Attribute extends CI_Model
                 }
             }
             $data['options'] = serialize($data['options']);
+        } else {
+            $data['options'] = serialize(array());
         }
 
         /* Insert Attribute */

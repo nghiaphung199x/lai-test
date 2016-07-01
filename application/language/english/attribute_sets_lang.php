@@ -11,6 +11,8 @@ $lang['attribute_sets_cannot_be_deleted'] = 'Could not deleted selected attribut
 
 $lang['attribute_sets_basic_information'] = 'Attribute set Basic Information';
 $lang['attribute_sets_permission_information'] = 'Attribute set Permissions and Access';
+$lang['attribute_sets_attribute_information'] = 'Attribute set Attribute Information';
+$lang['attribute_sets_all_attributes'] = 'All Attributes';
 $lang['attribute_sets_permission_desc'] = 'Check the boxes below to grant access to modules';
 
 $lang['attribute_sets_error_deleting_demo_admin'] = 'You can not delete the demo admin user';
