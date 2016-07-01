@@ -58,6 +58,7 @@
 	}
         #pdf_tbl_items th{
             font-size: 7px !important; 
+			text-align: center !important;
         }
 
 	#pdf_signature {
@@ -205,10 +206,10 @@
                                         <th class="text-center">Mã MH</th>
 					<th ><?php echo lang('common_item_name'); ?></th>
                                         <th  ><?php echo SL; ?></th>
-					<th ><?php echo lang('common_unit_sales'); ?></th>
+					<th ><?php echo lang('common_unit_sales_a8'); ?></th>
                                         <th  class="text-center"><?php echo lang('common_unit_discount_a8').' %';?></th>
                                         <th  class="text-center"><?php echo lang('reports_taxes') .' %'?></th>
-					<th ><?php echo lang('common_unit_total'); ?></th>
+					<th ><?php echo lang('common_unit_total_a8'); ?></th>
 				</tr>
 				<?php
 					if ($discount_item_line = $this->sale_lib->get_line_for_flat_discount_item())

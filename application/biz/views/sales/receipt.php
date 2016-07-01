@@ -60,6 +60,12 @@
 						<button class="btn btn-primary btn-lg hidden-print" id="fufillment_sheet_button" onclick="window.open('<?php echo site_url("sales/receipt/$sale_id_raw"); ?>', 'blank');" > <?php echo lang('sales_receipt'); ?></button>
 					</li>
                                     <?php }?>
+                                    <?php 
+                                            if($this->config->item('config_sales_receipt_pdf_size')=='a8' && $this->input->get('fulfillment')==NULL ){?>
+                                                <li style="padding-right: 0px;">
+                                                    <button class="btn btn-primary btn-lg hidden-print" id="fufillment_sheet_button" onclick="window.open('<?php echo site_url("sales/receipt/$sale_id_raw?fulfillment=0&type=".$type); ?>', 'blank');" > <?php echo lang('sales_regular_receipt'); ?></button>
+                                                </li>
+                                    <?php }?>
 				</ul>
 			</div>
 		</div>
@@ -173,7 +179,15 @@ if ($this->config->item('automatically_print_duplicate_receipt_for_cc_transactio
 
 function print_receipt()
  {
- 	window.print();
+	var conten_pdf = document.getElementById('pdf_content').outerHTML;
+	var css = $('#receipt_wrapper style[type="text/css"]').html();
+	var html ='<style type="text/css">';
+	html += css ;
+	html +='</style>';
+	html+=conten_pdf;
+	newWin = window.open("");
+	newWin.document.write(html);
+	newWin.print();
  	<?php
  	if ($this->config->item('redirect_to_sale_or_recv_screen_after_printing_receipt'))
  	{

@@ -58,6 +58,7 @@
 	}
         #pdf_tbl_items th{
             font-size: 7px !important; 
+			text-align: center !important;
         }
 
 	#pdf_signature {
@@ -197,7 +198,7 @@
 					<th><?php echo lang('common_item_name'); ?></th>
 					<th><?php echo lang('common_price'); ?></th>
 					<th><?php echo lang('common_quantity_a8'); ?></th>
-					<th><?php echo lang('common_unit_total'); ?></th>
+					<th><?php echo lang('common_unit_total_a8'); ?></th>
 				</tr>
 
 				<?php

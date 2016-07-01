@@ -937,6 +937,7 @@ class BizItems extends Items
 			$this->Inventory->update_inventory_from_count($count_id);
 			
 			$data['audit_items'] = $this->Inventory->get_items_counted($count_id, NULL,NULL);
+			$this->Inventory->set_count($count_id, 'closed');
 			$data['create_datetime'] = date(get_date_format().' '.get_time_format(), strtotime());
 			$data['count_id'] = $count_id;
 			$this->load->view("items/audit",$data);

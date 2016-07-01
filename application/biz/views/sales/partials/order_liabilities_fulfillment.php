@@ -58,6 +58,7 @@
 	}
         #pdf_tbl_items th{
             font-size: 7px !important; 
+			text-align: center !important;
         }
 
 	#pdf_signature {
@@ -153,6 +154,7 @@
         }
 
 </style>
+
 <div id="pdf_content">
 	<div id="pdf_header">
 		<div>
