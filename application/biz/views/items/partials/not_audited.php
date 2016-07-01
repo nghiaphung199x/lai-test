@@ -38,7 +38,7 @@
 				</table>
 				
 				<div style="text-align: center;">
-					<button type="button" class="btn btn-primary btn-lg disabled">Xuất file excel</button>
+					<a href="<?php echo site_url("items/extract_not_audit_items?count_id=" . $count_id);?>" class="btn btn-primary btn-lg">Xuất file excel</a>
 				</div>
 			</div>
 		</div>

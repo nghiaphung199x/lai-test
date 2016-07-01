@@ -13,6 +13,136 @@ class BizItems extends Items
 		$this->load->model('ItemMeasures');
 		$this->load->helper('items');
 		$this->load->model('Location');
+		$this->load->helper('bizexcel');
+	}
+	
+	public function extract_not_audit_items() {
+		
+		$data = array();
+		$count_id = $this->input->get('count_id', 0);
+		$audit_items = $this->Inventory->get_items_counted($count_id, NULL,NULL);
+		$auditedIds = array_map(function($item) {
+			return $item['item_id'];
+		}, $audit_items);
+		$extra['category_id'] = (int) $this->mysession->getValue('AUDIT_CATEGORY');
+		$notAuditedItems = $this->Item->getNotAuditedInLocation($auditedIds, $extra);
+		
+		$bizExcel = new BizExcel('A1.xlsx');
+		$excelContent = $bizExcel->setNumberRowStartBody(10)->setHeaderOfBody($this->getHeaderForNotAuditItems())
+								->setDataExcel($this->formattedNotAuditItems($notAuditedItems))
+								->buildExtraData($this->getExtraDataForNotAuditItems())
+								->generateFile(false);
+		$this->load->helper('download');
+		force_download('not_audit_items.xlsx', $excelContent);
+		exit;
+	}
+	
+	public function getHeaderForNotAuditItems() {
+		return array(
+				array(
+						'col' => 'A',
+						'text' => 'STT',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => '__AUTO__',
+				),
+				array(
+						'col' => 'B',
+						'text' => 'MÃ VẠCH',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'product_id',
+				),
+				array(
+						'col' => 'C',
+						'text' => 'TÊN SẢN PHẨM',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'item_name',
+				),
+				array(
+						'col' => 'D',
+						'text' => 'DANH MỤC',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'category_name',
+				),
+				array(
+						'col' => 'E',
+						'text' => 'GIÁ VỐN',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'item_cost_price',
+				),
+				array(
+						'col' => 'F',
+						'text' => 'GIÁ BÁN',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'item_unit_price',
+				),
+				array(
+						'col' => 'G',
+						'text' => 'SỐ LƯỢNG',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'location_quantity',
+				),
+		);
+	}
+	
+	public function getExtraDataForNotAuditItems () {
+		$current_location = $this->Location->get_info($this->Employee->get_logged_in_employee_current_location_id());
+		return [
+			[
+				'cell' => 'C6',
+				'value' => $current_location->name
+			],
+			[
+				'cell' => 'C7',
+				'value' => $current_location->address
+			],
+			[
+				'cell' => 'C8',
+				'value' => date("g:i a d-m-Y")
+			],
+		];
+	}
+	
+	public function formattedNotAuditItems($notAuditedItems = array()) {
+		$formattedItems = array();
+		foreach ($notAuditedItems as $item) {
+			$formattedItem = [];
+			$formattedItem['item_name'] = $item['name'];
+			$formattedItem['product_id'] = $item['product_id'];
+			$formattedItem['category_name'] = $item['category'];
+			$formattedItem['item_cost_price'] = NumberFormatToCurrency($item['cost_price']);
+			$formattedItem['item_unit_price'] = NumberFormatToCurrency($item['unit_price']);
+			$formattedItem['location_quantity'] = to_quantity($item['location_quantity']);
+			$formattedItems[] = $formattedItem;
+		}
+		return $formattedItems;
 	}
 	
 	
@@ -533,6 +663,7 @@ class BizItems extends Items
 		}, $data['audit_items']);
 		$extra['category_id'] = (int) $this->mysession->getValue('AUDIT_CATEGORY');
 		$data['notAuditedItems'] = $this->Item->getNotAuditedInLocation($auditedIds, $extra);
+		$data['count_id'] = $count_id;
 		$response['html'] = $this->load->view('items/partials/not_audited', $data, TRUE);
 		echo json_encode($response);
 	}
@@ -551,7 +682,8 @@ class BizItems extends Items
 	{
 		$this->check_action_permission('count_inventory');
 		$this->session->set_userdata('current_count_id',$count_id);
-	
+		$this->mysession->setValue('AUDIT_CATEGORY', 0);
+		
 		$data = array();
 		$config = array();
 		$config['base_url'] = site_url("items/do_count/$count_id");
