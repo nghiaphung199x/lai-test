@@ -12,7 +12,7 @@ class BizExcel {
 	
 	protected $newFileName;
 	
-	protected $excelPath = DOCUMENT_PATH . 'excel/';
+	protected $excelPath;
 	
 	protected $numberRowStartBody;
 	
@@ -21,6 +21,7 @@ class BizExcel {
 	protected $headerOfBody = [];
 	
 	public function __construct($formattedFile = '') {
+		$this->excelPath = DOCUMENT_PATH . 'excel/';
 		$this->formattedFile = $this->excelPath . $formattedFile;
 		if (is_file($this->formattedFile)) {
 			$this->oPHPExcel = PHPExcel_IOFactory::createReader('Excel2007');
