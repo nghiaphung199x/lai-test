@@ -216,7 +216,7 @@
 					$stt ++;
 					 if ($item['name'] != lang('sales_store_account_payment') && $item['name'] != lang('common_discount'))
 					 {
-				 		 $number_of_items_sold = $number_of_items_sold + $item['quantity'];
+				 		 $number_of_items_sold = $number_of_items_sold + abs($item['cur_quantity']);
 					 }
 					 
 					$item_number_for_receipt = false;
@@ -248,8 +248,8 @@
                                             <td class="text-center"><?php echo $stt; ?></td>
 						<td><?php echo $item['name']; ?><?php if ($item_number_for_receipt){ ?> - <?php echo $item_number_for_receipt; ?><?php } ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
                                                 <td><?php echo NumberFormatToCurrency($item['price']); ?></td>
-                                                <td><?php echo to_quantity(abs($item['quantity'])); ?></td>
-                                                <td><?php echo NumberFormatToCurrency(abs($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100)); ?></td>
+                                                <td><?php echo to_quantity(abs($item['cur_quantity'])); ?></td>
+                                                <td><?php echo NumberFormatToCurrency(abs($item['price']*abs($item['cur_quantity'])-$item['price']*abs($item['cur_quantity'])*$item['discount']/100)); ?></td>
 					</tr>
 					<?php if (!$item['description']=="" ||(isset($item['serialnumber']) && $item['serialnumber'] !="") ) {?>
 					<tr>
