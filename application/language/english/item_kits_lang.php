@@ -28,4 +28,5 @@ $lang['item_kits_tax_1_percent'] = 'Tax 1 Name Percent';
 $lang['item_kits_tax_2_name'] = 'Tax 2 Name';
 $lang['item_kits_tax_2_percent'] = 'Tax 2 Name Percent';
 $lang['item_kits_tax_2_cummulative'] = 'Tax 2 Cumulative';
+$lang['item_kits_attribute_set'] = 'Select attribute set';
 ?>

@@ -215,7 +215,8 @@ class Item_kits extends Secure_area implements Idata_controller
 		$data['controller_name']=$this->_controller_name;
 		$data['item_kit_info']=$this->Item_kit->get_info($item_kit_id);
 		$data['tags'] = implode(',',$this->Tag->get_tags_for_item_kit($item_kit_id));
-		
+		$data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+
 		$data['categories'][''] = lang('common_select_category');
 		
 		$categories = $this->Category->sort_categories_and_sub_categories($this->Category->get_all_categories_and_sub_categories());
@@ -338,6 +339,7 @@ class Item_kits extends Secure_area implements Idata_controller
 		$item_kit_data = array(
 		'item_kit_number'=>$this->input->post('item_kit_number')=='' ? null:$this->input->post('item_kit_number'),
 		'product_id'=>$this->input->post('product_id')=='' ? null:$this->input->post('product_id'),
+		'attribute_set_id'=>$this->input->post('attribute_set_id')=='' ? null:$this->input->post('attribute_set_id'),
 		'name'=>$this->input->post('name'),
 		'category_id'=>$category_id,
 		'tax_included'=>$this->input->post('tax_included') ? $this->input->post('tax_included') : 0,

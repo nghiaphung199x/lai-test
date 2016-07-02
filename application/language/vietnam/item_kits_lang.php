@@ -29,4 +29,5 @@ $lang['item_kits_tax_2_name'] = 'Tên thuế 2';
 $lang['item_kits_tax_2_percent'] = '% thuế 2';
 $lang['item_kits_tax_2_cummulative'] = 'Thuế lũy tiến (Thuế thu nhập/ Giá trị tài sản)';
 $lang['item_kits_available_qty'] = 'Số lượng khả dụng';
+$lang['item_kits_attribute_set'] = 'Chọn bộ thuộc tính';
 ?>

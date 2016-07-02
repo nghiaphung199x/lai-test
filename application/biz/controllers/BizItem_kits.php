@@ -49,7 +49,8 @@ class BizItem_kits extends Item_kits
 		$this->load->model('Supplier');
 		$this->load->model('Item_kit_taxes_finder');
 		$this->load->model('Item_location');
-	
+		$this->load->model('Attribute_set');
+
 		$this->check_action_permission('add_update');
 		$data = $this->_get_item_kit_data($item_kit_id);
 		$data['redirect']=$redirect;
@@ -81,6 +82,7 @@ class BizItem_kits extends Item_kits
 		$item_kit_data = array(
 				'item_kit_number'=>$this->input->post('item_kit_number')=='' ? null:$this->input->post('item_kit_number'),
 				'product_id'=>$this->input->post('product_id')=='' ? null:$this->input->post('product_id'),
+				'attribute_set_id'=>$this->input->post('attribute_set_id')=='' ? null:$this->input->post('attribute_set_id'),
 				'name'=>$this->input->post('name'),
 				'category_id'=>$category_id,
 				'tax_included'=>$this->input->post('tax_included') ? $this->input->post('tax_included') : 0,
