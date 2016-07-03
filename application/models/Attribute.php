@@ -20,7 +20,8 @@ class Attribute extends CI_Model
     /*
         Get all types
     */
-    public function get_types() {
+    public function get_types()
+    {
         $attribute_types = array();
         $attribute_types[self::ATTRIBUTE_TYPE_TEXT] = lang('attributes_type_text');
         $attribute_types[self::ATTRIBUTE_TYPE_NUMBER] = lang('attributes_type_number');
@@ -317,39 +318,35 @@ class Attribute extends CI_Model
     /*
         Gets the html table to manage groups.
     */
-    function get_grid($groups, $controller)
+    function get_grid($groups, $controller, $headers = true)
     {
-        $table='<table class="tablesorter table table-hover" id="sortable_table">';
+        $table = '<table class="tablesorter table table-hover" id="sortable_table">';
+        if ($headers) {
+            $headers = array('<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
+                'ID',
+                lang('common_name'),
+                lang('common_description'),
+                '&nbsp;',
+            );
 
-        $headers = array('<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
-            'ID',
-            lang('common_name'),
-            lang('common_description'),
-            '&nbsp;',
-        );
+            $table .= '<thead><tr>';
+            $count = 0;
+            foreach ($headers as $header) {
+                $count++;
 
-        $table.='<thead><tr>';
-        $count = 0;
-        foreach($headers as $header)
-        {
-            $count++;
-
-            if ($count == 1)
-            {
-                $table.="<th class='leftmost'>$header</th>";
+                if ($count == 1) {
+                    $table .= "<th class='leftmost'>$header</th>";
+                } elseif ($count == count($headers)) {
+                    $table .= "<th class='rightmost'>$header</th>";
+                } else {
+                    $table .= "<th>$header</th>";
+                }
             }
-            elseif ($count == count($headers))
-            {
-                $table.="<th class='rightmost'>$header</th>";
-            }
-            else
-            {
-                $table.="<th>$header</th>";
-            }
+            $table .= '</tr></thead>';
         }
-        $table.='</tr></thead><tbody>';
-        $table.= $this->get_rows( $groups, $controller );
-        $table.='</tbody></table>';
+        $table .= '<tbody>';
+        $table .= $this->get_rows($groups, $controller);
+        $table .= '</tbody></table>';
         return $table;
     }
 
@@ -388,12 +385,14 @@ class Attribute extends CI_Model
         return $row;
     }
 
-    public function get_html($attribute) {
+    public function get_html($attribute)
+    {
         $CI =& get_instance();
         $CI->load->view("attributes/renderer/" . $this->get_type_html($attribute), array('attribute' => $attribute));
     }
 
-    public function get_type_html($attribute) {
+    public function get_type_html($attribute)
+    {
         switch ($attribute->type) {
             case self::ATTRIBUTE_TYPE_TEXT:
                 $type = 'text';
@@ -426,7 +425,8 @@ class Attribute extends CI_Model
         return $type;
     }
 
-    public function get_entity_attributes($data) {
+    public function get_entity_attributes($data)
+    {
         $this->db->select('*');
         $this->db->from('attribute_values');
         $this->db->join('attributes', 'attribute_values.attribute_id = attributes.id');
@@ -440,28 +440,32 @@ class Attribute extends CI_Model
         return $attributes;
     }
 
-    public function set_attributes($data) {
+    public function set_attributes($data)
+    {
         if (!empty($data['entity_id'])) {
             $this->db->insert('attribute_values', $data);
         }
         return $this;
     }
 
-    public function reset_attributes($data) {
+    public function reset_attributes($data)
+    {
         if (!empty($data['entity_id'])) {
             $this->db->delete('attribute_values', array('entity_id' => $data['entity_id'], 'entity_type' => $data['entity_type']));
         }
         return $this;
     }
 
-    public function get_attribute_by_code($code) {
+    public function get_attribute_by_code($code)
+    {
         $this->db->select('*');
         $this->db->from('attributes');
         $this->db->where('code', $code);
         return $this->db->get()->row();
     }
 
-    public function get_attribute_value_by_code($data) {
+    public function get_attribute_value_by_code($data)
+    {
         $attribute = $this->get_attribute_by_code($data['code']);
         $this->db->select('entity_value');
         $this->db->from('attribute_values');

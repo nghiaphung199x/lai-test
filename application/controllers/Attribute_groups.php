@@ -70,7 +70,7 @@ class Attribute_groups extends Secure_area implements Idata_controller
         $this->load->library('pagination');
         $this->pagination->initialize($config);
         $data['pagination'] = $this->pagination->create_links();
-        $data['manage_table'] = $this->Attribute_group->get_grid($table_data, $this);
+        $data['manage_table'] = $this->Attribute_group->get_grid($table_data, $this, false);
         echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
     }
 
@@ -93,7 +93,7 @@ class Attribute_groups extends Secure_area implements Idata_controller
         $this->load->library('pagination');
         $this->pagination->initialize($config);
         $data['pagination'] = $this->pagination->create_links();
-        $data['manage_table'] = $this->Attribute_group->get_grid($search_data, $this);
+        $data['manage_table'] = $this->Attribute_group->get_grid($search_data, $this, false);
         echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
 
     }

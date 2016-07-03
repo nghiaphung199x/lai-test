@@ -49,6 +49,12 @@ $lang['attribute_field_required'] = 'Phải nhập';
 $lang['attribute_field_filterable'] = 'Có thể lọc';
 $lang['attribute_field_sortable'] = 'Có thể sắp xếp';
 
+$lang['attributes_step_1_desc'] = 'Bước 1';
+$lang['attributes_step_2_desc'] = 'Bước 2';
+$lang['attributes_new_items_import'] = 'Tải biểu mẫu tệp Excel';
+$lang['attributes_update_items_import'] = 'Tải biểu mẫu tệp Excel, có sẵn dữ liệu';
+$lang['attributes_cleanup_old_attributes'] = 'Xóa thuộc tính cũ';
+
 $lang['attributes_type_text'] = 'Kiểu nhập';
 $lang['attributes_type_number'] = 'Kiểu số';
 $lang['attributes_type_textarea'] = 'Kiểu đoạn văn ngắn';

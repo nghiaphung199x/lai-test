@@ -49,6 +49,12 @@ $lang['attribute_field_required'] = 'Is required';
 $lang['attribute_field_filterable'] = 'Is filterable';
 $lang['attribute_field_sortable'] = 'Is sortable';
 
+$lang['attributes_step_1_desc'] = 'Step 1';
+$lang['attributes_step_2_desc'] = 'Step 2';
+$lang['attributes_new_items_import'] = 'Download sample file';
+$lang['attributes_update_items_import'] = 'Download sample data';
+$lang['attributes_cleanup_old_attributes'] = 'Cleanup old attributes';
+
 $lang['attributes_type_text'] = 'Type text';
 $lang['attributes_type_number'] = 'Type number';
 $lang['attributes_type_textarea'] = 'Type textarea';

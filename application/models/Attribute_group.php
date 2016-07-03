@@ -267,37 +267,39 @@ class Attribute_group extends CI_Model
     /*
         Gets the html table to manage groups.
     */
-    function get_grid($groups, $controller)
+    function get_grid($groups, $controller, $headers = true)
     {
         $table='<table class="tablesorter table table-hover" id="sortable_table">';
+        if ($headers) {
+            $headers = array('<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
+                'ID',
+                lang('common_name'),
+                lang('common_description'),
+                '&nbsp;',
+            );
 
-        $headers = array('<input type="checkbox" id="select_all" /><label for="select_all"><span></span></label>',
-            'ID',
-            lang('common_name'),
-            lang('common_description'),
-            '&nbsp;',
-        );
+            $table.='<thead><tr>';
+            $count = 0;
+            foreach($headers as $header)
+            {
+                $count++;
 
-        $table.='<thead><tr>';
-        $count = 0;
-        foreach($headers as $header)
-        {
-            $count++;
-
-            if ($count == 1)
-            {
-                $table.="<th class='leftmost'>$header</th>";
+                if ($count == 1)
+                {
+                    $table.="<th class='leftmost'>$header</th>";
+                }
+                elseif ($count == count($headers))
+                {
+                    $table.="<th class='rightmost'>$header</th>";
+                }
+                else
+                {
+                    $table.="<th>$header</th>";
+                }
             }
-            elseif ($count == count($headers))
-            {
-                $table.="<th class='rightmost'>$header</th>";
-            }
-            else
-            {
-                $table.="<th>$header</th>";
-            }
+            $table.='</tr></thead>';
         }
-        $table.='</tr></thead><tbody>';
+        $table.='<tbody>';
         $table.= $this->get_rows( $groups, $controller );
         $table.='</tbody></table>';
         return $table;
