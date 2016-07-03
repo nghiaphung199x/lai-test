@@ -59,6 +59,7 @@
 
                 <h3><?php echo lang('common_step_3'); ?>: </h3>
                 <p><?php echo lang('item_kits_step_3_desc'); ?></p>
+                <p><?php echo lang('common_required_select_columns'); ?></p>
                 <div class="form-group ajax-result" id="import-result"></div>
 
                 <?php echo form_close() ?>
@@ -83,14 +84,6 @@
                     success: function (response) {
                         $('#grid-loader').hide();
                         $("#import-result").html(response.html);
-                        /*
-                        if (!response.success) {
-                            show_feedback('error', response.message, <?php echo json_encode(lang('common_error')); ?>);
-                        }
-                        else {
-                            show_feedback('success', response.message, <?php echo json_encode(lang('common_success')); ?>);
-                        }
-                        */
                         submitting = false;
                     },
                     dataType:'json',

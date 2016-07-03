@@ -74,6 +74,7 @@ $lang['common_step_5'] = 'Bước 5';
 $lang['common_step_6'] = 'Bước 6';
 $lang['common_select_fields'] = 'Chọn trường dữ liệu';
 $lang['common_record_stored'] = 'bản ghi đã được lưu';
+$lang['common_required_select_columns'] = 'Chọn đối chiếu ít nhất một trường dữ liệu';
 $lang['common_to'] = 'Đến';
 $lang['common_from'] = 'Từ';
 $lang['common_dashboard'] = 'Dashboard';

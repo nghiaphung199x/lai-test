@@ -350,6 +350,7 @@ class BizItem_kits extends Item_kits
         $rows = $this->input->post('rows');
         $selected_rows = $this->input->post('selected_rows');
         $stored_rows = 0;
+        $this->db->trans_start();
         foreach ($rows as $index => $row) {
             if (!isset($selected_rows[$index])) {
                 continue;
@@ -369,8 +370,14 @@ class BizItem_kits extends Item_kits
                 continue;
             }
         }
+        if (!empty($stored_rows)) {
+            $msg = $stored_rows . ' ' . lang('common_record_stored');
+            echo json_encode(array('success' => true, 'message' => $msg));
+            return;
+        }
+        $this->db->trans_complete();
         $msg = $stored_rows . ' ' . lang('common_record_stored');
-        echo json_encode(array('success' => true, 'message' => $msg));
+        echo json_encode(array('success' => false, 'message' => $msg));
     }
 }
 ?>

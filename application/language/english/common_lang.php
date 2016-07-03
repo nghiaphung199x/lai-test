@@ -69,6 +69,7 @@ $lang['common_step_5'] = 'Step 5';
 $lang['common_step_6'] = 'Step 6';
 $lang['common_select_fields'] = 'Select fields';
 $lang['common_record_stored'] = 'stored records';
+$lang['common_required_select_columns'] = 'Require select one column';
 $lang['common_to'] = 'To';
 $lang['common_from'] = 'From';
 $lang['common_dashboard'] = 'Dashboard';
