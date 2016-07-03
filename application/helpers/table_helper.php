@@ -254,12 +254,28 @@ function get_supplier_data_row($supplier,$controller)
 /*
 Gets the html table to manage items.
 */
-function get_items_manage_table($items,$controller)
+function get_items_manage_table($items,$controller, $withArray = false)
 {
 	$CI =& get_instance();
 	$has_cost_price_permission = $CI->Employee->has_module_action_permission('items','see_cost_price', $CI->Employee->get_logged_in_employee_info()->person_id);
 	$table='<table class="table tablesorter table-hover" id="sortable_table">';	
 
+	$totalQtyAllLoc = 0;
+	$totalQty = 0;
+	
+	if ($withArray) {
+		foreach($items as $item)
+		{
+			$totalQtyAllLoc += (int) $CI->Item->getTotalInAllLocation($item->item_id);
+			$totalQty += (int) $item->quantity;
+		}
+	} else {
+		foreach($items->result() as $item)
+		{
+			$totalQtyAllLoc += (int) $CI->Item->getTotalInAllLocation($item->item_id);
+			$totalQty += (int) $item->quantity;
+		}
+	}
 
 	if ($has_cost_price_permission)
 	{
@@ -306,19 +322,30 @@ function get_items_manage_table($items,$controller)
 		
 		if ($count == 1)
 		{
-			$table.="<th class='leftmost'>$header</th>";
+			$table.="<th class='leftmost'><span>$header</span></th>";
 		}
 		elseif ($count == count($headers))
 		{
-			$table.="<th class='rightmost'>$header</th>";
+			$table.="<th class='rightmost'><span>$header</span></th>";
 		}
 		else
 		{
-			$table.="<th>$header</th>";		
+			if ($header == lang('items_quantity')) {
+				$table.="<th><span class='hr-lbl'>$header</span><span id='totalQty' title='$totalQty total items' class='badge bg-primary tip-left'>$totalQty</span></th>";
+			} elseif ($header == lang('items_total_quantity')) {
+				$table.="<th><span class='hr-lbl'>$header</span><span id='totalQtyAllLoc' title='$totalQtyAllLoc total items' class='badge bg-primary tip-left'>$totalQtyAllLoc</span></th>";
+			} else {
+				$table.="<th><span class='hr-lbl'>$header</span></th>";
+			}
 		}
 	}
 	$table.='</tr></thead><tbody>';
-	$table.=get_items_manage_table_data_rows($items,$controller);
+	if ($withArray) {
+		$table.=get_items_manage_table_data_rows_with_array($items,$controller);
+	} else {
+		$table.=get_items_manage_table_data_rows($items,$controller);
+	}
+	
 	$table.='</tbody></table>';
 	return $table;
 }
@@ -345,6 +372,28 @@ function get_items_manage_table_data_rows($items,$controller)
 	return $table_data_rows;
 }
 
+/*
+ Gets the html data rows for the items.
+ */
+function get_items_manage_table_data_rows_with_array($items,$controller)
+{
+	$CI =& get_instance();
+	$table_data_rows='';
+
+	foreach($items as $item)
+	{
+		$item->total_quantity = $CI->Item->getTotalInAllLocation($item->item_id);
+		$table_data_rows.=get_item_data_row($item,$controller);
+	}
+
+	if(count($items)==0)
+	{
+		$table_data_rows.="<tr><td colspan='12'><span class='col-md-12 text-center text-warning' >".lang('items_no_items_to_display')."</span></td></tr>";
+	}
+
+	return $table_data_rows;
+}
+
 function get_item_data_row($item,$controller)
 {
 	$CI =& get_instance();
@@ -360,13 +409,13 @@ function get_item_data_row($item,$controller)
 
 	if($CI->config->item('highlight_low_inventory_items_in_items_module') && $item->quantity !== NULL && ($item->quantity<=0 || $item->quantity <= $reorder_level))
 	{
-		$low_inventory_class = "text-danger";
+		$low_inventory_class = "text-danger low-inventory";
 	}
 	$controller_name=str_replace(BIZ_PREFIX, '', strtolower(get_class($CI)));
 
 	$avatar_url=$item->image_id ?  site_url('app_files/view/'.$item->image_id) : base_url('assets/assets/images/avatar-default.jpg');
 
-	$table_data_row='<tr>';
+	$table_data_row='<tr class="'. $low_inventory_class .'">';
 	$table_data_row.="<td><input type='checkbox' id='item_$item->item_id' value='".$item->item_id."'/><label for='item_$item->item_id'><span></span></label></td>";
 	$table_data_row.='<td>'.$item->item_id.'</td>';
 	$table_data_row.='<td>'.H($item->item_number).'</td>';

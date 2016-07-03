@@ -288,11 +288,15 @@ $lang['sales_discount_percent'] = 'Phần trăm giảm giá';
 $lang['sales_close_register'] = 'Đóng Đăng ký';
 
 $lang['sales_quotes_title'] = 'Báo giá khách hàng';
+$lang['sales_contract_title'] = 'Hợp đồng khách hàng';
 $lang['sales_quotes_formality'] = 'Hình thức báo giá';
 $lang['sales_quotes_type'] = 'Loại báo giá';
+$lang['sales_contract_type'] = 'Loại hợp đồng';
 $lang['sales_quotes_template'] = 'Mẫu báo giá';
+$lang['sales_contract_template'] = 'Mẫu hợp đồng';
 $lang['sales_quotes_type_title'] = 'Báo giá';
 $lang['sales_contract_type_title'] = 'Hợp đồng';
-$lang['sales_contract_error_selected'] = 'Vui lòng chọn mẫu Báo giá để thực hiện!';
+$lang['sales_quotes_error_selected'] = 'Vui lòng chọn mẫu Báo giá để thực hiện!';
+$lang['sales_contract_error_selected'] = 'Vui lòng chọn mẫu Hợp đồng để thực hiện!';
 
 ?>

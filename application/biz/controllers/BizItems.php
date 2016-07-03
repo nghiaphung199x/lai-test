@@ -12,6 +12,159 @@ class BizItems extends Items
 		$this->load->model('Measure');
 		$this->load->model('ItemMeasures');
 		$this->load->helper('items');
+		$this->load->model('Location');
+		$this->load->helper('bizexcel');
+	}
+	
+	public function extract_not_audit_items() {
+		
+		$data = array();
+		$count_id = $this->input->get('count_id', 0);
+		$audit_items = $this->Inventory->get_items_counted($count_id, NULL,NULL);
+		$auditedIds = array_map(function($item) {
+			return $item['item_id'];
+		}, $audit_items);
+		$extra['category_id'] = (int) $this->mysession->getValue('AUDIT_CATEGORY');
+		$notAuditedItems = $this->Item->getNotAuditedInLocation($auditedIds, $extra);
+		
+		$bizExcel = new BizExcel('A1.xlsx');
+		$excelContent = $bizExcel->setNumberRowStartBody(10)->setHeaderOfBody($this->getHeaderForNotAuditItems())
+								->setDataExcel($this->formattedNotAuditItems($notAuditedItems))
+								->buildExtraData($this->getExtraDataForNotAuditItems())
+								->generateFile(false);
+		$this->load->helper('download');
+		force_download('not_audit_items.xlsx', $excelContent);
+		exit;
+	}
+	
+	public function getHeaderForNotAuditItems() {
+		return array(
+				array(
+						'col' => 'A',
+						'text' => 'STT',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => '__AUTO__',
+				),
+				array(
+						'col' => 'B',
+						'text' => 'MÃ VẠCH',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'product_id',
+				),
+				array(
+						'col' => 'C',
+						'text' => 'TÊN SẢN PHẨM',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'item_name',
+				),
+				array(
+						'col' => 'D',
+						'text' => 'DANH MỤC',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'category_name',
+				),
+				array(
+						'col' => 'E',
+						'text' => 'GIÁ VỐN',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'item_cost_price',
+				),
+				array(
+						'col' => 'F',
+						'text' => 'GIÁ BÁN',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'item_unit_price',
+				),
+				array(
+						'col' => 'G',
+						'text' => 'SỐ LƯỢNG',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'location_quantity',
+				),
+		);
+	}
+	
+	public function getExtraDataForNotAuditItems () {
+		$current_location = $this->Location->get_info($this->Employee->get_logged_in_employee_current_location_id());
+		return [
+			[
+				'cell' => 'C6',
+				'value' => $current_location->name
+			],
+			[
+				'cell' => 'C7',
+				'value' => $current_location->address
+			],
+			[
+				'cell' => 'C8',
+				'value' => date("g:i a d-m-Y")
+			],
+		];
+	}
+	
+	public function formattedNotAuditItems($notAuditedItems = array()) {
+		$formattedItems = array();
+		foreach ($notAuditedItems as $item) {
+			$formattedItem = [];
+			$formattedItem['item_name'] = $item['name'];
+			$formattedItem['product_id'] = $item['product_id'];
+			$formattedItem['category_name'] = $item['category'];
+			$formattedItem['item_cost_price'] = NumberFormatToCurrency($item['cost_price']);
+			$formattedItem['item_unit_price'] = NumberFormatToCurrency($item['unit_price']);
+			$formattedItem['location_quantity'] = to_quantity($item['location_quantity']);
+			$formattedItems[] = $formattedItem;
+		}
+		return $formattedItems;
+	}
+	
+	
+	public function history_transfer() {
+		$data = array();
+		if (empty($this->input->get('start_date'))) {
+			$data['start_date'] = date('d-m-Y', strtotime("-30 days"));
+			$search['start_date'] = date('Y-m-d', strtotime("-30 days"));
+		} else {
+			$data['start_date'] = $this->input->get('start_date_formatted');
+			$search['start_date'] = $this->input->get('start_date');
+		}
+		
+		if (empty($this->input->get('end_date'))) {
+			$data['end_date'] = date('d-m-Y');
+			$search['end_date'] = date('Y-m-d');
+		} else {
+			$data['end_date'] = $this->input->get('end_date_formatted');
+			$search['end_date'] = $this->input->get('end_date');
+		}
+		$data['history_transfers'] = $this->Receiving->getHistoryTransfers($search);
+		$this->load->view('items/history_transfers', $data);
 	}
 	
 	public function measures($item_id) {
@@ -510,6 +663,7 @@ class BizItems extends Items
 		}, $data['audit_items']);
 		$extra['category_id'] = (int) $this->mysession->getValue('AUDIT_CATEGORY');
 		$data['notAuditedItems'] = $this->Item->getNotAuditedInLocation($auditedIds, $extra);
+		$data['count_id'] = $count_id;
 		$response['html'] = $this->load->view('items/partials/not_audited', $data, TRUE);
 		echo json_encode($response);
 	}
@@ -528,7 +682,8 @@ class BizItems extends Items
 	{
 		$this->check_action_permission('count_inventory');
 		$this->session->set_userdata('current_count_id',$count_id);
-	
+		$this->mysession->setValue('AUDIT_CATEGORY', 0);
+		
 		$data = array();
 		$config = array();
 		$config['base_url'] = site_url("items/do_count/$count_id");
@@ -544,6 +699,18 @@ class BizItems extends Items
 		$data['count_info'] = $this->Inventory->get_count_info($count_id);
 	
 		$data['items_counted'] = $this->Inventory->get_items_counted($count_id,$config['per_page'], $offset);
+		
+		$totalItems = 0;
+		$totalQty = 0;
+		
+		foreach ($data['items_counted'] as $item) {
+			$totalQty += $item['count'];
+			$totalItems ++;
+		}
+		
+		$data['totalItems'] = $totalItems;
+		$data['totalQty'] = $totalQty;
+		
 		$data['mode'] = $this->session->userdata('count_mode') ? $this->session->userdata('count_mode') : 'scan_and_set';
 		$data['modes'] = array('scan_and_set' => lang('items_scan_and_set'), 'scan_and_add' => lang('items_scan_and_add') );
 		
@@ -557,12 +724,56 @@ class BizItems extends Items
 		$this->load->view('items/do_count', $data);
 	}
 	
+	function _reload_inventory_counts($data = array())
+	{
+		$this->check_action_permission('count_inventory');
+	
+		$count_id = $this->session->userdata('current_count_id');
+		$config = array();
+	
+		$config['base_url'] = site_url("items/do_count/$count_id");
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+		$config['total_rows'] = $this->Inventory->get_number_of_items_counted($count_id);
+		$config['uri_segment'] = 4;
+		$data['per_page'] = $config['per_page'];
+		$data['count_info'] = $this->Inventory->get_count_info($count_id);
+	
+		$data['total_rows'] = $config['total_rows'];
+		$this->load->library('pagination');$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+	
+		$data['items_counted'] = $this->Inventory->get_items_counted($count_id,	$config['per_page']);
+	
+		$totalItems = 0;
+		$totalQty = 0;
+		
+		foreach ($data['items_counted'] as $item) {
+			$totalQty += $item['count'];
+			$totalItems ++;
+		}
+		
+		$data['totalItems'] = $totalItems;
+		$data['totalQty'] = $totalQty;
+		
+		$data['mode'] = $this->session->userdata('count_mode') ? $this->session->userdata('count_mode') : 'scan_and_set';
+		$data['modes'] = array('scan_and_set' => lang('items_scan_and_set'), 'scan_and_add' => lang('items_scan_and_add') );
+	
+		$this->load->view("items/do_count_data",$data);
+	}
+	
 	public function setCategory()
 	{
 		$response = array('success' => 1);
 		$categoryId = $this->input->post('category_id', 0);
 		$this->mysession->setValue('AUDIT_CATEGORY', $categoryId);
 		echo json_encode($response);
+	}
+	
+	public function clear_low_inventory() {
+		$params = $this->session->userdata('item_search_data') ? $this->session->userdata('item_search_data') : array();
+		$params['low_inventory'] = 0;
+		$this->session->set_userdata("item_search_data", $params);
+		redirect('items');
 	}
 	
 	function index($offset=0)
@@ -594,20 +805,42 @@ class BizItems extends Items
 		if ($data['search'] || $data['category_id'])
 		{
 			$config['total_rows'] = $this->Item->search_count_all($data['search'], $data['category_id'],10000, $data['fields']);
+			$allItems = $this->Item->getSearchAll($data['search'], $data['category_id'],10000, $data['fields']);
 			$table_data = $this->Item->search($data['search'],$data['category_id'],$data['per_page'],$params['offset'],$params['order_col'],$params['order_dir'], $data['fields']);
 		}
 		else
 		{
 			$config['total_rows'] = $this->Item->count_all();
+			$allItems = $this->Item->get_all();
 			$table_data = $this->Item->get_all($data['per_page'],$params['offset'],$params['order_col'],$params['order_dir']);
 		}
+		
+		$countLowInventory = 0;
+		$items = array();
+		foreach($allItems->result() as $item)
+		{
+			$reorder_level = $item->location_reorder_level ? $item->location_reorder_level : $item->reorder_level;
+			if($item->quantity !== NULL && ($item->quantity<=0 || $item->quantity <= $reorder_level))
+			{
+				$countLowInventory++;
+				$items[] = $item;
+			}
+		}
+		$data['countLowInventory'] = $countLowInventory;
+		$data['$params'] = $params;
 		
 		$data['total_rows'] = $config['total_rows'];
 		$this->load->library('pagination');$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 		$data['order_col'] = $params['order_col'];
 		$data['order_dir'] = $params['order_dir'];
-		$data['manage_table']=get_items_manage_table($table_data,$this);
+		if ($params['low_inventory'] == 1) {
+			$data['manage_table']=get_items_manage_table($items,$this, true);
+		} else {
+			$data['manage_table']=get_items_manage_table($table_data,$this);
+		}
+		$data['low_inventory'] = (isset($params['low_inventory']) && $params['low_inventory']) == 1 ? true : false;
+		
 		$this->load->view('items/manage',$data);
 	}
 	
@@ -704,6 +937,7 @@ class BizItems extends Items
 			$this->Inventory->update_inventory_from_count($count_id);
 			
 			$data['audit_items'] = $this->Inventory->get_items_counted($count_id, NULL,NULL);
+			$this->Inventory->set_count($count_id, 'closed');
 			$data['create_datetime'] = date(get_date_format().' '.get_time_format(), strtotime());
 			$data['count_id'] = $count_id;
 			$this->load->view("items/audit",$data);
@@ -711,6 +945,157 @@ class BizItems extends Items
 			$this->Inventory->set_count($count_id, 'closed');
 			redirect('items/count');
 		}
+	}
+	
+	function low_inventory()
+	{
+		$this->check_action_permission('search');
+		$search=$this->input->post('search');
+		$category_id = $this->input->post('category_id');
+		$offset = $this->input->post('offset') ? $this->input->post('offset') : 0;
+		$order_col = $this->input->post('order_col') ? $this->input->post('order_col') : 'name';
+		$order_dir = $this->input->post('order_dir') ? $this->input->post('order_dir'): 'asc';
+		$fields = $this->input->post('fields') ? $this->input->post('fields') : 'all';
+		$per_page=$this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+		
+		$item_search_data = array(
+				'offset' => $offset,
+				'order_col' => $order_col, 
+				'order_dir' => $order_dir, 
+				'search' => $search, 
+				'category_id' => $category_id, 
+				'fields' => $fields, 
+				'low_inventory' => 1);
+		
+		$this->session->set_userdata("item_search_data",$item_search_data);
+		
+		if ($search || $category_id)
+		{
+			$allItems=$this->Item->search(
+				$search, 
+				$category_id, 
+				$per_page,
+				$offset, 
+				$order_col,
+				$order_dir, 
+				$fields
+			);
+		}
+		else
+		{
+			$allItems = $this->Item->get_all(
+				$per_page,
+				$offset,
+				$order_col,
+				$order_dir
+			);
+		}
+		
+		$countItems = 0;
+		$countLowInventory = 0;
+		$items = array();
+		foreach($allItems->result() as $item)
+		{
+			$reorder_level = $item->location_reorder_level ? $item->location_reorder_level : $item->reorder_level;
+			if($item->quantity !== NULL && ($item->quantity<=0 || $item->quantity <= $reorder_level))
+			{
+				$items[] = $item;
+				$countLowInventory ++;
+			}
+			$countItems ++;
+		}
+		
+		$config['base_url'] = site_url('items/search');
+		$config['per_page'] = $per_page ;
+		$this->load->library('pagination');
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->setTotalRows($countLowInventory)->create_links();
+		$data['manage_table']=get_items_manage_table_data_rows_with_array($items,$this);
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination'], 'count_items' => $countItems));
+	}
+	
+	function search()
+	{
+		$this->check_action_permission('search');
+		$search=$this->input->post('search');
+		$category_id = $this->input->post('category_id');
+		$offset = $this->input->post('offset') ? $this->input->post('offset') : 0;
+		$order_col = $this->input->post('order_col') ? $this->input->post('order_col') : 'name';
+		$order_dir = $this->input->post('order_dir') ? $this->input->post('order_dir'): 'asc';
+		$fields = $this->input->post('fields') ? $this->input->post('fields') : 'all';
+	
+		$params = $this->session->userdata('item_search_data') ? $this->session->userdata('item_search_data') : array();
+		$item_search_data = array(
+			'offset' => $offset, 
+			'order_col' => $order_col, 
+			'order_dir' => $order_dir, 
+			'search' => $search,  
+			'category_id' => $category_id, 
+			'fields' => $fields, 'low_inventory' => $params['low_inventory']);
+		$this->session->set_userdata("item_search_data",$item_search_data);
+		$per_page=$this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+		
+		if ($search || $category_id)
+		{
+			$search_data=$this->Item->search(
+				$search, 
+				$category_id, 
+				$per_page,
+				$this->input->post('offset') ? $this->input->post('offset') : 0, 
+				$this->input->post('order_col') ? $this->input->post('order_col') : 'name' ,
+				$this->input->post('order_dir') ? $this->input->post('order_dir'): 'asc', 
+				$fields
+			);
+		}
+		else
+		{
+			$search_data = $this->Item->get_all(
+				$per_page,
+				$this->input->post('offset') ? $this->input->post('offset') : 0,
+				$this->input->post('order_col') ? $this->input->post('order_col') : 'name' ,
+				$this->input->post('order_dir') ? $this->input->post('order_dir'): 'asc'
+			);
+		}
+		
+		$config['base_url'] = site_url('items/search');
+		$config['total_rows'] = $this->Item->search_count_all($search, $category_id,10000, $fields);
+		$config['per_page'] = $per_page ;
+	
+		$totalQty = 0;
+		$totalQtyAllLoc = 0;
+		
+		$countLowInventory = 0;
+		$items = array();
+		foreach($search_data->result() as $item)
+		{
+			$reorder_level = $item->location_reorder_level ? $item->location_reorder_level : $item->reorder_level;
+			if($item->quantity !== NULL && ($item->quantity<=0 || $item->quantity <= $reorder_level))
+			{
+				$items[] = $item;
+				$countLowInventory ++;
+			}
+			
+			$totalQty += (int) $item->quantity;
+			$totalQtyAllLoc += (int) $this->Item->getTotalInAllLocation($item->item_id);
+		}
+		
+		if ($params['low_inventory'] === 1) {
+			$data['manage_table']=get_items_manage_table_data_rows_with_array($items,$this);
+		} else {
+			$data['manage_table']=get_items_manage_table_data_rows($search_data,$this);
+		}
+		
+		$this->load->library('pagination');$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		echo json_encode(array(
+			'manage_table' => $data['manage_table'], 
+			'pagination' => $data['pagination'], 
+			'count_items' => $search_data->num_rows(), 
+			'count_low_inventory' => $countLowInventory,
+			'totalQty' => $totalQty,
+			'totalQtyAllLoc' => $totalQtyAllLoc,
+			)
+		);
 	}
 }
 ?>

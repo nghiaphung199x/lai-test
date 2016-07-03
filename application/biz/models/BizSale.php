@@ -18,7 +18,12 @@ class BizSale extends Sale
 	{
 		$query = "select * from " . $this->db->dbprefix('sales') . " WHERE location_id = ". $this->Employee->get_logged_in_employee_current_location_id() ." AND delivery_date IS NOT NULL AND DATE(delivery_date) >= CURRENT_DATE() AND DATE(delivery_date) <= CURRENT_DATE() + INTERVAL ". $intervalDays ." DAY";
 		$query = $this->db->query($query);
-		return $query->result_array();
+		
+		if (!empty($query)) {
+			return $query->result_array();
+		}
+		
+		return null;
 	}
 	
 	function getMeasureOnSaleItem($saleId, $ItemId)
@@ -446,7 +451,7 @@ class BizSale extends Sale
 				$cur_item_info = $this->Item->get_info($item['item_id']);
 				$cur_item_location_info = $this->Item_location->get_info($item['item_id']);
 				$qtyOriginal = $item['quantity'];
-				if( $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
+				if( (int) $item['measure_id'] && $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
 				{
 					$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $item['measure_id']);
 					$cost_price = $cost_price * $convertedValue->unit_price_percentage_converted / 100;
@@ -852,6 +857,23 @@ class BizSale extends Sale
 		$this->db->where('quotes_contract', 1);
 		$this->db->order_by('sale_id', 'desc');
 		return $this->db->get();
+	}
+	
+	function get_info_sale_order($sale_id) {
+		$this->db->from('sales');
+		$this->db->where('sale_id', $sale_id);
+		return $this->db->get()->row();
+	}
+	
+	function get_sale_item_by_sale_item($sale_id, $item_id) {
+		$this->db->where("sale_id", $sale_id);
+		$this->db->where("item_id", $item_id);
+		$query = $this->db->get("sales_items");
+		return $query->row();
+	}
+	
+	function insert_sale_material($data) {
+		$this->db->insert("sales_materials", $data);
 	}
 }
 ?>

@@ -495,5 +495,89 @@ class BizReports extends Reports
 	
 		$this->load->view("reports/tabular_details",$data);
 	}
+	
+	function detailed_count_report($start_date, $end_date, $export_excel=0, $offset = 0)
+	{
+		$this->check_action_permission('view_inventory_reports');
+	
+		$start_date=rawurldecode($start_date);
+		$end_date=rawurldecode($end_date);
+	
+		$this->load->model('reports/Detailed_inventory_count_report');
+		$model = $this->Detailed_inventory_count_report;
+		$model->setParams(array('start_date'=>$start_date, 'end_date'=>$end_date, 'offset' => $offset, 'export_excel' => $export_excel));
+	
+		$config = array();
+		$config['base_url'] = site_url("reports/detailed_count_report/".rawurlencode($start_date).'/'.rawurlencode($end_date)."/$export_excel");
+		$config['total_rows'] = $model->getTotalRows();
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+		$config['uri_segment'] = 6;
+		$this->load->library('pagination');$this->pagination->initialize($config);
+	
+		$headers = $model->getDataColumns();
+		$report_data = $model->getData();
+	
+		$summary_data = array();
+		$details_data = array();
+		$location_count = count(Report::get_selected_location_ids());
+	
+		foreach($report_data['summary'] as $key=>$row)
+		{
+			$status = '';
+			switch($row['status'])
+			{
+				case 'open':
+					$status = lang('common_open');
+					break;
+	
+				case 'closed':
+					$status = lang('common_closed');
+					break;
+			}
+			
+			$totalQtyCount = 0;
+			foreach($report_data['details'][$key] as $drow)
+			{
+				$details_data_row = array();
+				$details_data_row[] = array('data'=>$drow['item_number'], 'align'=>'left');
+				$details_data_row[] = array('data'=>$drow['product_id'], 'align'=>'left');
+				$details_data_row[] = array('data'=>$drow['name'], 'align'=>'left');
+				$details_data_row[] = array('data'=>$drow['category'], 'align'=>'left');
+				$details_data_row[] = array('data'=>$drow['size'], 'align'=>'left');
+				$details_data_row[] = array('data'=>to_quantity($drow['count']), 'align'=>'left');
+				$details_data_row[] = array('data'=>to_quantity($drow['actual_quantity']), 'align'=>'left');
+				$details_data_row[] = array('data'=>$drow['comment'], 'align'=>'left');
+				$details_data[$key][] = $details_data_row;
+				$totalQtyCount += $drow['count'];
+			}
+			
+			$summary_data_row = array(
+					array('data'=>date(get_date_format().' '.get_time_format(), strtotime($row['count_date'])), 'align'=>'left'),
+					array('data'=>$status, 'align'=>'left'),
+					array('data'=>$row['employee_name'], 'align'=>'left'),
+					array('data'=>to_quantity($row['items_counted']), 'align'=>'left'),
+					array('data'=>to_quantity($totalQtyCount), 'align'=>'left'),
+					array('data'=>to_quantity($row['difference']), 'align'=>'left'),
+					array('data'=>$row['comment'], 'align'=>'left'),
+			);
+	
+			if ($location_count > 1)
+			{
+				array_unshift($summary_data_row, array('data'=>$row['location_name'], 'align'=>'left'));
+			}
+			$summary_data[$key] = $summary_data_row;
+		}
+		$data = array(
+				"title" =>lang('reports_detailed_count_report'),
+				"subtitle" => date(get_date_format(), strtotime($start_date)) .'-'.date(get_date_format(), strtotime($end_date)),
+				"headers" => $model->getDataColumns(),
+				"summary_data" => $summary_data,
+				"details_data" => $details_data,
+				"overall_summary_data" => $model->getSummaryData(),
+				"export_excel" => $export_excel,
+				"pagination" => $this->pagination->create_links(),
+		);
+		$this->load->view("reports/tabular_details", $data);
+	}
 }
 ?>

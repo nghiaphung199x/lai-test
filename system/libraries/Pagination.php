@@ -343,6 +343,11 @@ class CI_Pagination {
 		log_message('info', 'Pagination Class Initialized');
 	}
 
+	public function setTotalRows($totalRows = 0) {
+		$this->total_rows = $totalRows;
+		return $this;
+	}
+	
 	// --------------------------------------------------------------------
 
 	/**

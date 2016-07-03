@@ -121,6 +121,20 @@ function do_search(show_feedback,on_complete)
 				enable_row_selection();		
 				$('#sortable_table tbody :checkbox').click(checkbox_click);
 				$("#select_all").attr('checked',false);
+				
+				if (typeof response.count_items !== 'undefined') {
+					$('span#count_items').text(response.count_items);
+				}
+				if (typeof response.count_low_inventory !== 'undefined') {
+					$('span#count_low_inventory').text(response.count_low_inventory);
+				}
+				
+				if (typeof response.totalQty !== 'undefined') {
+					$('span#totalQty').text(response.totalQty);
+				}
+				if (typeof response.totalQtyAllLoc !== 'undefined') {
+					$('span#totalQtyAllLoc').text(response.totalQtyAllLoc);
+				}
 			},
 			dataType: 'json'
 		});

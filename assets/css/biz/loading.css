@@ -97,22 +97,40 @@ a, a:HOVER {cursor: pointer; text-decoration: none}
 	text-align: left !important;
 }
 
-tr.delivery_expire {
-background-color: #fb5d5d !important;
-}
-
-tr.delivery_warning_lv1 {
-background-color: #fbed5d !important;
-}
-
-tr.delivery_warning_lv2 {
-background-color: #5de0fb !important;
-}
-
-
 #do_count_actions select {
 	padding: 9px 5px 10px;
 }
+
+#sortable_table tr th {
+	cursor: pointer;
+}
+
+.item-tabs{
+	padding: 10px;
+	cursor: pointer;
+}
+
+#all_items.selected, #low_inventory.selected {
+	background-color: orange;
+}
+
+.tablesorter .headerSortUp{
+	background-repeat: no-repeat;
+    background-position: center right;
+	background-image: url("../../img/sort_desc.png");
+}
+
+.tablesorter .headerSortDown{
+	background-repeat: no-repeat;
+    background-position: center right;
+	background-image: url("../../img/sort_asc.png");
+}
+
+#NotAuditedLocationModal .dataTables_paginate, #warning_orders_modal .dataTables_paginate, #warning_expire_modal .dataTables_paginate {
+	float: none!important; 
+}
+
+#total_count_block {margin: 10px 20px;}
 
 @media(min-width:768px) {
     

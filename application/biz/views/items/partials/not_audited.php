@@ -36,7 +36,24 @@
           <?php } ?>
           </tbody>
 				</table>
+				
+				<div style="text-align: center;">
+					<a href="<?php echo site_url("items/extract_not_audit_items?count_id=" . $count_id);?>" class="btn btn-primary btn-lg">Xuất file excel</a>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<script>
+	$(document).ready(function(){
+		$('#dTableA').DataTable({
+			"sPaginationType": "bootstrap",
+			"bFilter": false,
+			"bInfo": false,
+			"iDisplayStart ": 10,
+		    "iDisplayLength": 10,
+		    "bLengthChange": false
+		});
+	});
+</script>

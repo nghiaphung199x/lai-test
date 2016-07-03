@@ -188,7 +188,7 @@
 						<td><?php echo $stt; ?></td>
                                                 <td><?php echo H($item['product_id']);?></td>
 						<td><?php echo $item['name']; ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
-                                                <td><?php echo $authenticated_locations[$current_logged_in_location_id];?></td>
+                                                <td><?php echo $transfer_from_location;?></td>
                                                 <td><?php echo $transfer_to_location?></td>
                                                 <td><?php echo NumberFormatToCurrency(abs($item['price'])); ?></td>
 						<td><?php echo to_quantity_abs($item['quantity']); ?></td>
