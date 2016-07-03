@@ -2,6 +2,19 @@
 $this->load->helper('demo');
 ?>
 
+<style type="text/css">
+	tr.delivery_warning_lv1 {
+		background-color: #<?php echo $this->config->item('color_warning_level1'); ?> !important;
+	}
+	
+	tr.delivery_warning_lv2 {
+		background-color: #<?php echo $this->config->item('color_warning_level2'); ?> !important;
+	}
+	
+	tr.delivery_warning_lv3 {
+		background-color: #<?php echo $this->config->item('color_warning_level3'); ?> !important;
+	}
+</style>
 
 <?php if ($can_show_mercury_activate) { ?>
 	<!-- mercury activation message -->
@@ -57,7 +70,7 @@ if (!is_on_demo_host() && !$this->config->item('hide_test_mode_home')) { ?>
 
 <div class="text-center">					
 
-	<?php if (!$this->config->item('hide_dashboard_statistics') && (!$this->agent->is_mobile() || $this->agent->is_tablet())) { ?>
+	<?php if (!$this->config->item('hide_dashboard_statistics') /* && (!$this->agent->is_mobile() || $this->agent->is_tablet()) */) { ?>
 
 	<div class="row">
 		
@@ -207,7 +220,7 @@ if (!is_on_demo_host() && !$this->config->item('hide_test_mode_home')) { ?>
 	
 
 <!-- Modal -->
-<div class="modal fade" id="choose_location_modal" tabindex="-1" role="dialog" aria-labelledby="chooseLocation" data-keyboard="false" data-backdrop="static">
+<div class="modal fade" id="choose_location_modal" tabindex="-1" role="dialog" aria-labelledby="chooseLocation" data-keyboard="false">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -242,8 +255,8 @@ if (!is_on_demo_host() && !$this->config->item('hide_test_mode_home')) { ?>
 				<thead>
 					<tr>
 						<th><?php echo lang('ID'); ?></th>
-						<th><?php echo lang('common_date'); ?></th>
-						<th><?php echo lang('sales_customer'); ?></th>
+						<th class="hidden-xs"><?php echo lang('common_date'); ?></th>
+						<th class="hidden-xs"><?php echo lang('sales_customer'); ?></th>
 						<th><?php echo lang('common_delivery_date'); ?></th>
 						<th><?php echo lang('common_deliverer'); ?></th>
 					</tr>
@@ -252,8 +265,8 @@ if (!is_on_demo_host() && !$this->config->item('hide_test_mode_home')) { ?>
 					<?php foreach ($warning_orders as $warning_order) {?>
 					<tr class="<?php echo getStatusOfDelivery($warning_order['delivery_date']) ?>">
 						<td><?php echo ($this->config->item('sale_prefix') ? $this->config->item('sale_prefix') : 'POS' ). ' '.$warning_order['sale_id'];?></td>
-						<td><?php echo date(get_date_format(). ' @ '.get_time_format(),strtotime($warning_order['sale_time']));?></td>
-						<td>
+						<td class="hidden-xs"><?php echo date(get_date_format(). ' @ '.get_time_format(),strtotime($warning_order['sale_time']));?></td>
+						<td class="hidden-xs">
 							<?php
 							if (isset($warning_order['customer_id'])) 
 							{
@@ -292,15 +305,78 @@ if (!is_on_demo_host() && !$this->config->item('hide_test_mode_home')) { ?>
 <?php } ?>
 
 
+<?php if($config_show_warning_expire_time){ ?>
+<!-- Modal -->
+<div class="modal fade" id="warning_expire_modal" tabindex="-1" role="dialog" aria-labelledby="chooseLocation" data-keyboard="false">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span class="ti-close" aria-hidden="true"></span>
+				</button>
+        <h4 class="modal-title" id="chooseLocation"><?php echo lang('common_warning_expire_item_modal'); ?></h4>
+      </div>
+      <div class="modal-body">
+      	<div>
+	        <table class="transfer_pending table table-bordered table-striped table-hover data-table" id="dTableB">
+				<thead>
+					<tr>
+						<th><?php echo lang('common_item'); ?></th>
+						<th class="hidden-xs"><?php echo lang('common_category'); ?></th>
+						<th class="hidden-xs"><?php echo lang('common_company'); ?></th>
+						<th><?php echo lang('common_quantity'); ?></th>
+						<th><?php echo lang('common_expire_date'); ?></th>
+						
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ($expire_data as $warningItem) {?>
+					<tr>
+						<td><?php echo $warningItem['name'];?></td>
+						<td class="hidden-xs"><?php echo $warningItem['category'];?></td>
+						<td class="hidden-xs"><?php echo $warningItem['company_name'];?></td>
+						<td><?php echo to_quantity($warningItem['quantity']); ?></td>
+						<td><?php echo $warningItem['expire_date'];?></td>
+					</tr>
+					<?php } ?>
+				</tbody>
+			</table>
+		</div>
+      </div>
+    </div>
+  </div>
+</div>
+<?php } ?>
+
+
 <!-- Location Message to employee -->
 <script>
 	$(document).ready(function(){
 
-// 		$('#dTableA').DataTable({
-// 			"sPaginationType": "bootstrap"
-// 		});
+		$('#dTableB').DataTable({
+			"sPaginationType": "bootstrap",
+			"bFilter": false,
+			"bInfo": false,
+			"iDisplayStart ": 10,
+		    "iDisplayLength": 10,
+		    "bLengthChange": false
+		});
+
+		$('#dTableA').DataTable({
+			"sPaginationType": "bootstrap",
+			"bFilter": false,
+			"bInfo": false,
+			"iDisplayStart ": 10,
+		    "iDisplayLength": 10,
+		    "bLengthChange": false
+		});
+		
 		<?php if ($show_warning_orders_modal){ ?>
 			$('#warning_orders_modal').modal('show');
+		<?php } ?>
+
+		<?php if ($config_show_warning_expire_time){ ?>
+			$('#warning_expire_modal').modal('show');
 		<?php } ?>
 		
 		$("#dismiss_mercury").click(function(e){

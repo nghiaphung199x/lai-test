@@ -198,4 +198,8 @@ $lang['items_must_select_supplier'] = 'Bạn phải chọn một nhà cung cấp
 
 $lang['items_transfer_pending'] = 'Duyệt đơn chuyển kho';
 $lang['items_transfer_pending_title'] = 'Danh sách các đơn chuyển kho';
+
+$lang['items_history_transfer'] = 'Lịch sử chuyển kho';
+$lang['items_history_transfer_title'] = 'Lịch sử chuyển kho';
+
 ?>

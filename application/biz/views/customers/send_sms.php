@@ -76,7 +76,9 @@ $(document).ready(function(){
                 {
                     submitting = false;
                     show_feedback(response.success ? 'success' : 'error',response.message, response.success ? <?php echo json_encode(lang('common_success')); ?>  : <?php echo json_encode(lang('common_error')); ?>);
-                          
+                    if (response.success){
+                    	window.location = <?php echo json_encode(site_url('customers/')); ?>;
+                    }     
                 },
                 dataType:'json'
             });

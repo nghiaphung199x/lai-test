@@ -42,6 +42,7 @@ class BizConfig extends Config
 		$batch_save_data=array(
 			'company'=>$this->input->post('company'),
 			'sale_prefix'=>$this->input->post('sale_prefix') ? $this->input->post('sale_prefix') : 'POS',
+			'receive_prefix'=>$this->input->post('receive_prefix') ? $this->input->post('receive_prefix') : 'REC',
 			'website'=>$this->input->post('website'),
 			'prices_include_tax' => $this->input->post('prices_include_tax') ? 1 : 0,
 			'default_tax_1_rate'=>$this->input->post('default_tax_1_rate'),		
@@ -158,6 +159,16 @@ class BizConfig extends Config
 			'disable_quick_edit' => $this->input->post('disable_quick_edit')  ? 1 : 0,
 
 			'config_sales_receipt_pdf_size' => $this->input->post('config_sales_receipt_pdf_size'),
+				
+			'day_warning_level1' => $this->input->post('day_warning_level1'),
+			'color_warning_level1' => $this->input->post('color_warning_level1'),
+			'day_warning_level2' => $this->input->post('day_warning_level2'),
+			'color_warning_level2' => $this->input->post('color_warning_level2'),
+			'day_warning_level3' => $this->input->post('day_warning_level3'),
+			'color_warning_level3' => $this->input->post('color_warning_level3'),
+				
+			'config_show_warning_expire_time' => (int) $this->input->post('config_show_warning_expire_time'),
+			'config_expire_time' => (int) $this->input->post('config_expire_time'),
 			
 			'config_sms_brand_name'=>   $this->input->post('sms_brand_name'),
 			'config_sms_user'=>   $this->input->post('sms_user'),

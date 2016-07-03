@@ -14,7 +14,7 @@
 				</div>
 				<div class="col-md-12">
 					<?php 
-						echo form_open('customers/do_send_sms',array('id'=>'send_sms_form','class'=>'form-horizontal'));
+						echo form_open('customers/do_send_sms?type_send=1',array('id'=>'send_sms_form','class'=>'form-horizontal'));
 					?>
 					<ul id="error_message_box" class="text-danger"></ul>
 				

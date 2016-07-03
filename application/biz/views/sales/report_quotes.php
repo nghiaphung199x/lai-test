@@ -99,7 +99,7 @@
                     $info_pack = $this->Pack->get_info($item['pack_id']);
                     $pack_item = $this->Pack_items->get_info($item['pack_id']);
                     $info_sale_pack = $this->Sale->get_sale_pack_by_sale_pack($sale_id, $item['pack_id']);
-                    $info_unit = $this->Unit->get_info($info_sale_pack->unit_pack);
+                    //$info_unit = $this->Unit->get_info($info_sale_pack->unit_pack);
                     $thanh_tien = $item['quantity'] * $item['price'] - $item['quantity'] * $item['price'] * $item['discount'] / 100 + ($item['quantity'] * $item['price'] - $item['quantity'] * $item['price'] * $item['discount'] / 100) * $item['taxes'] / 100;
                     $str .= "<tr>";
                     $str .= "<td style='text-align: center; border: 1px solid #000000; padding: 10px 5px'>" . $item['line'] . "</td>";
@@ -117,7 +117,7 @@
                         $str .= "<img src='" . base_url('packs/' . $info_pack->images) . "' style='width:45px; height:45px'/>";
                     }
                     $str .= "</td>";
-                    $str .= "<td style='border: 1px solid #000000; padding: 10px 5px'>" . $info_unit->name . "</td>";
+                    $str .= "<td style='border: 1px solid #000000; padding: 10px 5px'>" . 'NAME' . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . format_quantity($item['quantity']) . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . number_format($item['price']) . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . number_format($item['discount']) . "</td>";
@@ -128,7 +128,7 @@
                 } else {
                     $info_item = $this->Item->get_info($item['item_id']);
                     $info_sale_item = $this->Sale->get_sale_item_by_sale_item($sale_id, $item['item_id']);
-                    $info_unit = $this->Unit->get_info($info_sale_item->unit_item);
+                    //$info_unit = $this->Unit->get_info($info_sale_item->unit_item);
                     $thanh_tien = $item['quantity'] * ($item['unit'] == 'unit_from' ? $item['price_rate'] : $item['price']) - $item['quantity'] * ($item['unit'] == 'unit_from' ? $item['price_rate'] : $item['price']) * $item['discount'] / 100 + ($item['quantity'] * ($item['unit'] == 'unit_from' ? $item['price_rate'] : $item['price']) - $item['quantity'] * ($item['unit'] == 'unit_from' ? $item['price_rate'] : $item['price']) * $item['discount'] / 100) * $item['taxes'] / 100;
                     $str .= "<tr>";
                     $str .= "<td style='text-align: center; border: 1px solid #000000; padding: 10px 5px'>" . $item['line'] . "</td>";
@@ -139,7 +139,7 @@
                         $str .= "<img src='" . base_url('item/' . $info_item->images) . "' style='width:45px; height:45px'/>";
                     }
                     $str .= "</td>";
-                    $str .= "<td style='border: 1px solid #000000; padding: 10px 5px'>" . $info_unit->name . "</td>";
+                    $str .= "<td style='border: 1px solid #000000; padding: 10px 5px'>" . 'NAME' . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . format_quantity($item['quantity']) . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . number_format(($item['unit'] == 'unit_from' ? $item['price_rate'] : $item['price'])) . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . number_format($item['discount']) . "</td>";
@@ -153,7 +153,7 @@
             foreach ($arr_service as $line => $item) {
                 $info_item = $this->Item->get_info($item['item_id']);
                 $info_sale_item = $this->Sale->get_sale_item_by_sale_item($sale_id, $item['item_id']);
-                $info_unit = $this->Unit->get_info($info_sale_item->unit_item);
+                //$info_unit = $this->Unit->get_info($info_sale_item->unit_item);
                 $thanh_tien = $item['quantity'] * $item['price'] - $item['quantity'] * $item['price'] * $item['discount'] / 100 + ($item['quantity'] * $item['price'] - $item['quantity'] * $item['price'] * $item['discount'] / 100) * $item['taxes'] / 100;
                 $str .= "<tr>";
                 $str .= "<td style='text-align: center; border: 1px solid #000000; padding: 10px 5px'>" . $item['line'] . "</td>";
@@ -164,7 +164,7 @@
                     $str .= "<img src='" . base_url('item/' . $info_item->images) . "' style='width:45px; height:45px'/>";
                 }
                 $str .= "</td>";
-                $str .= "<td style='border: 1px solid #000000; padding: 10px 5px'>" . $info_unit->name . "</td>";
+                $str .= "<td style='border: 1px solid #000000; padding: 10px 5px'>" . 'NAME' . "</td>";
                 $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . format_quantity($item['quantity']) . "</td>";
                 $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . number_format($item['price']) . "</td>";
                 $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . number_format($item['discount']) . "</td>";
@@ -179,7 +179,7 @@
                     $info_pack = $this->Pack->get_info($item['pack_id']);
                     $pack_item = $this->Pack_items->get_info($item['pack_id']);
                     $info_sale_pack = $this->Sale->get_sale_pack_by_sale_pack($sale_id, $item['pack_id']);
-                    $info_unit = $this->Unit->get_info($info_sale_pack->unit_pack);
+                    //$info_unit = $this->Unit->get_info($info_sale_pack->unit_pack);
                     $thanh_tien = $item['quantity'] * $item['price'] - $item['quantity'] * $item['price'] * $item['discount'] / 100 + ($item['quantity'] * $item['price'] - $item['quantity'] * $item['price'] * $item['discount'] / 100) * $item['taxes'] / 100;
                     $str .= "<tr>";
                     $str .= "<td style='text-align: center; border: 1px solid #000000; padding: 10px 5px'>" . $item['line'] . "</td>";
@@ -197,7 +197,7 @@
                         $str .= "<img src='" . base_url('packs/' . $info_pack->images) . "' style='width:45px; height:45px'/>";
                     }
                     $str .= "</td>";
-                    $str .= "<td style='border: 1px solid #000000; padding: 10px 5px'>" . $info_unit->name . "</td>";
+                    $str .= "<td style='border: 1px solid #000000; padding: 10px 5px'>" . 'NAME' . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . format_quantity($item['quantity']) . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . number_format($item['price']) . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . number_format($item['discount']) . "</td>";
@@ -208,7 +208,7 @@
                 } else {
                     $info_item = $this->Item->get_info($item['item_id']);
                     $info_sale_item = $this->Sale->get_sale_item_by_sale_item($sale_id, $item['item_id']);
-                    $info_unit = $this->Unit->get_info($info_sale_item->unit_item);
+                    //$info_unit = $this->Unit->get_info($info_sale_item->unit_item);
                     $thanh_tien = $item['quantity'] * ($item['unit'] == 'unit_from' ? $item['price_rate'] : $item['price']) - $item['quantity'] * ($item['unit'] == 'unit_from' ? $item['price_rate'] : $item['price']) * $item['discount'] / 100 + ($item['quantity'] * ($item['unit'] == 'unit_from' ? $item['price_rate'] : $item['price']) - $item['quantity'] * ($item['unit'] == 'unit_from' ? $item['price_rate'] : $item['price']) * $item['discount'] / 100) * $item['taxes'] / 100;
                     $str .= "<tr>";
                     $str .= "<td style='text-align: center; border: 1px solid #000000; padding: 10px 5px'>" . $item['line'] . "</td>";
@@ -219,7 +219,7 @@
                         $str .= "<img src='" . base_url('item/' . $info_item->images) . "' style='width:45px; height:45px'/>";
                     }
                     $str .= "</td>";
-                    $str .= "<td style='border: 1px solid #000000; padding: 10px 5px'>" . $info_unit->name . "</td>";
+                    $str .= "<td style='border: 1px solid #000000; padding: 10px 5px'>" . 'NAME' . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . format_quantity($item['quantity']) . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . number_format(($item['unit'] == 'unit_from' ? $item['price_rate'] : $item['price'])) . "</td>";
                     $str .= "<td style='text-align: right; border: 1px solid #000000; padding: 10px 5px'>" . number_format($item['discount']) . "</td>";
@@ -235,7 +235,8 @@
         $str .= "<td colspan='5' style='text-align: right; border: 1px solid #000000; padding: 10px 5px; font-weight: bold'>" . number_format($total) . "</td>";
         $str .= "</tr>";
         $str .= "</table>";
-        $str .= "<p>Tổng giá trị (Bằng chữ): <strong><em>" . $this->Cost->get_string_number($total) . "</em></strong></p>";
+//         $str .= "<p>Tổng giá trị (Bằng chữ): <strong><em>" . $this->Cost->get_string_number($total) . "</em></strong></p>";
+        $str .= "<p>Tổng giá trị (Bằng chữ): <strong><em>" . $total . "</em></strong></p>";
         $info_sale = $this->Sale->get_info_sale_order($sale_id);
         $d = $info_sale->date_debt != '0000-00-00' ? date('d', strtotime($info_sale->date_debt)) : '...';
         $m = $info_sale->date_debt != '0000-00-00' ? date('m', strtotime($info_sale->date_debt)) : '...';
@@ -264,6 +265,7 @@
         $content = str_replace('{MONTH}', $m, $content);
         $content = str_replace('{YEAR}', $y, $content);
         echo $content;
+       
         ?>
     </body>
 </html>

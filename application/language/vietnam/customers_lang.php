@@ -88,4 +88,26 @@ $lang['customers_sms_delete_msg_frs'] = 'Đã xóa';
 $lang['customers_sms_delete_msg_ed'] = 'SMS !';
 $lang['customers_sms_delete_msg_confrim'] = 'Bạn muốn xóa SMS này?';
 
+$lang['common_no_mail_to_display'] = 'Không có dữ liệu mail';
+$lang['customers_mail_new'] = 'Thêm mới mail';
+$lang['customers_mail_edit'] = 'Sửa mail';
+$lang['customers_manage_mail_replate_info'] = 'Thông tin các từ thay thế';
+$lang['customers_manage_mail_title'] = 'Tiêu đề gửi mail';
+$lang['customers_manage_mail_content'] = 'Nội dung gửi mail';
+$lang['customers_mail_menu_link'] = 'Quản lý mail';
+$lang['customers_mail_delete_msg_confrim'] = 'Bạn muốn xóa Email này?';
+$lang['customers_mail_send'] = 'Gửi Email';
+$lang['customers_mail_template_list'] = 'Danh sách mail template';
+$lang['customers_mail_selected_template'] = 'Vui lòng lựa chọn mail template để gửi!';
+$lang['customers_mail_must_selected'] = 'Vui lòng lựa chọn khách hàng để gửi mail!';
+$lang['customers_mail_send_mail'] = 'Gửi mail tạm';
+$lang['customers_mail_delete_all_temp'] = 'Xóa tất cả';
+$lang['customers_mail_delete_err_mail_auto'] = 'Lỗi! Không được xóa mail tempalte config tự động';
+$lang['customers_mail_not_send'] = 'Không gửi được mail';
+$lang['customers_mail_send_success'] = 'Đã gửi mail thành công!';
+$lang['customers_mail_add_mail_temp'] = 'Thêm vào DS mail tạm';
+$lang['customers_mail_required_title'] = 'Bạn phải nhập tiêu đề mail';
+$lang['customers_mail_required_content'] = 'Bạn phải nhập nội dung mail';
+
+
 ?>

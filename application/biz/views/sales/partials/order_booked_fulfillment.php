@@ -3,35 +3,39 @@
 		display: block;
 		overflow: hidden;
 		position: relative;
-                height: auto; width: 255px;
+                height: auto; width: 245px;
                 font-family: Arial;
-		font-size: 8px !important;
+		font-size: 7px !important;
+                line-height: 17px !important;
 	}
 	#pdf_logo  {
 		text-align: center;
-                width: 255px;
+                width: 245px;
 	}
+        #pdf_logo img{
+            width: 110px;
+        }
 	#company_name {
 		text-transform: uppercase;
 		font-weight: bold;
 		color: #002FC2;
-                width: 255px;
+                width: 245px;
                 text-align: center;
-                font-size: 8px;
+                font-size: 7px;
 	}
 	#pdf_content span {
 		color: #002FC2;
 	}
 	#pdf_title {
-		width: 255px;
+		width: 245px;
 		text-align: center;
 		text-transform: uppercase;
 		font-weight: bold;
-		font-size: 8px;
+		font-size: 7px;
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
-		font-size: 12px;
+		font-size: 7px;
 		margin: 10px 0;
 	}
 	#pdf_tbl_items tboby {
@@ -54,11 +58,12 @@
 	}
         #pdf_tbl_items th{
             font-size: 7px !important; 
+			text-align: center !important;
         }
 
 	#pdf_signature {
 		min-height: 50px;
-                width: 255px;
+                width: 245px;
 	}
         #pdf_signature p{
             min-height: 50px !important;
@@ -68,7 +73,7 @@
 		text-align: center;
 	}
 	#pdf_signature lable {
-		font-size: 11px;
+		font-size: 7px;
 		font-weight: bold;
 	}
         .text-left{
@@ -115,7 +120,7 @@
 		margin: 2px 0;
 	}
 	.w150px {
-		width: 255px;
+		width: 245px;
 	}
 	.fontI {
 		font-style: italic;
@@ -135,15 +140,17 @@
         #policy{
                 font-weight: bold;
                 text-align: center;
-                font-size: 8px;
+                font-size: 7px;
                 margin-top: 10px; 
         }
         .text-center{
-            direction: rtl !important;
             text-align: center !important;
         }
         .text-bold{
             font-weight: bold !important;
+        }
+        .text-right{
+            text-align: right;
         }
 
 </style>
@@ -178,21 +185,21 @@
 		<p>Ghi chú: </p>
 		<p>Kho: <?php if ($this->Location->count_all() > 1) { ?><span><?php echo $this->Location->get_info_for_key('name', isset($override_location_id) ? $override_location_id : FALSE); ?></span><?php } ?></p>
 		<p>Địa chỉ kho: <span><?php echo nl2br($this->Location->get_info_for_key('address', isset($override_location_id) ? $override_location_id : FALSE)); ?></span></p>
-		
+                <p class="text-right">Đơn vị: <?php echo $this->config->item('currency_symbol')?></p>
 	</div>	
 	<div class="w100 clb">
 		<table id="pdf_tbl_items" class="w100" style="border-collapse: collapse; margin-top: 10px; ">
 			<tbody>
 				<tr>
-					<th >STT</th>
+                                    <th class="text-center">STT</th>
 					<th   >Mã MH</th>
 					<th   ><?php echo lang('common_item_name'); ?></th>
 					<th   ><?php echo lang('common_quantity_a8'); ?></th>
-                                        <th   ><?php echo lang('common_unit_sales').' ('.$this->config->item('currency_symbol').')'; ?></th>
+                                        <th   ><?php echo lang('common_unit_sales_a8'); ?></th>
 					
 					<th   ><?php echo lang('common_unit_discount_a8').' %';?></th>
                                         <th    class="text-center"><?php echo lang('reports_taxes') .' %'?></th>
-					<th   ><?php echo lang('common_unit_total').' ('.$this->config->item('currency_symbol').')'; ?></th>
+					<th   ><?php echo lang('common_unit_total_a8'); ?></th>
 				</tr>
 
 				<?php
@@ -209,11 +216,11 @@
                                 $amount_money = 0;
 				foreach(array_reverse($cart, true) as $line => $item)
                                 {
-                                    $total_money +=($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100);
+                                    $total_money +=($item['price']*abs($item['cur_quantity'])-$item['price']*abs($item['cur_quantity'])*$item['discount']/100);
 					$stt ++;
 					 if ($item['name'] != lang('sales_store_account_payment') && $item['name'] != lang('common_discount'))
 					 {
-				 		 $number_of_items_sold = $number_of_items_sold + $item['quantity'];
+				 		 $number_of_items_sold = $number_of_items_sold + abs($item['cur_quantity']);
 					 }
 					 
 					$item_number_for_receipt = false;
@@ -242,18 +249,18 @@
 				?>
 
 					<tr>
-						<td><?php echo $stt; ?></td>
+                                            <td class="text-center"><?php echo $stt; ?></td>
                                                 <td><?php echo H($item['product_id']);?></td>
 						<td><?php echo $item['name']; ?><?php if ($item_number_for_receipt){ ?> - <?php echo $item_number_for_receipt; ?><?php } ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
-                                                <td><?php echo to_quantity($item['quantity']); ?></td>
+                                                <td><?php echo to_quantity(abs($item['cur_quantity'])); ?></td>
                                                 <td><?php echo NumberFormatToCurrency($item['price']); ?></td>
 						<td><?php echo to_quantity($item['discount']);?></td>
                                                 <td><?php echo to_quantity($item['tax_included']);?></td>
-                                                <td><?php echo NumberFormatToCurrency($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100); ?></td>
+                                                <td><?php echo NumberFormatToCurrency($item['price']*abs($item['cur_quantity'])-$item['price']*abs($item['cur_quantity'])*$item['discount']/100); ?></td>
 					</tr>
 					<?php if (!$item['description']=="" ||(isset($item['serialnumber']) && $item['serialnumber'] !="") ) {?>
 					<tr>
-						<td colspan="9">
+						<td colspan="8">
 							<?php if(!$item['description']==""){ ?>
 								<div class="invoice-desc"><?php echo $item['description']; ?></div>
 							<?php } ?>
@@ -266,7 +273,7 @@
 					<?php } ?>
 				<?php } ?>
                                         <tr>
-                                            <td class="border-bottom text-bold" colspan="9"><?php echo lang('common_total_money').': '; echo to_currency_no_money(abs($total_money)); ?></td>
+                                            <td class="border-bottom text-bold" colspan="8"><?php echo lang('common_total_money').': '; echo to_currency_no_money(abs($total_money)); ?></td>
                                         </tr>
 				 <?php if ($this->config->item('group_all_taxes_on_receipt')) { ?>
 					<?php 
@@ -277,25 +284,25 @@
 				 	}
 					?>
 					<tr>
-                                            <td colspan="9" class="border-bottom border-top text-bold"><?php echo lang('common_tax').': '; 
+                                            <td colspan="8" class="border-bottom border-top text-bold"><?php echo lang('common_tax').': '; 
                                                 echo to_currency_no_money($total_tax); ?></td>
 					</tr>
 				<?php }else {?>
 					<?php foreach($taxes as $name=>$value) { ?>
 						<tr>
-							<td colspan="9"  class="border-bottom border-top text-bold"><?php echo $name.': '; 
+							<td colspan="8"  class="border-bottom border-top text-bold"><?php echo $name.': '; 
                                                         echo to_currency_no_money($value); ?></td>
 						</tr>
 					<?php }; ?>
 				<?php } ?>
 
 				<tr>
-					<td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('common_total').': ';  echo $this->config->item('round_cash_on_sales') && $is_sale_cash_payment ? to_currency_no_money(round_to_nearest_05($total)) : to_currency_no_money($total); ?></td>
+					<td class="border-bottom border-top text-bold" colspan="8"><?php echo lang('common_total').': ';  echo $this->config->item('round_cash_on_sales') && $is_sale_cash_payment ? to_currency_no_money(round_to_nearest_05($total)) : to_currency_no_money($total); ?></td>
 				</tr>
 
 				<?php foreach($payments as $payment_id => $payment) { ?>
 				<tr>
-					<td class="border-bottom border-top text-bold" colspan="9"><?php if (($is_integrated_credit_sale || sale_has_partial_credit_card_payment()) && ($payment['payment_type'] == lang('common_credit') ||  $payment['payment_type'] == lang('sales_partial_credit'))) { ?>
+					<td class="border-bottom border-top text-bold" colspan="8"><?php if (($is_integrated_credit_sale || sale_has_partial_credit_card_payment()) && ($payment['payment_type'] == lang('common_credit') ||  $payment['payment_type'] == lang('sales_partial_credit'))) { ?>
 						<?php echo $payment['card_issuer']. ': '.$payment['truncated_card']; ?>
 					<?php } else { ?>
 						<?php $splitpayment=explode(':',$payment['payment_type']); echo $splitpayment[0]; ?>
@@ -307,7 +314,7 @@
 					<?php if (strpos($payment['payment_type'], lang('common_giftcard'))!== FALSE) {?>
 						<?php $giftcard_payment_row = explode(':', $payment['payment_type']); ?>
 						<tr>
-							<td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('sales_giftcard_balance') .': ';
+							<td class="border-bottom border-top text-bold" colspan="8"><?php echo lang('sales_giftcard_balance') .': ';
                                                         echo $payment['payment_type'].': ';echo to_currency_no_money($this->Giftcard->get_giftcard_value(end($giftcard_payment_row))); ?></td>
 						</tr>
 					<?php }?>
@@ -315,33 +322,33 @@
 
 				<?php if (isset($customer_balance_for_sale) && $customer_balance_for_sale !== FALSE && !$this->config->item('hide_store_account_balance_on_receipt')) {?>
 					<tr>
-                                            <td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('sales_customer_account_balance').': ';  echo to_currency_no_money($customer_balance_for_sale); ?></td>
+                                            <td class="border-bottom border-top text-bold" colspan="8"><?php echo lang('sales_customer_account_balance').': ';  echo to_currency_no_money($customer_balance_for_sale); ?></td>
 					</tr>
 				<?php } ?>
 
 				<?php if ($this->config->item('enable_customer_loyalty_system') && isset($sales_until_discount) && !$this->config->item('hide_sales_to_discount_on_receipt') && $this->config->item('loyalty_option') == 'simple') {?>
 					<tr>
-						<td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('common_sales_until_discount').': '; echo $sales_until_discount <= 0 ? lang('sales_redeem_discount_for_next_sale') : to_quantity($sales_until_discount); ?></td>
+						<td class="border-bottom border-top text-bold" colspan="8"><?php echo lang('common_sales_until_discount').': '; echo $sales_until_discount <= 0 ? lang('sales_redeem_discount_for_next_sale') : to_quantity($sales_until_discount); ?></td>
 					</tr>
 				<?php } ?>
 				<?php if ($this->config->item('enable_customer_loyalty_system') && isset($customer_points) && !$this->config->item('hide_points_on_receipt') && $this->config->item('loyalty_option') == 'advanced') {?>
 					<tr>
-						<td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('common_points').': '; echo to_quantity($customer_points); ?></td>
+						<td class="border-bottom border-top text-bold" colspan="8"><?php echo lang('common_points').': '; echo to_quantity($customer_points); ?></td>
 					</tr>
 				<?php } ?>
 
 				<?php if ($ref_no) { ?>
 					<tr>
-						<td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('sales_ref_no') .': '; echo lang('sales_ref_no'); ?></td>
+						<td class="border-bottom border-top text-bold" colspan="8"><?php echo lang('sales_ref_no') .': '; echo lang('sales_ref_no'); ?></td>
 					</tr>
 				<?php }
 
 				if (isset($auth_code) && $auth_code) { ?>
 					<tr>
-						<td class="border-bottom border-top text-bold" colspan="9"><?php echo lang('sales_auth_code').': '; echo $auth_code; ?></td>
+						<td class="border-bottom border-top text-bold" colspan="8"><?php echo lang('sales_auth_code').': '; echo $auth_code; ?></td>
 					</tr>
 				<?php } ?>
-                                        <tr ><td colspan="9" style="border-left: none;border-right: none; border-bottom: none;"></td></tr>
+                                        <tr ><td colspan="8" style="border-left: none;border-right: none; border-bottom: none;"></td></tr>
 			</tbody>
 		</table>
 	</div>

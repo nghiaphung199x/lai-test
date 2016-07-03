@@ -363,6 +363,17 @@ $this->load->helper('demo');
 					</div>
 					
 					<div class="form-group">	
+						<?php echo form_label(lang('config_receive_prefix').' :', 'receive_prefix',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+							<?php echo form_input(array(
+								'class'=>'form-control form-inps',
+							'name'=>'receive_prefix',
+							'id'=>'receive_prefix',
+							'value'=>$this->config->item('receive_prefix')));?>
+						</div>
+					</div>
+					
+					<div class="form-group">	
 						<?php echo form_label(lang('config_override_receipt_title').' :', 'override_receipt_title',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label')); ?>
 						<div class="col-sm-9 col-md-9 col-lg-10">
 							<?php echo form_input(array(
@@ -948,7 +959,28 @@ $this->load->helper('demo');
 						</div>
 					</div>
 					
+					<div class="form-group">	
+						<?php echo form_label(lang('config_show_warning_expire_time').' :', 'config_show_warning_expire_time',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+						<?php echo form_checkbox(array(
+							'name'=>'config_show_warning_expire_time',
+							'id'=>'config_show_warning_expire_time',
+							'value'=>'1',
+							'checked'=>$this->config->item('config_show_warning_expire_time')));?>
+							<label for="config_show_warning_expire_time"><span></span></label>
+						</div>
+					</div>
 					
+					<div class="form-group" id="config_expire_time_row">	
+						<?php echo form_label(lang('config_expire_time') .':', 'config_expire_time',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+							<?php echo form_input(array(
+							'name'=>'config_expire_time',
+							'id'=>'config_expire_time',
+							'class'=>'form-control',
+							'value'=>$this->config->item('config_expire_time')));?>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -969,6 +1001,110 @@ $this->load->helper('demo');
 							'value'=>'1',
 							'checked'=>$this->config->item('show_warning_modal_order_sale')));?>
 							<label for="show_warning_modal_order_sale"><span></span></label>
+						</div>
+					</div>
+					
+					<div class="form-group" id="warning_order_sale_config">
+						<div class="col-sm-3 col-md-3 col-lg-2"></div>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+							<div class="col-md-12">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="day_warning_level1" class="col-sm-6 control-label">Thời gian cảnh báo level1:</label>
+										<div class="col-sm-6">
+											<?php echo form_dropdown('day_warning_level1', array(
+											'0'    => 'Quá hạn ',
+											'1'    => '1 Ngày',
+											'2'  => '2 Ngày',
+											'3'  => '3 Ngày',
+											'4'  => '4 Ngày',
+											'5'  => '5 Ngày',
+											'6'  => '6 Ngày',
+											'7'  => '7 Ngày',
+											),
+											$this->config->item('day_warning_level1'), 'class="form-control" id="day_warning_level1"'); ?>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="color_warning_level1" class="col-sm-6 control-label">Màu sắc:</label>
+										<div class="col-sm-6">
+											<?php echo form_input(array(
+											'class'=>'form-control form-inps jscolor',
+											'name'=>'color_warning_level1',
+											'id'=>'color_warning_level1',
+											'value'=>$this->config->item('color_warning_level1')));?>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-12">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="day_warning_level2" class="col-sm-6 control-label">Thời gian cảnh báo level2:</label>
+										<div class="col-sm-6">
+											<?php echo form_dropdown('day_warning_level2', array(
+											'0'    => 'Quá hạn ',
+											'1'    => '1 Ngày',
+											'2'  => '2 Ngày',
+											'3'  => '3 Ngày',
+											'4'  => '4 Ngày',
+											'5'  => '5 Ngày',
+											'6'  => '6 Ngày',
+											'7'  => '7 Ngày',
+											),
+											$this->config->item('day_warning_level2'), 'class="form-control" id="day_warning_level2"'); ?>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="color_warning_level2" class="col-sm-6 control-label">Màu sắc:</label>
+										<div class="col-sm-6">
+											<?php echo form_input(array(
+											'class'=>'form-control form-inps jscolor',
+											'name'=>'color_warning_level2',
+											'id'=>'color_warning_level2',
+											'value'=>$this->config->item('color_warning_level2')));?>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-12">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="day_warning_level3" class="col-sm-6 control-label">Thời gian cảnh báo level3:</label>
+										<div class="col-sm-6">
+											<?php echo form_dropdown('day_warning_level3', array(
+											'0'    => 'Quá hạn ',
+											'1'    => '1 Ngày',
+											'2'  => '2 Ngày',
+											'3'  => '3 Ngày',
+											'4'  => '4 Ngày',
+											'5'  => '5 Ngày',
+											'6'  => '6 Ngày',
+											'7'  => '7 Ngày',
+											),
+											$this->config->item('day_warning_level3'), 'class="form-control" id="day_warning_level3"'); ?>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="color_warning_level3" class="col-sm-6 control-label">Màu sắc:</label>
+										<div class="col-sm-6">
+											<?php echo form_input(array(
+											'class'=>'form-control form-inps jscolor',
+											'name'=>'color_warning_level3',
+											'id'=>'color_warning_level3',
+											'value'=>$this->config->item('color_warning_level3')));?>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				
@@ -1711,6 +1847,38 @@ $this->load->helper('demo');
 //validation and submit handling
 $(document).ready(function()
 {	
+	if($('#show_warning_modal_order_sale').is(':checked'))
+	{
+		$('#warning_order_sale_config').show();
+	} else {
+		$('#warning_order_sale_config').hide();
+	}
+
+	if($('#config_show_warning_expire_time').is(':checked'))
+	{
+		$('#config_expire_time_row').show();
+	} else {
+		$('#config_expire_time_row').hide();
+	}
+
+	$('#config_show_warning_expire_time').change(function(){
+		if($(this).is(':checked')) {
+			
+			$('#config_expire_time_row').show();
+		} else {
+			$('#config_expire_time_row').hide();
+		}
+	});
+	
+	$('#show_warning_modal_order_sale').change(function(){
+		if($(this).is(':checked'))
+		{
+			$('#warning_order_sale_config').show();
+		} else {
+			$('#warning_order_sale_config').hide();
+		}
+	});
+	
 	$(".delete_tier").click(function()
 	{
 		$("#config_form").append('<input type="hidden" name="tiers_to_delete[]" value="'+$(this).data('tier-id')+'" />');

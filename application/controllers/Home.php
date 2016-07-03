@@ -45,9 +45,27 @@ class Home extends Secure_area
 			$data['month_sale'] = $this->sales_widget();
 		}
 		
-		$data['warning_orders'] = $this->Sale->getWarningOrder();
+		$warning_days_level1 = (int) $this->config->item('day_warning_level1');
+		$warning_days_level2 = (int) $this->config->item('day_warning_level2');
+		$warning_days_level3 = (int) $this->config->item('day_warning_level3');
+		
+		$data['warning_orders'] = !$choose_location ? $this->Sale->getWarningOrder(max($warning_days_level1, $warning_days_level2, $warning_days_level3)) : null;
 		
 		$data['show_warning_orders_modal'] = (!$choose_location && $this->config->item('show_warning_modal_order_sale') && !empty($data['warning_orders'])) ? true : false;
+		
+		$data['config_show_warning_expire_time'] = false;
+		if (!$choose_location && $this->config->item('config_show_warning_expire_time')) {
+			$data['config_show_warning_expire_time'] = true;
+			$this->load->model('reports/Inventory_expire_summary');
+			$model = $this->Inventory_expire_summary;
+			$start_date = date('Y-m-d');
+			$end_date = date('Y-m-d', strtotime("+". (int) $this->config->item('config_expire_time') ." days"));
+			$model->setParams(array(
+				'start_date'=>$start_date,
+				'end_date' => $end_date));
+			$data['expire_data'] = $model->getData();
+			$data['config_show_warning_expire_time'] = count($data['expire_data']) ? true : false;
+		}
 		
 		$this->load->helper('demo');
 		$data['can_show_mercury_activate'] = (!is_on_demo_host() && !$this->config->item('mercury_activate_seen')) && !$this->Location->get_info_for_key('enable_credit_card_processing');		

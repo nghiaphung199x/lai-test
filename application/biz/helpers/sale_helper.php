@@ -30,20 +30,22 @@ function sale_has_partial_credit_card_payment()
 
 function getStatusOfDelivery($delivery_date)
 {
-	$status = '';
+	$CI =& get_instance();
+	$warning_days_level1 = (int) $CI->config->item('day_warning_level1');
+	$warning_days_level2 = (int) $CI->config->item('day_warning_level2');
+	$warning_days_level3 = (int) $CI->config->item('day_warning_level3');
+	
 	if( strlen($delivery_date) ) {
 		$current = strtotime(date('Y-m-d'));
 		$delivery_datetime = strtotime($delivery_date);
 		
 		$diff = $delivery_datetime - $current;
-		
-		if( $diff <= 0 )
-		{
-			$status = 'delivery_expire';
-		} elseif ($diff <= (24 * 60 * 60)) {
+		if ($diff <= ($warning_days_level1 * 24 * 60 * 60)) {
 			$status = 'delivery_warning_lv1';
-		} elseif ($diff <= (7 * 24 * 60 * 60)) {
+		} elseif ($diff <= ($warning_days_level2 * 24 * 60 * 60)) {
 			$status = 'delivery_warning_lv2';
+		} elseif ($diff <= ($warning_days_level3 * 24 * 60 * 60)) {
+			$status = 'delivery_warning_lv3';
 		}
 	}
 	return $status;

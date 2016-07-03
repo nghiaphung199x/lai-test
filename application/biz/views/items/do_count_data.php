@@ -1,7 +1,6 @@
 <div class="container-fluid">
 <div class="row register">
 	<div class="col-lg-12 col-md-12 no-padding-left no-padding-right">
-		
 		<?php if ($count_info->status == 'open') { ?>
 			<div class="register-box register-items-form">
 				<div class="item-form">
@@ -52,6 +51,10 @@
 		<div class="col-lg-12 col-md-12 no-padding-left no-padding-right">
 
 		<div class="register-box register-items paper-cut">
+			<div id="total_count_block">
+				<div id="total_count_item">Tổng số mặt hàng: <span><?php echo $totalItems; ?></span></div>
+				<div id="total_count_qty">Tổng số lượng kiểm: <span><?php echo $totalQty; ?></span></div>
+			</div>
 			<div class="register-items-holder table-responsive">
 				<table id="register" class="table table-hover">
 					<thead>
@@ -70,7 +73,8 @@
 						<?php foreach($items_counted as $counted_item) { ?>
 							<tr class="register-item-details">
 								<td><a href="<?php echo site_url('home/view_item_modal').'/'.$counted_item['item_id']; ?>" data-toggle="modal" class="register-item-name count-items" data-target="#myModal"><?php echo H($counted_item['name']).' ('.H($counted_item['category']).')'; ?></a></td>
-								<td class="text-center"><a href="#" id="count" class="xeditable" data-type="text" data-pk="<?php echo $counted_item['item_id']; ?>" data-name="quantity" data-url="<?php echo site_url('items/edit_count_item'); ?>" data-title="<?php echo H(lang('items_edit_count')); ?>"><?php echo to_quantity($counted_item['count']); ?></a></td>
+								<td class="text-center">
+								<a href="#" id="count" class="xeditable" data-type="text" data-pk="<?php echo $counted_item['item_id']; ?>" data-name="quantity" data-url="<?php echo site_url('items/edit_count_item'); ?>" data-title="<?php echo H(lang('items_edit_count')); ?>"><?php echo to_quantity($counted_item['count']); ?></a></td>
 								<td class="text-center"><?php 
 									$measure = $this->Measure->getInfo($counted_item['measure_id']);
 									echo $measure->name;
@@ -134,9 +138,14 @@ $(document).ready(function()
 		});
 	});
 	
-	
 	<?php if ($count_info->status == 'open') { ?>
-	  $('.xeditable').editable();
+	  $('.xeditable').editable({
+	    	success: function(response, newValue) {
+				 // $("#count_container").html(response);
+				 var newTotalQty = parseInt($('#total_count_qty span').text()) + parseInt(newValue) - parseInt($(this).text());
+				 $('#total_count_qty span').text( parseInt(newTotalQty) );
+			}
+	    });
 	 <?php }else { ?>
   	  $('.xeditable').click(function(e){e.preventDefault();});
 	 	

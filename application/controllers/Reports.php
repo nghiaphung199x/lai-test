@@ -4921,7 +4921,11 @@ class Reports extends Secure_area
 		$this->check_action_permission('view_inventory_reports');
 		$this->load->model('reports/Inventory_expire_summary');
 		$model = $this->Inventory_expire_summary;
-		$model->setParams(array('start_date'=>$start_date,'end_date' => $end_date, 'export_excel' => $export_excel, 'offset'=>$offset));
+		$model->setParams(array(
+			'start_date'=>$start_date,
+			'end_date' => $end_date, 
+			'export_excel' => $export_excel, 
+			'offset'=>$offset));
 		
 		$config = array();
 		$config['base_url'] = site_url("reports/expiring_inventory/$start_date/$end_date/$export_excel");
@@ -4957,7 +4961,7 @@ class Reports extends Secure_area
 				$data_row[] = array('data'=>to_currency($row['cost_price']), 'align'=> 'right');
 			}
 			$data_row[] = array('data'=>to_currency($row['unit_price']), 'align'=> 'right');
-			$data_row[] = array('data'=>to_quantity($row['quantity']), 'align'=> 'left');
+			// $data_row[] = array('data'=>to_quantity($row['quantity']), 'align'=> 'left');
 			$data_row[] = array('data'=>to_quantity($row['reorder_level']), 'align'=> 'left');
 			
 			$tabular_data[] = $data_row;				
