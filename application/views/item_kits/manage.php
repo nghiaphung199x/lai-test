@@ -162,6 +162,13 @@ function init_table_sorting()
 						<i class="ion-android-more-horizontal"></i>
 					</button>
 					<ul class="dropdown-menu" role="menu">
+                        <li>
+                            <?php echo anchor("$controller_name/excel_import/",
+                            '<span class="">'.lang("common_excel_import").'</span>',
+                            array('class'=>' ',
+                                'title'=>lang('common_excel_import')));
+                            ?>
+                        </li>
 						<li class="">
 							<?php if ($this->Employee->has_module_action_permission('items', 'manage_categories', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
 								<?php echo anchor("items/categories",

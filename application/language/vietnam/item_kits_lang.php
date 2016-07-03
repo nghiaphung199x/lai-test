@@ -30,4 +30,11 @@ $lang['item_kits_tax_2_percent'] = '% thuế 2';
 $lang['item_kits_tax_2_cummulative'] = 'Thuế lũy tiến (Thuế thu nhập/ Giá trị tài sản)';
 $lang['item_kits_available_qty'] = 'Số lượng khả dụng';
 $lang['item_kits_attribute_set'] = 'Chọn bộ thuộc tính';
+$lang['item_kits_new_items_import'] = 'Tải biểu mẫu tệp Excel';
+$lang['item_kits_update_items_import'] = 'Tải biểu mẫu tệp Excel, có sẵn dữ liệu';
+$lang['item_kits_step_1_desc'] = 'Tải tệp excel để thêm mới/ sửa gói sản phẩm';
+$lang['item_kits_step_2_desc'] = 'Tải lên tệp excel ở bước 1, để hoàn thành việc thêm mới/ sửa gói sản phẩm';
+$lang['item_kits_step_3_desc'] = 'Hiện kết quả tải tệp excel ở bước 2, lọc danh sách cần thêm và thực hiện tải';
+$lang['item_kits_duplicate_item_kit'] = 'Lỗi không thể lưu thẻ gói sản phẩm';
+$lang['item_kits_import_success'] = 'Tải về các gói sản phẩm đã thành công';
 ?>

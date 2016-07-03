@@ -29,4 +29,11 @@ $lang['item_kits_tax_2_name'] = 'Tax 2 Name';
 $lang['item_kits_tax_2_percent'] = 'Tax 2 Name Percent';
 $lang['item_kits_tax_2_cummulative'] = 'Tax 2 Cumulative';
 $lang['item_kits_attribute_set'] = 'Select attribute set';
+$lang['item_kits_new_items_import'] = 'Download Excel Template for NEW Gift Cards';
+$lang['item_kits_update_items_import'] = 'Download Template for EXISTING Gift Cards';
+$lang['item_kits_step_1_desc'] = 'Download excel template file to add/update gift cards';
+$lang['item_kits_step_2_desc'] = 'Upload file from step 1 to complete your gift cards additions/updates';
+$lang['item_kits_step_3_desc'] = 'Show results from step 2 then filters result and do import';
+$lang['item_kits_duplicate_giftcard'] = 'Error unable to save gift card; already exists';
+$lang['item_kits_import_success'] = 'Import of gift cards was a success';
 ?>

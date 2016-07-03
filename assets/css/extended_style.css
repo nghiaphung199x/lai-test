@@ -34,3 +34,7 @@ label.error { font-weight: normal; color: red; }
 }
 .sortable {padding: 10px; border: 1px dashed #ddd; background-color: #f8f8f8 }
 .sortable, .sortable li {list-style-type: none}
+.ajax-result table thead th { background-color: #f3f3f3 }
+.ajax-result table td, .ajax-result table th { padding: 6px; }
+.ajax-result {padding: 20px;}
+.ajax-result .form-control {margin-bottom: 0px}

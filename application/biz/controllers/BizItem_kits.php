@@ -287,5 +287,90 @@ class BizItem_kits extends Item_kits
 		}
 	
 	}
+
+    /**
+     * @Loads the form for excel import
+     */
+    function excel_import()
+    {
+        $this->check_action_permission('add_update');
+        $this->load->view("item_kits/excel_import", null);
+    }
+
+    /**
+     * @Loads the form for excel import
+     */
+    function do_excel_import()
+    {
+        $this->check_action_permission('add_update');
+        $this->load->helper('demo');
+        if (is_on_demo_host()) {
+            $msg = lang('common_excel_import_disabled_on_demo');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        }
+        if ($_FILES['file_path']['error'] != UPLOAD_ERR_OK) {
+            $msg = lang('common_excel_import_failed');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        } else {
+            if (($handle = fopen($_FILES['file_path']['tmp_name'], "r")) !== FALSE) {
+                $this->load->helper('spreadsheet');
+                $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
+                $end_column = $objPHPExcel->setActiveSheetIndex(0)->getHighestColumn();
+                $data['sheet'] = $objPHPExcel->getActiveSheet();
+                $data['num_rows'] = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
+                $data['columns'] = range('A', $end_column);
+                $data['fields'] = $this->Item_kit->db->list_fields('item_kits');
+                $html = $this->load->view('item_kits/import/result', $data, true);
+                $result = array('success' => true, 'message' => lang('item_kits_import_success'), 'html' => $html);
+                echo json_encode($result);
+                return;
+            } else {
+                echo json_encode(array('success' => false, 'message' => lang('common_upload_file_not_supported_format')));
+                return;
+            }
+        }
+        $result = array('success' => true, 'message' => lang('item_kits_import_success'));
+        echo json_encode($result);
+    }
+
+    /*
+     * Import Real Data
+     * */
+    public function action_import_data() {
+        $this->check_action_permission('add_update');
+        $this->load->helper('demo');
+        if (is_on_demo_host()) {
+            $msg = lang('common_excel_import_disabled_on_demo');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        }
+        $columns = $this->input->post('columns');
+        $rows = $this->input->post('rows');
+        $selected_rows = $this->input->post('selected_rows');
+        $stored_rows = 0;
+        foreach ($rows as $index => $row) {
+            if (!isset($selected_rows[$index])) {
+                continue;
+            }
+            $data = array();
+            foreach ($columns as $excel_column => $field_column) {
+                if (!empty($field_column) && !empty($row[$excel_column])) {
+                    $data[$field_column] = $row[$excel_column];
+                }
+            }
+            try {
+                $this->Item_kit->save($data);
+                if (!empty($data['item_kit_id'])) {
+                    $stored_rows++;
+                }
+            } catch (Exception $ex) {
+                continue;
+            }
+        }
+        $msg = $stored_rows . ' ' . lang('common_record_stored');
+        echo json_encode(array('success' => true, 'message' => $msg));
+    }
 }
 ?>
