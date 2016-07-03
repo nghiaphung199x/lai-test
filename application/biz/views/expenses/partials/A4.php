@@ -239,7 +239,7 @@ table th, table td {
 		<p>Người nộp tiền: <?php echo $receiver->first_name . ' ' . $receiver->last_name; ?></p>
 		<p>Địa chỉ: <?php echo nl2br($this->Location->get_info_for_key('address', isset($override_location_id) ? $override_location_id : FALSE)); ?></p>
 		<p>Lý do nộp: <?php echo $expense_info->expense_description; ?></p>
-		<p>Số tiền: <?php echo NumberFormatToCurrency($expense_info->expense_amount); ?> <?php echo $this->config->item('currency_symbol')?></p>
+		<p>Số tiền: <?php echo NumberFormatToCurrency($expense_info->expense_amount); ?> <?php echo $this->config->item('currency_symbol'); ?></p>
 		<p>
 			Số tiền viết bằng chữ: <span><?php echo getStringNumber((int) $expense_info->expense_amount);?></span>
 		</p>

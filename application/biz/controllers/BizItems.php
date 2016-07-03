@@ -30,7 +30,7 @@ class BizItems extends Items
 		$bizExcel = new BizExcel('A1.xlsx');
 		$excelContent = $bizExcel->setNumberRowStartBody(10)->setHeaderOfBody($this->getHeaderForNotAuditItems())
 								->setDataExcel($this->formattedNotAuditItems($notAuditedItems))
-								->buildExtraData($this->getExtraDataForNotAuditItems())
+								->setExtraData($this->getExtraDataForNotAuditItems())
 								->generateFile(false);
 		$this->load->helper('download');
 		force_download('not_audit_items.xlsx', $excelContent);
