@@ -38,6 +38,8 @@ class BizExpenses extends Expenses
 	}
 	
 	public function reprint($id = 0) {
+		$data = [];
+		$data['expense_info'] = $this->Expense->get_info($id);
 		$typeOfPrint = 'A4.php';
 		$data['print_block_html'] = $this->load->view('expenses/partials/' . $typeOfPrint, $data, TRUE);
 		$this->load->view('expenses/reprint', $data);
