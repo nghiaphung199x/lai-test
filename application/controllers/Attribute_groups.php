@@ -243,59 +243,45 @@ class Attribute_groups extends Secure_area implements Idata_controller
     }
 
     /**
-     * @imports gift cards
-     * imports as new if gift card number is not found
+     * @imports attribute_groups
+     * imports as new if attribute_group name is not found
      */
     function do_excel_import()
     {
         $this->load->helper('demo');
-
         if (is_on_demo_host()) {
             $msg = lang('common_excel_import_disabled_on_demo');
             echo json_encode(array('success' => false, 'message' => $msg));
             return;
         }
+        $employee_info = $this->Employee->get_logged_in_employee_info();
 
         set_time_limit(0);
         $this->check_action_permission('add_update');
         $this->db->trans_start();
 
-        if ($_FILES['file_id']['error'] != UPLOAD_ERR_OK) {
+        $msg = 'do_excel_import';
+        $failCodes = array();
+        if ($_FILES['file_path']['error'] != UPLOAD_ERR_OK) {
             $msg = lang('common_excel_import_failed');
             echo json_encode(array('success' => false, 'message' => $msg));
             return;
         } else {
-            if (($handle = fopen($_FILES['file_id']['tmp_name'], "r")) !== FALSE) {
+            if (($handle = fopen($_FILES['file_path']['tmp_name'], "r")) !== FALSE) {
                 $this->load->helper('spreadsheet');
-                $objPHPExcel = file_to_obj_php_excel($_FILES['file_id']['tmp_name']);
+                $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
                 $sheet = $objPHPExcel->getActiveSheet();
                 $num_rows = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
 
                 //Loop through rows, skip header row
                 for ($k = 2; $k <= $num_rows; $k++) {
                     $name = $sheet->getCellByColumnAndRow(0, $k)->getValue();
-                    if (!$name) {
-                        $name = '';
-                    }
-
                     $description = $sheet->getCellByColumnAndRow(1, $k)->getValue();
-
-                    $attribute_group_id = $this->Attribute_group->get_attribute_group_id($name);
-
-                    $current_attribute_group = $this->Attribute_group->get_info($attribute_group_id);
-                    $old_attribute_group_value = $current_attribute_group->value;
-
-                    //If we don't have a gift card number skip the import
-                    if (!$name) {
-                        continue;
-                    }
-
                     $attribute_group_data = array(
                         'name' => $name,
-                        'description' => $description
+                        'description' => $description,
                     );
-
-                    if (!$this->Attribute_group->save($attribute_group_data, $attribute_group_id ? $attribute_group_id : FALSE)) {
+                    if (!$this->Attribute_group->save($attribute_group_data, FALSE)) {
                         echo json_encode(array('success' => false, 'message' => lang('attribute_groups_duplicate_attribute_group')));
                         return;
                     }

@@ -207,7 +207,7 @@ class Attributes extends Secure_area implements Idata_controller
 
     function _excel_get_header_row()
     {
-        return array(lang('attributes_field_name'), lang('attributes_field_description'));
+        return array(lang('attributes_field_code'), lang('attributes_field_name'), lang('attributes_field_description'));
     }
 
     function excel_export()
@@ -220,6 +220,7 @@ class Attributes extends Secure_area implements Idata_controller
         $rows[] = $this->_excel_get_header_row();
         foreach ($data as $r) {
             $row = array(
+                $r->code,
                 $r->name,
                 $r->description,
             );
@@ -243,61 +244,75 @@ class Attributes extends Secure_area implements Idata_controller
     }
 
     /**
-     * @imports gift cards
-     * imports as new if gift card number is not found
+     * @imports attributes
+     * imports as new if attribute name is not found
      */
     function do_excel_import()
     {
         $this->load->helper('demo');
-
         if (is_on_demo_host()) {
             $msg = lang('common_excel_import_disabled_on_demo');
             echo json_encode(array('success' => false, 'message' => $msg));
             return;
         }
+        $employee_info = $this->Employee->get_logged_in_employee_info();
 
         set_time_limit(0);
         $this->check_action_permission('add_update');
         $this->db->trans_start();
 
-        if ($_FILES['file_id']['error'] != UPLOAD_ERR_OK) {
+        $msg = 'do_excel_import';
+        $failCodes = array();
+        if ($_FILES['file_path']['error'] != UPLOAD_ERR_OK) {
             $msg = lang('common_excel_import_failed');
             echo json_encode(array('success' => false, 'message' => $msg));
             return;
         } else {
-            if (($handle = fopen($_FILES['file_id']['tmp_name'], "r")) !== FALSE) {
+            if (($handle = fopen($_FILES['file_path']['tmp_name'], "r")) !== FALSE) {
                 $this->load->helper('spreadsheet');
-                $objPHPExcel = file_to_obj_php_excel($_FILES['file_id']['tmp_name']);
+                $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
                 $sheet = $objPHPExcel->getActiveSheet();
                 $num_rows = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
 
                 //Loop through rows, skip header row
                 for ($k = 2; $k <= $num_rows; $k++) {
-                    $name = $sheet->getCellByColumnAndRow(0, $k)->getValue();
-                    if (!$name) {
-                        $name = '';
+                    $attribute_code = $sheet->getCellByColumnAndRow(0, $k)->getValue();
+                    if (!$attribute_code) {
+                        $attribute_code = '';
                     }
 
-                    $description = $sheet->getCellByColumnAndRow(1, $k)->getValue();
+                    $name = $sheet->getCellByColumnAndRow(1, $k)->getValue();
 
-                    $attribute_id = $this->Attribute->get_attribute_id($name);
+                    $attribute_id = $this->Attribute->get_attribute_id($attribute_code);
 
                     $current_attribute = $this->Attribute->get_info($attribute_id);
-                    $old_attribute_value = $current_attribute->value;
+                    $old_attribute_name = $current_attribute->name;
 
-                    //If we don't have a gift card number skip the import
-                    if (!$name) {
+                    $description = $sheet->getCellByColumnAndRow(2, $k)->getValue();
+
+                    //If we don't have a attribute code skip the import
+                    if (!$attribute_code) {
                         continue;
                     }
 
                     $attribute_data = array(
+                        'code' => $attribute_code,
                         'name' => $name,
-                        'description' => $description
+                        'description' => $description,
                     );
 
                     if (!$this->Attribute->save($attribute_data, $attribute_id ? $attribute_id : FALSE)) {
                         echo json_encode(array('success' => false, 'message' => lang('attributes_duplicate_attribute')));
                         return;
+                    }
+
+                    $keyword = '';
+                    if ($attribute_id) {
+                        $keyword = $name > $old_attribute_name ? lang('attributes_added') : lang('attributes_removed');
+                    }
+
+                    if ($old_attribute_name != $attribute_data['name']) {
+                        //$this->Attribute->log_modification(array("number" => $attribute_data['attribute_code'], "person" => $employee_info->first_name . " " . $employee_info->last_name, "new_name" => $attribute_data['name'], 'keyword' => $keyword, 'old_name' => $old_attribute_name, "type" => $attribute_id ? 'update' : 'create'));
                     }
                 }
             } else {

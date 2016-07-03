@@ -159,15 +159,14 @@ class Attribute_sets extends Secure_area implements Idata_controller
 
         /* Get All Data Submit */
         $data = $this->input->post('attribute_set');
-        $permission_data = $this->input->post('permissions') != false ? $this->input->post('permissions') : array();
-        $permission_action_data = $this->input->post('permissions_actions') != false ? $this->input->post('permissions_actions') : array();
 
         /* Get Redirect Code */
         $redirect_code = $this->input->post('redirect_code');
 
-        if ($data['attribute_set_id'] = $this->Attribute_set->save($data, $attribute_set_id, $permission_data, $permission_action_data)) {
+        if ($data['attribute_set_id'] = $this->Attribute_set->save($data, $attribute_set_id)) {
             /* New Attribute_set */
             if (!$attribute_set_id) {
+                $attribute_set_id = $data['attribute_set_id'];
                 $success_message = lang('attribute_sets_created_successful') . ' [' . $data['name'] . ']';
                 echo json_encode(array('success' => true, 'message' => $success_message, 'attribute_set_id' => $data['attribute_set_id'], 'redirect_code' => $redirect_code));
             } else {
@@ -179,11 +178,11 @@ class Attribute_sets extends Secure_area implements Idata_controller
 
             /* Combine attributes */
             $attribute_groups = $this->input->post('attribute');
-            $this->Attribute_set->clear_combined($data['attribute_set_id']);
+            $this->Attribute_set->clear_combined($attribute_set_id);
             foreach ($attribute_groups as $attribute_group_id => $attribute_ids) {
                 if (!empty($attribute_group_id)) {
                     foreach ($attribute_ids as $attribute_id) {
-                        $this->Attribute_set->combine($data['attribute_set_id'], $attribute_group_id, $attribute_id);
+                        $this->Attribute_set->combine($attribute_set_id, $attribute_group_id, $attribute_id);
                     }
                 }
             }
@@ -271,56 +270,61 @@ class Attribute_sets extends Secure_area implements Idata_controller
     }
 
     /**
-     * @imports gift cards
-     * imports as new if gift card number is not found
+     * @imports attribute_sets
+     * imports as new if attribute_set name is not found
      */
     function do_excel_import()
     {
         $this->load->helper('demo');
-
         if (is_on_demo_host()) {
             $msg = lang('common_excel_import_disabled_on_demo');
             echo json_encode(array('success' => false, 'message' => $msg));
             return;
         }
+        $employee_info = $this->Employee->get_logged_in_employee_info();
 
         set_time_limit(0);
         $this->check_action_permission('add_update');
         $this->db->trans_start();
 
-        if ($_FILES['file_id']['error'] != UPLOAD_ERR_OK) {
+        $msg = 'do_excel_import';
+        $failCodes = array();
+        if ($_FILES['file_path']['error'] != UPLOAD_ERR_OK) {
             $msg = lang('common_excel_import_failed');
             echo json_encode(array('success' => false, 'message' => $msg));
             return;
         } else {
-            if (($handle = fopen($_FILES['file_id']['tmp_name'], "r")) !== FALSE) {
+            if (($handle = fopen($_FILES['file_path']['tmp_name'], "r")) !== FALSE) {
                 $this->load->helper('spreadsheet');
-                $objPHPExcel = file_to_obj_php_excel($_FILES['file_id']['tmp_name']);
+                $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
                 $sheet = $objPHPExcel->getActiveSheet();
                 $num_rows = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
 
                 //Loop through rows, skip header row
                 for ($k = 2; $k <= $num_rows; $k++) {
-                    $name = $sheet->getCellByColumnAndRow(0, $k)->getValue();
-                    if (!$name) {
-                        $name = '';
+                    $attribute_set_code = $sheet->getCellByColumnAndRow(0, $k)->getValue();
+                    if (!$attribute_set_code) {
+                        $attribute_set_code = '';
                     }
 
-                    $description = $sheet->getCellByColumnAndRow(1, $k)->getValue();
+                    $name = $sheet->getCellByColumnAndRow(1, $k)->getValue();
 
-                    $attribute_set_id = $this->Attribute_set->get_attribute_set_id($name);
+                    $attribute_set_id = $this->Attribute_set->get_attribute_set_id($attribute_set_code);
 
                     $current_attribute_set = $this->Attribute_set->get_info($attribute_set_id);
-                    $old_attribute_set_value = $current_attribute_set->value;
+                    $old_attribute_set_name = $current_attribute_set->name;
 
-                    //If we don't have a gift card number skip the import
-                    if (!$name) {
+                    $description = $sheet->getCellByColumnAndRow(2, $k)->getValue();
+
+                    //If we don't have a attribute_set code skip the import
+                    if (!$attribute_set_code) {
                         continue;
                     }
 
                     $attribute_set_data = array(
+                        'code' => $attribute_set_code,
                         'name' => $name,
-                        'description' => $description
+                        'description' => $description,
                     );
 
                     if (!$this->Attribute_set->save($attribute_set_data, $attribute_set_id ? $attribute_set_id : FALSE)) {

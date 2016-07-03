@@ -114,7 +114,9 @@ class Attribute_set extends CI_Model
 
         /* Update Attribute_set */
         $this->db->where('id', $id);
-        $success = $this->db->update('attribute_sets', $data);
+        if ($this->db->update('attribute_sets', $data)) {
+            return $id;
+        }
         return $success;
     }
 

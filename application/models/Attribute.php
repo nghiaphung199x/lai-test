@@ -456,6 +456,23 @@ class Attribute extends CI_Model
         return $this;
     }
 
+    /*
+        Get an attribute id given a code
+    */
+    function get_attribute_id($code, $deleted = false)
+    {
+        $this->db->from('attributes');
+        $this->db->where('code', $code);
+        if (!$deleted) {
+            $this->db->where('deleted', 0);
+        }
+        $query = $this->db->get();
+        if ($query->num_rows() == 1) {
+            return $query->row()->id;
+        }
+        return false;
+    }
+
     public function get_attribute_by_code($code)
     {
         $this->db->select('*');
