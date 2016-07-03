@@ -32,7 +32,7 @@ $lang['expenses_cleanup_old_expenses'] = 'Xóa chi phí cũ';
 $lang['expenses_cleanup_sucessful'] = 'Xóa chi phí thành công';
 $lang['expenses_confirm_cleanup'] = 'Bạn có chắc chắn bạn muốn xóa chi phí';
 
-
+$lang['expenses_reprint'] = 'In hóa đơn chi phí';
 
 
 

@@ -18,6 +18,8 @@ class BizExcel {
 	
 	protected $dataExcel = array();
 	
+	protected $dataExtra = [];
+	
 	protected $headerOfBody = [];
 	
 	public function __construct($formattedFile = '') {
@@ -43,9 +45,18 @@ class BizExcel {
 		if (!empty($newFileName)) {
 			$this->newFileName = $newFileName;
 		}
-		$this->buildHeaderOfTable();
 		
-		$this->buildBobyOfTable();
+		if (!empty($this->headerOfBody)) {
+			$this->buildHeaderOfTable();
+		}
+		
+		if (!empty($this->dataExcel)) {
+			$this->buildBobyOfTable();
+		}
+		
+		if (!empty($this->dataExtra)) {
+			$this->buildExtraData();
+		}
 		
 		$objWriter = PHPExcel_IOFactory::createWriter($this->oPHPExcel, 'Excel2007');
 		if ($saveToLocal) {
@@ -76,8 +87,13 @@ class BizExcel {
 		return $this;
 	}
 	
-	public function buildExtraData($extraData = []) {
-		foreach ($extraData as $cellData) {
+	public function setExtraData($extraData = []) {
+		$this->dataExtra = $extraData;
+		return $this;
+	}
+	
+	protected function buildExtraData() {
+		foreach ($this->dataExtra as $cellData) {
 			$this->oPHPExcel->getActiveSheet()->setCellValue($cellData['cell'], $cellData['value']);
 		}
 		return $this;

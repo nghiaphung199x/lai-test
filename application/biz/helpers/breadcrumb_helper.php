@@ -670,6 +670,12 @@ function create_breadcrumb()
   				$return.=create_current_page_url(lang('expenses_update'));
 			}
 		}
+		
+		if($ci->uri->segment(2) == 'reprint')
+		{
+			$return.=create_current_page_url(lang('expenses_reprint'));
+		}
+		
         }
 	elseif ($ci->uri->segment(1) == 'timeclocks')
 	{
