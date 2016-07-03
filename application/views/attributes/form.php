@@ -29,7 +29,7 @@
 
                         <div class="form-group">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <?php echo form_label(lang('attributes_field_code'), 'attribute_code', array('class' => '')); ?>
                                     <div class="cl">
                                         <?php echo form_input(array(
@@ -41,7 +41,19 @@
                                     )); ?>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
+                                    <?php echo form_label(lang('attributes_field_sort_order'), 'attribute_sort_order', array('class' => '')); ?>
+                                    <div class="cl">
+                                        <?php echo form_input(array(
+                                        'name' => 'attribute[sort_order]',
+                                        'id' => 'attribute_sort_order',
+                                        'title' => lang('common_fields_required_alert'),
+                                        'class' => 'form-control form-inps required',
+                                        'value' => $entity->sort_order
+                                    )); ?>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <?php echo form_label(lang('attributes_field_type'), 'attribute_type', array('class' => '')); ?>
                                     <?php if (!empty($attribute_types)) :?>
                                     <select id="attribute_type" name="attribute[type]" class="form-control">

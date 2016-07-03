@@ -26,6 +26,7 @@ $lang['attribute_root'] = 'Not belong to any attribute_group';
 $lang['attribute_field_name'] = 'Name';
 $lang['attribute_field_type'] = 'Type';
 $lang['attribute_field_code'] = 'Code';
+$lang['attributes_field_sort_order'] = 'Sort order';
 $lang['attribute_field_description'] = 'Description';
 $lang['attribute_field_parent'] = 'Belong to attribute_group';
 $lang['attribute_required'] = 'At least one attribute_group is required';

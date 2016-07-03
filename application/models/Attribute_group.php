@@ -27,9 +27,9 @@ class Attribute_group extends CI_Model
     /*
         Returns all the attribute_groups
     */
-    function get_all($limit = 10000, $offset = 0, $col = 'id', $order = 'DESC')
+    function get_all($limit = 10000, $offset = 0, $col = 'sort_order', $order = 'ASC')
     {
-        $order_by = '';
+        $order_by = "ORDER BY " . $col . " " . $order;
         if (!$this->config->item('speed_up_search_queries')) {
             $order_by = "ORDER BY " . $col . " " . $order;
         }

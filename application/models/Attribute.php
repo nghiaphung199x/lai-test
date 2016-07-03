@@ -6,6 +6,8 @@ class Attribute extends CI_Model
     /*
         Defines types
     */
+    const YES = 1;
+    const NO = 0;
     const ATTRIBUTE_TYPE_TEXT = 1;
     const ATTRIBUTE_TYPE_NUMBER = 2;
     const ATTRIBUTE_TYPE_TEXTAREA = 3;
@@ -56,9 +58,9 @@ class Attribute extends CI_Model
     /*
         Returns all the attributes
     */
-    function get_all($limit = 10000, $offset = 0, $col = 'id', $order = 'DESC')
+    function get_all($limit = 10000, $offset = 0, $col = 'sort_order', $order = 'ASC')
     {
-        $order_by = '';
+        $order_by = "ORDER BY " . $col . " " . $order;
         if (!$this->config->item('speed_up_search_queries')) {
             $order_by = "ORDER BY " . $col . " " . $order;
         }
@@ -384,6 +386,90 @@ class Attribute extends CI_Model
         $row .= '</tr>';
 
         return $row;
+    }
+
+    public function get_html($attribute) {
+        $CI =& get_instance();
+        $CI->load->view("attributes/renderer/" . $this->get_type_html($attribute), array('attribute' => $attribute));
+    }
+
+    public function get_type_html($attribute) {
+        switch ($attribute->type) {
+            case self::ATTRIBUTE_TYPE_TEXT:
+                $type = 'text';
+                break;
+            case self::ATTRIBUTE_TYPE_NUMBER:
+                $type = 'number';
+                break;
+            case self::ATTRIBUTE_TYPE_TEXTAREA:
+                $type = 'textarea';
+                break;
+            case self::ATTRIBUTE_TYPE_SELECT:
+                $type = 'select';
+                break;
+            case self::ATTRIBUTE_TYPE_CHECKBOX:
+                $type = 'checkbox';
+                break;
+            case self::ATTRIBUTE_TYPE_RADIO:
+                $type = 'radio';
+                break;
+            case self::ATTRIBUTE_TYPE_EDITOR:
+                $type = 'editor';
+                break;
+            case self::ATTRIBUTE_TYPE_FILE:
+                $type = 'file';
+                break;
+            default:
+                $type = 'text';
+                break;
+        }
+        return $type;
+    }
+
+    public function get_entity_attributes($data) {
+        $this->db->select('*');
+        $this->db->from('attribute_values');
+        $this->db->join('attributes', 'attribute_values.attribute_id = attributes.id');
+        $this->db->where('attribute_values.entity_id', $data['entity_id']);
+        $this->db->where('attribute_values.entity_type', $data['entity_type']);
+        $collection = $this->db->get()->result();
+        $attributes = array();
+        foreach ($collection as $attribute) {
+            $attributes[$attribute->id] = $attribute;
+        }
+        return $attributes;
+    }
+
+    public function set_attributes($data) {
+        if (!empty($data['entity_id'])) {
+            $this->db->insert('attribute_values', $data);
+        }
+        return $this;
+    }
+
+    public function reset_attributes($data) {
+        if (!empty($data['entity_id'])) {
+            $this->db->delete('attribute_values', array('entity_id' => $data['entity_id'], 'entity_type' => $data['entity_type']));
+        }
+        return $this;
+    }
+
+    public function get_attribute_by_code($code) {
+        $this->db->select('*');
+        $this->db->from('attributes');
+        $this->db->where('code', $code);
+        return $this->db->get()->row();
+    }
+
+    public function get_attribute_value_by_code($data) {
+        $attribute = $this->get_attribute_by_code($data['code']);
+        $this->db->select('entity_value');
+        $this->db->from('attribute_values');
+        $this->db->where('entity_id', $data['entity_id']);
+        $this->db->where('entity_type', $data['entity_type']);
+        $this->db->where('attribute_id', $attribute->id);
+        $row = $this->db->get()->row();
+        return $row->entity_value;
     }
 }
 

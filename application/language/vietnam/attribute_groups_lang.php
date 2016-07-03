@@ -22,6 +22,7 @@ $lang['attribute_groups_select_all_message'] = 'Chọn tất cả';
 
 $lang['attribute_groups_root'] = 'Không thuộc nhóm thuộc tính nào';
 $lang['attribute_groups_field_name'] = 'Tên nhóm thuộc tính';
+$lang['attribute_groups_field_sort_order'] = 'Thứ tự nhóm';
 $lang['attribute_groups_field_description'] = 'Mô tả nhóm thuộc tính';
 $lang['attribute_groups_field_parent'] = 'Thuộc nhóm thuộc tính';
 $lang['attribute_groups_required'] = 'Cần tạo ít nhất một nhóm thuộc tính';

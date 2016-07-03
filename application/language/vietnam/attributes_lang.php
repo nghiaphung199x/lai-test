@@ -26,6 +26,7 @@ $lang['attributes_root'] = 'Không thuộc thuộc tính nào';
 $lang['attributes_field_name'] = 'Tên thuộc tính';
 $lang['attributes_field_type'] = 'Kiểu thuộc tính';
 $lang['attributes_field_code'] = 'Mã thuộc tính';
+$lang['attributes_field_sort_order'] = 'Thứ tự thuộc tính';
 $lang['attributes_field_description'] = 'Mô tả thuộc tính';
 $lang['attributes_field_parent'] = 'Thuộc thuộc tính';
 $lang['attributes_required'] = 'Cần tạo ít nhất một thuộc tính';
@@ -50,7 +51,7 @@ $lang['attribute_field_sortable'] = 'Có thể sắp xếp';
 
 $lang['attributes_type_text'] = 'Kiểu nhập';
 $lang['attributes_type_number'] = 'Kiểu số';
-$lang['attributes_type_textarea'] = 'Kiểu văn bản';
+$lang['attributes_type_textarea'] = 'Kiểu đoạn văn ngắn';
 $lang['attributes_type_select'] = 'Kiểu lựa chọn';
 $lang['attributes_type_checkbox'] = 'Kiểu nhiều lựa chọn';
 $lang['attributes_type_radio'] = 'Kiểu chọn đúng sai';

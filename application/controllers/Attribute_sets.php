@@ -121,6 +121,14 @@ class Attribute_sets extends Secure_area implements Idata_controller
         foreach ($data['attributes_combined'] as $attribute) {
             $data['attributes_group_combined'][$attribute->attribute_group_id][$attribute->id] = $attribute;
         }
+        $data['has_attributes'] = array();
+        foreach ($data['attributes'] as $attribute) {
+            foreach ($data['attributes_combined'] as $attribute_combined) {
+                if ($attribute->id == $attribute_combined->attribute_id) {
+                    $data['has_attributes'][$attribute->id] = true;
+                }
+            }
+        }
         $data['attribute_groups'] = $this->Attribute_group->get_all()->result();
         $data['parents'] = $this->Attribute_set->get_all()->result();
         $data['all_modules'] = $this->Module->get_all_modules();

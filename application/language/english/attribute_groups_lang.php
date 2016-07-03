@@ -22,6 +22,7 @@ $lang['attribute_groups_select_all_message'] = 'Select all';
 
 $lang['attribute_groups_root'] = 'Not belong to any attribute_group';
 $lang['attribute_groups_field_name'] = 'Name';
+$lang['attribute_groups_field_sort_order'] = 'Sort order';
 $lang['attribute_groups_field_description'] = 'Description';
 $lang['attribute_groups_field_parent'] = 'Belong to attribute_group';
 $lang['attribute_groups_required'] = 'At least one attribute_group is required';

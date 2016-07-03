@@ -50,6 +50,8 @@ class BizItem_kits extends Item_kits
 		$this->load->model('Item_kit_taxes_finder');
 		$this->load->model('Item_location');
 		$this->load->model('Attribute_set');
+		$this->load->model('Attribute_group');
+		$this->load->model('Attribute');
 
 		$this->check_action_permission('add_update');
 		$data = $this->_get_item_kit_data($item_kit_id);
@@ -119,7 +121,20 @@ class BizItem_kits extends Item_kits
 	
 		if($this->Item_kit->save($item_kit_data,$item_kit_id))
 		{
-				
+            /* Update Extended Attributes */
+            if (!class_exists('Attribute')) {
+                $this->load->model('Attribute');
+            }
+            $attributes = $this->input->post('attributes');
+            if (!empty($attributes)) {
+                $this->Attribute->reset_attributes(array('entity_id' => $item_kit_id, 'entity_type' => 'item_kits'));
+                foreach ($attributes as $attribute_id => $value) {
+                    $attribute_value = array('entity_id' => $item_kit_id, 'entity_type' => 'item_kits', 'attribute_id' => $attribute_id, 'entity_value' => $value);
+                    $this->Attribute->set_attributes($attribute_value);
+                }
+            }
+            /* End Update */
+
 			$this->Tag->save_tags_for_item_kit(isset($item_kit_data['item_kit_id']) ? $item_kit_data['item_kit_id'] : $item_kit_id, $this->input->post('tags'));
 				
 			$tier_type = $this->input->post('tier_type');

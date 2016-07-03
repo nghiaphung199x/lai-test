@@ -26,6 +26,19 @@
                 </div>
 
                 <div class="form-group">
+                    <?php echo form_label(lang('attribute_groups_field_sort_order'), 'attribute_group_sort_order', array('class' => '')); ?>
+                    <div class="cl">
+                        <?php echo form_input(array(
+                                'name' => 'attribute_group[sort_order]',
+                                'id' => 'attribute_group_sort_order',
+                                'title' => lang('common_fields_required_alert'),
+                                'class' => 'form-control form-inps required',
+                                'value' => $entity->sort_order
+                        )); ?>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <?php echo form_label(lang('attribute_groups_field_description'), 'attribute_group_description', array('class' => '')); ?>
                     <div class="cl">
                         <?php echo form_textarea(array(

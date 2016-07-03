@@ -99,14 +99,7 @@
                             <p><i class="glyphicon glyphicon-list"></i> <strong><?php echo lang('attribute_sets_all_attributes'); ?></strong></p>
                             <ul id="attribute_group_0" class="sortable">
                                 <?php $is_exists = false; foreach ($attributes as $attribute) :?>
-                                <?php if (!empty($attributes_combined)) :?>
-                                    <?php foreach ($attributes_combined as $attribute_combined) :?>
-                                        <?php if ($attribute_combined->id == $attribute->id) :?>
-                                            <?php $is_exists = true; ?>
-                                        <?php endif; ?>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                                <?php if (!$is_exists) :?>
+                                <?php if (!isset($has_attributes[$attribute->id])) :?>
                                 <li>
                                     <input type="hidden" name="attribute[0][]" value="<?php echo $attribute->id; ?>" />
                                     <?php echo $attribute->name; ?>

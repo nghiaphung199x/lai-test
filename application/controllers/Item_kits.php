@@ -216,6 +216,18 @@ class Item_kits extends Secure_area implements Idata_controller
 		$data['item_kit_info']=$this->Item_kit->get_info($item_kit_id);
 		$data['tags'] = implode(',',$this->Tag->get_tags_for_item_kit($item_kit_id));
 		$data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+		$data['attribute_groups'] = $this->Attribute_group->get_all()->result();
+		$data['attribute_values'] = $this->Attribute->get_entity_attributes(array('entity_id' => $item_kit_id, 'entity_type' => 'item_kits'));
+        if (!empty($data['item_kit_info']->attribute_set_id)) {
+            $data['attributes'] = $this->Attribute_set->get_attributes($data['item_kit_info']->attribute_set_id);
+        }
+        foreach ($data['attribute_groups'] as $key => $attribute_group) {
+            foreach ($data['attributes'] as $attribute) {
+                if ($attribute->attribute_group_id == $attribute_group->id) {
+                    $data['attribute_groups'][$key]->has_attributes = true;
+                }
+            }
+        }
 
 		$data['categories'][''] = lang('common_select_category');
 		
