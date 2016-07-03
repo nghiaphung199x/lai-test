@@ -1,0 +1,83 @@
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `phppos_attributes`
+--
+
+CREATE TABLE IF NOT EXISTS `phppos_attributes` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `code` varchar(255) NOT NULL,
+  `description` varchar(525) NOT NULL,
+  `type` int(4) unsigned NOT NULL,
+  `sortable` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `filterable` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `required` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `options` blob NOT NULL,
+  `sort_order` smallint(4) unsigned NOT NULL,
+  `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `deleted` (`deleted`),
+  KEY `type` (`type`),
+  KEY `sort_order` (`sort_order`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `phppos_attribute_groups`
+--
+
+CREATE TABLE IF NOT EXISTS `phppos_attribute_groups` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` varchar(525) NOT NULL,
+  `sort_order` tinyint(4) unsigned NOT NULL,
+  `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `deleted` (`deleted`),
+  KEY `sort_order` (`sort_order`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `phppos_attribute_sets`
+--
+
+CREATE TABLE IF NOT EXISTS `phppos_attribute_sets` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `code` varchar(255) NOT NULL,
+  `description` varchar(525) NOT NULL,
+  `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `deleted` (`deleted`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `phppos_attribute_sets_combined`
+--
+
+CREATE TABLE IF NOT EXISTS `phppos_attribute_sets_combined` (
+  `attribute_set_id` int(10) unsigned NOT NULL,
+  `attribute_group_id` int(10) unsigned NOT NULL,
+  `attribute_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`attribute_set_id`,`attribute_group_id`,`attribute_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `phppos_attribute_values`
+--
+
+CREATE TABLE IF NOT EXISTS `phppos_attribute_values` (
+  `entity_id` int(10) unsigned NOT NULL,
+  `entity_type` varchar(255) NOT NULL,
+  `attribute_id` int(10) unsigned NOT NULL,
+  `entity_value` text NOT NULL,
+  PRIMARY KEY (`entity_id`,`entity_type`,`attribute_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
