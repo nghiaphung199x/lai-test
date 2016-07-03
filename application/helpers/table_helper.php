@@ -750,6 +750,7 @@ function get_expenses_manage_table($expenses,$controller)
 		lang('common_tax'),
 		lang('common_recipient_name'),
 		lang('common_approved_by'),
+		'&nbsp;',
 		'&nbsp;'
 		);
 		
@@ -813,6 +814,10 @@ function get_expenses_data_row($expense,$controller)
 	$table_data_row.='<td>'.to_currency($expense->expense_tax).'</td>';
 	$table_data_row.='<td>'.H($expense->employee_recv).'</td>';
 	$table_data_row.='<td>'.H($expense->employee_appr).'</td>';
+	$table_data_row.='<td>'.
+			anchor($controller_name."/reprint/$expense->id", lang('common_print'),array('class'=>'','title'=>lang($controller_name.'_print')))
+			.' '. anchor($controller_name."/export_excel/$expense->id", lang('common_excel_export'),array('class'=>'','title'=>lang($controller_name.'_excel')))
+	.'</td>';
 	$table_data_row.='<td class="rightmost">'.anchor($controller_name."/view/$expense->id/2	", lang('common_edit'),array('class'=>'','title'=>lang($controller_name.'_update'))).'</td>';		
 	
 	$table_data_row.='</tr>';
