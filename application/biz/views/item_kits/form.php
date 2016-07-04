@@ -1332,7 +1332,8 @@ $('#grid-loader').hide();
 		}
 		else
 		{
-			$("html, body").animate({ scrollTop: 0 }, "slow");
+            window.location.href = '<?php echo site_url('item_kits/view'); ?>' + '/' + response.item_kit_id + '/2';
+			//$("html, body").animate({ scrollTop: 0 }, "slow");
 		}
 	},
 	<?php if(!$item_kit_info->item_kit_id) { ?>
