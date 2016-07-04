@@ -2,7 +2,56 @@
 require_once (APPPATH.'/libraries/Receiving_lib.php');
 class BizReceiving_lib extends Receiving_lib
 {
-	function add_item($item_id,$quantity=1,$quantity_received=NULL,$discount=0,$price=null,$description=null,$serialnumber=null,$expire_date= null, $force_add = FALSE, $line = FALSE)
+	function copy_entire_receiving($receiving_id, $is_receipt = false)
+	{
+		$this->empty_cart();
+		$this->delete_supplier();
+		$receiving_taxes = $this->get_taxes($receiving_id);
+	
+		foreach($this->CI->Receiving->get_receiving_items($receiving_id)->result() as $row)
+		{
+			$item_info = $this->CI->Item->get_info($row->item_id);
+			$price_to_use = $row->item_unit_price;
+			$this->add_item(
+					$row->item_id,
+					$row->quantity_purchased,
+					$row->quantity_received,
+					$row->discount_percent,
+					$price_to_use,
+					$row->description,
+					$row->serialnumber,
+					$row->expire_date,
+					TRUE,
+					$row->line,
+					$receiving_id);
+				
+		}
+		$this->set_supplier($this->CI->Receiving->get_supplier($receiving_id)->person_id);
+	
+		$recv_info = $this->CI->Receiving->get_info($receiving_id)->row_array();
+		$this->set_comment($recv_info['comment']);
+		$this->set_location($recv_info['transfer_to_location_id']);
+	
+		if ($recv_info['transfer_to_location_id'])
+		{
+			$this->set_mode('transfer');
+		}
+		$this->set_deleted_taxes($this->CI->Receiving->get_deleted_taxes($receiving_id));
+	
+	}
+	
+	function add_item(
+			$item_id,
+			$quantity=1,
+			$quantity_received=NULL,
+			$discount=0,
+			$price=null,
+			$description=null,
+			$serialnumber=null,
+			$expire_date= null,
+			$force_add = FALSE,
+			$line = FALSE,
+			$receiving_id = 0)
 	{
 		//make sure item exists in database.
 		if(!$force_add && !$this->CI->Item->exists(does_contain_only_digits($item_id) ? (int)$item_id : -1))
@@ -68,6 +117,18 @@ class BizReceiving_lib extends Receiving_lib
 		}
 		
 		$measure = $this->CI->Measure->getInfo($cur_item_info->measure_id);
+		
+		if ($receiving_id) {
+			$measureOnRecv = $this->CI->Receiving->getMeasureOnRecvItem($receiving_id, $item_id);
+			if ($measureOnRecv) {
+				$quantity = $measureOnRecv->measure_qty;
+				if ($measureOnRecv->id != $measure->id) {
+					$price = $this->getPriceByMeasureConverted($item_id, (int) $measureOnRecv->measure_id);
+				}
+				$measure = $measureOnRecv;
+			}
+		}
+		
 		//array records are identified by $insertkey and item_id is just another field.
 		$item = array(($line === FALSE ? $insertkey : $line)=>
 		array(

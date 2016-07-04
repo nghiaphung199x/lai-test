@@ -2,6 +2,23 @@
 require_once (APPPATH . "models/Receiving.php");
 class BizReceiving extends Receiving
 {
+	function get_receiving_items_taxes($receiving_id, $line = FALSE)
+	{
+		$item_where = '';
+	
+		if ($line)
+		{
+			$item_where = 'and '.$this->db->dbprefix('receivings_items').'.line = '.$line;
+		}
+	
+		$query = $this->db->query('SELECT name, percent, cumulative, item_unit_price as price, quantity_purchased as quantity, discount_percent as discount '.
+				'FROM '. $this->db->dbprefix('receivings_items_taxes'). ' JOIN '.
+				$this->db->dbprefix('receivings_items'). ' USING (receiving_id, item_id, line) '.
+				'WHERE '.$this->db->dbprefix('receivings_items_taxes').".receiving_id = $receiving_id".' '.$item_where.' '.
+				'ORDER BY '.$this->db->dbprefix('receivings_items').'.line,'.$this->db->dbprefix('receivings_items').'.item_id,cumulative,name,percent');
+				return $query->result_array();
+	}
+	
 	public function getHistoryTransfers ($search = array()) {
 		$location_id = $this->Employee->get_logged_in_employee_current_location_id();
 		$this->db->from('receivings');
@@ -157,12 +174,11 @@ class BizReceiving extends Receiving
 			if( $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
 			{
 				$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $item['measure_id']);
-				$cost_price = $cost_price * (100 + (int)$convertedValue->cost_price_percentage_converted ) / 100;
-				
+				$cost_price = $cost_price * (int)$convertedValue->cost_price_percentage_converted / 100;
+				$unit_price = $item['price'] * (int)$convertedValue->unit_price_percentage_converted / 100;
 				$totalQty = $item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
 				$item['quantity_received'] = $item['quantity_received'] * (int)$convertedValue->qty_converted;
-				
-				$item['price'] = $item['price'] / $totalQty;
+				$item['price'] = $unit_price / (int)$convertedValue->qty_converted;
 			}
 			
 			$item_unit_price_before_tax = $item['price'];
@@ -396,10 +412,8 @@ class BizReceiving extends Receiving
 			{
 				$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $item['measure_id']);
 				$cost_price = $cost_price * (100 + (int)$convertedValue->cost_price_percentage_converted ) / 100;
-			
 				$totalQty = $item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
-			
-				$item['price'] = $item['price'] / $totalQty;
+				$item['price'] = $item['price'] / (int)$convertedValue->qty_converted;
 			}
 			
 			$item_unit_price_before_tax = $item['price'];
@@ -597,6 +611,22 @@ class BizReceiving extends Receiving
 					
 				$where
 				GROUP BY receiving_id, item_id, line)");
+	}
+	
+	function getMeasureOnRecvItem($recvId, $ItemId)
+	{
+		$this->db->from('receivings_items');
+		$this->db->join('measures', 'measures.id = receivings_items.measure_id', 'left');
+		$this->db->where('receiving_id', $recvId);
+		$this->db->where('item_id', $ItemId);
+		$result = $this->db->get();
+		if($result->num_rows() > 0)
+		{
+			$row = $result->result();
+			return $row[0];
+		}
+	
+		return FALSE;
 	}
 }
 ?>
