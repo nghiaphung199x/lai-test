@@ -283,11 +283,9 @@ class BizSale_lib extends Sale_lib
 
 		if ($saleId) {
 			$measureOnSale = $this->CI->Sale->getMeasureOnSaleItem($saleId, $item_id);
-			if($measureOnSale) {
+			if($measureOnSale && $measureOnSale->id && $measureOnSale->id != $measure->id) {
 				$quantity = $measureOnSale->measure_qty;
-				if($measureOnSale->id != $measure->id) {
-					$price = $this->getPriceByMeasureConverted($item_id, (int) $measureOnSale->measure_id);
-				}
+				$price = $this->getPriceByMeasureConverted($item_id, (int) $measureOnSale->measure_id);
 				$measure = $measureOnSale;
 			}
 		}

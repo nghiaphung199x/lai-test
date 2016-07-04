@@ -120,11 +120,9 @@ class BizReceiving_lib extends Receiving_lib
 		$quantity = $quantity_received;
 		if ($receiving_id) {
 			$measureOnRecv = $this->CI->Receiving->getMeasureOnRecvItem($receiving_id, $item_id);
-			if ($measureOnRecv) {
+			if ($measureOnRecv && $measureOnRecv->id && $measureOnRecv->id != $measure->id) {
 				$quantity = $measureOnRecv->measure_qty;
-				if ($measureOnRecv->id != $measure->id) {
-					$price = $this->getPriceByMeasureConverted($item_id, (int) $measureOnRecv->measure_id);
-				}
+				$price = $this->getPriceByMeasureConverted($item_id, (int) $measureOnRecv->measure_id);
 				$measure = $measureOnRecv;
 			}
 		}
