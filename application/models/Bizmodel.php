@@ -36,6 +36,24 @@ class Bizmodel extends CI_Model
     {
         return $this->export_fields;
     }
+
+    public function reset_attributes($data) {
+        $CI =& get_instance();
+        if (!class_exists('Attribute')) {
+            $CI->load->model('Attribute');
+        }
+        $CI->Attribute->reset_attributes($data);
+        return $this;
+    }
+
+    public function mass_reset_attributes($data) {
+        $CI =& get_instance();
+        if (!class_exists('Attribute')) {
+            $CI->load->model('Attribute');
+        }
+        $CI->Attribute->mass_reset_attributes($data);
+        return $this;
+    }
 }
 
 ?>

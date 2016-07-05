@@ -394,4 +394,10 @@ $lang['common_select_attribute_set'] = 'Select attribute set';
 $lang['common_basic_attributes'] = 'Basic attributes';
 $lang['common_attributes_by_set'] = 'Attributes by set';
 $lang['common_column'] = 'Column';
+$lang['common_not_yet_selected_rows'] = 'Not yet selected rows to imports';
+$lang['common_not_yet_selected_columns'] = 'Not yet selected columns to matching';
+$lang['common_select_duplicated_column'] = 'Selected this field already';
+$lang['common_not_yet_selected_duplicate_field'] = 'Not yet select field to check duplicate ';
+$lang['common_select_attribute_set'] = 'Select attribute set';
+
 ?>

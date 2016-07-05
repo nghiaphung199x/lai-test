@@ -1,6 +1,26 @@
 <?php
 class Supplier extends Person
-{	
+{
+    protected $import_fields = array(
+        'company_name' => 'company_name',
+        'account_number' => 'account_number',
+    );
+
+    protected $person_import_fields = array(
+        'first_name' => 'first_name',
+        'last_name' => 'last_name',
+        'birth_date' => 'birth_date',
+        'email' => 'email',
+        'phone_number' => 'phone_number',
+        'address_1' => 'address_1',
+        'address_2' => 'address_2',
+        'city' => 'city',
+        'state' => 'state',
+        'zip' => 'zip',
+        'country' => 'country',
+        'comments' => 'comments',
+    );
+
 	/*
 	Determines if a given person_id is a customer
 	*/
@@ -85,7 +105,7 @@ class Supplier extends Person
 		{
 			$cache = array();
 		}
-				
+
 		$this->db->from('suppliers');	
 		$this->db->join('people', 'people.person_id = suppliers.person_id');
 		$this->db->where('suppliers.person_id',$supplier_id);
@@ -138,7 +158,11 @@ class Supplier extends Person
 			if (!$supplier_id or !$this->exists($supplier_id))
 			{
 				$supplier_data['person_id'] = $person_data['person_id'];
-				$success = $this->db->insert('suppliers',$supplier_data);				
+				$success = $this->db->insert('suppliers',$supplier_data);
+                if ($success) {
+                    $supplier_id = $this->db->insert_id();
+                    return $supplier_id;
+                }
 			}
 			else
 			{
@@ -163,7 +187,9 @@ class Supplier extends Person
 			$this->load->model('Appfile');
 			$this->Person->update_image(NULL,$supplier_id);
 			$this->Appfile->delete($supplier_info->image_id);			
-		}			
+		}
+
+        $this->reset_attributes(array('entity_id' => $supplier_id, 'entity_type' => 'suppliers'));
 		
 		$this->db->where('person_id', $supplier_id);
 		return $this->db->update('suppliers', array('deleted' => 1));
@@ -185,7 +211,8 @@ class Supplier extends Person
 				$this->Appfile->delete($supplier_info->image_id);			
 			}			
 		}
-		
+
+        $this->mass_reset_attributes(array('entity_ids' => $supplier_ids, 'entity_type' => 'item_kits'));
 		$this->db->where_in('person_id',$supplier_ids);
 		return $this->db->update('suppliers', array('deleted' => 1));
  	}
@@ -613,5 +640,10 @@ class Supplier extends Person
 		$this->db->where('deleted', 1);
 		return $this->db->update('suppliers',$supplier_data);
 	}
+
+    public function get_person_import_fields()
+    {
+        return $this->person_import_fields;
+    }
 }
 ?>

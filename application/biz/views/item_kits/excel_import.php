@@ -83,11 +83,15 @@
                 $(form).ajaxSubmit({
                     success: function (response) {
                         $('#grid-loader').hide();
-                        $("#import-result").html(response.html);
+                        if (!response.success) {
+                            show_feedback('error', response.message, <?php echo json_encode(lang('common_error')); ?>);
+                        } else {
+                            $("#import-result").html(response.html);
+                        }
                         submitting = false;
                     },
-                    dataType:'json',
-                    resetForm:false
+                    dataType: 'json',
+                    resetForm: true
                 });
 
             },
@@ -101,7 +105,7 @@
                 $(element).parents('.form-group').addClass('success');
             },
             rules: {
-                file_path:"required"
+                file_path: "required"
             },
             messages: {
                 file_path: <?php echo json_encode(lang('common_full_path_to_excel_file_required')); ?>

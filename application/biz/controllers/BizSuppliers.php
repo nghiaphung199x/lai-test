@@ -20,6 +20,7 @@ class BizSuppliers extends Suppliers
 			'birth_date' => date('Y-m-d', strtotime($this->input->post('birth_date'))),
 		);
 		$supplier_data=array(
+            'attribute_set_id' => $this->input->post('attribute_set_id'),
 			'company_name'=>$this->input->post('company_name'),
 			'account_number'=>$this->input->post('account_number')=='' ? null:$this->input->post('account_number'),
 			'override_default_tax'=> $this->input->post('override_default_tax') ? $this->input->post('override_default_tax') : 0,

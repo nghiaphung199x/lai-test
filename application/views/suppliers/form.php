@@ -1,6 +1,6 @@
 <?php $this->load->view("partial/header"); ?>
 
-		
+
 <div class="row">
 	<div class="spinner" id="grid-loader" style="display:none">
 	  <div class="rect1"></div>
@@ -21,7 +21,7 @@
 						<ul class="list-inline pull-right">
 							<?php
 								$six_months_ago = date('Y-m-d', strtotime('-6 months'));
-								$today = date('Y-m-d').'%2023:59:59';	
+								$today = date('Y-m-d').'%2023:59:59';
 							?>
 							<li><a href="<?php echo site_url('reports/specific_supplier/'.$six_months_ago.'/'.$today.'/'.$person_info->person_id.'/all/0'); ?>" class="btn btn-success"><?php echo lang('common_view_report'); ?></a></li>
 							<?php if ($person_info->email) { ?>
@@ -37,7 +37,7 @@
 			<div class="panel panel-piluku">
 				<div class="panel-heading">
 	                <h3 class="panel-title">
-	                    <i class="ion-edit"></i> 
+	                    <i class="ion-edit"></i>
 	                    <?php echo lang("suppliers_basic_information"); ?>
     					<small>(<?php echo lang('common_fields_required_message'); ?>)</small>
 	                </h3>
@@ -45,7 +45,7 @@
 
 			<div class="panel-body">
 				<div class="form-group">
-				
+
 						<?php echo form_label(lang('suppliers_company_name').' :', 'company_name', array('class'=>'required col-sm-3 col-md-3 col-lg-2 control-label')); ?>
 						<div class="col-sm-9 col-md-9 col-lg-10 cmp-inps">
 						<?php echo form_input(array(
@@ -56,7 +56,7 @@
 							);?>
 						</div>
 					</div>
-				
+
 					<?php $this->load->view("people/form_basic_info"); ?>
 					<div class="form-group">
 						<?php echo form_label(lang('suppliers_account_number').' :', 'account_number', array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
@@ -69,11 +69,11 @@
 							);?>
 						</div>
 					</div>
-					
-					
+
+
 					<?php if ($this->config->item('charge_tax_on_recv')) { ?>
-					
-					
+
+
 							<div class="form-group override-taxes-container">
 								<?php echo form_label(lang('supplier_override_default_tax_for_recv').' :', '',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
 								<div class="col-sm-9 col-md-9 col-lg-10">
@@ -88,7 +88,7 @@
 								</div>
 							</div>
 
-							<div class="tax-container main <?php if (!$person_info->override_default_tax){echo 'hidden';} ?>">	
+							<div class="tax-container main <?php if (!$person_info->override_default_tax){echo 'hidden';} ?>">
 								<div class="form-group">
 									<?php echo form_label(lang('common_tax_1').' :', 'tax_percent_1',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
 									<div class="col-sm-9 col-md-9 col-lg-10">
@@ -148,7 +148,7 @@
 									    </span>
 									</div>
 								</div>
-	                 
+
 								<div class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-9 col-lg-offset-3"  style="visibility: <?php echo isset($supplier_tax_info[2]['name']) ? 'hidden' : 'visible';?>">
 									<a href="javascript:void(0);" class="show_more_taxes"><?php echo lang('common_show_more');?> &raquo;</a>
 								</div>
@@ -199,7 +199,7 @@
 											'name'=>'tax_percents[]',
 											'id'=>'tax_percent_name_4',
 											'size'=>'3',
-											'class'=>'form-control form-inps-tax', 
+											'class'=>'form-control form-inps-tax',
 											'placeholder' => lang('common_tax_percent'),
 											'value'=> isset($supplier_tax_info[3]['percent']) ? $supplier_tax_info[3]['percent'] : '')
 										);?>
@@ -208,7 +208,7 @@
 										<?php echo form_hidden('tax_cumulatives[]', '0'); ?>
 										</div>
 									</div>
-						
+
 									<div class="form-group">
 									<?php echo form_label(lang('common_tax_5').' :', 'tax_percent_5',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
 										<div class="col-sm-9 col-md-9 col-lg-10">
@@ -239,10 +239,10 @@
 								</div> <!--End more Taxes Container-->
 				                <div class="clear"></div>
 							</div>
-					
+
 					<?php } ?>
-					
-					
+
+
 
 					<?php echo form_hidden('redirect', $redirect); ?>
 
@@ -274,6 +274,10 @@
 					</div>
 			</div>
 		</div>
+
+            <?php $this->load->view('attribute_sets/widgets/attribute_set', array('entity_info' => $person_info)); ?>
+            <?php $this->load->view('attribute_sets/widgets/attributes'); ?>
+
 			<?php  echo form_close(); ?>
 	</div>
 </div>
@@ -288,40 +292,36 @@ $(document).ready(function()
 	{
 		$(this).parent().parent().next().toggleClass('hidden')
 	});
-	
+
 	$("#cancel").click(cancelAddSupplier);
-	
+
 	setTimeout(function(){$(":input:visible:first","#supplier_form").focus();},100);
 	var submitting = false;
 	$('#image_id').imagePreview({ selector : '#avatar' }); // Custom preview container
-	
+
 	$('#supplier_form').validate({
 		submitHandler:function(form)
 		{
-$('#grid-loader').show();
+            $('#grid-loader').show();
 			if (submitting) return;
 			submitting = true;
 			$(form).ajaxSubmit({
 				success:function(response)
 				{
-$('#grid-loader').hide();
-					submitting = false;					
+                    $('#grid-loader').hide();
+					submitting = false;
 					show_feedback(response.success ? 'success' : 'error',response.message,response.success ? <?php echo json_encode(lang('common_success')); ?> : <?php echo json_encode(lang('common_error')); ?>);
-					
+
 					if(response.redirect==1 && response.success)
-					{ 
+					{
 						$.post('<?php echo site_url("receivings/select_supplier");?>', {supplier: response.person_id}, function()
 						{
 							window.location.href = '<?php echo site_url('receivings'); ?>';
-						});					
+						});
 					}
 					if(response.redirect==2 && response.success)
-					{ 
-						window.location.href = '<?php echo site_url('suppliers'); ?>';
-					}
-					else
 					{
-						$("html, body").animate({ scrollTop: 0 }, "slow");
+                        window.location.href = '<?php echo site_url('suppliers/view'); ?>' + '/' + response.person_id;
 					}
 
 				},
@@ -341,22 +341,22 @@ $('#grid-loader').hide();
 		unhighlight: function(element, errorClass, validClass) {
 			$(element).parents('.form-group').removeClass('has-error').addClass('has-success');
 		},
-		rules: 
+		rules:
 		{
 			<?php if(!$person_info->person_id) { ?>
 				account_number:
 				{
-					remote: 
-					{ 
-						url: "<?php echo site_url('suppliers/account_number_exists');?>", 
+					remote:
+					{
+						url: "<?php echo site_url('suppliers/account_number_exists');?>",
 						type: "post"
 
-					} 
+					}
 				},
 				<?php } ?>
 				company_name: "required"
 			},
-			messages: 
+			messages:
 			{
 				<?php if(!$person_info->person_id) { ?>
 					account_number:
@@ -371,7 +371,7 @@ $('#grid-loader').hide();
 });
 
 function cancelAddSupplier()
-{	
+{
 	bootbox.confirm(<?php echo json_encode(lang('suppliers_are_you_sure_cancel')); ?>,function(result)
 	{
 		if (result)
@@ -379,7 +379,7 @@ function cancelAddSupplier()
 			window.location = <?php echo json_encode(site_url('receivings')); ?>;
 		}
 	});
-	
+
 }
 </script>
 <?php $this->load->view('partial/footer')?>

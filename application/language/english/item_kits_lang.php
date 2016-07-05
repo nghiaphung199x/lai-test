@@ -34,8 +34,8 @@ $lang['item_kits_update_items_import'] = 'Download Template for EXISTING Gift Ca
 $lang['item_kits_step_1_desc'] = 'Download excel template file to add/update gift cards';
 $lang['item_kits_step_2_desc'] = 'Upload file from step 1 to complete your gift cards additions/updates';
 $lang['item_kits_step_3_desc'] = 'Show results from step 2 then filters result and do import';
-$lang['item_kits_duplicate_giftcard'] = 'Error unable to save gift card; already exists';
-$lang['item_kits_import_success'] = 'Import of gift cards was a success';
+$lang['item_kits_duplicate_item_kit'] = 'Error unable to save item kits; already exists';
+$lang['item_kits_import_success'] = 'Import of item kits was a success';
 
 $lang['item_kits_item_kit_id'] = 'Item kit ID';
 $lang['item_kits_attribute_set_id'] = 'Attribute Set ID';
