@@ -1125,7 +1125,17 @@ class BizSales extends Sales
 		$data['redeem'] = $this->sale_lib->get_redeem();
 		$data['deliverer'] = $this->Employee->get_info($this->sale_lib->get_deliverer());
 		$data['delivery_date'] = $this->sale_lib->get_delivery_date();
-		
+	
+		$totalItems = 0;
+		$totalQty = 0;
+		foreach ($data['cart'] as $item) {
+			$totalQty += $item['quantity'];
+			$totalItems ++;
+		}
+
+		$data['total_items'] = $totalItems;
+		$data['total_qty'] = $totalQty;		
+	
 		$customer_id=$this->sale_lib->get_customer();
 	
 		if ($customer_id!=-1)
