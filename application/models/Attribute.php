@@ -492,6 +492,16 @@ class Attribute extends CI_Model
         $row = $this->db->get()->row();
         return $row->entity_value;
     }
+
+    function exists_by_value($entity_type, $attribute_id, $entity_value)
+    {
+        $this->db->from('attribute_values');
+        $this->db->where('entity_type', $entity_type);
+        $this->db->where('attribute_id', $attribute_id);
+        $this->db->where('entity_value', $entity_value);
+        $query = $this->db->get();
+        return ($query->num_rows() > 0);
+    }
 }
 
 ?>

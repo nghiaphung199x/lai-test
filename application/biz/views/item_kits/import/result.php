@@ -14,7 +14,7 @@
         <?php if (!empty($fields)) :?>
         <div class="col-md-4">
             <label><i class="icon ti-settings"></i> <?php echo lang('common_select_field_to_check_duplicate'); ?></label>
-            <select class="form-control" name="check_duplicate">
+            <select class="form-control" name="check_duplicate_field">
                 <option value="0"><?php echo lang('common_select_field_to_check_duplicate'); ?></option>
                 <optgroup label="<?php echo lang('common_basic_attributes'); ?>">
                     <?php foreach ($fields as $field) :?>

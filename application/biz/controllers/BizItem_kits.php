@@ -350,6 +350,12 @@ class BizItem_kits extends Item_kits
         }
         $this->load->model('Attribute');
         $entity_type = 'item_kits';
+        $check_duplicate_field = $this->input->post('check_duplicate_field');
+        $field_parts = explode(':', $check_duplicate_field);
+        if (count($field_parts) == 2) {
+            $check_duplicate_field_type =  $field_parts[0];
+            $check_duplicate_field_name =  $field_parts[1];
+        }
         $attribute_set_id = $this->input->post('attribute_set_id');
         $columns = $this->input->post('columns');
         $rows = $this->input->post('rows');
@@ -380,13 +386,24 @@ class BizItem_kits extends Item_kits
                 }
             }
             try {
-                $item_kit_id = $this->Item_kit->save($data);
-                if (!empty($item_kit_id)) {
-                    $stored_rows++;
-                    /* Set extended attributes */
-                    if (!empty($extend_data)) {
-                        $extend_data['entity_id'] = $item_kit_id;
-                        $this->Attribute->set_attributes($extend_data);
+                /* Check duplicate item */
+                $exists_row = false;
+                if (isset($check_duplicate_field_type) && isset($check_duplicate_field_name) && !empty($data[$check_duplicate_field_name])) {
+                    if ($check_duplicate_field_type == 'basic') {
+                        $exists_row = $this->Item_kit->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                    } else {
+                        $exists_row = $this->Attribute->exists_value($entity_type, $check_duplicate_field_name, $extend_data['attribute_id']);
+                    }
+                }
+                if (!$exists_row) {
+                    $item_kit_id = $this->Item_kit->save($data);
+                    if (!empty($item_kit_id)) {
+                        $stored_rows++;
+                        /* Set extended attributes */
+                        if (!empty($extend_data)) {
+                            $extend_data['entity_id'] = $item_kit_id;
+                            $this->Attribute->set_attributes($extend_data);
+                        }
                     }
                 }
             } catch (Exception $ex) {

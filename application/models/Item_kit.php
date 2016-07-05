@@ -1,5 +1,8 @@
 <?php
-class Item_kit extends CI_Model
+
+require_once 'Bizmodel.php';
+
+class Item_kit extends Bizmodel
 {
     protected $import_fields = array(
         'item_kit_id' => 'item_kit_id',
@@ -775,16 +778,6 @@ class Item_kit extends CI_Model
         $item_kit_data = array('item_kit_number' => null, 'product_id' => null);
         $this->db->where('deleted', 1);
         return $this->db->update('item_kits', $item_kit_data);
-    }
-
-    public function get_import_fields()
-    {
-        return $this->import_fields;
-    }
-
-    public function get_export_fields()
-    {
-        return $this->export_fields;
     }
 }
 
