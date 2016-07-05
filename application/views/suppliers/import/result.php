@@ -1,4 +1,4 @@
-<div id="data-import" data-action="<?php echo site_url('item_kits/action_import_data'); ?>">
+<div id="data-import" data-action="<?php echo site_url('suppliers/action_import_data'); ?>">
     <div class="row">
         <?php if (!empty($attribute_sets)) :?>
         <div class="col-md-4">
@@ -18,7 +18,10 @@
                 <option value="0"><?php echo lang('common_select_field_to_check_duplicate'); ?></option>
                 <optgroup label="<?php echo lang('common_basic_attributes'); ?>">
                     <?php foreach ($fields as $field) :?>
-                    <option value="basic:<?php echo $field; ?>"><?php echo lang('item_kits_' . $field); ?></option>
+                    <option value="basic:<?php echo $field; ?>"><?php echo lang('suppliers_' . $field); ?></option>
+                    <?php endforeach; ?>
+                    <?php foreach ($person_fields as $field) :?>
+                    <option value="person:<?php echo $field; ?>"><?php echo lang('common_' . $field); ?></option>
                     <?php endforeach; ?>
                 </optgroup>
                 <optgroup class="attributes-by-set" id="attributes-by-set" label="<?php echo lang('common_attributes_by_set'); ?>"></optgroup>
@@ -40,7 +43,10 @@
                         <option value="0"><?php echo lang('common_column') . ' ' . $column; ?></option>
                         <optgroup label="<?php echo lang('common_basic_attributes'); ?>">
                             <?php foreach ($fields as $field) :?>
-                            <option value="basic:<?php echo $field; ?>"><?php echo lang('item_kits_' . $field); ?></option>
+                            <option value="basic:<?php echo $field; ?>"><?php echo lang('suppliers_' . $field); ?></option>
+                            <?php endforeach; ?>
+                            <?php foreach ($person_fields as $field) :?>
+                            <option value="person:<?php echo $field; ?>"><?php echo lang('common_' . $field); ?></option>
                             <?php endforeach; ?>
                         </optgroup>
                         <optgroup class="attributes-by-set" label="<?php echo lang('common_attributes_by_set'); ?>"></optgroup>

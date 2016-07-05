@@ -437,4 +437,9 @@ $lang['common_select_attribute_set'] = 'Chọn bộ thuộc tính';
 $lang['common_basic_attributes'] = 'Thuộc tính căn bản';
 $lang['common_attributes_by_set'] = 'Thuộc tính theo bộ';
 $lang['common_column'] = 'Cột';
+
+$lang['common_not_yet_selected_rows'] = 'Bạn chưa chọn hàng nào để tải về';
+$lang['common_not_yet_selected_columns'] = 'Bạn chưa chọn cột nào để đối chiếu trường dữ liệu';
+$lang['common_select_duplicated_column'] = 'Trường dữ liệu đã được chọn để đối chiếu';
+$lang['common_not_yet_selected_duplicate_field'] = 'Bạn chưa chọn trường dữ liệu để kiểm tra dữ liệu bị trùng lặp';
 ?>

@@ -1,5 +1,8 @@
 <?php
-class Person extends CI_Model 
+
+require_once 'Bizmodel.php';
+
+class Person extends Bizmodel
 {
 	/*Determines whether the given person exists*/
 	function exists($person_id)
