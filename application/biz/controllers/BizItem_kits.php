@@ -318,10 +318,12 @@ class BizItem_kits extends Item_kits
                 $this->load->helper('spreadsheet');
                 $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
                 $end_column = $objPHPExcel->setActiveSheetIndex(0)->getHighestColumn();
+                $this->load->model('Attribute_set');
+                $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
                 $data['sheet'] = $objPHPExcel->getActiveSheet();
                 $data['num_rows'] = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
                 $data['columns'] = range('A', $end_column);
-                $data['fields'] = $this->Item_kit->db->list_fields('item_kits');
+                $data['fields'] = $this->Item_kit->get_import_fields();
                 $html = $this->load->view('item_kits/import/result', $data, true);
                 $result = array('success' => true, 'message' => lang('item_kits_import_success'), 'html' => $html);
                 echo json_encode($result);
@@ -337,7 +339,7 @@ class BizItem_kits extends Item_kits
 
     /*
      * Import Real Data
-     * */
+     **/
     public function action_import_data() {
         $this->check_action_permission('add_update');
         $this->load->helper('demo');
@@ -346,25 +348,46 @@ class BizItem_kits extends Item_kits
             echo json_encode(array('success' => false, 'message' => $msg));
             return;
         }
+        $this->load->model('Attribute');
+        $entity_type = 'item_kits';
+        $attribute_set_id = $this->input->post('attribute_set_id');
         $columns = $this->input->post('columns');
         $rows = $this->input->post('rows');
         $selected_rows = $this->input->post('selected_rows');
         $stored_rows = 0;
-        $this->db->trans_start();
         foreach ($rows as $index => $row) {
             if (!isset($selected_rows[$index])) {
                 continue;
             }
-            $data = array();
+            $data = array('attribute_set_id' => $attribute_set_id);
+            $extend_data = array();
             foreach ($columns as $excel_column => $field_column) {
                 if (!empty($field_column) && !empty($row[$excel_column])) {
-                    $data[$field_column] = $row[$excel_column];
+                    $field_parts = explode(':', $field_column);
+
+                    /* Set Basic Attributes */
+                    if (count($field_parts) == 2) {
+                        if ($field_parts[0] == 'basic') {
+                            $data[$field_parts[1]] = $row[$excel_column];
+                        } else {
+                            $extend_data = array(
+                                'entity_type' => $entity_type,
+                                'attribute_id' => $field_parts[1],
+                                'entity_value' => $row[$excel_column],
+                            );
+                        }
+                    }
                 }
             }
             try {
-                $this->Item_kit->save($data);
-                if (!empty($data['item_kit_id'])) {
+                $item_kit_id = $this->Item_kit->save($data);
+                if (!empty($item_kit_id)) {
                     $stored_rows++;
+                    /* Set extended attributes */
+                    if (!empty($extend_data)) {
+                        $extend_data['entity_id'] = $item_kit_id;
+                        $this->Attribute->set_attributes($extend_data);
+                    }
                 }
             } catch (Exception $ex) {
                 continue;
@@ -375,7 +398,6 @@ class BizItem_kits extends Item_kits
             echo json_encode(array('success' => true, 'message' => $msg));
             return;
         }
-        $this->db->trans_complete();
         $msg = $stored_rows . ' ' . lang('common_record_stored');
         echo json_encode(array('success' => false, 'message' => $msg));
     }

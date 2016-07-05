@@ -388,4 +388,10 @@ $lang['customers_family_info'] = 'Husband/Wife/Children';
 $lang['customers_company_birth_date'] = 'Company birth date';
 $lang['customers_company_manage_name'] = 'Director';
 $lang['customers_code_tax'] = 'Tax code';
+
+$lang['common_select_field_to_check_duplicate'] = 'Select field to check duplicate';
+$lang['common_select_attribute_set'] = 'Select attribute set';
+$lang['common_basic_attributes'] = 'Basic attributes';
+$lang['common_attributes_by_set'] = 'Attributes by set';
+$lang['common_column'] = 'Column';
 ?>

@@ -340,6 +340,16 @@ class Attribute_sets extends Secure_area implements Idata_controller
         $this->db->trans_complete();
         echo json_encode(array('success' => true, 'message' => lang('attribute_sets_import_success')));
     }
+
+    public function action_get_attributes() {
+        $attribute_set_id = $this->input->post('attribute_set_id');
+        if (empty($attribute_set_id)) {
+            json_encode(array('success' => false, 'attributes' => null));
+            return;
+        }
+        $attributes = $this->Attribute_set->get_attributes($attribute_set_id);
+        echo json_encode(array('success' => true, 'attributes' => $attributes));
+    }
 }
 
 ?>

@@ -37,4 +37,21 @@ $lang['item_kits_step_2_desc'] = 'Tải lên tệp excel ở bước 1, để ho
 $lang['item_kits_step_3_desc'] = 'Hiện kết quả tải tệp excel ở bước 2, lọc danh sách cần thêm và thực hiện tải';
 $lang['item_kits_duplicate_item_kit'] = 'Lỗi không thể lưu thẻ gói sản phẩm';
 $lang['item_kits_import_success'] = 'Tải về các gói sản phẩm đã thành công';
+
+$lang['item_kits_item_kit_id'] = 'ID gói sản phẩm';
+$lang['item_kits_attribute_set_id'] = 'ID bộ thuộc tính';
+$lang['item_kits_item_kit_number'] = 'Chuẩn mã vạch quốc gia';
+$lang['item_kits_product_id'] = 'ID sản phẩm';
+$lang['item_kits_name'] = 'Tên gói sản phẩm';
+$lang['item_kits_description'] = 'Mô tả gói sản phẩm';
+$lang['item_kits_category_id'] = 'Danh mục';
+$lang['item_kits_unit_price'] = 'Giá bán';
+$lang['item_kits_cost_price'] = 'Giá vốn';
+$lang['item_kits_commission_value'] = 'Tiền hoa hồng';
+$lang['item_kits_commission_percent'] = 'Tỷ lệ lợi nhuận';
+$lang['item_kits_override_default_tax'] = 'Thay tiêu đề thuế mặc định';
+$lang['item_kits_override_default_commission'] = 'Thay đổi tiêu đề tiền hoa hồng';
+$lang['item_kits_tax_included'] = 'Giá đã bao gồm thuế hay chưa';
+$lang['item_kits_change_cost_price'] = 'Hiển thị giá vốn trong quá trình bán hàng';
+$lang['item_kits_override_default_commission'] = 'Thay đổi tiêu đề tiền hoa hồng';
 ?>

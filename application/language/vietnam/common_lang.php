@@ -431,4 +431,10 @@ $lang['customers_family_info'] = 'Chồng/Vợ/Con';
 $lang['customers_company_birth_date'] = 'Sinh nhật công ty';
 $lang['customers_company_manage_name'] = 'Giám đốc';
 $lang['customers_code_tax'] = 'Mã số thuế';
+
+$lang['common_select_field_to_check_duplicate'] = 'Chọn trường dữ liệu để kiểm tra trùng lặp';
+$lang['common_select_attribute_set'] = 'Chọn bộ thuộc tính';
+$lang['common_basic_attributes'] = 'Thuộc tính căn bản';
+$lang['common_attributes_by_set'] = 'Thuộc tính theo bộ';
+$lang['common_column'] = 'Cột';
 ?>

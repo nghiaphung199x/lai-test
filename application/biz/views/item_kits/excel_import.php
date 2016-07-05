@@ -87,7 +87,7 @@
                         submitting = false;
                     },
                     dataType:'json',
-                    resetForm:true
+                    resetForm:false
                 });
 
             },
