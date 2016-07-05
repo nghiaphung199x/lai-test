@@ -374,11 +374,35 @@ class Suppliers extends Person_controller
     function view($supplier_id = -1, $redirect = 0)
     {
         $this->check_action_permission('add_update');
+
+        $this->load->model('Attribute_set');
+        $this->load->model('Attribute_group');
+        $this->load->model('Attribute');
+
         $data = array();
         $data['controller_name'] = $this->_controller_name;
         $data['person_info'] = $this->Supplier->get_info($supplier_id);
         $data['supplier_tax_info'] = $this->Supplier_taxes->get_info($supplier_id);
         $data['redirect'] = $redirect;
+
+        $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+        $data['attribute_groups'] = $this->Attribute_group->get_all()->result();
+        $data['attribute_values'] = $this->Attribute->get_entity_attributes(array('entity_id' => $supplier_id, 'entity_type' => 'suppliers'));
+        if (!empty($data['person_info']->attribute_set_id)) {
+            $data['attributes'] = $this->Attribute_set->get_attributes($data['person_info']->attribute_set_id);
+        }
+        if (!empty($data['attribute_groups'])) {
+            foreach ($data['attribute_groups'] as $key => $attribute_group) {
+                if (!empty($data['attributes'])) {
+                    foreach ($data['attributes'] as $attribute) {
+                        if ($attribute->attribute_group_id == $attribute_group->id) {
+                            $data['attribute_groups'][$key]->has_attributes = true;
+                        }
+                    }
+                }
+            }
+        }
+
         $this->load->view("suppliers/form", $data);
     }
 
@@ -402,6 +426,7 @@ class Suppliers extends Person_controller
             'comments' => $this->input->post('comments')
         );
         $supplier_data = array(
+            'attribute_set_id' => $this->input->post('attribute_set_id'),
             'company_name' => $this->input->post('company_name'),
             'account_number' => $this->input->post('account_number') == '' ? null : $this->input->post('account_number'),
             'override_default_tax' => $this->input->post('override_default_tax') ? $this->input->post('override_default_tax') : 0,

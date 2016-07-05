@@ -9,6 +9,7 @@ class Supplier extends Person
     protected $person_import_fields = array(
         'first_name' => 'first_name',
         'last_name' => 'last_name',
+        'birth_date' => 'birth_date',
         'email' => 'email',
         'phone_number' => 'phone_number',
         'address_1' => 'address_1',
@@ -104,7 +105,7 @@ class Supplier extends Person
 		{
 			$cache = array();
 		}
-				
+
 		$this->db->from('suppliers');	
 		$this->db->join('people', 'people.person_id = suppliers.person_id');
 		$this->db->where('suppliers.person_id',$supplier_id);
