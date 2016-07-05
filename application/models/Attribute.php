@@ -463,8 +463,8 @@ class Attribute extends CI_Model
     {
         if (!empty($data['entity_ids'])) {
             $this->db->flush_cache();
-            $this->db->where_in('id', $data['entity_ids']);
-            $this->db->where_in('id', $data['entity_type']);
+            $this->db->where_in('entity_id', $data['entity_ids']);
+            $this->db->where('entity_type', $data['entity_type']);
             $this->db->delete('attribute_values');
         }
         return $this;
