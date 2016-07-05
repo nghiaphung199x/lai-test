@@ -141,6 +141,10 @@
         if (selected_columns.indexOf(value) >= 0) {
             show_feedback('error', "Trường dữ liệu đã được chọn để đối chiếu", <?php echo json_encode(lang('common_error')); ?>);
             $select.prop('selectedIndex', 0);
+            var index = selected_columns.indexOf(value);
+            if (index > -1) {
+                selected_columns.splice(value, 1);
+            }
             return false;
         } else {
             selected_columns.push(value);
