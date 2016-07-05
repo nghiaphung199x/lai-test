@@ -455,10 +455,8 @@ class BizSale extends Sale
 				{
 					$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $item['measure_id']);
 					$cost_price = $cost_price * $convertedValue->unit_price_percentage_converted / 100;
-				
 					$totalQty = $item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
-				
-					$item['price'] = $item['price'] / $totalQty;
+					$item['price'] = $item['price'] / (int)$convertedValue->qty_converted;;
 				}
 				
 				//Redeem profit when giftcard is used; so we set cost price to item price
