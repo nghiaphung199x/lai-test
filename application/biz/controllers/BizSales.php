@@ -56,6 +56,123 @@ class BizSales extends Sales
 		}
 		$this->_reload(array(), false);
 	}
+	
+	function edit_item($line)
+	{
+		$data= array();
+	
+		$this->form_validation->set_rules('price', 'lang:common_price', 'numeric');
+		$this->form_validation->set_rules('cost_price', 'lang:common_price', 'numeric');
+		$this->form_validation->set_rules('quantity', 'lang:common_quantity', 'numeric');
+		$this->form_validation->set_rules('discount', 'lang:common_discount_percent', 'numeric');
+	
+		if($this->input->post("name"))
+		{
+			$variable = $this->input->post("name");
+			$$variable = $this->input->post("value");
+		}
+	
+		if (isset($discount) && $discount !== NULL && $discount == '')
+		{
+			$discount = 0;
+		}
+	
+		$can_edit = TRUE;
+	
+		if ($this->form_validation->run() != FALSE)
+		{
+			if ($this->config->item('do_not_allow_out_of_stock_items_to_be_sold'))
+			{
+				if (isset($quantity) && $this->sale_lib->is_kit_or_item($line) == 'item')
+				{
+					$current_item_id = $this->sale_lib->get_item_id($line);
+					$before_quantity = $this->sale_lib->get_quantity_at_line($line);
+	
+					if ($this->sale_lib->will_be_out_of_stock($current_item_id, isset($quantity) ? $quantity - $before_quantity : 0))
+					{
+						$can_edit = FALSE;
+					}
+				}
+				elseif (isset($quantity) && $this->sale_lib->is_kit_or_item($line) == 'kit')
+				{
+					$current_item_kit_id = $this->sale_lib->get_kit_id($line);
+					$before_quantity = $this->sale_lib->get_quantity_at_line($line);
+	
+					if ($this->sale_lib->will_be_out_of_stock_kit($current_item_kit_id, isset($quantity) ? $quantity - $before_quantity : 0))
+					{
+						$can_edit = FALSE;
+					}
+				}
+	
+				if (!$can_edit)
+				{
+					$data['error']=lang('sales_unable_to_add_item_out_of_stock');
+				}
+			}
+		}
+		else
+		{
+			$can_edit = FALSE;
+			$data['error']=lang('sales_error_editing_item');
+		}
+	
+		if($this->sale_lib->is_kit_or_item($line) == 'item')
+		{
+			if($this->sale_lib->out_of_stock($this->sale_lib->get_item_id($line)))
+			{
+				$data['warning'] = lang('sales_quantity_less_than_zero');
+			}
+	
+			if ($this->sale_lib->below_cost_price_item($line, isset($price) ? $price : NULL, isset($discount) ? $discount : NULL, isset($cost_price)  ? $cost_price : NULL))
+			{
+				if ($this->config->item('do_not_allow_below_cost'))
+				{
+					$can_edit = FALSE;
+					$data['error'] = lang('sales_selling_item_below_cost');
+				}
+				else
+				{
+					$data['warning'] = lang('sales_selling_item_below_cost');
+				}
+			}
+		}
+		elseif($this->sale_lib->is_kit_or_item($line) == 'kit')
+		{
+			if($this->sale_lib->out_of_stock_kit($this->sale_lib->get_kit_id($line)))
+			{
+				$data['warning'] = lang('sales_quantity_less_than_zero');
+			}
+	
+			if ($this->sale_lib->below_cost_price_item($line, isset($price) ? $price : NULL, isset($discount) ? $discount : NULL, isset($cost_price)  ? $cost_price : NULL))
+			{
+				if ($this->config->item('do_not_allow_below_cost'))
+				{
+					$can_edit = FALSE;
+					$data['error'] = lang('sales_selling_item_below_cost');
+				}
+				else
+				{
+					$data['warning'] = lang('sales_selling_item_below_cost');
+				}
+			}
+		}
+	
+		if ($can_edit)
+		{
+			$this->sale_lib->edit_item(
+					$line,
+					isset($description) ? $description : NULL,
+					isset($serialnumber) ? $serialnumber : NULL,
+					isset($quantity) ? $quantity : NULL,
+					isset($discount) ? $discount : NULL,
+					isset($price) ? $price: NULL,
+					isset($cost_price) ? $cost_price: NULL,
+					isset($measure) ? $measure: NULL
+					);
+		}
+	
+		$this->_reload($data);
+	}
 
 	function complete()
 	{

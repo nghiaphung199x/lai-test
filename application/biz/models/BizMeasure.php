@@ -87,6 +87,7 @@ class BizMeasure extends CI_Model
 			$this->db->join('item_measures', 'measures.id = item_measures.measure_converted_id', 'left');
 			$this->db->where('item_id', $itemId);
 			$this->db->or_where($measures. '.id = (SELECT '. $items .'.measure_id FROM '. $items .' WHERE '. $items .'.item_id = '. $itemId .')');
+			$this->db->group_by('measures.id');
 			return $this->db->get()->result_array();
 		}
 		return array();
