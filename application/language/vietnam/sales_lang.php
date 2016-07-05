@@ -8,7 +8,8 @@ $lang['sales_mode']='Chế độ đăng kí';
 $lang['sales_item_name'] = 'Tên';
 
 
-
+$lang['sale_total_items'] = '';
+$lang['sale_total_qty'] = '';
 
 
 $lang['sales_tax_percent']='Thuế %';
