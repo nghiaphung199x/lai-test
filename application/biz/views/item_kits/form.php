@@ -8,7 +8,28 @@
 	  <div class="rect3"></div>
 	</div>
 	<div class="col-md-12">
-				
+        <?php if (!empty($attribute_sets)) :?>
+		<div class="panel">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <?php echo lang("item_kits_attribute_set"); ?>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="attribute_set_id" class="col-sm-3 col-md-3 col-lg-2 control-label"><?php echo lang('item_kits_attribute_set'); ?></label>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span>
+                        <select onchange="$('#item_kit_form').submit()" name="attribute_set_id" id="attribute_set_id" class="form-control">
+                            <?php foreach ($attribute_sets as $attribute_set) :?>
+                            <option <?php if ($item_kit_info->attribute_set_id == $attribute_set->id) :?>selected="selected"<?php endif; ?> value="<?php echo $attribute_set->id; ?>"><?php echo $attribute_set->name; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+		</div>
+        <?php endif; ?>
 		<div class="panel panel-piluku">
 				<div class="panel-heading">
 	                <h3 class="panel-title">
@@ -770,6 +791,30 @@
 		</div>
 	</div>
 </div>
+        <?php if (!empty($attribute_groups)) :?>
+            <?php foreach ($attribute_groups as $attribute_group) :?>
+                <?php if (!isset($attribute_group->has_attributes)) continue; ?>
+                <div class="panel">
+                    <div class="panel-heading"><a class="panel-title" target="_blank" href="<?php echo site_url('attribute_groups/view/'.$attribute_group->id.'/2'); ?>"><i class="icon ion-edit"></i> <?php echo $attribute_group->name; ?></a></div>
+                    <div class="panel-body">
+                        <?php foreach ($attributes as $attribute) :?>
+                        <?php if ($attribute->attribute_group_id == $attribute_group->id) :?>
+                        <div class="form-group">
+                            <label class="col-sm-3 col-md-3 col-lg-2 control-label">
+                                <a target="_blank" href="<?php echo site_url('attributes/view/'.$attribute->id.'/2'); ?>">
+                                    <?php echo $attribute->name; ?>
+                                </a>
+                            </label>
+                            <div class="col-sm-9 col-md-9 col-lg-10">
+                                <?php echo $this->Attribute->get_html($attribute); ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
 <?php echo form_close(); ?>
 </div>
 <script type='text/javascript'>
@@ -1287,7 +1332,8 @@ $('#grid-loader').hide();
 		}
 		else
 		{
-			$("html, body").animate({ scrollTop: 0 }, "slow");
+            window.location.href = '<?php echo site_url('item_kits/view'); ?>' + '/' + response.item_kit_id + '/2';
+			//$("html, body").animate({ scrollTop: 0 }, "slow");
 		}
 	},
 	<?php if(!$item_kit_info->item_kit_id) { ?>

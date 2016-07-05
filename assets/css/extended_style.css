@@ -19,7 +19,22 @@ textarea.form-control { height: auto !important; }
 .panel-body.bootstrap { padding: 15px !important; }
 label.error { font-weight: normal; color: red; }
 .navbar-breadcrumb > a.current { font-size: 14px; font-weight: bold; }
-.ml-10 {margin-left: 10px;}
 .btn-default-border { background-color: #fff; border: 1px solid #ccc; color: #666; box-shadow: 0 0px 3px rgba(0,0,0,.1)}
 .font-14 {font-size: 14px}
 .employees, .employees li { list-style-type: none; list-style: none; padding: 0px; margin: 0px;}
+.ml-10 {margin-left: 10px;}
+.mt-10 {margin-top: 10px;}
+.mr-10 {margin-right: 10px;}
+.no-border {border:none !important;}
+.well {border-radius: 0px}
+.manage_buttons .form-control {margin-bottom: 0px !important; border: none !important; }
+.left-bar .menu-parent > li a i, .side-bar .menu-parent > li a i {
+    top: 3px;
+    position: relative;
+}
+.sortable {padding: 10px; border: 1px dashed #ddd; background-color: #f8f8f8 }
+.sortable, .sortable li {list-style-type: none}
+.ajax-result table thead th { background-color: #f3f3f3 }
+.ajax-result table td, .ajax-result table th { padding: 6px; }
+.ajax-result {padding: 20px;}
+.ajax-result .form-control {margin-bottom: 0px}

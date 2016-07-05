@@ -75,9 +75,9 @@ $query_builder = TRUE;
 
 $db['default']['hostname'] = 'localhost';
 $db['default']['dsn'] = '';
-$db['default']['username'] = 'homestead';
-$db['default']['password'] = 'secret';
-$db['default']['database'] = '4biz2016';
+$db['default']['username'] = 'root';
+$db['default']['password'] = '';
+$db['default']['database'] = 'bizserial';
 $db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = 'phppos_';
 $db['default']['pconnect'] = FALSE;

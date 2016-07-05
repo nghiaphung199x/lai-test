@@ -68,6 +68,13 @@ $lang['common_warning'] = 'Cảnh báo';
 $lang['common_settings'] = 'Cài đặt';
 $lang['common_step_1'] = 'Bước 1';
 $lang['common_step_2'] = 'Bước 2';
+$lang['common_step_3'] = 'Bước 3';
+$lang['common_step_4'] = 'Bước 4';
+$lang['common_step_5'] = 'Bước 5';
+$lang['common_step_6'] = 'Bước 6';
+$lang['common_select_fields'] = 'Chọn trường dữ liệu';
+$lang['common_record_stored'] = 'bản ghi đã được lưu';
+$lang['common_required_select_columns'] = 'Chọn đối chiếu ít nhất một trường dữ liệu';
 $lang['common_to'] = 'Đến';
 $lang['common_from'] = 'Từ';
 $lang['common_dashboard'] = 'Dashboard';
@@ -424,4 +431,10 @@ $lang['customers_family_info'] = 'Chồng/Vợ/Con';
 $lang['customers_company_birth_date'] = 'Sinh nhật công ty';
 $lang['customers_company_manage_name'] = 'Giám đốc';
 $lang['customers_code_tax'] = 'Mã số thuế';
+
+$lang['common_select_field_to_check_duplicate'] = 'Chọn trường dữ liệu để kiểm tra trùng lặp';
+$lang['common_select_attribute_set'] = 'Chọn bộ thuộc tính';
+$lang['common_basic_attributes'] = 'Thuộc tính căn bản';
+$lang['common_attributes_by_set'] = 'Thuộc tính theo bộ';
+$lang['common_column'] = 'Cột';
 ?>

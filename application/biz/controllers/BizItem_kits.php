@@ -49,7 +49,10 @@ class BizItem_kits extends Item_kits
 		$this->load->model('Supplier');
 		$this->load->model('Item_kit_taxes_finder');
 		$this->load->model('Item_location');
-	
+		$this->load->model('Attribute_set');
+		$this->load->model('Attribute_group');
+		$this->load->model('Attribute');
+
 		$this->check_action_permission('add_update');
 		$data = $this->_get_item_kit_data($item_kit_id);
 		$data['redirect']=$redirect;
@@ -81,6 +84,7 @@ class BizItem_kits extends Item_kits
 		$item_kit_data = array(
 				'item_kit_number'=>$this->input->post('item_kit_number')=='' ? null:$this->input->post('item_kit_number'),
 				'product_id'=>$this->input->post('product_id')=='' ? null:$this->input->post('product_id'),
+				'attribute_set_id'=>$this->input->post('attribute_set_id')=='' ? null:$this->input->post('attribute_set_id'),
 				'name'=>$this->input->post('name'),
 				'category_id'=>$category_id,
 				'tax_included'=>$this->input->post('tax_included') ? $this->input->post('tax_included') : 0,
@@ -117,7 +121,20 @@ class BizItem_kits extends Item_kits
 	
 		if($this->Item_kit->save($item_kit_data,$item_kit_id))
 		{
-				
+            /* Update Extended Attributes */
+            if (!class_exists('Attribute')) {
+                $this->load->model('Attribute');
+            }
+            $attributes = $this->input->post('attributes');
+            if (!empty($attributes)) {
+                $this->Attribute->reset_attributes(array('entity_id' => $item_kit_id, 'entity_type' => 'item_kits'));
+                foreach ($attributes as $attribute_id => $value) {
+                    $attribute_value = array('entity_id' => $item_kit_id, 'entity_type' => 'item_kits', 'attribute_id' => $attribute_id, 'entity_value' => $value);
+                    $this->Attribute->set_attributes($attribute_value);
+                }
+            }
+            /* End Update */
+
 			$this->Tag->save_tags_for_item_kit(isset($item_kit_data['item_kit_id']) ? $item_kit_data['item_kit_id'] : $item_kit_id, $this->input->post('tags'));
 				
 			$tier_type = $this->input->post('tier_type');
@@ -270,5 +287,141 @@ class BizItem_kits extends Item_kits
 		}
 	
 	}
+
+    /**
+     * @Loads the form for excel import
+     */
+    function excel_import()
+    {
+        $this->check_action_permission('add_update');
+        $this->load->view("item_kits/excel_import", null);
+    }
+
+    /**
+     * @Loads the form for excel import
+     */
+    function do_excel_import()
+    {
+        $this->check_action_permission('add_update');
+        $this->load->helper('demo');
+        if (is_on_demo_host()) {
+            $msg = lang('common_excel_import_disabled_on_demo');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        }
+        if ($_FILES['file_path']['error'] != UPLOAD_ERR_OK) {
+            $msg = lang('common_excel_import_failed');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        } else {
+            if (($handle = fopen($_FILES['file_path']['tmp_name'], "r")) !== FALSE) {
+                $this->load->helper('spreadsheet');
+                $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
+                $end_column = $objPHPExcel->setActiveSheetIndex(0)->getHighestColumn();
+                $this->load->model('Attribute_set');
+                $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+                $data['sheet'] = $objPHPExcel->getActiveSheet();
+                $data['num_rows'] = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
+                $data['columns'] = range('A', $end_column);
+                $data['fields'] = $this->Item_kit->get_import_fields();
+                $html = $this->load->view('item_kits/import/result', $data, true);
+                $result = array('success' => true, 'message' => lang('item_kits_import_success'), 'html' => $html);
+                echo json_encode($result);
+                return;
+            } else {
+                echo json_encode(array('success' => false, 'message' => lang('common_upload_file_not_supported_format')));
+                return;
+            }
+        }
+        $result = array('success' => true, 'message' => lang('item_kits_import_success'));
+        echo json_encode($result);
+    }
+
+    /*
+     * Import Real Data
+     **/
+    public function action_import_data() {
+        $this->check_action_permission('add_update');
+        $this->load->helper('demo');
+        if (is_on_demo_host()) {
+            $msg = lang('common_excel_import_disabled_on_demo');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        }
+        $this->load->model('Attribute');
+        $entity_type = 'item_kits';
+        $check_duplicate_field = $this->input->post('check_duplicate_field');
+        $field_parts = explode(':', $check_duplicate_field);
+        if (count($field_parts) == 2) {
+            $check_duplicate_field_type =  $field_parts[0];
+            $check_duplicate_field_name =  $field_parts[1];
+        }
+        $attribute_set_id = $this->input->post('attribute_set_id');
+        $columns = $this->input->post('columns');
+        $rows = $this->input->post('rows');
+        $selected_rows = $this->input->post('selected_rows');
+        $stored_rows = 0;
+        if (empty($rows) || empty($selected_rows)) {
+            $msg = lang('common_error');
+            echo json_encode(array('success' => true, 'message' => $msg));
+            return;
+        }
+        foreach ($rows as $index => $row) {
+            if (!isset($selected_rows[$index])) {
+                continue;
+            }
+            $data = array('attribute_set_id' => $attribute_set_id);
+            $extend_data = array();
+            foreach ($columns as $excel_column => $field_column) {
+                if (!empty($field_column) && !empty($row[$excel_column])) {
+                    $field_parts = explode(':', $field_column);
+
+                    /* Set Basic Attributes */
+                    if (count($field_parts) == 2) {
+                        if ($field_parts[0] == 'basic') {
+                            $data[$field_parts[1]] = $row[$excel_column];
+                        } else {
+                            $extend_data = array(
+                                'entity_type' => $entity_type,
+                                'attribute_id' => $field_parts[1],
+                                'entity_value' => $row[$excel_column],
+                            );
+                        }
+                    }
+                }
+            }
+            try {
+                /* Check duplicate item */
+                $exists_row = false;
+                if (isset($check_duplicate_field_type) && isset($check_duplicate_field_name)) {
+                    if ($check_duplicate_field_type == 'basic') {
+                        $exists_row = $this->Item_kit->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                    } else {
+                        $exists_row = $this->Attribute->exists_by_value($entity_type, $extend_data['attribute_id'], $extend_data['entity_value']);
+                    }
+                }
+                if (!$exists_row) {
+                    $item_kit_id = $this->Item_kit->save($data);
+                    if (!empty($item_kit_id)) {
+                        $stored_rows++;
+                        /* Set extended attributes */
+                        if (!empty($extend_data)) {
+                            $extend_data['entity_id'] = $item_kit_id;
+                            $this->Attribute->set_attributes($extend_data);
+                        }
+                    }
+                }
+            } catch (Exception $ex) {
+                continue;
+            }
+        }
+        if (!empty($stored_rows)) {
+            $msg = $stored_rows . ' ' . lang('common_record_stored');
+            echo json_encode(array('success' => true, 'message' => $msg));
+            return;
+        }
+        $msg = $stored_rows . ' ' . lang('common_record_stored');
+        echo json_encode(array('success' => false, 'message' => $msg));
+    }
 }
 ?>

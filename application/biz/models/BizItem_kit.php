@@ -1,5 +1,6 @@
 <?php
 require_once (APPPATH . "models/Item_kit.php");
+
 class BizItem_kit extends Item_kit
 {
 	public function countAvailableKits($items = null)
