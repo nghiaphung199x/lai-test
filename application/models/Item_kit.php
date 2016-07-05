@@ -214,6 +214,11 @@ class Item_kit extends Bizmodel
     */
     function delete($item_kit_id)
     {
+        $CI =& get_instance();
+        if (!class_exists('Attribute')) {
+            $CI->load->model('Attribute');
+        }
+        $CI->Attribute->reset_attributes(array('entity_id' => $item_kit_id, 'entity_type' => 'item_kits'));
         $this->db->where('item_kit_id', $item_kit_id);
         return $this->db->update('item_kits', array('deleted' => 1));
     }
@@ -223,6 +228,11 @@ class Item_kit extends Bizmodel
     */
     function delete_list($item_kit_ids)
     {
+        $CI =& get_instance();
+        if (!class_exists('Attribute')) {
+            $CI->load->model('Attribute');
+        }
+        $CI->Attribute->mass_reset_attributes(array('entity_ids' => $item_kit_ids, 'entity_type' => 'item_kits'));
         $this->db->where_in('item_kit_id', $item_kit_ids);
         return $this->db->update('item_kits', array('deleted' => 1));
     }

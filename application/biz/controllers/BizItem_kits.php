@@ -361,6 +361,11 @@ class BizItem_kits extends Item_kits
         $rows = $this->input->post('rows');
         $selected_rows = $this->input->post('selected_rows');
         $stored_rows = 0;
+        if (empty($rows) || empty($selected_rows)) {
+            $msg = lang('common_error');
+            echo json_encode(array('success' => true, 'message' => $msg));
+            return;
+        }
         foreach ($rows as $index => $row) {
             if (!isset($selected_rows[$index])) {
                 continue;
@@ -388,11 +393,11 @@ class BizItem_kits extends Item_kits
             try {
                 /* Check duplicate item */
                 $exists_row = false;
-                if (isset($check_duplicate_field_type) && isset($check_duplicate_field_name) && !empty($data[$check_duplicate_field_name])) {
+                if (isset($check_duplicate_field_type) && isset($check_duplicate_field_name)) {
                     if ($check_duplicate_field_type == 'basic') {
                         $exists_row = $this->Item_kit->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
                     } else {
-                        $exists_row = $this->Attribute->exists_value($entity_type, $check_duplicate_field_name, $extend_data['attribute_id']);
+                        $exists_row = $this->Attribute->exists_by_value($entity_type, $extend_data['attribute_id'], $extend_data['entity_value']);
                     }
                 }
                 if (!$exists_row) {

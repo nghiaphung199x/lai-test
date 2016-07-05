@@ -451,7 +451,21 @@ class Attribute extends CI_Model
     public function reset_attributes($data)
     {
         if (!empty($data['entity_id'])) {
-            $this->db->delete('attribute_values', array('entity_id' => $data['entity_id'], 'entity_type' => $data['entity_type']));
+            $this->db->flush_cache();
+            $this->db->where('entity_id', $data['entity_id']);
+            $this->db->where('entity_type', $data['entity_type']);
+            $this->db->delete('attribute_values');
+        }
+        return $this;
+    }
+
+    public function mass_reset_attributes($data)
+    {
+        if (!empty($data['entity_ids'])) {
+            $this->db->flush_cache();
+            $this->db->where_in('id', $data['entity_ids']);
+            $this->db->where_in('id', $data['entity_type']);
+            $this->db->delete('attribute_values');
         }
         return $this;
     }
