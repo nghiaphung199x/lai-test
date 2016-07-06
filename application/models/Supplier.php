@@ -160,8 +160,7 @@ class Supplier extends Person
 				$supplier_data['person_id'] = $person_data['person_id'];
 				$success = $this->db->insert('suppliers',$supplier_data);
                 if ($success) {
-                    $supplier_id = $this->db->insert_id();
-                    return $supplier_id;
+                    return $supplier_data['person_id'];
                 }
 			}
 			else

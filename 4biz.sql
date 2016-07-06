@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 06, 2016 at 09:16 PM
+-- Generation Time: Jul 06, 2016 at 09:22 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -255,7 +255,16 @@ CREATE TABLE IF NOT EXISTS `phppos_attributes` (
   KEY `deleted` (`deleted`),
   KEY `type` (`type`),
   KEY `sort_order` (`sort_order`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
+
+--
+-- Dumping data for table `phppos_attributes`
+--
+
+INSERT INTO `phppos_attributes` (`id`, `name`, `code`, `description`, `type`, `sortable`, `filterable`, `required`, `options`, `sort_order`, `deleted`) VALUES
+(18, 'Họ', 'prefix_name', '', 1, 1, 1, 0, 0x613a303a7b7d, 1, 0),
+(19, 'Tên', 'name', '', 1, 1, 1, 0, 0x613a303a7b7d, 2, 0),
+(20, 'Mô tả', 'description', '', 1, 1, 1, 0, 0x613a303a7b7d, 3, 0);
 
 -- --------------------------------------------------------
 
@@ -272,7 +281,15 @@ CREATE TABLE IF NOT EXISTS `phppos_attribute_groups` (
   PRIMARY KEY (`id`),
   KEY `deleted` (`deleted`),
   KEY `sort_order` (`sort_order`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+
+--
+-- Dumping data for table `phppos_attribute_groups`
+--
+
+INSERT INTO `phppos_attribute_groups` (`id`, `name`, `description`, `sort_order`, `deleted`) VALUES
+(3, 'Nhóm thuộc tính cơ bản', 'Nhóm thuộc tính cơ bản', 1, 0),
+(4, 'Nhóm thuộc tính nâng cao', 'Nhóm thuộc tính nâng cao', 2, 0);
 
 -- --------------------------------------------------------
 
@@ -288,7 +305,14 @@ CREATE TABLE IF NOT EXISTS `phppos_attribute_sets` (
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `deleted` (`deleted`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+
+--
+-- Dumping data for table `phppos_attribute_sets`
+--
+
+INSERT INTO `phppos_attribute_sets` (`id`, `name`, `code`, `description`, `deleted`) VALUES
+(5, 'Bộ thuộc tính test', 'test', 'Bộ thuộc tính test', 0);
 
 -- --------------------------------------------------------
 
@@ -302,6 +326,15 @@ CREATE TABLE IF NOT EXISTS `phppos_attribute_sets_combined` (
   `attribute_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`attribute_set_id`,`attribute_group_id`,`attribute_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `phppos_attribute_sets_combined`
+--
+
+INSERT INTO `phppos_attribute_sets_combined` (`attribute_set_id`, `attribute_group_id`, `attribute_id`) VALUES
+(5, 3, 18),
+(5, 3, 19),
+(5, 4, 20);
 
 -- --------------------------------------------------------
 
@@ -2263,6 +2296,9 @@ CREATE TABLE IF NOT EXISTS `phppos_permissions` (
 --
 
 INSERT INTO `phppos_permissions` (`module_id`, `person_id`) VALUES
+('attribute_groups', 1),
+('attribute_sets', 1),
+('attributes', 1),
 ('config', 1),
 ('customers', 1),
 ('departments', 1),
@@ -2314,6 +2350,15 @@ CREATE TABLE IF NOT EXISTS `phppos_permissions_actions` (
 --
 
 INSERT INTO `phppos_permissions_actions` (`module_id`, `person_id`, `action_id`) VALUES
+('attribute_groups', 1, 'add_update'),
+('attribute_groups', 1, 'delete'),
+('attribute_groups', 1, 'search'),
+('attribute_sets', 1, 'add_update'),
+('attribute_sets', 1, 'delete'),
+('attribute_sets', 1, 'search'),
+('attributes', 1, 'add_update'),
+('attributes', 1, 'delete'),
+('attributes', 1, 'search'),
 ('customers', 1, 'add_update'),
 ('customers', 1, 'delete'),
 ('customers', 1, 'edit_customer_points'),
@@ -4256,7 +4301,7 @@ INSERT INTO `phppos_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
 ('2f3d56980804e8e7a32b7c146731dde17f996a19', '171.234.215.32', 1467790502, ''),
 ('7a25c70481fe1c0313362f6e527c274c94c0c460', '117.6.1.149', 1467630205, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c733a313a2231223b66756c6c73637265656e7c733a313a2230223b6b6565705f616c6976657c693a313436373633303230353b636172747c613a303a7b7d7061796d656e74737c613a303a7b7d637573746f6d65727c693a2d313b),
 ('856260402a2c97ca12e82153333ab48fbdf6cce6', '123.24.37.134', 1467739896, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c733a313a2231223b66756c6c73637265656e7c733a313a2230223b636172747c613a303a7b7d7061796d656e74737c613a303a7b7d637573746f6d65727c693a2d313b6b6565705f616c6976657c693a313436373733393837373b),
-('9b8c3f6255b91e4ab39d1751c56252b122752f47', '127.0.0.1', 1467839787, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c623a303b),
+('9b8c3f6255b91e4ab39d1751c56252b122752f47', '127.0.0.1', 1467840107, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c623a303b),
 ('d5d28ff94c069382d3b2e089845813825f77a4a5', '123.24.37.134', 1467742860, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c623a303b63757272656e745f636f756e745f69647c733a323a223334223b41554449545f43415445474f52597c693a303b6b6565705f616c6976657c693a313436373734323836303b),
 ('def307e748dc55c76bac3aa0eec897da109bd9e4', '117.6.1.149', 1467632249, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c623a303b6b6565705f616c6976657c693a313436373633323234393b),
 ('fad131ca0cd7c0e8d78aa23647afb9503aedad5f', '117.6.1.149', 1467635758, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c733a313a2231223b63617274526563767c613a303a7b7d63757272656e745f636f756e745f69647c733a323a223333223b41554449545f43415445474f52597c693a303b6b6565705f616c6976657c693a313436373633353735383b6974656d5f6b69745f7365617263685f646174617c613a363a7b733a363a226f6666736574223b693a303b733a393a226f726465725f636f6c223b733a31313a226974656d5f6b69745f6964223b733a393a226f726465725f646972223b733a333a22617363223b733a363a22736561726368223b733a303a22223b733a31313a2263617465676f72795f6964223b733a303a22223b733a363a226669656c6473223b733a333a22616c6c223b7d66756c6c73637265656e7c733a313a2230223b636172747c613a303a7b7d7061796d656e74737c613a303a7b7d637573746f6d65727c693a2d313b);
