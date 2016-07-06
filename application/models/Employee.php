@@ -294,7 +294,8 @@ class Employee extends Person
 			$this->db->where('person_id', $employee_id);
 			$success = $this->db->update('employees', array('deleted' => 1));
 		}
-		$this->db->trans_complete();		
+		$this->db->trans_complete();
+        $this->reset_attributes(array('entity_id' => $employee_id, 'entity_type' => 'employees'));
 		return $success;
 	}
 	
@@ -332,7 +333,8 @@ class Employee extends Person
 			$this->db->where_in('person_id',$employee_ids);
 			$success = $this->db->update('employees', array('deleted' => 1));
 		}
-		$this->db->trans_complete();		
+		$this->db->trans_complete();
+        $this->mass_reset_attributes(array('entity_ids' => $employee_ids, 'entity_type' => 'employees'));
 		return $success;
  	}
 	

@@ -579,7 +579,9 @@ class Item extends Bizmodel
 			$this->load->model('Appfile');
 			$this->Item->update_image(NULL,$item_id);
 			$this->Appfile->delete($item_info->image_id);			
-		}			
+		}
+
+        $this->reset_attributes(array('entity_id' => $item_id, 'entity_type' => 'items'));
 		
 		$this->db->where('item_id', $item_id);
 		return $this->db->update('items', array('deleted' => 1));
@@ -601,6 +603,8 @@ class Item extends Bizmodel
 				$this->Appfile->delete($item_info->image_id);			
 			}			
 		}
+
+        $this->mass_reset_attributes(array('entity_ids' => $item_ids, 'entity_type' => 'items'));
 		
 		if($select_inventory)
 		{

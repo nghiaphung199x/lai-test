@@ -186,7 +186,9 @@ class Customer extends Person
 			$this->load->model('Appfile');
 			$this->Person->update_image(NULL,$customer_id);
 			$this->Appfile->delete($customer_info->image_id);			
-		}			
+		}
+
+        $this->reset_attributes(array('entity_id' => $customer_id, 'entity_type' => 'customers'));
 		
 		$this->db->where('person_id', $customer_id);
 		return $this->db->update('customers', array('deleted' => 1));
@@ -208,6 +210,8 @@ class Customer extends Person
 				$this->Appfile->delete($customer_info->image_id);			
 			}			
 		}
+
+        $this->mass_reset_attributes(array('entity_ids' => $customer_ids, 'entity_type' => 'customers'));
 		
 		$this->db->where_in('person_id',$customer_ids);
 		return $this->db->update('customers', array('deleted' => 1));
