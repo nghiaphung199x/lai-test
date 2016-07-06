@@ -81,3 +81,18 @@ CREATE TABLE IF NOT EXISTS `phppos_attribute_values` (
   `entity_value` text NOT NULL,
   PRIMARY KEY (`entity_id`,`entity_type`,`attribute_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `phppos_item_kits`
+ADD COLUMN `attribute_set_id` int(10) NULL AFTER `item_kit_id`;
+
+ALTER TABLE `phppos_items`
+ADD COLUMN `attribute_set_id` int(10) NULL AFTER `item_id`;
+
+ALTER TABLE `phppos_suppliers`
+ADD COLUMN `attribute_set_id` int(10) NULL AFTER `id`;
+
+ALTER TABLE `phppos_employees`
+ADD COLUMN `attribute_set_id` int(10) NULL AFTER `id`;
+
+ALTER TABLE `phppos_customers`
+ADD COLUMN `attribute_set_id` int(10) NULL AFTER `id`;

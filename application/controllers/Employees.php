@@ -591,7 +591,7 @@ class Employees extends Person_controller
                 if (isset($check_duplicate_field_type) && isset($check_duplicate_field_name)) {
                     switch ($check_duplicate_field_type) {
                         case 'person':
-                            $exists_row = $this->Person->exists_by_field($person_entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            $exists_row = $this->Person->exists_by_field($person_entity_type, $check_duplicate_field_name, $person_data[$check_duplicate_field_name], false, false);
                             break;
                         case 'basic':
                             $exists_row = $this->Employee->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);

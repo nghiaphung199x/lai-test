@@ -212,7 +212,7 @@ class Supplier extends Person
 			}			
 		}
 
-        $this->mass_reset_attributes(array('entity_ids' => $supplier_ids, 'entity_type' => 'item_kits'));
+        $this->mass_reset_attributes(array('entity_ids' => $supplier_ids, 'entity_type' => 'suppliers'));
 		$this->db->where_in('person_id',$supplier_ids);
 		return $this->db->update('suppliers', array('deleted' => 1));
  	}

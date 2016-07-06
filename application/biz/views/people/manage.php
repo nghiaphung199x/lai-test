@@ -155,13 +155,6 @@
 							<i class="ion-android-more-horizontal"></i>
 						</button>
 						<ul class="dropdown-menu" role="menu">
-                            <li>
-                                <?php echo anchor("$controller_name/excel_import/",
-                                '<span class="">'.lang("common_excel_import").'</span>',
-                                array('class'=>' ',
-                                    'title'=>lang('common_excel_import')));
-                                ?>
-                            </li>
 							<li>
 								<?php if ($controller_name =='customers') {  
 								?>
@@ -202,9 +195,8 @@
 									);
 								} ?>
 							</li>
-		
 							<li>
-								<?php if ($controller_name =='customers' || $controller_name == 'suppliers') {  
+								<?php if ($controller_name == 'employees' || $controller_name =='customers' || $controller_name == 'suppliers') {
 								?>
 								<?php echo anchor("$controller_name/excel_import/",
 									'<span class="">'.lang('common_excel_import').'</span>',
@@ -213,7 +205,7 @@
 							</li>
 							<li>
 								<?php
-								if ($controller_name == 'customers' || $controller_name == 'employees' || $controller_name == 'suppliers') {	
+								if ($controller_name == 'customers' || $controller_name == 'employees' || $controller_name == 'suppliers') {
 									echo anchor("$controller_name/excel_export",
 										'<span class="">'.lang('common_excel_export').'</span>',
 										array('class'=>'hidden-xs import','title'=>lang('common_excel_export')));
