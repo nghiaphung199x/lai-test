@@ -194,6 +194,29 @@ class Employees extends Person_controller
         }
         $data['controller_name'] = $this->_controller_name;
 
+        /* Load Attribute Sets, Groups And Required Attributes */
+        $this->load->model('Attribute_set');
+        $this->load->model('Attribute_group');
+        $this->load->model('Attribute');
+
+        $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+        $data['attribute_groups'] = $this->Attribute_group->get_all()->result();
+        $data['attribute_values'] = $this->Attribute->get_entity_attributes(array('entity_id' => $supplier_id, 'entity_type' => 'suppliers'));
+        if (!empty($data['person_info']->attribute_set_id)) {
+            $data['attributes'] = $this->Attribute_set->get_attributes($data['person_info']->attribute_set_id);
+        }
+        if (!empty($data['attribute_groups'])) {
+            foreach ($data['attribute_groups'] as $key => $attribute_group) {
+                if (!empty($data['attributes'])) {
+                    foreach ($data['attributes'] as $attribute) {
+                        if ($attribute->attribute_group_id == $attribute_group->id) {
+                            $data['attribute_groups'][$key]->has_attributes = true;
+                        }
+                    }
+                }
+            }
+        }
+
         $locations_list = $this->Location->get_all()->result();
         $authenticated_locations = $this->Employee->get_authenticated_location_ids($employee_id);
         $logged_in_employee_authenticated_locations = $this->Employee->get_authenticated_location_ids($data['logged_in_employee_id']);
@@ -288,6 +311,7 @@ class Employees extends Person_controller
         //Password has been changed OR first time password set
         if ($this->input->post('password') != '') {
             $employee_data = array(
+                'attribute_set_id' => $this->input->post('attribute_set_id'),
                 'department_id' => $this->input->post('department_id'),
                 'group_id' => $this->input->post('group_id'),
                 'username' => $this->input->post('username'),
@@ -303,6 +327,7 @@ class Employees extends Person_controller
         } else //Password not changed
         {
             $employee_data = array(
+                'attribute_set_id' => $this->input->post('attribute_set_id'),
                 'department_id' => $this->input->post('department_id'),
                 'group_id' => $this->input->post('group_id'),
                 'username' => $this->input->post('username'),
