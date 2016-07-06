@@ -459,4 +459,7 @@ $lang['common_import_success'] = 'Tải về các thông tin thành công';
 $lang['common_total_items'] = 'Tổ số mặt hàng';
 $lang['common_total_qty'] = 'Tổ số lượng';
 
+$lang['common_continue'] = 'Tiếp tục';
+
+
 ?>

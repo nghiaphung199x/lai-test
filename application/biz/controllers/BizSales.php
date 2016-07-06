@@ -1634,5 +1634,85 @@ class BizSales extends Sales
 		}
 		$this->sale_lib->clear_all();
 	}
+	
+	function register_add_subtract($mode,$return = 'sales')
+	{
+		$data = array();
+		$data['mode'] = $mode;
+		$data['return'] = $return;
+		$cash_register = $this->Register->get_current_register_log();
+	
+		if (!$this->Register->is_register_log_open())
+		{
+			redirect(site_url('home'));
+			return;
+		}
+	
+		if ($this->input->post('amount') != '')
+		{
+			$message = '';
+			$amount = to_currency_no_money($this->input->post('amount'));
+	
+			if ($mode == 'add')
+			{
+				$cash_register->total_cash_additions+=$amount;
+				$message = lang('sales_cash_successfully_added_to_drawer');
+			}
+			else
+			{
+				$cash_register->total_cash_subtractions+=$amount;
+				$message = lang('sales_cash_successfully_removed_from_drawer');
+			}
+			$this->Register->update_register_log($cash_register);
+	
+	
+			$employee_id_audit = $this->Employee->get_logged_in_employee_current_register_id();
+			$register_audit_log_data = array(
+					'register_log_id'=> $cash_register->register_log_id,
+					'employee_id'=> $employee_id_audit,
+					'date' => date('Y-m-d H:i:s'),
+					'amount' => $mode == 'add' ? $amount : -$amount,
+					'note' => $this->input->post('note'),
+			);
+				
+			$this->Register->insert_audit_log($register_audit_log_data);
+				
+			$this->session->set_flashdata('cash_drawer_add_subtract_message', $message);
+			
+			$data = [];
+			
+				
+			if ($return == 'sales')
+			{
+				$data['next_url'] = site_url('sales');
+			} elseif ($return == 'closeregister')
+			{
+				$data['next_url'] = site_url('sales/closeregister?continue=home');
+			}
+			
+			$data['id'] = $cash_register->register_log_id;
+			$data['amount'] = $amount;
+			$data['note'] = $this->input->post('note');
+			$typeOfPrint = 'added_A4.php';
+			$data['print_block_html'] = $this->load->view('sales/partials/cash_drawer/' . $typeOfPrint, $data, TRUE);
+			$this->load->view('sales/cash_added_drawer', $data);
+		}
+		else
+		{
+				
+			if ($mode == 'add')
+			{
+				$data['amount'] = to_currency($cash_register->total_cash_additions);
+			}
+			else
+			{
+				$data['amount'] = to_currency($cash_register->total_cash_subtractions);
+	
+			}
+				
+			$this->load->view('sales/register_add_subtract', $data);
+		}
+	
+	}
 }
 ?>
