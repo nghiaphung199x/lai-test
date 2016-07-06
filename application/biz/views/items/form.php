@@ -1,5 +1,4 @@
 <?php $this->load->view("partial/header"); ?>
-
 <?php echo form_open_multipart('items/save/'.(!isset($is_clone) ? $item_info->item_id : ''),array('id'=>'item_form','class'=>'form-horizontal')); ?>
 <div class="row" id="form">
 	<div class="spinner" id="grid-loader" style="display:none">
@@ -8,288 +7,285 @@
 	  <div class="rect3"></div>
 	</div>
 	<div class="col-md-12">
-	<div class="panel panel-piluku">
-		<div class="panel-heading">
+	    <div class="panel panel-piluku">
+            <div class="panel-heading">
                 <h3 class="panel-title">
-                    <i class="ion-edit"></i> 
-                    	<?php echo lang("items_basic_information"); ?>
-						<small>(<?php echo lang('common_fields_required_message'); ?>)</small>
+                    <i class="ion-edit"></i>
+                        <?php echo lang("items_basic_information"); ?>
+                        <small>(<?php echo lang('common_fields_required_message'); ?>)</small>
                 </h3>
-        </div>
+            </div>
+            <div class="panel-body">
+                <div class="item_navigation clearfix text-center">
+                    <ul class="list-inline">
+                        <li>
+                            <?php
+                            if (isset($prev_item_id) && $prev_item_id)
+                            {
+                                echo '<div class="previous_item">';
+                                    echo anchor('items/view/'.$prev_item_id, '&laquo; '.lang('items_prev_item'), 'class="btn btn-green btn-round"');
+                                echo '</div>';
+                            }
+                            ?>
+                        </li>
+                        <li>
+                            <?php
+                            if (isset($next_item_id) && $next_item_id)
+                            {
+                                echo '<div class="next_item">';
+                                    echo anchor('items/view/'.$next_item_id,lang('items_next_item').' &raquo;', 'class="btn btn-green btn-round"');
+                                echo '</div>';
+                            }
+                            ?>
+                        </li>
+                    </ul>
+                </div>
 
-			<div class="panel-body">
-				<div class="item_navigation clearfix text-center">
-					<ul class="list-inline">
-						<li>
-							<?php
-							if (isset($prev_item_id) && $prev_item_id)
-							{
-								echo '<div class="previous_item">';
-									echo anchor('items/view/'.$prev_item_id, '&laquo; '.lang('items_prev_item'), 'class="btn btn-green btn-round"');
-								echo '</div>';
-							}
-							?>
-						</li>
-						<li>
-							<?php
-							if (isset($next_item_id) && $next_item_id)
-							{
-								echo '<div class="next_item">';
-									echo anchor('items/view/'.$next_item_id,lang('items_next_item').' &raquo;', 'class="btn btn-green btn-round"');
-								echo '</div>';
-							}
-							?>
-						</li>
-					</ul>
-				</div>
+                <div class="form-group">
+                    <?php echo form_label(lang('common_item_number_expanded').' :', 'item_number',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_input(array(
+                            'name'=>'item_number',
+                            'id'=>'item_number',
+                            'class'=>'form-control form-inps',
+                            'value'=>$item_info->item_number)
+                        );?>
+                    </div>
+                </div>
 
-				<div class="form-group">
-					<?php echo form_label(lang('common_item_number_expanded').' :', 'item_number',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_input(array(
-							'name'=>'item_number',
-							'id'=>'item_number',
-							'class'=>'form-control form-inps',
-							'value'=>$item_info->item_number)
-						);?>
-					</div>
-				</div>
+                <div class="form-group">
+                    <?php echo form_label(lang('common_product_id').' :', 'product_id',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_input(array(
+                            'name'=>'product_id',
+                            'id'=>'product_id',
+                            'class'=>'form-control form-inps',
+                            'value'=>$item_info->product_id)
+                        );?>
+                    </div>
+                </div>
 
-				<div class="form-group">
-					<?php echo form_label(lang('common_product_id').' :', 'product_id',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_input(array(
-							'name'=>'product_id',
-							'id'=>'product_id',
-							'class'=>'form-control form-inps',
-							'value'=>$item_info->product_id)
-						);?>
-					</div>
-				</div>
-				
-				<div class="form-group">	
-					<label class="col-sm-3 col-md-3 col-lg-2 control-label"><?php echo lang('items_additional_item_numbers') ?></label>
-					<div class="col-sm-9 col-md-3 col-lg-3">
-						<table id="additional_item_numbers" class="table">
-							<thead>
-								<tr>
-								<th><?php echo lang('common_item_number'); ?></th>
-								<th><?php echo lang('common_delete'); ?></th>
-								</tr>
-							</thead>
-							
-							<tbody>
-								<?php if (isset($additional_item_numbers) && $additional_item_numbers) {?>
-									<?php foreach($additional_item_numbers->result() as $additional_item_number) { ?>
-										<tr><td><input type="text" class="form-control form-inps" size="50" name="additional_item_numbers[]" value="<?php echo H($additional_item_number->item_number); ?>" /></td><td>
-										<a class="delete_item_number" href="javascript:void(0);"><?php echo lang('common_delete'); ?></a>
-									</td></tr>
-									<?php } ?>
-								<?php } ?>
-							</tbody>
-						</table>
-					
-						<a href="javascript:void(0);" id="add_addtional_item_number"><?php echo lang('items_add_item_number'); ?></a>
-					</div>
-				</div>
+                <div class="form-group">
+                    <label class="col-sm-3 col-md-3 col-lg-2 control-label"><?php echo lang('items_additional_item_numbers') ?></label>
+                    <div class="col-sm-9 col-md-3 col-lg-3">
+                        <table id="additional_item_numbers" class="table">
+                            <thead>
+                                <tr>
+                                <th><?php echo lang('common_item_number'); ?></th>
+                                <th><?php echo lang('common_delete'); ?></th>
+                                </tr>
+                            </thead>
 
-				<div class="form-group">
-					<?php echo form_label(lang('common_item_name').' :', 'name',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label required wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_input(array(
-							'name'=>'name',
-							'id'=>'name',
-							'class'=>'form-control form-inps',
-							'value'=>$item_info->name)
-						);?>
-					</div>
-				</div>
+                            <tbody>
+                                <?php if (isset($additional_item_numbers) && $additional_item_numbers) {?>
+                                    <?php foreach($additional_item_numbers->result() as $additional_item_number) { ?>
+                                        <tr><td><input type="text" class="form-control form-inps" size="50" name="additional_item_numbers[]" value="<?php echo H($additional_item_number->item_number); ?>" /></td><td>
+                                        <a class="delete_item_number" href="javascript:void(0);"><?php echo lang('common_delete'); ?></a>
+                                    </td></tr>
+                                    <?php } ?>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+
+                        <a href="javascript:void(0);" id="add_addtional_item_number"><?php echo lang('items_add_item_number'); ?></a>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <?php echo form_label(lang('common_item_name').' :', 'name',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label required wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_input(array(
+                            'name'=>'name',
+                            'id'=>'name',
+                            'class'=>'form-control form-inps',
+                            'value'=>$item_info->name)
+                        );?>
+                    </div>
+                </div>
 
 
-				<div class="form-group">
-					<?php echo form_label(lang('common_category').' :', 'category_id',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label  required wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_dropdown('category_id', $categories,$item_info->category_id, 'class="form-control form-inps" id ="category_id"');?>
-						<?php if ($this->Employee->has_module_action_permission('items', 'manage_categories', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
-								<div>
-									<?php echo anchor("items/categories",lang('items_manage_categories'),array('target' => '_blank', 'title'=>lang('items_manage_categories')));?>
-								</div>
-						<?php } ?>		
-					</div>
-					
-				</div>
-				
-				
-				<div class="form-group">
-					<?php echo form_label(lang('common_tags').' :', 'tags',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_input(array(
-							'name'=>'tags',
-							'id'=>'tags',
-							'class'=>'form-control form-inps',
-							'value' => $tags,
-						));?>
-						<?php if ($this->Employee->has_module_action_permission('items', 'manage_tags', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
-								<div>
-									<?php echo anchor("items/manage_tags",lang('items_manage_tags'),array('target' => '_blank', 'title'=>lang('items_manage_tags')));?>
-								</div>
-						<?php } ?>
-					</div>
-				</div>
-				
-				<div class="form-group">
-					<?php echo form_label(lang('common_size').' :', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_input(array(
-							'name'=>'size',
-							'id'=>'size',
-							'class'=>'form-control form-inps',
-							'value'=>$item_info->size)
-						);?>
-					</div>
-				</div>
-				<div class="form-group">
-					<?php echo form_label(lang('common_measure').' :', 'measures',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_dropdown('measure_id', $measures, $item_info->measure_id, 'class="form-control form-inps" id ="measure_id" onchange="rebuildDropBox();"');?>
-						<?php // if ($this->Employee->has_module_action_permission('items', 'manage_tags', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
-								<div>
-									<?php echo anchor("items/manage_measures",lang('items_manage_measures'),array('target' => '_blank', 'title'=>lang('items_manage_measures')));?>
-								</div>
-						<?php // } ?>
-					</div>
-				</div>
-				<div class="form-group">
-					<?php echo form_label(lang('common_supplier').' :', 'supplier_id',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide '.(!$item_info->item_id ? 'required' : ''))); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_dropdown('supplier_id', $suppliers, $selected_supplier,'class="form-control" id="supplier_id"');?>
-					</div>
-				</div>
-				
-				<div class="form-group reorder-input <?php if ($item_info->is_service){echo 'hidden';} ?>">
-					<?php echo form_label(lang('items_reorder_level').' :', 'reorder_level',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_input(array(
-							'name'=>'reorder_level',
-							'id'=>'reorder_level',
-							'class'=>'form-control form-inps',
-							'value'=>$item_info->reorder_level ? to_quantity($item_info->reorder_level) :'')
-						);?>
-					</div>
-				</div>
-				
-				<div class="form-group">
-					<?php echo form_label(lang('items_days_to_expiration').' :', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_input(array(
-							'name'=>'expire_days',
-							'id'=>'expire_days',
-							'class'=>'form-control form-inps',
-							'value'=>$item_info->expire_days)
-						);?>
-					</div>
-				</div>
+                <div class="form-group">
+                    <?php echo form_label(lang('common_category').' :', 'category_id',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label  required wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_dropdown('category_id', $categories,$item_info->category_id, 'class="form-control form-inps" id ="category_id"');?>
+                        <?php if ($this->Employee->has_module_action_permission('items', 'manage_categories', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
+                                <div>
+                                    <?php echo anchor("items/categories",lang('items_manage_categories'),array('target' => '_blank', 'title'=>lang('items_manage_categories')));?>
+                                </div>
+                        <?php } ?>
+                    </div>
 
-				<div class="form-group">
-					<?php echo form_label(lang('common_description').' :', 'description',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_textarea(array(
-							'name'=>'description',
-							'id'=>'description',
-							'value'=>$item_info->description,
-							'class'=>'form-control  text-area',
-							'rows'=>'5',
-							'cols'=>'17')
-						);?>
-					</div>
-				</div>
+                </div>
 
-				<div class="form-group">
-					<?php echo form_label(lang('common_prices_include_tax').' :', 'tax_included',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_checkbox(array(
-							'name'=>'tax_included',
-							'id'=>'tax_included',
-							'class'=>'delete-checkbox',
-							'value'=>1,
-							'checked'=>($item_info->tax_included || (!$item_info->item_id && $this->config->item('prices_include_tax'))) ? 1 : 0)
-						);?>
-						<label for="tax_included"><span></span></label>
-					</div>
-				</div>
 
-				<div class="form-group">
-					<?php echo form_label(lang('items_is_service').' :', 'is_service',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_checkbox(array(
-							'name'=>'is_service',
-							'id'=>'is_service',
-								'class'=>'delete-checkbox',
-							'value'=>1,
-							'checked'=>($item_info->is_service || (!$item_info->item_id && $this->config->item('default_new_items_to_service'))) ? 1 : 0)
-						);?>
-						<label for="is_service"><span></span></label>
-					</div>
-				</div>
+                <div class="form-group">
+                    <?php echo form_label(lang('common_tags').' :', 'tags',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_input(array(
+                            'name'=>'tags',
+                            'id'=>'tags',
+                            'class'=>'form-control form-inps',
+                            'value' => $tags,
+                        ));?>
+                        <?php if ($this->Employee->has_module_action_permission('items', 'manage_tags', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
+                                <div>
+                                    <?php echo anchor("items/manage_tags",lang('items_manage_tags'),array('target' => '_blank', 'title'=>lang('items_manage_tags')));?>
+                                </div>
+                        <?php } ?>
+                    </div>
+                </div>
 
-				<div class="form-group">
-					<?php echo form_label(lang('items_allow_alt_desciption').' :', 'allow_alt_description',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_checkbox(array(
-							'name'=>'allow_alt_description',
-							'id'=>'allow_alt_description',
-							'class'=>'delete-checkbox',
-							'value'=>1,
-							'checked'=>($item_info->allow_alt_description)? 1  :0)
-						);?>
-						<label for="allow_alt_description"><span></span></label>
-					</div>
-				</div>
+                <div class="form-group">
+                    <?php echo form_label(lang('common_size').' :', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_input(array(
+                            'name'=>'size',
+                            'id'=>'size',
+                            'class'=>'form-control form-inps',
+                            'value'=>$item_info->size)
+                        );?>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <?php echo form_label(lang('common_measure').' :', 'measures',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_dropdown('measure_id', $measures, $item_info->measure_id, 'class="form-control form-inps" id ="measure_id" onchange="rebuildDropBox();"');?>
+                        <?php // if ($this->Employee->has_module_action_permission('items', 'manage_tags', $this->Employee->get_logged_in_employee_info()->person_id)) {?>
+                                <div>
+                                    <?php echo anchor("items/manage_measures",lang('items_manage_measures'),array('target' => '_blank', 'title'=>lang('items_manage_measures')));?>
+                                </div>
+                        <?php // } ?>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <?php echo form_label(lang('common_supplier').' :', 'supplier_id',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide '.(!$item_info->item_id ? 'required' : ''))); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_dropdown('supplier_id', $suppliers, $selected_supplier,'class="form-control" id="supplier_id"');?>
+                    </div>
+                </div>
 
-				<div class="form-group">
-					<?php echo form_label(lang('items_is_serialized').' :', 'is_serialized',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_checkbox(array(
-							'name'=>'is_serialized',
-							'id'=>'is_serialized',
-								'class'=>'delete-checkbox',
-							'value'=>1,
-							'checked'=>($item_info->is_serialized)? 1 : 0)
-						);?>
-						<label for="is_serialized"><span></span></label>
-					</div>
-				</div>
-				
-				<div class="form-group">
-	                <?php echo form_label(lang('common_choose_avatar').' :', 'image_id',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-	                    <div class="image-upload">
-	                      	<input type="file" name="image_id" id="image_id" class="filestyle" data-icon="false" >  
-	                  	</div>  &nbsp;
-	                  	<div id="avatar">
-			      			<?php echo $item_info->image_id ? img(array('src' => site_url('app_files/view/'.$item_info->image_id),'class'=>'img-polaroid img-polaroid-s')) : img(array('src' => base_url().'assets/img/avatar.png','class'=>'','id'=>'image_empty')); ?>
-						</div>
-	                </div> 
-				</div>
+                <div class="form-group reorder-input <?php if ($item_info->is_service){echo 'hidden';} ?>">
+                    <?php echo form_label(lang('items_reorder_level').' :', 'reorder_level',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_input(array(
+                            'name'=>'reorder_level',
+                            'id'=>'reorder_level',
+                            'class'=>'form-control form-inps',
+                            'value'=>$item_info->reorder_level ? to_quantity($item_info->reorder_level) :'')
+                        );?>
+                    </div>
+                </div>
 
-				<?php if($item_info->image_id) {  ?>
-				<div class="form-group">
-					<?php echo form_label(lang('common_del_image').' :', 'del_image',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
-					<div class="col-sm-9 col-md-9 col-lg-10">
-						<?php echo form_checkbox(array(
-							'name'=>'del_image',
-							'id'=>'del_image',
-							'class'=>'delete-checkbox',
-							'value'=>1
-						));?>
-						<label for="del_image"><span></span></label>
-					</div>
-				</div>
-				<?php } ?>
-			</div><!--/panel-body -->
+                <div class="form-group">
+                    <?php echo form_label(lang('items_days_to_expiration').' :', 'size',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_input(array(
+                            'name'=>'expire_days',
+                            'id'=>'expire_days',
+                            'class'=>'form-control form-inps',
+                            'value'=>$item_info->expire_days)
+                        );?>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <?php echo form_label(lang('common_description').' :', 'description',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_textarea(array(
+                            'name'=>'description',
+                            'id'=>'description',
+                            'value'=>$item_info->description,
+                            'class'=>'form-control  text-area',
+                            'rows'=>'5',
+                            'cols'=>'17')
+                        );?>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <?php echo form_label(lang('common_prices_include_tax').' :', 'tax_included',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_checkbox(array(
+                            'name'=>'tax_included',
+                            'id'=>'tax_included',
+                            'class'=>'delete-checkbox',
+                            'value'=>1,
+                            'checked'=>($item_info->tax_included || (!$item_info->item_id && $this->config->item('prices_include_tax'))) ? 1 : 0)
+                        );?>
+                        <label for="tax_included"><span></span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <?php echo form_label(lang('items_is_service').' :', 'is_service',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_checkbox(array(
+                            'name'=>'is_service',
+                            'id'=>'is_service',
+                                'class'=>'delete-checkbox',
+                            'value'=>1,
+                            'checked'=>($item_info->is_service || (!$item_info->item_id && $this->config->item('default_new_items_to_service'))) ? 1 : 0)
+                        );?>
+                        <label for="is_service"><span></span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <?php echo form_label(lang('items_allow_alt_desciption').' :', 'allow_alt_description',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_checkbox(array(
+                            'name'=>'allow_alt_description',
+                            'id'=>'allow_alt_description',
+                            'class'=>'delete-checkbox',
+                            'value'=>1,
+                            'checked'=>($item_info->allow_alt_description)? 1  :0)
+                        );?>
+                        <label for="allow_alt_description"><span></span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <?php echo form_label(lang('items_is_serialized').' :', 'is_serialized',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_checkbox(array(
+                            'name'=>'is_serialized',
+                            'id'=>'is_serialized',
+                                'class'=>'delete-checkbox',
+                            'value'=>1,
+                            'checked'=>($item_info->is_serialized)? 1 : 0)
+                        );?>
+                        <label for="is_serialized"><span></span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <?php echo form_label(lang('common_choose_avatar').' :', 'image_id',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <div class="image-upload">
+                            <input type="file" name="image_id" id="image_id" class="filestyle" data-icon="false" >
+                        </div>  &nbsp;
+                        <div id="avatar">
+                            <?php echo $item_info->image_id ? img(array('src' => site_url('app_files/view/'.$item_info->image_id),'class'=>'img-polaroid img-polaroid-s')) : img(array('src' => base_url().'assets/img/avatar.png','class'=>'','id'=>'image_empty')); ?>
+                        </div>
+                    </div>
+                </div>
+
+                <?php if($item_info->image_id) {  ?>
+                <div class="form-group">
+                    <?php echo form_label(lang('common_del_image').' :', 'del_image',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label wide')); ?>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <?php echo form_checkbox(array(
+                            'name'=>'del_image',
+                            'id'=>'del_image',
+                            'class'=>'delete-checkbox',
+                            'value'=>1
+                        ));?>
+                        <label for="del_image"><span></span></label>
+                    </div>
+                </div>
+                <?php } ?>
+            </div><!--/panel-body -->
 		</div><!-- /panel-piluku -->
-
-
 		<div class="panel panel-piluku">
 			<div class="panel-heading pricing-widget">
 				<?php echo lang("items_pricing_and_inventory"); ?>
@@ -648,7 +644,6 @@
 				</div>
 			</div><!-- /panel-body-->
 		</div><!--/panel-piluku-->
-
 		<div class="panel">
 			<div class="panel-body">
 				<?php foreach($locations as $location) { 
@@ -1132,10 +1127,7 @@
 		</div><!-- /panel -->
 	</div>
 </div>
-		
-
 <script type='text/javascript'>
-
 function commission_change()
 {
 	if ($("#commission_type").val() == 'percent')
@@ -1747,8 +1739,9 @@ function cancelItemAddingFromSaleOrRecv()
 		}
 	});
 }
-
 </script>
+<?php $this->load->view('attribute_sets/widgets/attribute_set', array('entity_info' => $item_info)); ?>
+<?php $this->load->view('attribute_sets/widgets/attributes'); ?>
 <?php echo form_close(); ?>
 <div id="measure_item_tmp" style="display: none">
 	<div class="form-group">

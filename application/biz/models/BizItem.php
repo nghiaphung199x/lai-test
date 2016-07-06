@@ -1,5 +1,7 @@
 <?php
+
 require_once (APPPATH . "models/Item.php");
+
 class BizItem extends Item
 {
 	function getNotAuditedInLocation($auditedIds = array(), $extra = array())

@@ -210,6 +210,7 @@ class BizItems extends Items
         }
 
         $item_data = array(
+            'attribute_set_id' => $this->input->post('attribute_set_id'),
             'name' => $this->input->post('name'),
             'description' => $this->input->post('description'),
             'tax_included' => $this->input->post('tax_included') ? $this->input->post('tax_included') : 0,
@@ -257,6 +258,25 @@ class BizItems extends Items
         $sale_or_receiving = $this->input->post('sale_or_receiving');
 
         if ($this->Item->save($item_data, $item_id)) {
+
+            if (empty($item_id)) {
+                $item_id = $item_data['item_id'];
+            }
+
+            /* Update Extended Attributes */
+            if (!class_exists('Attribute')) {
+                $this->load->model('Attribute');
+            }
+            $attributes = $this->input->post('attributes');
+            if (!empty($attributes)) {
+                $this->Attribute->reset_attributes(array('entity_id' => $item_id, 'entity_type' => 'items'));
+                foreach ($attributes as $attribute_id => $value) {
+                    $attribute_value = array('entity_id' => $item_id, 'entity_type' => 'items', 'attribute_id' => $attribute_id, 'entity_value' => $value);
+                    $this->Attribute->set_attributes($attribute_value);
+                }
+            }
+            /* End Update */
+
             $this->Tag->save_tags_for_item(isset($item_data['item_id']) ? $item_data['item_id'] : $item_id, $this->input->post('tags'));
             $tier_type = $this->input->post('tier_type');
 
@@ -459,6 +479,29 @@ class BizItems extends Items
         $data['controller_name'] = $this->_controller_name;
 
         $data['item_info'] = $this->Item->get_info($item_id);
+        /* Load Attribute Sets, Groups And Required Attributes */
+
+        $this->load->model('Attribute_set');
+        $this->load->model('Attribute_group');
+        $this->load->model('Attribute');
+
+        $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+        $data['attribute_groups'] = $this->Attribute_group->get_all()->result();
+        $data['attribute_values'] = $this->Attribute->get_entity_attributes(array('entity_id' => $item_id, 'entity_type' => 'items'));
+        if (!empty($data['item_info']->attribute_set_id)) {
+            $data['attributes'] = $this->Attribute_set->get_attributes($data['item_info']->attribute_set_id);
+        }
+        if (!empty($data['attribute_groups'])) {
+            foreach ($data['attribute_groups'] as $key => $attribute_group) {
+                if (!empty($data['attributes'])) {
+                    foreach ($data['attributes'] as $attribute) {
+                        if ($attribute->attribute_group_id == $attribute_group->id) {
+                            $data['attribute_groups'][$key]->has_attributes = true;
+                        }
+                    }
+                }
+            }
+        }
 
         $data['item_info']->measures_converted = $this->ItemMeasures->getMeasuresByItemId($item_id);
 
@@ -872,7 +915,7 @@ class BizItems extends Items
 
             $data['audit_items'] = $this->Inventory->get_items_counted($count_id, NULL, NULL);
             $this->Inventory->set_count($count_id, 'closed');
-            $data['create_datetime'] = date(get_date_format() . ' ' . get_time_format(), strtotime(time()));
+            $data['create_datetime'] = date(get_date_format() . ' ' . get_time_format(), strtotime(''));
             $data['count_id'] = $count_id;
             $this->load->view("items/audit", $data);
         } else {

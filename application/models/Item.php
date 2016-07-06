@@ -1,6 +1,19 @@
 <?php
-class Item extends CI_Model
+
+require_once 'Bizmodel.php';
+
+class Item extends Bizmodel
 {
+    protected $import_fields = array(
+        'item_number' => 'item_number',
+        'product_id' => 'product_id',
+        'name' => 'name',
+        'description' => 'description',
+        'cost_price' => 'cost_price',
+        'unit_price' => 'unit_price',
+        'size' => 'size'
+    );
+
 	/*
 	Determines if a given item_id is an item
 	*/
@@ -398,7 +411,7 @@ class Item extends CI_Model
 			if($this->db->insert('items',$item_data))
 			{
 				$item_data['item_id']=$this->db->insert_id();
-				return true;
+				return $item_data['item_id'];
 			}
 			return false;
 		}
