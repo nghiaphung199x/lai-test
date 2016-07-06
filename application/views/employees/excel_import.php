@@ -67,8 +67,6 @@
         </div>
     </div>
 </div>
-</div>
-
 <script type='text/javascript'>
 
     //validation and submit handling

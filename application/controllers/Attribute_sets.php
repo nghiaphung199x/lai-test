@@ -13,6 +13,9 @@ class Attribute_sets extends Secure_area implements Idata_controller
         $this->load->model('Attribute');
         $this->load->model('Attribute_group');
         $this->load->model('Attribute_set');
+        global $global_breadcrumb;
+        $global_breadcrumb[] = array('label' => 'Dashboard', 'url' => site_url('home'));
+        $global_breadcrumb[] = array('label' => lang('attribute_sets_manage'), 'url' => site_url('attribute_sets'));
     }
 
     function index($offset = 0)
@@ -142,6 +145,8 @@ class Attribute_sets extends Secure_area implements Idata_controller
     */
     function view($attribute_set_id = -1, $redirect_code = 0)
     {
+        global $global_breadcrumb;
+        $global_breadcrumb[] = array('label' => lang('common_edit'), 'url' => '#');
         $this->load->model('Module_action');
         $this->check_action_permission('add_update');
         $data = $this->_get_data($attribute_set_id);
