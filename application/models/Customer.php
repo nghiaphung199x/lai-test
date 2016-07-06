@@ -1,6 +1,29 @@
 <?php
 class Customer extends Person
-{	
+{
+    protected $import_fields = array(
+        'account_number' => 'account_number',
+        'company_name' => 'company_name',
+        'balance' => 'balance',
+        'credit_limit' => 'credit_limit',
+        'points' => 'points',
+        'sex' => 'sex'
+    );
+
+    protected $person_import_fields = array(
+        'first_name' => 'first_name',
+        'last_name' => 'last_name',
+        'birth_date' => 'birth_date',
+        'email' => 'email',
+        'phone_number' => 'phone_number',
+        'address_1' => 'address_1',
+        'address_2' => 'address_2',
+        'city' => 'city',
+        'state' => 'state',
+        'zip' => 'zip',
+        'country' => 'country',
+        'comments' => 'comments',
+    );
 	/*
 	Determines if a given person_id is a customer
 	*/
@@ -667,5 +690,9 @@ class Customer extends Person
 		$this->db->where('deleted', 1);
 		return $this->db->update('customers',$customer_data);
 	}
+
+    public function get_person_import_fields() {
+        return $this->person_import_fields;
+    }
 }
 ?>

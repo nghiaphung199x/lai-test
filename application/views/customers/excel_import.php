@@ -49,6 +49,11 @@
 							</div>
 						</div>
 					</div>
+
+                    <h3><?php echo lang('common_step_3'); ?>: </h3>
+                    <p><?php echo lang('common_step_3_desc'); ?></p>
+                    <p><?php echo lang('common_required_select_columns'); ?></p>
+                    <div class="form-group ajax-result" id="import-result"></div>
 			</div>
 			<?php echo form_close(); ?>
 		</div>	
@@ -77,7 +82,8 @@
 						}
 						else
 						{
-							show_feedback('success',response.message,<?php echo json_encode(lang('common_success')); ?>);
+                            $("#import-result").html(response.html);
+							//show_feedback('success',response.message,<?php echo json_encode(lang('common_success')); ?>);
 						}
 						submitting = false;
 					},
