@@ -1138,6 +1138,338 @@ class Items extends Secure_area implements Idata_controller
         $this->load->view("items/excel_import", null);
     }
 
+    function cleanup()
+    {
+        $this->Item->cleanup();
+        echo json_encode(array('success' => true, 'message' => lang('items_cleanup_sucessful')));
+    }
+
+
+    function select_inventory()
+    {
+        $this->session->set_userdata('select_inventory', 1);
+    }
+
+    function get_select_inventory()
+    {
+        return $this->session->userdata('select_inventory') ? $this->session->userdata('select_inventory') : 0;
+    }
+
+    function clear_select_inventory()
+    {
+        $this->session->unset_userdata('select_inventory');
+
+    }
+
+    function tags()
+    {
+        //allow parallel searchs to improve performance.
+        session_write_close();
+        $suggestions = $this->Tag->get_tag_suggestions($this->input->get('term'), 25);
+        echo json_encode($suggestions);
+    }
+
+    function count($status = 'open', $offset = 0)
+    {
+        $this->check_action_permission('count_inventory');
+        $data = array();
+        $config = array();
+        $config['base_url'] = site_url("items/count/$status");
+        $config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+        $config['total_rows'] = $this->Inventory->get_count_by_status($status);
+        $config['uri_segment'] = 4;
+        $data['per_page'] = $config['per_page'];
+
+
+        $data['total_rows'] = $config['total_rows'];
+        $this->load->library('pagination');
+        $this->pagination->initialize($config);
+        $data['pagination'] = $this->pagination->create_links();
+
+        $counts = $this->Inventory->get_counts_by_status($status, $config['per_page'], $offset)->result_array();
+
+        $data['counts'] = $counts;
+        $data['status'] = $status;
+        $this->load->view('items/count', $data);
+    }
+
+    function new_count()
+    {
+        $this->check_action_permission('count_inventory');
+        $count_id = $this->Inventory->create_count();
+        redirect('items/do_count/' . $count_id);
+    }
+
+    function do_count($count_id, $offset = 0)
+    {
+        $this->check_action_permission('count_inventory');
+        $this->session->set_userdata('current_count_id', $count_id);
+
+        $data = array();
+        $config = array();
+        $config['base_url'] = site_url("items/do_count/$count_id");
+        $config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+        $config['total_rows'] = $this->Inventory->get_number_of_items_counted($count_id);
+        $config['uri_segment'] = 4;
+        $data['per_page'] = $config['per_page'];
+
+
+        $data['total_rows'] = $config['total_rows'];
+        $this->load->library('pagination');
+        $this->pagination->initialize($config);
+        $data['pagination'] = $this->pagination->create_links();
+        $data['count_info'] = $this->Inventory->get_count_info($count_id);
+
+        $data['items_counted'] = $this->Inventory->get_items_counted($count_id, $config['per_page'], $offset);
+        $data['mode'] = $this->session->userdata('count_mode') ? $this->session->userdata('count_mode') : 'scan_and_set';
+        $data['modes'] = array('scan_and_set' => lang('items_scan_and_set'), 'scan_and_add' => lang('items_scan_and_add'));
+
+        $this->load->view('items/do_count', $data);
+    }
+
+    function add_item_to_inventory_count()
+    {
+        $this->check_action_permission('count_inventory');
+        $this->load->model('Item_location');
+
+        $item = $this->input->post('item');
+        $count_id = $this->session->userdata('current_count_id');
+        $mode = $this->session->userdata('count_mode') ? $this->session->userdata('count_mode') : 'scan_and_set';
+
+        if ($item && $count_id) {
+            if (!$this->Item->exists(does_contain_only_digits($item) ? (int)$item : -1)) {
+                //try to get item id given an item_number
+                $item = $this->Item->get_item_id($item);
+            }
+
+            if ($item) {
+                $current_count = $this->Inventory->get_count_item_current_quantity($count_id, $item);
+                $actual_quantity = $this->Inventory->get_count_item_actual_quantity($count_id, $item);
+
+                if ($actual_quantity !== NULL) {
+                    $current_inventory_value = $actual_quantity;
+                } else {
+                    $current_inventory_value = $this->Item_location->get_location_quantity($item);
+                }
+
+                if ($mode == 'scan_and_add') {
+                    $this->Inventory->set_count_item($count_id, $item, $current_count + 1, $current_inventory_value);
+                } else {
+                    $this->Inventory->set_count_item($count_id, $item, $current_count, $current_inventory_value);
+                }
+            }
+        }
+
+        $this->_reload_inventory_counts();
+    }
+
+    function edit_count()
+    {
+        $this->check_action_permission('count_inventory');
+        $name = $this->input->post('name');
+        $count_id = $this->input->post('pk');
+        $$name = $this->input->post('value');
+
+        $this->Inventory->set_count($count_id, isset($status) ? $status : FALSE, isset($comment) ? $comment : FALSE);
+    }
+
+    function excel_import_count()
+    {
+        $this->check_action_permission('count_inventory');
+        $this->load->view("items/excel_import_count", null);
+    }
+
+    function _excel_get_header_row_count()
+    {
+        return array(lang('common_item_id') . '/' . lang('common_item_number') . '/' . lang('common_product_id'), lang('items_count'));
+    }
+
+    function excel_count()
+    {
+        $this->load->helper('report');
+        $header_row = $this->_excel_get_header_row_count();
+        $this->load->helper('spreadsheet');
+        $content = array_to_spreadsheet(array($header_row));
+        $this->load->helper('download');
+        force_download('items_count.' . ($this->config->item('spreadsheet_format') == 'XLSX' ? 'xlsx' : 'csv'), $content);
+    }
+
+
+    function do_excel_import_count()
+    {
+        $this->check_action_permission('count_inventory');
+        $this->load->model('Item_location');
+
+        $count_id = $this->session->userdata('current_count_id');
+        $this->load->helper('demo');
+        if (is_on_demo_host()) {
+            $msg = lang('common_excel_import_disabled_on_demo');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        }
+
+        $file_info = pathinfo($_FILES['file_path']['name']);
+        if ($file_info['extension'] != 'xlsx' && $file_info['extension'] != 'csv') {
+            echo json_encode(array('success' => false, 'message' => lang('common_upload_file_not_supported_format')));
+            return;
+        }
+
+
+        set_time_limit(0);
+        $this->db->trans_start();
+        $msg = 'do_excel_import';
+
+        $category_map = array();
+        $failCodes = array();
+        if ($_FILES['file_path']['error'] != UPLOAD_ERR_OK) {
+            $msg = lang('common_excel_import_failed');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        } else {
+            if (($handle = fopen($_FILES['file_path']['tmp_name'], "r")) !== FALSE) {
+                $this->load->helper('spreadsheet');
+                $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
+                $sheet = $objPHPExcel->getActiveSheet();
+                $num_rows = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
+
+                //Loop through rows, skip header row
+                for ($k = 2; $k <= $num_rows; $k++) {
+                    $item_id = $sheet->getCellByColumnAndRow(0, $k)->getValue();
+                    if (!$item_id) {
+                        continue;
+                    }
+
+                    $quantity = $sheet->getCellByColumnAndRow(1, $k)->getValue();
+                    if (!$quantity) {
+                        continue;
+                    }
+
+                    if ($item_id && $quantity) {
+                        if (!$this->Item->exists(does_contain_only_digits($item_id) ? (int)$item_id : -1)) {
+                            //try to get item id given an item_number
+                            $item_id = $this->Item->get_item_id($item_id);
+                        }
+
+                        if ($item_id) {
+                            $current_inventory_value = $this->Item_location->get_location_quantity($item_id);
+                            $this->Inventory->set_count_item($count_id, $item_id, $quantity, $current_inventory_value);
+                        }
+                    }
+
+                }
+
+                $this->db->trans_complete();
+                echo json_encode(array('success' => true, 'message' => lang('items_import_successful')));
+
+            } else {
+                echo json_encode(array('success' => false, 'message' => lang('common_upload_file_not_supported_format')));
+                return;
+            }
+        }
+    }
+
+    function count_import_success()
+    {
+        $count_id = $this->session->userdata('current_count_id');
+        redirect('items/do_count/' . $count_id);
+    }
+
+    function finish_count($update_inventory = 0)
+    {
+        $this->check_action_permission('count_inventory');
+
+        $count_id = $this->session->userdata('current_count_id');
+
+        if ($update_inventory && $this->Employee->has_module_action_permission('items', 'edit_quantity', $this->Employee->get_logged_in_employee_info()->person_id)) {
+            $this->Inventory->update_inventory_from_count($count_id);
+        }
+
+        $this->Inventory->set_count($count_id, 'closed');
+        redirect('items/count');
+    }
+
+    function edit_count_item()
+    {
+        $this->check_action_permission('count_inventory');
+
+        $name = $this->input->post('name');
+        $item_id = $this->input->post('pk');
+        $$name = $this->input->post('value');
+        $count_id = $this->session->userdata('current_count_id');
+
+        $current_count = $this->Inventory->get_count_item_current_quantity($count_id, $item_id);
+        $actual_quantity = $this->Inventory->get_count_item_actual_quantity($count_id, $item_id);
+
+        if ($actual_quantity !== NULL) {
+            $current_inventory_value = $actual_quantity;
+        } else {
+            $current_inventory_value = $this->Item_location->get_location_quantity($item_id);
+        }
+
+        $this->Inventory->set_count_item($count_id, $item_id, isset($quantity) ? $quantity : $current_count, $current_inventory_value, isset($comment) ? $comment : FALSE);
+        $this->_reload_inventory_counts();
+    }
+
+    function delete_inventory_count_item($item_id)
+    {
+        $this->check_action_permission('count_inventory');
+
+        $count_id = $this->session->userdata('current_count_id');
+        $this->Inventory->delete_count_item($count_id, $item_id);
+        redirect('items/do_count/' . $count_id);
+    }
+
+    function delete_inventory_count($count_id, $go_back_to_status = 'open')
+    {
+        $this->check_action_permission('count_inventory');
+
+        $this->Inventory->delete_inventory_count($count_id);
+        redirect("items/count/$go_back_to_status");
+    }
+
+    function reload_inventory_counts()
+    {
+        $this->check_action_permission('count_inventory');
+
+        $this->_reload_inventory_counts();
+    }
+
+    function change_count_mode()
+    {
+        $this->check_action_permission('count_inventory');
+
+        $this->session->set_userdata('count_mode', $this->input->post('mode'));
+
+        $this->_reload_inventory_counts();
+    }
+
+    function _reload_inventory_counts($data = array())
+    {
+        $this->check_action_permission('count_inventory');
+
+        $count_id = $this->session->userdata('current_count_id');
+        $config = array();
+
+        $config['base_url'] = site_url("items/do_count/$count_id");
+        $config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+        $config['total_rows'] = $this->Inventory->get_number_of_items_counted($count_id);
+        $config['uri_segment'] = 4;
+        $data['per_page'] = $config['per_page'];
+        $data['count_info'] = $this->Inventory->get_count_info($count_id);
+
+        $data['total_rows'] = $config['total_rows'];
+        $this->load->library('pagination');
+        $this->pagination->initialize($config);
+        $data['pagination'] = $this->pagination->create_links();
+
+        $data['items_counted'] = $this->Inventory->get_items_counted($count_id, $config['per_page']);
+
+        $data['mode'] = $this->session->userdata('count_mode') ? $this->session->userdata('count_mode') : 'scan_and_set';
+        $data['modes'] = array('scan_and_set' => lang('items_scan_and_set'), 'scan_and_add' => lang('items_scan_and_add'));
+
+        $this->load->view("items/do_count_data", $data);
+    }
+
     /*
     function do_excel_import()
     {
@@ -1479,336 +1811,105 @@ class Items extends Secure_area implements Idata_controller
         echo json_encode($result);
     }
 
-    function cleanup()
+    /**
+     * Import Real Data
+     **/
+    public function action_import_data()
     {
-        $this->Item->cleanup();
-        echo json_encode(array('success' => true, 'message' => lang('items_cleanup_sucessful')));
-    }
-
-
-    function select_inventory()
-    {
-        $this->session->set_userdata('select_inventory', 1);
-    }
-
-    function get_select_inventory()
-    {
-        return $this->session->userdata('select_inventory') ? $this->session->userdata('select_inventory') : 0;
-    }
-
-    function clear_select_inventory()
-    {
-        $this->session->unset_userdata('select_inventory');
-
-    }
-
-    function tags()
-    {
-        //allow parallel searchs to improve performance.
-        session_write_close();
-        $suggestions = $this->Tag->get_tag_suggestions($this->input->get('term'), 25);
-        echo json_encode($suggestions);
-    }
-
-    function count($status = 'open', $offset = 0)
-    {
-        $this->check_action_permission('count_inventory');
-        $data = array();
-        $config = array();
-        $config['base_url'] = site_url("items/count/$status");
-        $config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
-        $config['total_rows'] = $this->Inventory->get_count_by_status($status);
-        $config['uri_segment'] = 4;
-        $data['per_page'] = $config['per_page'];
-
-
-        $data['total_rows'] = $config['total_rows'];
-        $this->load->library('pagination');
-        $this->pagination->initialize($config);
-        $data['pagination'] = $this->pagination->create_links();
-
-        $counts = $this->Inventory->get_counts_by_status($status, $config['per_page'], $offset)->result_array();
-
-        $data['counts'] = $counts;
-        $data['status'] = $status;
-        $this->load->view('items/count', $data);
-    }
-
-    function new_count()
-    {
-        $this->check_action_permission('count_inventory');
-        $count_id = $this->Inventory->create_count();
-        redirect('items/do_count/' . $count_id);
-    }
-
-    function do_count($count_id, $offset = 0)
-    {
-        $this->check_action_permission('count_inventory');
-        $this->session->set_userdata('current_count_id', $count_id);
-
-        $data = array();
-        $config = array();
-        $config['base_url'] = site_url("items/do_count/$count_id");
-        $config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
-        $config['total_rows'] = $this->Inventory->get_number_of_items_counted($count_id);
-        $config['uri_segment'] = 4;
-        $data['per_page'] = $config['per_page'];
-
-
-        $data['total_rows'] = $config['total_rows'];
-        $this->load->library('pagination');
-        $this->pagination->initialize($config);
-        $data['pagination'] = $this->pagination->create_links();
-        $data['count_info'] = $this->Inventory->get_count_info($count_id);
-
-        $data['items_counted'] = $this->Inventory->get_items_counted($count_id, $config['per_page'], $offset);
-        $data['mode'] = $this->session->userdata('count_mode') ? $this->session->userdata('count_mode') : 'scan_and_set';
-        $data['modes'] = array('scan_and_set' => lang('items_scan_and_set'), 'scan_and_add' => lang('items_scan_and_add'));
-
-        $this->load->view('items/do_count', $data);
-    }
-
-    function add_item_to_inventory_count()
-    {
-        $this->check_action_permission('count_inventory');
-        $this->load->model('Item_location');
-
-        $item = $this->input->post('item');
-        $count_id = $this->session->userdata('current_count_id');
-        $mode = $this->session->userdata('count_mode') ? $this->session->userdata('count_mode') : 'scan_and_set';
-
-        if ($item && $count_id) {
-            if (!$this->Item->exists(does_contain_only_digits($item) ? (int)$item : -1)) {
-                //try to get item id given an item_number
-                $item = $this->Item->get_item_id($item);
-            }
-
-            if ($item) {
-                $current_count = $this->Inventory->get_count_item_current_quantity($count_id, $item);
-                $actual_quantity = $this->Inventory->get_count_item_actual_quantity($count_id, $item);
-
-                if ($actual_quantity !== NULL) {
-                    $current_inventory_value = $actual_quantity;
-                } else {
-                    $current_inventory_value = $this->Item_location->get_location_quantity($item);
-                }
-
-                if ($mode == 'scan_and_add') {
-                    $this->Inventory->set_count_item($count_id, $item, $current_count + 1, $current_inventory_value);
-                } else {
-                    $this->Inventory->set_count_item($count_id, $item, $current_count, $current_inventory_value);
-                }
-            }
-        }
-
-        $this->_reload_inventory_counts();
-    }
-
-    function edit_count()
-    {
-        $this->check_action_permission('count_inventory');
-        $name = $this->input->post('name');
-        $count_id = $this->input->post('pk');
-        $$name = $this->input->post('value');
-
-        $this->Inventory->set_count($count_id, isset($status) ? $status : FALSE, isset($comment) ? $comment : FALSE);
-    }
-
-    function excel_import_count()
-    {
-        $this->check_action_permission('count_inventory');
-        $this->load->view("items/excel_import_count", null);
-    }
-
-    function _excel_get_header_row_count()
-    {
-        return array(lang('common_item_id') . '/' . lang('common_item_number') . '/' . lang('common_product_id'), lang('items_count'));
-    }
-
-    function excel_count()
-    {
-        $this->load->helper('report');
-        $header_row = $this->_excel_get_header_row_count();
-        $this->load->helper('spreadsheet');
-        $content = array_to_spreadsheet(array($header_row));
-        $this->load->helper('download');
-        force_download('items_count.' . ($this->config->item('spreadsheet_format') == 'XLSX' ? 'xlsx' : 'csv'), $content);
-    }
-
-
-    function do_excel_import_count()
-    {
-        $this->check_action_permission('count_inventory');
-        $this->load->model('Item_location');
-
-        $count_id = $this->session->userdata('current_count_id');
+        $this->check_action_permission('add_update');
         $this->load->helper('demo');
         if (is_on_demo_host()) {
             $msg = lang('common_excel_import_disabled_on_demo');
             echo json_encode(array('success' => false, 'message' => $msg));
             return;
         }
-
-        $file_info = pathinfo($_FILES['file_path']['name']);
-        if ($file_info['extension'] != 'xlsx' && $file_info['extension'] != 'csv') {
-            echo json_encode(array('success' => false, 'message' => lang('common_upload_file_not_supported_format')));
+        $this->load->model('Attribute');
+        $entity_type = 'items';
+        $check_duplicate_field = $this->input->post('check_duplicate_field');
+        $field_parts = explode(':', $check_duplicate_field);
+        if (count($field_parts) == 2) {
+            $check_duplicate_field_type = $field_parts[0];
+            $check_duplicate_field_name = $field_parts[1];
+        }
+        $attribute_set_id = $this->input->post('attribute_set_id');
+        $columns = $this->input->post('columns');
+        $rows = $this->input->post('rows');
+        $selected_rows = $this->input->post('selected_rows');
+        $stored_rows = 0;
+        if (empty($rows) || empty($selected_rows)) {
+            $msg = lang('common_error');
+            echo json_encode(array('success' => true, 'message' => $msg));
             return;
         }
+        foreach ($rows as $index => $row) {
+            if (!isset($selected_rows[$index])) {
+                continue;
+            }
+            $data = array('attribute_set_id' => $attribute_set_id);
+            $person_data = array();
+            $extend_data = array();
+            foreach ($columns as $excel_column => $field_column) {
+                if (!empty($field_column) && !empty($row[$excel_column])) {
+                    $field_parts = explode(':', $field_column);
 
-
-        set_time_limit(0);
-        $this->db->trans_start();
-        $msg = 'do_excel_import';
-
-        $category_map = array();
-        $failCodes = array();
-        if ($_FILES['file_path']['error'] != UPLOAD_ERR_OK) {
-            $msg = lang('common_excel_import_failed');
-            echo json_encode(array('success' => false, 'message' => $msg));
-            return;
-        } else {
-            if (($handle = fopen($_FILES['file_path']['tmp_name'], "r")) !== FALSE) {
-                $this->load->helper('spreadsheet');
-                $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
-                $sheet = $objPHPExcel->getActiveSheet();
-                $num_rows = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
-
-                //Loop through rows, skip header row
-                for ($k = 2; $k <= $num_rows; $k++) {
-                    $item_id = $sheet->getCellByColumnAndRow(0, $k)->getValue();
-                    if (!$item_id) {
-                        continue;
-                    }
-
-                    $quantity = $sheet->getCellByColumnAndRow(1, $k)->getValue();
-                    if (!$quantity) {
-                        continue;
-                    }
-
-                    if ($item_id && $quantity) {
-                        if (!$this->Item->exists(does_contain_only_digits($item_id) ? (int)$item_id : -1)) {
-                            //try to get item id given an item_number
-                            $item_id = $this->Item->get_item_id($item_id);
-                        }
-
-                        if ($item_id) {
-                            $current_inventory_value = $this->Item_location->get_location_quantity($item_id);
-                            $this->Inventory->set_count_item($count_id, $item_id, $quantity, $current_inventory_value);
+                    /* Set Basic Attributes */
+                    if (count($field_parts) == 2) {
+                        switch ($field_parts[0]) {
+                            case 'basic':
+                                $data[$field_parts[1]] = $row[$excel_column];
+                                break;
+                            case 'extend':
+                                $extend_data = array(
+                                    'entity_type' => $entity_type,
+                                    'attribute_id' => $field_parts[1],
+                                    'entity_value' => $row[$excel_column],
+                                );
+                                break;
+                            default:
+                                $data[$field_parts[1]] = $row[$excel_column];
+                                break;
                         }
                     }
-
                 }
-
-                $this->db->trans_complete();
-                echo json_encode(array('success' => true, 'message' => lang('items_import_successful')));
-
-            } else {
-                echo json_encode(array('success' => false, 'message' => lang('common_upload_file_not_supported_format')));
-                return;
+            }
+            try {
+                /* Check duplicate item */
+                $exists_row = false;
+                if (isset($check_duplicate_field_type) && isset($check_duplicate_field_name)) {
+                    switch ($check_duplicate_field_type) {
+                        case 'basic':
+                            $exists_row = $this->Item->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            break;
+                        case 'extend':
+                            $exists_row = $this->Attribute->exists_by_value($entity_type, $extend_data['attribute_id'], $extend_data['entity_value']);
+                            break;
+                        default:
+                            $exists_row = $this->Item->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            break;
+                    }
+                }
+                if (!$exists_row) {
+                    $item_id = $this->Item->save($data);
+                    if (!empty($item_id)) {
+                        $stored_rows++;
+                        /* Set extended attributes */
+                        if (!empty($extend_data)) {
+                            $extend_data['entity_id'] = $item_id;
+                            $this->Attribute->set_attributes($extend_data);
+                        }
+                    }
+                }
+            } catch (Exception $ex) {
+                continue;
             }
         }
-    }
-
-    function count_import_success()
-    {
-        $count_id = $this->session->userdata('current_count_id');
-        redirect('items/do_count/' . $count_id);
-    }
-
-    function finish_count($update_inventory = 0)
-    {
-        $this->check_action_permission('count_inventory');
-
-        $count_id = $this->session->userdata('current_count_id');
-
-        if ($update_inventory && $this->Employee->has_module_action_permission('items', 'edit_quantity', $this->Employee->get_logged_in_employee_info()->person_id)) {
-            $this->Inventory->update_inventory_from_count($count_id);
+        if (!empty($stored_rows)) {
+            $msg = $stored_rows . ' ' . lang('common_record_stored');
+            echo json_encode(array('success' => true, 'message' => $msg));
+            return;
         }
-
-        $this->Inventory->set_count($count_id, 'closed');
-        redirect('items/count');
-    }
-
-    function edit_count_item()
-    {
-        $this->check_action_permission('count_inventory');
-
-        $name = $this->input->post('name');
-        $item_id = $this->input->post('pk');
-        $$name = $this->input->post('value');
-        $count_id = $this->session->userdata('current_count_id');
-
-        $current_count = $this->Inventory->get_count_item_current_quantity($count_id, $item_id);
-        $actual_quantity = $this->Inventory->get_count_item_actual_quantity($count_id, $item_id);
-
-        if ($actual_quantity !== NULL) {
-            $current_inventory_value = $actual_quantity;
-        } else {
-            $current_inventory_value = $this->Item_location->get_location_quantity($item_id);
-        }
-
-        $this->Inventory->set_count_item($count_id, $item_id, isset($quantity) ? $quantity : $current_count, $current_inventory_value, isset($comment) ? $comment : FALSE);
-        $this->_reload_inventory_counts();
-    }
-
-    function delete_inventory_count_item($item_id)
-    {
-        $this->check_action_permission('count_inventory');
-
-        $count_id = $this->session->userdata('current_count_id');
-        $this->Inventory->delete_count_item($count_id, $item_id);
-        redirect('items/do_count/' . $count_id);
-    }
-
-    function delete_inventory_count($count_id, $go_back_to_status = 'open')
-    {
-        $this->check_action_permission('count_inventory');
-
-        $this->Inventory->delete_inventory_count($count_id);
-        redirect("items/count/$go_back_to_status");
-    }
-
-    function reload_inventory_counts()
-    {
-        $this->check_action_permission('count_inventory');
-
-        $this->_reload_inventory_counts();
-    }
-
-    function change_count_mode()
-    {
-        $this->check_action_permission('count_inventory');
-
-        $this->session->set_userdata('count_mode', $this->input->post('mode'));
-
-        $this->_reload_inventory_counts();
-    }
-
-    function _reload_inventory_counts($data = array())
-    {
-        $this->check_action_permission('count_inventory');
-
-        $count_id = $this->session->userdata('current_count_id');
-        $config = array();
-
-        $config['base_url'] = site_url("items/do_count/$count_id");
-        $config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
-        $config['total_rows'] = $this->Inventory->get_number_of_items_counted($count_id);
-        $config['uri_segment'] = 4;
-        $data['per_page'] = $config['per_page'];
-        $data['count_info'] = $this->Inventory->get_count_info($count_id);
-
-        $data['total_rows'] = $config['total_rows'];
-        $this->load->library('pagination');
-        $this->pagination->initialize($config);
-        $data['pagination'] = $this->pagination->create_links();
-
-        $data['items_counted'] = $this->Inventory->get_items_counted($count_id, $config['per_page']);
-
-        $data['mode'] = $this->session->userdata('count_mode') ? $this->session->userdata('count_mode') : 'scan_and_set';
-        $data['modes'] = array('scan_and_set' => lang('items_scan_and_set'), 'scan_and_add' => lang('items_scan_and_add'));
-
-        $this->load->view("items/do_count_data", $data);
+        $msg = $stored_rows . ' ' . lang('common_record_stored');
+        echo json_encode(array('success' => false, 'message' => $msg));
     }
 
 }

@@ -10,7 +10,6 @@ class Customers extends Person_controller
 		$this->load->model('Customer');
 	}
 	
-	
 	function index($offset=0)
 	{
 		$params = $this->session->userdata('customers_search_data') ? $this->session->userdata('customers_search_data') : array('offset' => 0, 'order_col' => 'last_name', 'order_dir' => 'asc', 'search' => FALSE);
