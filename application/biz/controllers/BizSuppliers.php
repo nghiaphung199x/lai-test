@@ -29,7 +29,21 @@ class BizSuppliers extends Suppliers
 		$redirect = $this->input->post('redirect');
 		
 		if($this->Supplier->save_supplier($person_data,$supplier_data,$supplier_id))
-		{			
+		{
+            /* Update Extended Attributes */
+            if (!class_exists('Attribute')) {
+                $this->load->model('Attribute');
+            }
+            $attributes = $this->input->post('attributes');
+            if (!empty($attributes)) {
+                $this->Attribute->reset_attributes(array('entity_id' => $supplier_id, 'entity_type' => 'suppliers'));
+                foreach ($attributes as $attribute_id => $value) {
+                    $attribute_value = array('entity_id' => $supplier_id, 'entity_type' => 'suppliers', 'attribute_id' => $attribute_id, 'entity_value' => $value);
+                    $this->Attribute->set_attributes($attribute_value);
+                }
+            }
+            /* End Update */
+
 			if ($this->Location->get_info_for_key('mailchimp_api_key'))
 			{
 				$this->Person->update_mailchimp_subscriptions($this->input->post('email'), $this->input->post('first_name'), $this->input->post('last_name'), $this->input->post('mailing_lists'));

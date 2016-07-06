@@ -201,7 +201,7 @@ class Employees extends Person_controller
 
         $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
         $data['attribute_groups'] = $this->Attribute_group->get_all()->result();
-        $data['attribute_values'] = $this->Attribute->get_entity_attributes(array('entity_id' => $supplier_id, 'entity_type' => 'suppliers'));
+        $data['attribute_values'] = $this->Attribute->get_entity_attributes(array('entity_id' => $employee_id, 'entity_type' => 'employees'));
         if (!empty($data['person_info']->attribute_set_id)) {
             $data['attributes'] = $this->Attribute_set->get_attributes($data['person_info']->attribute_set_id);
         }
@@ -356,6 +356,21 @@ class Employees extends Person_controller
             //failure
             echo json_encode(array('success' => false, 'message' => lang('common_employees_error_updating_demo_admin'), 'person_id' => -1));
         } elseif ((is_array($location_data) && count($location_data) > 0) && $this->Employee->save_employee($person_data, $employee_data, $permission_data, $permission_action_data, $location_data, $employee_id)) {
+
+            /* Update Extended Attributes */
+            if (!class_exists('Attribute')) {
+                $this->load->model('Attribute');
+            }
+            $attributes = $this->input->post('attributes');
+            if (!empty($attributes)) {
+                $this->Attribute->reset_attributes(array('entity_id' => $employee_id, 'entity_type' => 'employees'));
+                foreach ($attributes as $attribute_id => $value) {
+                    $attribute_value = array('entity_id' => $employee_id, 'entity_type' => 'employees', 'attribute_id' => $attribute_id, 'entity_value' => $value);
+                    $this->Attribute->set_attributes($attribute_value);
+                }
+            }
+            /* End Update */
+
             if ($this->Location->get_info_for_key('mailchimp_api_key')) {
                 $this->Person->update_mailchimp_subscriptions($this->input->post('email'), $this->input->post('first_name'), $this->input->post('last_name'), $this->input->post('mailing_lists'));
             }
