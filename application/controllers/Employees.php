@@ -604,14 +604,57 @@ class Employees extends Person_controller
                             break;
                     }
                 }
+
                 if (!$exists_row) {
+
                     /* Auto fill empty person fields */
                     foreach ($person_import_fields as $person_import_field) {
                         if (!isset($person_data[$person_import_field])) {
                             $person_data[$person_import_field] = '';
                         }
                     }
-                    $employee_id = $this->Employee->save_employee($person_data, $data, null, null);
+
+                    /* Auto fill required fields */
+                    if (empty($data['password'])) {
+                        $data['password'] = '123456a@';
+                    }
+                    if (empty($person_data['birth_date'])) {
+                        $person_data['birth_date'] = '';
+                    }
+                    if (empty($person_data['email'])) {
+                        $person_data['email'] = 'unknown@gmail.com';
+                    }
+                    if (empty($person_data['address_1'])) {
+                        $person_data['address_1'] = '';
+                    }
+                    if (empty($person_data['address_2'])) {
+                        $person_data['address_2'] = '';
+                    }
+                    if (empty($person_data['city'])) {
+                        $person_data['city'] = '';
+                    }
+                    if (empty($person_data['state'])) {
+                        $person_data['state'] = '';
+                    }
+                    if (empty($person_data['zip'])) {
+                        $person_data['zip'] = '';
+                    }
+                    if (empty($person_data['country'])) {
+                        $person_data['country'] = '';
+                    }
+                    if (empty($person_data['phone_number'])) {
+                        $person_data['phone_number'] = '';
+                    }
+                    if (empty($person_data['comments'])) {
+                        $person_data['comments'] = '';
+                    }
+
+                    $permission_data = array();
+                    $permission_action_data = array();
+                    $location_data = array();
+
+                    $employee_id = $this->Employee->save_employee($person_data, $data, $permission_data, $permission_action_data, $location_data);
+
                     if (!empty($employee_id)) {
                         $stored_rows++;
                         /* Set extended attributes */

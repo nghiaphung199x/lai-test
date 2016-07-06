@@ -672,6 +672,36 @@ class Suppliers extends Person_controller
                             $person_data[$person_import_field] = '';
                         }
                     }
+                    if (empty($person_data['birth_date'])) {
+                        $person_data['birth_date'] = '';
+                    }
+                    if (empty($person_data['email'])) {
+                        $person_data['email'] = 'unknown@gmail.com';
+                    }
+                    if (empty($person_data['address_1'])) {
+                        $person_data['address_1'] = '';
+                    }
+                    if (empty($person_data['address_2'])) {
+                        $person_data['address_2'] = '';
+                    }
+                    if (empty($person_data['city'])) {
+                        $person_data['city'] = '';
+                    }
+                    if (empty($person_data['state'])) {
+                        $person_data['state'] = '';
+                    }
+                    if (empty($person_data['zip'])) {
+                        $person_data['zip'] = '';
+                    }
+                    if (empty($person_data['country'])) {
+                        $person_data['country'] = '';
+                    }
+                    if (empty($person_data['phone_number'])) {
+                        $person_data['phone_number'] = '';
+                    }
+                    if (empty($person_data['comments'])) {
+                        $person_data['comments'] = '';
+                    }
                     $supplier_id = $this->Supplier->save_supplier($person_data, $data, null);
                     if (!empty($supplier_id)) {
                         $stored_rows++;
