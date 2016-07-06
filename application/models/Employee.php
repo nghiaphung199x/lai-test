@@ -1,6 +1,27 @@
 <?php
 class Employee extends Person
 {
+    protected $import_fields = array(
+        'username' => 'username',
+        'password' => 'password',
+        'employee_number' => 'employee_number',
+    );
+
+    protected $person_import_fields = array(
+        'first_name' => 'first_name',
+        'last_name' => 'last_name',
+        'birth_date' => 'birth_date',
+        'email' => 'email',
+        'phone_number' => 'phone_number',
+        'address_1' => 'address_1',
+        'address_2' => 'address_2',
+        'city' => 'city',
+        'state' => 'state',
+        'zip' => 'zip',
+        'country' => 'country',
+        'comments' => 'comments',
+    );
+
 	/*
 	Determines if a given person_id is an employee
 	*/
@@ -1316,5 +1337,10 @@ class Employee extends Person
 		$this->db->where('id', $message_id);
 		return $this->db->update('messages', array('deleted' => 1));		
 	}
+
+    public function get_person_import_fields()
+    {
+        return $this->person_import_fields;
+    }
 }
 ?>

@@ -158,6 +158,13 @@
 							<i class="ion-android-more-horizontal"></i>
 						</button>
 						<ul class="dropdown-menu" role="menu">
+                            <li>
+                                <?php echo anchor("$controller_name/excel_import/",
+                                '<span class="">'.lang("common_excel_import").'</span>',
+                                array('class'=>' ',
+                                    'title'=>lang('common_excel_import')));
+                                ?>
+                            </li>
 							<li>
 								<?php if ($controller_name =='customers') {  
 								?>

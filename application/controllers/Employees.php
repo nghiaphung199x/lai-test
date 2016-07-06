@@ -431,6 +431,168 @@ class Employees extends Person_controller
         $this->Employee->cleanup();
         echo json_encode(array('success' => true, 'message' => lang('employees_cleanup_sucessful')));
     }
+
+    function excel_import()
+    {
+        $this->check_action_permission('add_update');
+        $this->load->view("employees/excel_import", null);
+    }
+
+    /**
+     * @Loads the form for excel import
+     */
+    function do_excel_import()
+    {
+        $this->check_action_permission('add_update');
+        $this->load->helper('demo');
+        if (is_on_demo_host()) {
+            $msg = lang('common_excel_import_disabled_on_demo');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        }
+        if ($_FILES['file_path']['error'] != UPLOAD_ERR_OK) {
+            $msg = lang('common_excel_import_failed');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        } else {
+            if (($handle = fopen($_FILES['file_path']['tmp_name'], "r")) !== FALSE) {
+                $this->load->helper('spreadsheet');
+                $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
+                $end_column = $objPHPExcel->setActiveSheetIndex(0)->getHighestColumn();
+                $this->load->model('Attribute_set');
+                $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+                $data['sheet'] = $objPHPExcel->getActiveSheet();
+                $data['num_rows'] = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
+                $data['columns'] = range('A', $end_column);
+                $data['fields'] = $this->Employee->get_import_fields();
+                $data['person_fields'] = $this->Employee->get_person_import_fields();
+                $html = $this->load->view('employees/import/result', $data, true);
+                $result = array('success' => true, 'message' => lang('item_kits_import_success'), 'html' => $html);
+                echo json_encode($result);
+                return;
+            } else {
+                echo json_encode(array('success' => false, 'message' => lang('common_upload_file_not_supported_format')));
+                return;
+            }
+        }
+        $result = array('success' => true, 'message' => lang('item_kits_import_success'));
+        echo json_encode($result);
+    }
+
+    /**
+     * Import Real Data
+     **/
+    public function action_import_data()
+    {
+        $this->check_action_permission('add_update');
+        $this->load->helper('demo');
+        if (is_on_demo_host()) {
+            $msg = lang('common_excel_import_disabled_on_demo');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        }
+        $this->load->model('Attribute');
+        $entity_type = 'employees';
+        $person_entity_type = 'people';
+        $check_duplicate_field = $this->input->post('check_duplicate_field');
+        $field_parts = explode(':', $check_duplicate_field);
+        if (count($field_parts) == 2) {
+            $check_duplicate_field_type = $field_parts[0];
+            $check_duplicate_field_name = $field_parts[1];
+        }
+        $attribute_set_id = $this->input->post('attribute_set_id');
+        $columns = $this->input->post('columns');
+        $rows = $this->input->post('rows');
+        $selected_rows = $this->input->post('selected_rows');
+        $stored_rows = 0;
+        $person_import_fields = $this->Employee->get_person_import_fields();
+        if (empty($rows) || empty($selected_rows)) {
+            $msg = lang('common_error');
+            echo json_encode(array('success' => true, 'message' => $msg));
+            return;
+        }
+        foreach ($rows as $index => $row) {
+            if (!isset($selected_rows[$index])) {
+                continue;
+            }
+            $data = array('attribute_set_id' => $attribute_set_id);
+            $person_data = array();
+            $extend_data = array();
+            foreach ($columns as $excel_column => $field_column) {
+                if (!empty($field_column) && !empty($row[$excel_column])) {
+                    $field_parts = explode(':', $field_column);
+
+                    /* Set Basic Attributes */
+                    if (count($field_parts) == 2) {
+                        switch ($field_parts[0]) {
+                            case 'person':
+                                $person_data[$field_parts[1]] = $row[$excel_column];
+                                break;
+                            case 'basic':
+                                $data[$field_parts[1]] = $row[$excel_column];
+                                break;
+                            case 'extend':
+                                $extend_data = array(
+                                    'entity_type' => $entity_type,
+                                    'attribute_id' => $field_parts[1],
+                                    'entity_value' => $row[$excel_column],
+                                );
+                                break;
+                            default:
+                                $data[$field_parts[1]] = $row[$excel_column];
+                                break;
+                        }
+                    }
+                }
+            }
+            try {
+                /* Check duplicate item */
+                $exists_row = false;
+                if (isset($check_duplicate_field_type) && isset($check_duplicate_field_name)) {
+                    switch ($check_duplicate_field_type) {
+                        case 'person':
+                            $exists_row = $this->Person->exists_by_field($person_entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            break;
+                        case 'basic':
+                            $exists_row = $this->Employee->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            break;
+                        case 'extend':
+                            $exists_row = $this->Attribute->exists_by_value($entity_type, $extend_data['attribute_id'], $extend_data['entity_value']);
+                            break;
+                        default:
+                            $exists_row = $this->Employee->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            break;
+                    }
+                }
+                if (!$exists_row) {
+                    /* Auto fill empty person fields */
+                    foreach ($person_import_fields as $person_import_field) {
+                        if (!isset($person_data[$person_import_field])) {
+                            $person_data[$person_import_field] = '';
+                        }
+                    }
+                    $employee_id = $this->Employee->save_employee($person_data, $data, null, null);
+                    if (!empty($employee_id)) {
+                        $stored_rows++;
+                        /* Set extended attributes */
+                        if (!empty($extend_data)) {
+                            $extend_data['entity_id'] = $employee_id;
+                            $this->Attribute->set_attributes($extend_data);
+                        }
+                    }
+                }
+            } catch (Exception $ex) {
+                continue;
+            }
+        }
+        if (!empty($stored_rows)) {
+            $msg = $stored_rows . ' ' . lang('common_record_stored');
+            echo json_encode(array('success' => true, 'message' => $msg));
+            return;
+        }
+        $msg = $stored_rows . ' ' . lang('common_record_stored');
+        echo json_encode(array('success' => false, 'message' => $msg));
+    }
 }
 
 ?>

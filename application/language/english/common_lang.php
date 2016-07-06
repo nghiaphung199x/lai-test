@@ -95,6 +95,9 @@ $lang['common_announcement_special'] = 'Announcements/Specials';
 $lang['common_credit_card_processing'] = 'Credit Card Processing';
 
 $lang['common_name'] = 'Name';
+$lang['common_birth_date'] = 'Birth day';
+$lang['common_birth_day'] = 'Birth day';
+$lang['common_employee_number'] = 'Employee number';
 $lang['common_new_category'] = 'New Category';
 $lang['common_enter_name_of_category'] = 'Enter name of new category';
 $lang['common_month'] = 'Month';
@@ -399,5 +402,14 @@ $lang['common_not_yet_selected_columns'] = 'Not yet selected columns to matching
 $lang['common_select_duplicated_column'] = 'Selected this field already';
 $lang['common_not_yet_selected_duplicate_field'] = 'Not yet select field to check duplicate ';
 $lang['common_select_attribute_set'] = 'Select attribute set';
+
+$lang['common_new_items_import'] = 'Download sample file';
+$lang['common_update_items_import'] = 'Download sample data';
+$lang['common_import_successfull'] = 'Import successfully';
+$lang['common_step_1_desc'] = 'Download sample data';
+$lang['common_step_2_desc'] = 'Upload excel file to import data';
+$lang['common_step_3_desc'] = 'Show all items from extraction of excel file, filters results and do import data';
+$lang['common_duplicate_item'] = 'Duplicated content';
+$lang['common_import_success'] = 'Import all data successfully';
 
 ?>

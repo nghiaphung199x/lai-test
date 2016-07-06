@@ -100,6 +100,9 @@ $lang['common_announcement_special'] = 'Thông báo / Khuyến mãi';
 $lang['common_credit_card_processing'] = 'Xử lý thẻ tín dụng';
 
 $lang['common_name'] = 'Tên';
+$lang['common_birth_date'] = 'Ngày sinh';
+$lang['common_birth_day'] = 'Ngày sinh';
+$lang['common_employee_number'] = 'Mã nhân viên';
 $lang['common_new_category'] = 'Tạo mới Danh mục';
 $lang['common_enter_name_of_category'] = 'Nhập tên Danh mục mới';
 $lang['common_month'] = 'Tháng';
@@ -443,4 +446,13 @@ $lang['common_not_yet_selected_columns'] = 'Bạn chưa chọn cột nào để 
 $lang['common_select_duplicated_column'] = 'Trường dữ liệu đã được chọn để đối chiếu';
 $lang['common_not_yet_selected_duplicate_field'] = 'Bạn chưa chọn trường dữ liệu để kiểm tra dữ liệu bị trùng lặp';
 $lang['common_select_attribute_set'] = 'Chọn bộ thuộc tính';
+
+$lang['common_new_items_import'] = 'Tải file mẫu';
+$lang['common_update_items_import'] = 'Tải dữ liệu mẫu';
+$lang['common_import_successfull'] = 'Cập nhập các nhà cung cấp thành công';
+$lang['common_step_1_desc'] = 'Tải về một trong các tệp dưới đây và thêm / cập nhật thông tin mới';
+$lang['common_step_2_desc'] = 'Tải lên các tập tin từ bước 1 để hoàn thành bổ sung / cập nhật các thông tin mới';
+$lang['common_step_3_desc'] = 'Hiện kết quả tải tệp excel ở bước 2, lọc danh sách cần thêm và thực hiện tải';
+$lang['common_duplicate_item'] = 'Lỗi trùng lặp thông tin';
+$lang['common_import_success'] = 'Tải về các thông tin thành công';
 ?>

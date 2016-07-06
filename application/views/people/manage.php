@@ -70,7 +70,7 @@
 						</a>	
 					</div>
 			</form>	
-			
+
 		</div>
 		<div class="col-md-7">	
 			<div class="buttons-list">
