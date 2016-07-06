@@ -685,10 +685,11 @@ class BizItems extends Items
 
         $data['items_counted'] = $this->Inventory->get_items_counted($count_id, $config['per_page'], $offset);
 
+        $allItems = $this->Inventory->get_items_counted($count_id, null, null);
         $totalItems = 0;
         $totalQty = 0;
 
-        foreach ($data['items_counted'] as $item) {
+        foreach ($allItems as $item) {
             $totalQty += $item['count'];
             $totalItems++;
         }
