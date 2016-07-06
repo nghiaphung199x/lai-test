@@ -556,8 +556,7 @@ class Employees extends Person_controller
                 continue;
             }
             $data = array('attribute_set_id' => $attribute_set_id);
-            $person_data = array();
-            $extend_data = array();
+            $person_data = $extend_data = $extend_rows = array();
             foreach ($columns as $excel_column => $field_column) {
                 if (!empty($field_column) && !empty($row[$excel_column])) {
                     $field_parts = explode(':', $field_column);
@@ -577,6 +576,7 @@ class Employees extends Person_controller
                                     'attribute_id' => $field_parts[1],
                                     'entity_value' => $row[$excel_column],
                                 );
+                                $extend_rows[] = $extend_data;
                                 break;
                             default:
                                 $data[$field_parts[1]] = $row[$excel_column];
@@ -616,21 +616,23 @@ class Employees extends Person_controller
 
                     /* Auto fill required fields */
                     if (empty($data['password'])) {
-                        $data['password'] = '123456a@';
+                        $data['password'] = md5('123456a@');
                     }
 
                     $permission_data = array();
                     $permission_action_data = array();
                     $location_data = array();
 
-                    $employee_id = $this->Employee->save_employee($person_data, $data, $permission_data, $permission_action_data, $location_data);
+                    $this->Employee->save_employee($person_data, $data, $permission_data, $permission_action_data, $location_data);
 
-                    if (!empty($employee_id)) {
+                    if (!empty($person_data['person_id'])) {
                         $stored_rows++;
                         /* Set extended attributes */
-                        if (!empty($extend_data)) {
-                            $extend_data['entity_id'] = $employee_id;
-                            $this->Attribute->set_attributes($extend_data);
+                        if (!empty($extend_rows)) {
+                            foreach ($extend_rows as $extend_data) {
+                                $extend_data['entity_id'] = $person_data['person_id'];
+                                $this->Attribute->set_attributes($extend_data);
+                            }
                         }
                     }
                 }

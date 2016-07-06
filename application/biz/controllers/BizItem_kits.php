@@ -371,7 +371,7 @@ class BizItem_kits extends Item_kits
                 continue;
             }
             $data = array('attribute_set_id' => $attribute_set_id);
-            $extend_data = array();
+            $extend_data = $extend_rows = array();
             foreach ($columns as $excel_column => $field_column) {
                 if (!empty($field_column) && !empty($row[$excel_column])) {
                     $field_parts = explode(':', $field_column);
@@ -386,6 +386,7 @@ class BizItem_kits extends Item_kits
                                 'attribute_id' => $field_parts[1],
                                 'entity_value' => $row[$excel_column],
                             );
+                            $extend_rows[] = $extend_data;
                         }
                     }
                 }
@@ -409,9 +410,11 @@ class BizItem_kits extends Item_kits
                     if (!empty($item_kit_id)) {
                         $stored_rows++;
                         /* Set extended attributes */
-                        if (!empty($extend_data)) {
-                            $extend_data['entity_id'] = $item_kit_id;
-                            $this->Attribute->set_attributes($extend_data);
+                        if (!empty($extend_rows)) {
+                            foreach ($extend_rows as $extend_data) {
+                                $extend_data['entity_id'] = $item_kit_id;
+                                $this->Attribute->set_attributes($extend_data);
+                            }
                         }
                     }
                 }

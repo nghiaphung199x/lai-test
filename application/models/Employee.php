@@ -254,10 +254,10 @@ class Employee extends Person
 			}
 			
 		}
-		
+
 		$this->db->trans_complete();
-        if (!$success && !empty($employee_data['person_id'])) {
-            return $employee_data['person_id'];
+        if (!$success) {
+            return $employee_id;
         }
 		return $success;
 	}

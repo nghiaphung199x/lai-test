@@ -1846,8 +1846,7 @@ class Items extends Secure_area implements Idata_controller
                 continue;
             }
             $data = array('attribute_set_id' => $attribute_set_id);
-            $person_data = array();
-            $extend_data = array();
+            $person_data = $extend_data = $extend_rows = array();
             foreach ($columns as $excel_column => $field_column) {
                 if (!empty($field_column) && !empty($row[$excel_column])) {
                     $field_parts = explode(':', $field_column);
@@ -1864,6 +1863,7 @@ class Items extends Secure_area implements Idata_controller
                                     'attribute_id' => $field_parts[1],
                                     'entity_value' => $row[$excel_column],
                                 );
+                                $extend_rows[] = $extend_data;
                                 break;
                             default:
                                 $data[$field_parts[1]] = $row[$excel_column];
@@ -1905,9 +1905,11 @@ class Items extends Secure_area implements Idata_controller
                     if (!empty($item_id)) {
                         $stored_rows++;
                         /* Set extended attributes */
-                        if (!empty($extend_data)) {
-                            $extend_data['entity_id'] = $item_id;
-                            $this->Attribute->set_attributes($extend_data);
+                        if (!empty($extend_rows)) {
+                            foreach ($extend_rows as $extend_data) {
+                                $extend_data['entity_id'] = $item_id;
+                                $this->Attribute->set_attributes($extend_data);
+                            }
                         }
                     }
                 }
