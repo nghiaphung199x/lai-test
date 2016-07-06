@@ -11,6 +11,9 @@ class Groups extends Secure_area implements Idata_controller
         $this->lang->load('groups');
         $this->lang->load('module');
         $this->load->model('Group');
+        global $global_breadcrumb;
+        $global_breadcrumb[] = array('label' => 'Dashboard', 'url' => site_url('home'));
+        $global_breadcrumb[] = array('label' => lang('groups_manage'), 'url' => site_url('groups'));
     }
 
     function index($offset = 0)
@@ -123,6 +126,8 @@ class Groups extends Secure_area implements Idata_controller
     */
     function view($group_id = -1, $redirect_code = 0)
     {
+        global $global_breadcrumb;
+        $global_breadcrumb[] = array('label' => lang('common_edit'), 'url' => '#');
         $this->load->model('Module_action');
         $this->check_action_permission('add_update');
         $data = $this->_get_data($group_id);

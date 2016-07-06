@@ -11,6 +11,9 @@ class Departments extends Secure_area implements Idata_controller
         $this->lang->load('departments');
         $this->lang->load('module');
         $this->load->model('Department');
+        global $global_breadcrumb;
+        $global_breadcrumb[] = array('label' => 'Dashboard', 'url' => site_url('home'));
+        $global_breadcrumb[] = array('label' => lang('departments_manage'), 'url' => site_url('departments'));
     }
 
     function index($offset = 0)
@@ -131,6 +134,8 @@ class Departments extends Secure_area implements Idata_controller
     */
     function view($department_id = -1, $redirect_code = 0)
     {
+        global $global_breadcrumb;
+        $global_breadcrumb[] = array('label' => lang('common_edit'), 'url' => '#');
         $this->load->model('Module_action');
         $this->check_action_permission('add_update');
         $data = $this->_get_data($department_id);

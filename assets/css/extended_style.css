@@ -29,13 +29,11 @@ label.error { font-weight: normal; color: red; }
 .well {border-radius: 0px}
 .manage_buttons .form-control {margin-bottom: 0px !important; border: 1px solid #ccc; }
 .manage_buttons input.form-control {border: none !important;}
-.left-bar .menu-parent > li a i, .side-bar .menu-parent > li a i {
-    top: 3px;
-    position: relative;
-}
+.left-bar .menu-parent > li a i, .side-bar .menu-parent > li a i {top: 3px; position: relative;}
 .sortable {padding: 10px; border: 1px dashed #ddd; background-color: #f8f8f8 }
 .sortable, .sortable li {list-style-type: none}
 .ajax-result table thead th { background-color: #f3f3f3 }
 .ajax-result table td, .ajax-result table th { padding: 6px; }
 .ajax-result {padding: 20px;}
 .ajax-result .form-control {margin-bottom: 0px}
+.sub {font-weight: normal; font-style: italic}

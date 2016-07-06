@@ -11,6 +11,9 @@ class Attribute_groups extends Secure_area implements Idata_controller
         $this->lang->load('attribute_groups');
         $this->lang->load('module');
         $this->load->model('Attribute_group');
+        global $global_breadcrumb;
+        $global_breadcrumb[] = array('label' => 'Dashboard', 'url' => site_url('home'));
+        $global_breadcrumb[] = array('label' => lang('attribute_groups_manage'), 'url' => site_url('attribute_groups'));
     }
 
     function index($offset = 0)
@@ -125,6 +128,8 @@ class Attribute_groups extends Secure_area implements Idata_controller
     */
     function view($attribute_group_id = -1, $redirect_code = 0)
     {
+        global $global_breadcrumb;
+        $global_breadcrumb[] = array('label' => lang('common_edit'), 'url' => '#');
         $this->load->model('Module_action');
         $this->check_action_permission('add_update');
         $data = $this->_get_data($attribute_group_id);
