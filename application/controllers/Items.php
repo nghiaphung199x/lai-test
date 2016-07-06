@@ -1138,7 +1138,7 @@ class Items extends Secure_area implements Idata_controller
         $this->load->view("items/excel_import", null);
     }
 
-
+    /*
     function do_excel_import()
     {
         $this->load->helper('demo');
@@ -1440,6 +1440,43 @@ class Items extends Secure_area implements Idata_controller
 
         $this->db->trans_complete();
         echo json_encode(array('success' => true, 'message' => lang('items_import_successful')));
+    }
+    */
+
+    public function do_excel_import() {
+        $this->check_action_permission('add_update');
+        $this->load->helper('demo');
+        if (is_on_demo_host()) {
+            $msg = lang('common_excel_import_disabled_on_demo');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        }
+        if ($_FILES['file_path']['error'] != UPLOAD_ERR_OK) {
+            $msg = lang('common_excel_import_failed');
+            echo json_encode(array('success' => false, 'message' => $msg));
+            return;
+        } else {
+            if (($handle = fopen($_FILES['file_path']['tmp_name'], "r")) !== FALSE) {
+                $this->load->helper('spreadsheet');
+                $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
+                $end_column = $objPHPExcel->setActiveSheetIndex(0)->getHighestColumn();
+                $this->load->model('Attribute_set');
+                $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+                $data['sheet'] = $objPHPExcel->getActiveSheet();
+                $data['num_rows'] = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
+                $data['columns'] = range('A', $end_column);
+                $data['fields'] = $this->Item->get_import_fields();
+                $html = $this->load->view('items/import/result', $data, true);
+                $result = array('success' => true, 'message' => lang('item_kits_import_success'), 'html' => $html);
+                echo json_encode($result);
+                return;
+            } else {
+                echo json_encode(array('success' => false, 'message' => lang('common_upload_file_not_supported_format')));
+                return;
+            }
+        }
+        $result = array('success' => true, 'message' => lang('item_kits_import_success'));
+        echo json_encode($result);
     }
 
     function cleanup()

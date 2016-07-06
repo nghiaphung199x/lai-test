@@ -2,6 +2,8 @@
 
 function create_breadcrumb()
 {
+    global $global_breadcrumb;
+
 	$ci = &get_instance();
 	$return = '';
 	$dashboard_link = '<a  tabindex="-1"  href="'.site_url('home').'">'.lang('common_dashboard').'</a>';
@@ -722,6 +724,15 @@ function create_breadcrumb()
 		}
 		
 	}
+
+    if (!empty($global_breadcrumb)) {
+        $return = array();
+        foreach ($global_breadcrumb as $item) {
+            $return[] = '<a href="'.$item['url'].'">'.$item['label'].'</a>';
+        }
+        $return = implode('', $return);
+    }
+
   	return $return;
 }
 
