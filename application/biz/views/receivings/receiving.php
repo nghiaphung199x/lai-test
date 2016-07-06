@@ -428,6 +428,12 @@
 	</div>
 
 
+<div class="register-box">
+		<div style="margin: 5px 15px;">
+			<p><?php echo lang('common_total_items'); ?>: <span id="sale_total_items"><?php echo $total_items; ?></span></p>
+			<p><?php echo lang('common_total_qty'); ?>: <span id="sale_total_qty"><?php echo $total_qty; ?></span></p>
+		</div>
+	</div>
 
 		<!-- Summary -->
 		<div class="register-box register-summary paper-cut">

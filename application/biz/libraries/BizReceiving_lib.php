@@ -117,7 +117,6 @@ class BizReceiving_lib extends Receiving_lib
 		}
 		
 		$measure = $this->CI->Measure->getInfo($cur_item_info->measure_id);
-		$quantity = $quantity_received;
 		if ($receiving_id) {
 			$measureOnRecv = $this->CI->Receiving->getMeasureOnRecvItem($receiving_id, $item_id);
 			if ($measureOnRecv && $measureOnRecv->id && $measureOnRecv->id != $measure->id) {

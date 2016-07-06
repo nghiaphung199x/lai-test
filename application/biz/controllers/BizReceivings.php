@@ -227,7 +227,7 @@ class BizReceivings extends Receivings
 		$data['subtotal']=$this->receiving_lib->get_subtotal($receiving_id);
 		$data['taxes']=$this->receiving_lib->get_taxes($receiving_id);
 		$data['total']=$this->receiving_lib->get_total($receiving_id);
-                $data['mode'] = $this->receiving_lib->get_mode();
+        $data['mode'] = $this->receiving_lib->get_mode();
 		$data['receipt_title']=lang('receivings_receipt');
 		$data['transaction_time']= date(get_date_format().' '.get_time_format(), strtotime($receiving_info['receiving_time']));
 		$supplier_id=$this->receiving_lib->get_supplier();
@@ -294,5 +294,101 @@ class BizReceivings extends Receivings
 		//Restore previous state saved above
 		$this->receiving_lib->restore_current_recv_state();
 	
+	}
+	
+	function _reload($data=array(), $is_ajax = true)
+	{
+		$person_info = $this->Employee->get_logged_in_employee_info();
+	
+		$data['cart']=$this->receiving_lib->get_cart();
+		$data['modes']=array('receive'=>lang('receivings_receiving'),'return'=>lang('receivings_return'),'purchase_order'=>lang('receivings_purchase_order'));
+		$data['comment'] = $this->receiving_lib->get_comment();
+		if ($this->Location->count_all() > 1)
+		{
+			$data['modes']['transfer']= lang('receivings_transfer');
+		}
+		$data['mode']=$this->receiving_lib->get_mode();
+		$data['selected_payment'] = $this->receiving_lib->get_selected_payment();
+		$data['subtotal']=$this->receiving_lib->get_subtotal();
+		$data['taxes']=$this->receiving_lib->get_taxes();
+		$data['total']=$this->receiving_lib->get_total();
+		$data['items_in_cart'] = $this->receiving_lib->get_items_in_cart();
+		$data['change_recv_date_enable'] = $this->receiving_lib->get_change_receiving_date_enable();
+		$data['change_receiving_date'] = $this->receiving_lib->get_change_receiving_date();
+		$data['email_receipt'] = $this->receiving_lib->get_email_receipt();
+		
+		$totalItems = 0;
+		$totalQty = 0;
+		foreach ($data['cart'] as $item) {
+			$totalQty += $item['quantity'];
+			$totalItems ++;
+		}
+		
+		$data['total_items'] = $totalItems;
+		$data['total_qty'] = $totalQty;
+		
+		$data['items_module_allowed'] = $this->Employee->has_module_permission('items', $person_info->person_id);
+		$data['payment_options']=array(
+				lang('common_cash') => lang('common_cash'),
+				lang('common_check') => lang('common_check'),
+				lang('common_debit') => lang('common_debit'),
+				lang('common_credit') => lang('common_credit')
+		);
+		$data['fullscreen'] = $this->session->userdata('fullscreen');
+	
+		foreach($this->Appconfig->get_additional_payment_types() as $additional_payment_type)
+		{
+			$data['payment_options'][$additional_payment_type] = $additional_payment_type;
+		}
+	
+		$deleted_payment_types = $this->config->item('deleted_payment_types');
+		$deleted_payment_types = explode(',',$deleted_payment_types);
+	
+		foreach($deleted_payment_types as $deleted_payment_type)
+		{
+			foreach($data['payment_options'] as $payment_option)
+			{
+				if ($payment_option == $deleted_payment_type)
+				{
+					unset($data['payment_options'][$payment_option]);
+				}
+			}
+		}
+	
+		$supplier_id=$this->receiving_lib->get_supplier();
+		if($supplier_id!=-1)
+		{
+			$info=$this->Supplier->get_info($supplier_id);
+			$data['supplier']=$info->company_name;
+			if ($info->first_name || $info->last_name)
+			{
+				$data['supplier'] .= ' ('.$info->first_name.' '.$info->last_name.')';
+			}
+				
+			$data['supplier_email']=$info->email;
+			$data['avatar']=$info->image_id ?  site_url('app_files/view/'.$info->image_id) : base_url()."assets/img/user.png";
+				
+				
+			$data['supplier_id']=$supplier_id;
+		}
+	
+		$location_id=$this->receiving_lib->get_location();
+		if($location_id!=-1)
+		{
+			$info=$this->Location->get_info($location_id);
+			$data['location']=$info->name;
+			$data['location_id']=$location_id;
+		}
+	
+		$data['is_po'] = $this->receiving_lib->get_po();
+	
+		if ($is_ajax)
+		{
+			$this->load->view("receivings/receiving",$data);
+		}
+		else
+		{
+			$this->load->view("receivings/receiving_initial",$data);
+		}
 	}
 }

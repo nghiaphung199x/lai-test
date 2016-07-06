@@ -455,4 +455,8 @@ $lang['common_step_2_desc'] = 'Tải lên các tập tin từ bước 1 để ho
 $lang['common_step_3_desc'] = 'Hiện kết quả tải tệp excel ở bước 2, lọc danh sách cần thêm và thực hiện tải';
 $lang['common_duplicate_item'] = 'Lỗi trùng lặp thông tin';
 $lang['common_import_success'] = 'Tải về các thông tin thành công';
+
+$lang['common_total_items'] = 'Tổ số mặt hàng';
+$lang['common_total_qty'] = 'Tổ số lượng';
+
 ?>
