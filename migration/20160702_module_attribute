@@ -96,3 +96,19 @@ ADD COLUMN `attribute_set_id` int(10) NULL AFTER `id`;
 
 ALTER TABLE `phppos_customers`
 ADD COLUMN `attribute_set_id` int(10) NULL AFTER `id`;
+
+INSERT INTO `phppos_modules` (`name_lang_key`, `desc_lang_key`, `sort`, `icon`, `module_id`, `main_menu`) VALUES
+('module_attribute_sets', 'module_attribute_sets_desc', 122, 'settings', 'attribute_sets', 1),
+('module_attribute_groups', 'module_attribute_group_desc', 123, 'settings', 'attribute_groups', 0),
+('module_attributes', 'module_attributes_desc', 124, 'settings', 'attributes', 0);
+
+INSERT INTO `phppos_modules_actions` (`action_id`, `module_id`, `action_name_key`, `sort`) VALUES
+('add_update', 'attribute_groups', 'module_action_add_update', 1),
+('add_update', 'attribute_sets', 'module_action_add_update', 1),
+('add_update', 'attributes', 'module_action_add_update', 1),
+('delete', 'attribute_groups', 'module_action_delete', 2),
+('delete', 'attribute_sets', 'module_action_delete', 2),
+('delete', 'attributes', 'module_action_delete', 2),
+('search', 'attribute_groups', 'module_action_search_attribute_groups', 3),
+('search', 'attribute_sets', 'module_action_search_attribute_sets', 3),
+('search', 'attributes', 'module_search_attributes', 3);

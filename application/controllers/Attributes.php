@@ -13,7 +13,7 @@ class Attributes extends Secure_area implements Idata_controller
         $this->load->model('Attribute');
         global $global_breadcrumb;
         $global_breadcrumb[] = array('label' => 'Dashboard', 'url' => site_url('home'));
-        $global_breadcrumb[] = array('label' => lang('attribute_manage'), 'url' => site_url('attributes'));
+        $global_breadcrumb[] = array('label' => lang('attributes_manage'), 'url' => site_url('attributes'));
     }
 
     function index($offset = 0)

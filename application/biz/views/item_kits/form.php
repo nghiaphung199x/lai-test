@@ -768,9 +768,9 @@
 			</div>
 		</div>
 	</div>
+    <?php $this->load->view('attribute_sets/widgets/attribute_set', array('entity_info' => $item_kit_info)); ?>
+    <?php $this->load->view('attribute_sets/widgets/attributes'); ?>
 </div>
-<?php $this->load->view('attribute_sets/widgets/attribute_set', array('entity_info' => $item_kit_info)); ?>
-<?php $this->load->view('attribute_sets/widgets/attributes'); ?>
 <?php echo form_close(); ?>
 </div>
 <script type='text/javascript'>

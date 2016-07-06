@@ -568,7 +568,7 @@ class Suppliers extends Person_controller
                 $data['fields'] = $this->Supplier->get_import_fields();
                 $data['person_fields'] = $this->Supplier->get_person_import_fields();
                 $html = $this->load->view('suppliers/import/result', $data, true);
-                $result = array('success' => true, 'message' => lang('item_kits_import_success'), 'html' => $html);
+                $result = array('success' => true, 'message' => lang('common_import_success'), 'html' => $html);
                 echo json_encode($result);
                 return;
             } else {
@@ -576,7 +576,7 @@ class Suppliers extends Person_controller
                 return;
             }
         }
-        $result = array('success' => true, 'message' => lang('item_kits_import_success'));
+        $result = array('success' => true, 'message' => lang('common_import_success'));
         echo json_encode($result);
     }
 
@@ -652,16 +652,24 @@ class Suppliers extends Person_controller
                 if (isset($check_duplicate_field_type) && isset($check_duplicate_field_name)) {
                     switch ($check_duplicate_field_type) {
                         case 'person':
-                            $exists_row = $this->Person->exists_by_field($person_entity_type, $check_duplicate_field_name, $person_data[$check_duplicate_field_name], false, false);
+                            if (!empty($person_data[$check_duplicate_field_name])) {
+                                $exists_row = $this->Person->exists_by_field($person_entity_type, $check_duplicate_field_name, $person_data[$check_duplicate_field_name], false, false);
+                            }
                             break;
                         case 'basic':
-                            $exists_row = $this->Supplier->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            if (!empty($data[$check_duplicate_field_name])) {
+                                $exists_row = $this->Supplier->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            }
                             break;
                         case 'extend':
-                            $exists_row = $this->Attribute->exists_by_value($entity_type, $extend_data['attribute_id'], $extend_data['entity_value']);
+                            if (!empty($extend_data['entity_value'])) {
+                                $exists_row = $this->Attribute->exists_by_value($entity_type, $extend_data['attribute_id'], $extend_data['entity_value']);
+                            }
                             break;
                         default:
-                            $exists_row = $this->Supplier->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            if (!empty($data[$check_duplicate_field_name])) {
+                                $exists_row = $this->Supplier->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            }
                             break;
                     }
                 }

@@ -1878,17 +1878,29 @@ class Items extends Secure_area implements Idata_controller
                 if (isset($check_duplicate_field_type) && isset($check_duplicate_field_name)) {
                     switch ($check_duplicate_field_type) {
                         case 'basic':
-                            $exists_row = $this->Item->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            if (!empty($data[$check_duplicate_field_name])) {
+                                $exists_row = $this->Item->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            }
                             break;
                         case 'extend':
-                            $exists_row = $this->Attribute->exists_by_value($entity_type, $extend_data['attribute_id'], $extend_data['entity_value']);
+                            if (!empty($extend_data['entity_value'])) {
+                                $exists_row = $this->Attribute->exists_by_value($entity_type, $extend_data['attribute_id'], $extend_data['entity_value']);
+                            }
                             break;
                         default:
-                            $exists_row = $this->Item->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            if (!empty($data[$check_duplicate_field_name])) {
+                                $exists_row = $this->Item->exists_by_field($entity_type, $check_duplicate_field_name, $data[$check_duplicate_field_name]);
+                            }
                             break;
                     }
                 }
                 if (!$exists_row) {
+                    if (empty($data['unit_price']) || !is_numeric($data['unit_price'])) {
+                        $data['unit_price'] = 0;    
+                    }
+                    if (empty($data['cost_price']) || !is_numeric($data['cost_price'])) {
+                        $data['cost_price'] = 0;    
+                    }
                     $item_id = $this->Item->save($data);
                     if (!empty($item_id)) {
                         $stored_rows++;
