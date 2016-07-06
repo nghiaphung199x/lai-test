@@ -437,4 +437,7 @@ $lang['common_select_attribute_set'] = 'Chọn bộ thuộc tính';
 $lang['common_basic_attributes'] = 'Thuộc tính căn bản';
 $lang['common_attributes_by_set'] = 'Thuộc tính theo bộ';
 $lang['common_column'] = 'Cột';
+
+$lang['common_total_items'] = 'Tổ số mặt hàng';
+$lang['common_total_qty'] = 'Tổ số lượng';
 ?>
