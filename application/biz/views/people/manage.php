@@ -101,8 +101,8 @@
 		<a href="#" class="btn btn-lg btn-clear-selection btn-warning"><?php echo lang('common_clear_selection'); ?></a>
 	</div>
 </div>
-	<div class="row">
-		<div class="col-md-5">
+	<div class="cl">
+		<div class="pull-left">
 			<?php echo form_open("$controller_name/search",array('id'=>'search_form', 'autocomplete'=> 'off', 'class' => 'form-inline')); ?>
 				<div class="search no-left-border">
 					<input type="text" class="form-control" name ='search' id='search' value="<?php echo H($search); ?>" placeholder="<?php echo lang('common_search'); ?> <?php echo lang('module_'.$controller_name); ?>"/>
@@ -111,9 +111,9 @@
 				<?php if(isset($type) && $type == 'customer') { ?>
 				<div class="form-group">
 					<label><?php echo lang('customers_filter_tier'); ?></label>
-					<?php echo form_dropdown('tier_id', $tiers, $selected_tier,'class=""');?>
+					<?php echo form_dropdown('tier_id', $tiers, $selected_tier,'class="form-control"');?>
 					<label style="margin-left: 10px;"><?php echo lang('customers_filter_created_by'); ?></label>
-					<?php echo form_dropdown('created_by', $employees, $selected_employee,'class=""');?>
+					<?php echo form_dropdown('created_by', $employees, $selected_employee,'class="form-control"');?>
 				</div>
 				<?php } ?>
 				<div class="clear-block <?php echo ($search=='') ? 'hidden' : ''  ?>">
@@ -121,12 +121,9 @@
 						<i class="ion ion-close-circled"></i>
 					</a>	
 				</div>
-
-				
-			</form>	
-			
+			</form>
 		</div>
-		<div class="col-md-7">	
+		<div class="pull-right">
 			<div class="buttons-list">
 				<div class="pull-right-btn">
 					<?php 
@@ -239,6 +236,7 @@
 				</div>
 			</div>				
 		</div>
+        <div class="cl"></div>
 	</div>
 </div>
 

@@ -27,7 +27,8 @@ label.error { font-weight: normal; color: red; }
 .mr-10 {margin-right: 10px;}
 .no-border {border:none !important;}
 .well {border-radius: 0px}
-.manage_buttons .form-control {margin-bottom: 0px !important; border: none !important; }
+.manage_buttons .form-control {margin-bottom: 0px !important; border: 1px solid #ccc; }
+.manage_buttons input.form-control {border: none !important;}
 .left-bar .menu-parent > li a i, .side-bar .menu-parent > li a i {
     top: 3px;
     position: relative;
