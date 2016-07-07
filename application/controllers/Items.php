@@ -1924,7 +1924,7 @@ class Items extends Secure_area implements Idata_controller
         }
         $error_html = '';
         if (!empty($error_rows)) {
-            $error_html = $this->load->view('items/import/error/rows', array('num_rows' => count($error_rows), 'rows' => $error_rows, 'columns' => $columns), true);
+            $error_html = $this->load->view('import/error/rows', array('num_rows' => count($error_rows), 'rows' => $error_rows, 'columns' => $columns), true);
         }
         if (!empty($stored_rows)) {
             $msg = $stored_rows . ' ' . lang('common_record_stored');
