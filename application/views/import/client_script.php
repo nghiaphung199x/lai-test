@@ -140,6 +140,9 @@
             success: function(response) {
                 response = $.parseJSON(response);
                 $container.html("");
+                if (response.error_html != undefined) {
+                    $container.html(response.error_html);
+                }
                 if (response.success) {
                     show_feedback('success', response.message, <?php echo json_encode(lang('common_success')); ?>);
                 } else {
