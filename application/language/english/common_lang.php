@@ -414,4 +414,11 @@ $lang['common_step_3_desc'] = 'Show all items from extraction of excel file, fil
 $lang['common_duplicate_item'] = 'Duplicated content';
 $lang['common_import_success'] = 'Import all data successfully';
 
+$lang['common_employees_import_note'] = '(*) Required fields: first name, last name, email, username';
+$lang['common_item_kits_import_note'] = '(*) Required fields: name, unit price, cost price';
+$lang['common_customers_import_note'] = '(*) Required fields: first name, last name';
+$lang['common_items_import_note'] = '(*) Required fields: name, unit price, cost price';
+$lang['common_suppliers_import_note'] = '(*) Required fields: company name, first name, last name';
+$lang['common_error_import_rows'] = 'Error import rows (invalid data types or duplicate content)';
+$lang['common_empty_data'] = 'Empty data';
 ?>

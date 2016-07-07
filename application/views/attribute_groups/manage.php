@@ -36,7 +36,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-4">
             <?php echo form_open("$controller_name/search",array('id'=>'search_form', 'autocomplete'=> 'off')); ?>
             <div class="search no-left-border">
                 <input type="text" class="form-control" name='search' id='search' value="<?php echo H($search); ?>" placeholder="<?php echo lang('common_search'); ?> <?php echo lang('module_'.$controller_name); ?>"/>
@@ -48,15 +48,25 @@
             </div>
             <?php echo form_close() ?>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-8">
             <div class="buttons-list attribute_groups-buttons">
                 <div class="pull-right-btn">
+
+                    <?php if ($this->Employee->has_module_action_permission('attribute_sets', 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+                    <?php echo anchor("attribute_sets", '<span class="">' . lang('attribute_sets_manage') . '</span>', array('class' => 'btn btn-primary btn-lg', 'title' => lang($controller_name . '_new'))); ?>
+                    <?php endif ?>
+
+                    <?php if ($this->Employee->has_module_action_permission('attributes', 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
+                    <?php echo anchor("attributes", '<span class="">' . lang('attributes_manage') . '</span>', array('class' => 'btn btn-primary btn-lg', 'title' => lang($controller_name . '_new'))); ?>
+                    <?php endif ?>
+
                     <?php if ($this->Employee->has_module_action_permission($controller_name, 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) :?>
                     <?php echo anchor("$controller_name/view/-1/",
                                       '<span class="">' . lang($controller_name . '_new') . '</span>',
                                       array('class' => 'btn btn-primary btn-lg', 'title' => lang($controller_name . '_new')));
                     ?>
                     <?php endif ?>
+
                     <div class="piluku-dropdown">
                         <button type="button" class="btn btn-more dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                             <i class="ion-android-more-horizontal"></i>
