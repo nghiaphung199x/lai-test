@@ -27,7 +27,7 @@ class BizSuppliers extends Suppliers
 		);
 		
 		$redirect = $this->input->post('redirect');
-		
+
 		if($this->Supplier->save_supplier($person_data,$supplier_data,$supplier_id))
 		{
             /* Update Extended Attributes */

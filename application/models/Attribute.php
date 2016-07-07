@@ -2,7 +2,6 @@
 
 class Attribute extends CI_Model
 {
-
     /*
         Defines types
     */
@@ -441,6 +440,9 @@ class Attribute extends CI_Model
     public function set_attributes($data)
     {
         if (!empty($data['entity_id'])) {
+            if (isset($data['entity_value']) && is_array($data['entity_value'])) {
+                $data['entity_value'] = implode(',', $data['entity_value']);
+            }
             $this->db->insert('attribute_values', $data);
         }
         return $this;
