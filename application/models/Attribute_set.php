@@ -2,6 +2,14 @@
 
 class Attribute_set extends CI_Model
 {
+    protected $related_objects = array(
+        'customers' => 'common_customers',
+        'items' => 'common_items',
+        'item_kits' => 'common_item_kits',
+        'supplier' => 'common_supplier',
+        'employees' => 'common_employees',
+    );
+
     /*
         Determines if a given id is an attribute_set
     */
@@ -68,6 +76,9 @@ class Attribute_set extends CI_Model
 
         if ($query->num_rows() == 1) {
             $cache[$id] = $query->row();
+            if (!empty($cache[$id]->related_objects)) {
+                $cache[$id]->related_objects = @unserialize($cache[$id]->related_objects);
+            }
             return $cache[$id];
         } else {
             /* Get empty base parent object */
@@ -359,6 +370,10 @@ class Attribute_set extends CI_Model
         $attribute_sets_combined = $this->db->dbprefix('attribute_sets_combined');
         $attributes = $this->db->dbprefix('attributes');
         return $this->db->query("SELECT * FROM " . $attribute_sets_combined . " AS ac INNER JOIN " . $attributes . " AS at ON (at.id = ac.attribute_id) WHERE attribute_set_id = " . $attribute_set_id)->result();
+    }
+
+    public function get_related_objects() {
+        return $this->related_objects;
     }
 }
 

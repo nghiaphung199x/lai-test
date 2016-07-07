@@ -421,4 +421,11 @@ $lang['common_items_import_note'] = '(*) Required fields: name, unit price, cost
 $lang['common_suppliers_import_note'] = '(*) Required fields: company name, first name, last name';
 $lang['common_error_import_rows'] = 'Error import rows (invalid data types or duplicate content)';
 $lang['common_empty_data'] = 'Empty data';
+
+$lang['common_customers'] = 'Customer';
+$lang['common_suppliers'] = 'Supplier';
+$lang['common_employees'] = 'Employee';
+$lang['common_items'] = 'Items';
+$lang['common_item_kits'] = 'Item kits';
+
 ?>

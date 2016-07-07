@@ -470,4 +470,11 @@ $lang['common_items_import_note'] = '(*) Những trường cần nhập: tên s�
 $lang['common_suppliers_import_note'] = '(*) Những trường cần nhập: tên công ty, họ, tên người đại diện';
 $lang['common_error_import_rows'] = 'Bản ghi không thể tải về được (dữ liệu bị trùng lặp hoặc không đúng kiểu dữ liệu)';
 $lang['common_empty_data'] = 'Dữ liệu trống';
+
+$lang['common_customers'] = 'Khách hàng';
+$lang['common_suppliers'] = 'Nhà cung cấp';
+$lang['common_employees'] = 'Nhân viên';
+$lang['common_items'] = 'Sản phấm';
+$lang['common_item_kits'] = 'Gói sản phẩm';
+
 ?>

@@ -133,6 +133,7 @@ class Attribute_sets extends Secure_area implements Idata_controller
             }
         }
         $data['attribute_groups'] = $this->Attribute_group->get_all()->result();
+        $data['related_objects'] = $this->Attribute_set->get_related_objects();
         $data['parents'] = $this->Attribute_set->get_all()->result();
         $data['all_modules'] = $this->Module->get_all_modules();
         $data['controller_name'] = $this->_controller_name;
@@ -164,6 +165,11 @@ class Attribute_sets extends Secure_area implements Idata_controller
 
         /* Get All Data Submit */
         $data = $this->input->post('attribute_set');
+        if (!empty($data['related_objects'])) {
+            $data['related_objects'] = @serialize($data['related_objects']);
+        } else {
+            $data['related_objects'] = 'NULL';
+        }
 
         /* Get Redirect Code */
         $redirect_code = $this->input->post('redirect_code');
