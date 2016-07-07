@@ -71,6 +71,16 @@
 
     //validation and submit handling
     $(document).ready(function () {
+
+        $(".wrapper").addClass("mini-bar");
+        $(".wrapper.mini-bar .left-bar").hover(
+                function() {
+                    $(this).parent().removeClass('mini-bar');
+                }, function() {
+                    $(this).parent().addClass('mini-bar');
+                }
+        );
+
         var submitting = false;
 
         $('#employee_form').validate({
