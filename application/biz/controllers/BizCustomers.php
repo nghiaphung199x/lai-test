@@ -745,7 +745,7 @@ class BizCustomers extends Customers
         $this->load->model('Attribute_group');
         $this->load->model('Attribute');
 
-        $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+        $data['attribute_sets'] = $this->Attribute_set->get_by_related_object('customers');
         $data['attribute_groups'] = $this->Attribute_group->get_all()->result();
         $data['attribute_values'] = $this->Attribute->get_entity_attributes(array('entity_id' => $customer_id, 'entity_type' => 'customers'));
         if (!empty($data['person_info']->attribute_set_id)) {

@@ -476,5 +476,6 @@ $lang['common_suppliers'] = 'Nhà cung cấp';
 $lang['common_employees'] = 'Nhân viên';
 $lang['common_items'] = 'Sản phấm';
 $lang['common_item_kits'] = 'Gói sản phẩm';
+$lang['common_sex'] = 'Giới tính';
 
 ?>

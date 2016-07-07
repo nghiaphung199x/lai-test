@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `phppos_attribute_values` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `phppos_attribute_sets`
-ADD `related_objects` BLOB NOT NULL AFTER `description` ;
+ADD `related_objects` TEXT NOT NULL AFTER `description` ;
 
 ALTER TABLE `phppos_item_kits`
 ADD COLUMN `attribute_set_id` int(10) NULL AFTER `item_kit_id`;

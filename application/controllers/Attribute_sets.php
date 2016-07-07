@@ -166,7 +166,7 @@ class Attribute_sets extends Secure_area implements Idata_controller
         /* Get All Data Submit */
         $data = $this->input->post('attribute_set');
         if (!empty($data['related_objects'])) {
-            $data['related_objects'] = @serialize($data['related_objects']);
+            $data['related_objects'] = implode(',', $data['related_objects']);
         } else {
             $data['related_objects'] = 'NULL';
         }

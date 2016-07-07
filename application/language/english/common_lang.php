@@ -427,5 +427,6 @@ $lang['common_suppliers'] = 'Supplier';
 $lang['common_employees'] = 'Employee';
 $lang['common_items'] = 'Items';
 $lang['common_item_kits'] = 'Item kits';
+$lang['common_sex'] = 'Gender';
 
 ?>

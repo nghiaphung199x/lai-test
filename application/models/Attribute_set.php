@@ -6,7 +6,7 @@ class Attribute_set extends CI_Model
         'customers' => 'common_customers',
         'items' => 'common_items',
         'item_kits' => 'common_item_kits',
-        'supplier' => 'common_supplier',
+        'suppliers' => 'common_supplier',
         'employees' => 'common_employees',
     );
 
@@ -77,7 +77,7 @@ class Attribute_set extends CI_Model
         if ($query->num_rows() == 1) {
             $cache[$id] = $query->row();
             if (!empty($cache[$id]->related_objects)) {
-                $cache[$id]->related_objects = @unserialize($cache[$id]->related_objects);
+                $cache[$id]->related_objects = explode(',', $cache[$id]->related_objects);
             }
             return $cache[$id];
         } else {
@@ -374,6 +374,19 @@ class Attribute_set extends CI_Model
 
     public function get_related_objects() {
         return $this->related_objects;
+    }
+
+    public function get_by_related_object($related_object) {
+        if (empty($related_object)) {
+            return null;
+        }
+        $attribute_sets = $this->db->dbprefix('attribute_sets');
+        $query = 'SELECT * FROM `'.$attribute_sets.'` WHERE CONCAT(",", `related_objects`, ",") LIKE "%,'.$related_object.',%"';
+        $attribute_sets = $this->db->query($query)->result();
+        if (empty($attribute_sets)) {
+            $attribute_sets = array();
+        }
+        return $attribute_sets;
     }
 }
 

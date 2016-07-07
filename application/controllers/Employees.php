@@ -199,7 +199,7 @@ class Employees extends Person_controller
         $this->load->model('Attribute_group');
         $this->load->model('Attribute');
 
-        $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+        $data['attribute_sets'] = $this->Attribute_set->get_by_related_object('employees');
         $data['attribute_groups'] = $this->Attribute_group->get_all()->result();
         $data['attribute_values'] = $this->Attribute->get_entity_attributes(array('entity_id' => $employee_id, 'entity_type' => 'employees'));
         if (!empty($data['person_info']->attribute_set_id)) {
@@ -500,7 +500,7 @@ class Employees extends Person_controller
                 $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
                 $end_column = $objPHPExcel->setActiveSheetIndex(0)->getHighestColumn();
                 $this->load->model('Attribute_set');
-                $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+                $data['attribute_sets'] = $this->Attribute_set->get_by_related_object('employees');
                 $data['sheet'] = $objPHPExcel->getActiveSheet();
                 $data['num_rows'] = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
                 $data['columns'] = range('A', $end_column);
@@ -546,7 +546,7 @@ class Employees extends Person_controller
         $selected_rows = $this->input->post('selected_rows');
         if (empty($rows) || empty($selected_rows)) {
             $msg = lang('common_error');
-            echo json_encode(array('success' => true, 'message' => $msg));
+            echo json_encode(array('success' => false, 'message' => $msg));
             return;
         }
         $stored_rows = 0;

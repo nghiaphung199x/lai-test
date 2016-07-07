@@ -90,7 +90,7 @@
 						submitting = false;
 					},
 					dataType:'json',
-					resetForm: true
+					resetForm: false
 				});
 			},
 			errorLabelContainer: "#error_message_box",

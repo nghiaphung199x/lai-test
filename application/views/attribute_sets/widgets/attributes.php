@@ -1,4 +1,4 @@
-<?php if (!empty($attribute_groups)) :?>
+<?php if (!empty($attribute_sets) && !empty($attribute_groups)) :?>
 <?php foreach ($attribute_groups as $attribute_group) :?>
     <?php if (!isset($attribute_group->has_attributes)) continue; ?>
     <div class="panel">

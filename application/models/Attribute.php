@@ -29,8 +29,6 @@ class Attribute extends CI_Model
         $attribute_types[self::ATTRIBUTE_TYPE_SELECT] = lang('attributes_type_select');
         $attribute_types[self::ATTRIBUTE_TYPE_CHECKBOX] = lang('attributes_type_checkbox');
         $attribute_types[self::ATTRIBUTE_TYPE_RADIO] = lang('attributes_type_radio');
-        $attribute_types[self::ATTRIBUTE_TYPE_EDITOR] = lang('attributes_type_editor');
-        $attribute_types[self::ATTRIBUTE_TYPE_FILE] = lang('attributes_type_file');
         return $attribute_types;
     }
 
