@@ -1687,7 +1687,7 @@ class BizSales extends Sales
 				$data['next_url'] = site_url('sales');
 			} elseif ($return == 'closeregister')
 			{
-				$data['next_url'] = site_url('sales/closeregister?continue=home');
+				$data['next_url'] = site_url('sales/closeregister?continue=logout');
 			}
 			
 			$data['id'] = $cash_register->register_log_id;

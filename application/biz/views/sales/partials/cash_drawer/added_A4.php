@@ -228,7 +228,11 @@ table th, table td {
 		</div>
 	</div>
 	<div id="pdf_title" class="clb">
+		<?php if ($mode == 'add') {?>
+		<p>PHIẾU THU</p>
+		<?php } else {?>
 		<p>PHIẾU CHI</p>
+		<?php }?>
 	</div>
 	<div class="fr w220px">
 		<p>Số: <?php echo $id; ?></p>
