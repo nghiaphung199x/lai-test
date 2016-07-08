@@ -37,3 +37,8 @@ label.error { font-weight: normal; color: red; }
 .ajax-result {padding: 20px;}
 .ajax-result .form-control {margin-bottom: 0px}
 .sub {font-weight: normal; font-style: italic}
+table.error thead th {background-color: #e02a00 !important; color: #fff !important;}
+table.error thead th * {color: #fff;}
+table.error tr:nth-child(odd) td {background-color: #ffe9df}
+.empty-data {color: #ccc; font-style: italic}
+.red-color {color: #e02a00}

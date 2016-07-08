@@ -36,4 +36,7 @@ $lang['attribute_sets_updated_successful'] = 'Attribute set updated successful';
 $lang['attribute_sets_btn_list'] = 'Manage Attribute sets';
 $lang['attribute_sets_btn_save'] = 'Save Attribute set';
 $lang['attribute_sets_btn_delete'] = 'Delete Attribute set';
+
+$lang['attribute_sets_hint'] = 'Drag and drop attribute to group';
+$lang['attribute_sets_related_objects'] = 'Set related objects';
 ?>

@@ -36,4 +36,7 @@ $lang['attribute_sets_updated_successful'] = 'Thông tin bộ thuộc tính đã
 $lang['attribute_sets_btn_list'] = 'Danh sách bộ thuộc tính';
 $lang['attribute_sets_btn_save'] = 'Lưu bộ thuộc tính';
 $lang['attribute_sets_btn_delete'] = 'Xóa bộ thuộc tính';
+
+$lang['attribute_sets_hint'] = 'Kéo thả từng thuộc tính vào nhóm tương ứng';
+$lang['attribute_sets_related_objects'] = 'Đối tượng sử dụng bộ thuộc tính';
 ?>

@@ -1793,7 +1793,7 @@ class Items extends Secure_area implements Idata_controller
                 $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
                 $end_column = $objPHPExcel->setActiveSheetIndex(0)->getHighestColumn();
                 $this->load->model('Attribute_set');
-                $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+                $data['attribute_sets'] = $this->Attribute_set->get_by_related_object('items');
                 $data['sheet'] = $objPHPExcel->getActiveSheet();
                 $data['num_rows'] = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
                 $data['columns'] = range('A', $end_column);
@@ -1835,18 +1835,19 @@ class Items extends Secure_area implements Idata_controller
         $columns = $this->input->post('columns');
         $rows = $this->input->post('rows');
         $selected_rows = $this->input->post('selected_rows');
-        $stored_rows = 0;
         if (empty($rows) || empty($selected_rows)) {
             $msg = lang('common_error');
-            echo json_encode(array('success' => true, 'message' => $msg));
+            echo json_encode(array('success' => false, 'message' => $msg));
             return;
         }
+        $stored_rows = 0;
+        $error_rows = array();
         foreach ($rows as $index => $row) {
             if (!isset($selected_rows[$index])) {
                 continue;
             }
             $data = array('attribute_set_id' => $attribute_set_id);
-            $person_data = $extend_data = $extend_rows = array();
+            $extend_data = $extend_rows = array();
             foreach ($columns as $excel_column => $field_column) {
                 if (!empty($field_column) && !empty($row[$excel_column])) {
                     $field_parts = explode(':', $field_column);
@@ -1894,6 +1895,7 @@ class Items extends Secure_area implements Idata_controller
                             break;
                     }
                 }
+                // Test
                 if (!$exists_row) {
                     if (empty($data['unit_price']) || !is_numeric($data['unit_price'])) {
                         $data['unit_price'] = 0;    
@@ -1912,18 +1914,25 @@ class Items extends Secure_area implements Idata_controller
                             }
                         }
                     }
+                } else {
+                    $error_rows[] = $row;
                 }
             } catch (Exception $ex) {
+                $error_rows[] = $row;
                 continue;
             }
         }
+        $error_html = '';
+        if (!empty($error_rows)) {
+            $error_html = $this->load->view('import/error/rows', array('num_rows' => count($error_rows), 'rows' => $error_rows, 'columns' => $columns), true);
+        }
         if (!empty($stored_rows)) {
             $msg = $stored_rows . ' ' . lang('common_record_stored');
-            echo json_encode(array('success' => true, 'message' => $msg));
+            echo json_encode(array('success' => true, 'message' => $msg, 'error_html' => $error_html));
             return;
         }
         $msg = $stored_rows . ' ' . lang('common_record_stored');
-        echo json_encode(array('success' => false, 'message' => $msg));
+        echo json_encode(array('success' => false, 'message' => $msg, 'error_html' => $error_html));
     }
 
 }

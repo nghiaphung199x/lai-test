@@ -60,6 +60,7 @@
                 <h3><?php echo lang('common_step_3'); ?>: </h3>
                 <p><?php echo lang('item_kits_step_3_desc'); ?></p>
                 <p><?php echo lang('common_required_select_columns'); ?></p>
+                <p><?php echo lang('common_item_kits_import_note'); ?></p>
                 <div class="form-group ajax-result" id="import-result"></div>
 
                 <?php echo form_close() ?>
@@ -73,6 +74,16 @@
 
     //validation and submit handling
     $(document).ready(function () {
+
+        $(".wrapper").addClass("mini-bar");
+        $(".wrapper.mini-bar .left-bar").hover(
+            function() {
+                $(this).parent().removeClass('mini-bar');
+            }, function() {
+                $(this).parent().addClass('mini-bar');
+            }
+        );
+
         var submitting = false;
 
         $('#item_kit_form').validate({

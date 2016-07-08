@@ -485,7 +485,7 @@ class BizItems extends Items
         $this->load->model('Attribute_group');
         $this->load->model('Attribute');
 
-        $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+        $data['attribute_sets'] = $this->Attribute_set->get_by_related_object('items');
         $data['attribute_groups'] = $this->Attribute_group->get_all()->result();
         $data['attribute_values'] = $this->Attribute->get_entity_attributes(array('entity_id' => $item_id, 'entity_type' => 'items'));
         if (!empty($data['item_info']->attribute_set_id)) {

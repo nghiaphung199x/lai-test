@@ -385,7 +385,7 @@ class Suppliers extends Person_controller
         $data['supplier_tax_info'] = $this->Supplier_taxes->get_info($supplier_id);
         $data['redirect'] = $redirect;
 
-        $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+        $data['attribute_sets'] = $this->Attribute_set->get_by_related_object('suppliers');
         $data['attribute_groups'] = $this->Attribute_group->get_all()->result();
         $data['attribute_values'] = $this->Attribute->get_entity_attributes(array('entity_id' => $supplier_id, 'entity_type' => 'suppliers'));
         if (!empty($data['person_info']->attribute_set_id)) {
@@ -561,7 +561,7 @@ class Suppliers extends Person_controller
                 $objPHPExcel = file_to_obj_php_excel($_FILES['file_path']['tmp_name']);
                 $end_column = $objPHPExcel->setActiveSheetIndex(0)->getHighestColumn();
                 $this->load->model('Attribute_set');
-                $data['attribute_sets'] = $this->Attribute_set->get_all()->result();
+                $data['attribute_sets'] = $this->Attribute_set->get_by_related_object('suppliers');
                 $data['sheet'] = $objPHPExcel->getActiveSheet();
                 $data['num_rows'] = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
                 $data['columns'] = range('A', $end_column);
@@ -605,13 +605,14 @@ class Suppliers extends Person_controller
         $columns = $this->input->post('columns');
         $rows = $this->input->post('rows');
         $selected_rows = $this->input->post('selected_rows');
-        $stored_rows = 0;
-        $person_import_fields = $this->Supplier->get_person_import_fields();
         if (empty($rows) || empty($selected_rows)) {
             $msg = lang('common_error');
-            echo json_encode(array('success' => true, 'message' => $msg));
+            echo json_encode(array('success' => false, 'message' => $msg));
             return;
         }
+        $stored_rows = 0;
+        $person_import_fields = $this->Supplier->get_person_import_fields();
+        $error_rows = array();
         foreach ($rows as $index => $row) {
             if (!isset($selected_rows[$index])) {
                 continue;
@@ -691,18 +692,25 @@ class Suppliers extends Person_controller
                             }
                         }
                     }
+                } else {
+                    $error_rows[] = $row;
                 }
             } catch (Exception $ex) {
+                $error_rows[] = $row;
                 continue;
             }
         }
+        $error_html = '';
+        if (!empty($error_rows)) {
+            $error_html = $this->load->view('import/error/rows', array('num_rows' => count($error_rows), 'rows' => $error_rows, 'columns' => $columns), true);
+        }
         if (!empty($stored_rows)) {
             $msg = $stored_rows . ' ' . lang('common_record_stored');
-            echo json_encode(array('success' => true, 'message' => $msg));
+            echo json_encode(array('success' => true, 'message' => $msg, 'error_html' => $error_html));
             return;
         }
         $msg = $stored_rows . ' ' . lang('common_record_stored');
-        echo json_encode(array('success' => false, 'message' => $msg));
+        echo json_encode(array('success' => false, 'message' => $msg, 'error_html' => $error_html));
     }
 }
 

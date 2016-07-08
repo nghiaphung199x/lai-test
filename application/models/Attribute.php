@@ -2,7 +2,6 @@
 
 class Attribute extends CI_Model
 {
-
     /*
         Defines types
     */
@@ -29,8 +28,6 @@ class Attribute extends CI_Model
         $attribute_types[self::ATTRIBUTE_TYPE_SELECT] = lang('attributes_type_select');
         $attribute_types[self::ATTRIBUTE_TYPE_CHECKBOX] = lang('attributes_type_checkbox');
         $attribute_types[self::ATTRIBUTE_TYPE_RADIO] = lang('attributes_type_radio');
-        $attribute_types[self::ATTRIBUTE_TYPE_EDITOR] = lang('attributes_type_editor');
-        $attribute_types[self::ATTRIBUTE_TYPE_FILE] = lang('attributes_type_file');
         return $attribute_types;
     }
 
@@ -443,6 +440,9 @@ class Attribute extends CI_Model
     public function set_attributes($data)
     {
         if (!empty($data['entity_id'])) {
+            if (isset($data['entity_value']) && is_array($data['entity_value'])) {
+                $data['entity_value'] = implode(',', $data['entity_value']);
+            }
             $this->db->insert('attribute_values', $data);
         }
         return $this;
