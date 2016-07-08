@@ -2,64 +2,88 @@
 <div class="form">
     <?php echo form_open('attribute_sets/save/' . (!isset($is_clone) ? $entity->id : ''), array('id' => 'form-attribute_set',)); ?>
         <?php form_hidden('redirect_code', 2); ?>
-        <div class="panel">
-            <div class="panel-heading">
-                <h3 class="panel-title">
-                    <i class="ion-edit"></i>
-                    <?php echo lang('attribute_sets_basic_information'); ?>
-                    <span class="sub hidden-xs hidden-sm"> <?php echo lang('common_fields_required_message'); ?> </span>
-                </h3>
-            </div>
-            <div class="panel-body bootstrap">
-
-                <div class="form-group">
-                    <?php echo form_label(lang('attribute_sets_field_name'), 'attribute_set_name', array('class' => '')); ?>
-                    <div class="cl">
-                        <?php echo form_input(array(
+        <div class="row">
+            <div class="col-md-8">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="ion-edit"></i>
+                            <?php echo lang('attribute_sets_basic_information'); ?>
+                            <span class="sub hidden-xs hidden-sm"> <?php echo lang('common_fields_required_message'); ?> </span>
+                        </h3>
+                    </div>
+                    <div class="panel-body bootstrap">
+                        <div class="form-group">
+                            <?php echo form_label(lang('attribute_sets_field_name'), 'attribute_set_name', array('class' => '')); ?>
+                            <div class="cl">
+                                <?php echo form_input(array(
                                 'name' => 'attribute_set[name]',
                                 'id' => 'attribute_set_name',
                                 'title' => lang('common_fields_required_alert'),
                                 'class' => 'form-control form-inps required',
                                 'value' => $entity->name
-                        )); ?>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <?php echo form_label(lang('attribute_sets_field_code'), 'attribute_set_code', array('class' => '')); ?>
-                    <div class="cl">
-                        <?php echo form_input(array(
+                            )); ?>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <?php echo form_label(lang('attribute_sets_field_code'), 'attribute_set_code', array('class' => '')); ?>
+                            <div class="cl">
+                                <?php echo form_input(array(
                                 'name' => 'attribute_set[code]',
                                 'id' => 'attribute_set_code',
                                 'title' => lang('common_fields_required_alert'),
                                 'class' => 'form-control form-inps',
                                 'value' => $entity->code
-                        )); ?>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <?php echo form_label(lang('attribute_sets_field_description'), 'attribute_set_description', array('class' => '')); ?>
-                    <div class="cl">
-                        <?php echo form_textarea(array(
+                            )); ?>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <?php echo form_label(lang('attribute_sets_field_description'), 'attribute_set_description', array('class' => '')); ?>
+                            <div class="cl">
+                                <?php echo form_textarea(array(
                                 'name' => 'attribute_set[description]',
                                 'id' => 'attribute_set_description',
                                 'rows' => '3',
                                 'class' => 'form-control',
                                 'value' => $entity->description
-                        )); ?>
+                            )); ?>
+                            </div>
+                        </div>
+                        <div class="clear">
+                            <div class="btn-group">
+                                <a class="btn btn-default" href="<?php echo site_url('attribute_sets'); ?>"><?php echo lang('attribute_sets_btn_list'); ?></a>
+                                <?php echo form_submit(array(
+                                    'name' => 'submit',
+                                    'id' => 'submit',
+                                    'value' => lang('attribute_sets_btn_save'),
+                                    'class' => 'btn btn-primary')
+                            ); ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="clear">
-                    <div class="btn-group">
-                        <a class="btn btn-default" href="<?php echo site_url('attribute_sets'); ?>"><?php echo lang('attribute_sets_btn_list'); ?></a>
-                        <?php echo form_submit(array(
-                            'name' => 'submit',
-                            'id' => 'submit',
-                            'value' => lang('attribute_sets_btn_save'),
-                            'class' => 'btn btn-primary')
-                        ); ?>
+            </div>
+            <div class="col-md-4">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <?php echo lang('attribute_sets_related_objects'); ?>
+                        </h3>
+                    </div>
+                    <div class="panel-body bootstrap">
+                        <table class="table">
+                            <tbody>
+                            <?php foreach ($related_objects as $value => $label) :?>
+                            <tr>
+                                <td class="no-border">
+                                    &nbsp;
+                                    <input <?php if (!empty($entity->related_objects) && in_array($value, $entity->related_objects)) :?>checked="checked"<?php endif; ?> type="checkbox" name="attribute_set[related_objects][]" value="<?php echo $value; ?>" id="ro-<?php echo $value; ?>" class="module_checkboxes" />
+                                    <label for="ro-<?php echo $value; ?>"><span></span></label><span class="text-info"><?php echo lang($label); ?></span>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -71,6 +95,7 @@
                 </h3>
             </div>
             <div class="panel-body bootstrap">
+                <p><i><?php echo lang('attribute_sets_hint'); ?></i></p>
                 <div class="row">
                     <div class="col-md-6">
                         <?php if (!empty($attribute_groups)) :?>

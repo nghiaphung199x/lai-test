@@ -5,14 +5,10 @@ require_once 'Bizmodel.php';
 class Item_kit extends Bizmodel
 {
     protected $import_fields = array(
-        'item_kit_id' => 'item_kit_id',
         'name' => 'name',
         'description' => 'description',
         'unit_price' => 'unit_price',
-        'cost_price' => 'cost_price',
-        'commission_value' => 'commission_value',
-        'commission_percent' => 'commission_percent',
-        'product_id' => 'product_id'
+        'cost_price' => 'cost_price'
     );
 
     protected $export_fields = array(
