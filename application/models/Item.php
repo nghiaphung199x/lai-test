@@ -56,6 +56,34 @@ class Item extends Bizmodel
 		return $this->db->get();
 	}
 	
+	function getByLocationId($locationId = 0, $limit=100000, $offset=0,$col='item_id',$order='desc')
+	{
+		$this->db->select('items.*, GROUP_CONCAT('.$this->db->dbprefix('tags').'.name) as tags, categories.name as category,
+		categories.id as category_id,
+		location_items.quantity as quantity,
+		location_items.reorder_level as location_reorder_level,
+		location_items.cost_price as location_cost_price,
+		location_items.unit_price as location_unit_price');
+	
+		$this->db->from('items');
+		$this->db->join('location_items', 'location_items.item_id = items.item_id and location_id = '.$locationId, 'left');
+		$this->db->join('categories', 'categories.id = items.category_id','left');
+		$this->db->join('items_tags', 'items_tags.item_id = items.item_id', 'left');
+		$this->db->join('tags', 'tags.id = items_tags.tag_id', 'left');
+		$this->db->group_by('items.item_id');
+		$this->db->where('items.deleted',0);
+		if (!$this->config->item('speed_up_search_queries'))
+		{
+			$this->db->order_by($col, $order);
+		}
+	
+		$this->db->limit($limit);
+		$this->db->offset($offset);
+		return $this->db->get();
+	}
+	
+	
+	
 	function get_all_by_supplier($supplier_id)
 	{
 		$this->db->from('items');

@@ -41,7 +41,7 @@ class BizExcel {
 		return $this;
 	}
 	
-	public function generateFile($saveToLocal = true, $newFileName = '') {
+	public function generateFile($saveToLocal = true, $newFileName = '', $final = true) {
 		if (!empty($newFileName)) {
 			$this->newFileName = $newFileName;
 		}
@@ -58,17 +58,33 @@ class BizExcel {
 			$this->buildExtraData();
 		}
 		
-		$objWriter = PHPExcel_IOFactory::createWriter($this->oPHPExcel, 'Excel2007');
-		if ($saveToLocal) {
-			$objWriter->save($this->excelPath . $this->newFileName);
-			return null;
-		} else {
-			ob_start();
-			$objWriter->save('php://output');
-			$excelOutput = ob_get_clean();
-			return $excelOutput;
+		
+		if ($final) {
+			$objWriter = PHPExcel_IOFactory::createWriter($this->oPHPExcel, 'Excel2007');
+			if ($saveToLocal) {
+				$objWriter->save($this->excelPath . $this->newFileName);
+				return null;
+			} else {
+				ob_start();
+				$objWriter->save('php://output');
+				$excelOutput = ob_get_clean();
+				return $excelOutput;
+			}
 		}
 	}
+	
+	public function setActiveSheet($index = 0, $sheetName = '') {
+		if ($index) {
+			$objWorkSheet = $this->oPHPExcel->createSheet($index);
+			$this->oPHPExcel->setActiveSheetIndex($index);
+		}
+		
+		if ($sheetName) {
+			!empty($objWorkSheet) ? $objWorkSheet->setTitle($sheetName) : $this->oPHPExcel->getActiveSheet()->setTitle($sheetName);
+		}
+		return $this;
+	}
+	
 	
 	protected function buildBobyOfTable() {
 		foreach ($this->dataExcel as $index => $row) {

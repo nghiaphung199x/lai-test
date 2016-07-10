@@ -1,6 +1,50 @@
 <?php
 class Inventory extends CI_Model 
 {	
+	
+	public function getHistoryAuditsByAllItems($search) {
+		
+		$this->db->select('items.*, inventory_counts_items.*, inventory_counts.*, locations.name as location_name, categories.name as category_name');
+		$this->db->from('inventory_counts_items');
+		$this->db->join('inventory_counts', 'inventory_counts_items.inventory_counts_id = inventory_counts.id');
+		$this->db->join('items', 'inventory_counts_items.item_id = items.item_id');
+		$this->db->join('locations', 'inventory_counts.location_id = locations.location_id');
+		$this->db->join('categories', 'categories.id = items.category_id');
+		
+		if (!empty($search['start_date'])) {
+			$this->db->where('inventory_counts.count_date >= ', $search['start_date']);
+		}
+		
+		if (!empty($search['end_date'])) {
+			$this->db->where('inventory_counts.count_date <= ', $search['end_date']);
+		}
+		
+		$this->db->order_by('inventory_counts.count_date');
+		return $this->db->get()->result_array();
+	}
+	
+	
+	public function getAllDetail($search)
+	{
+		$this->db->select('locations.name as location_name, inventory.*, items.*, categories.name as category');
+		$this->db->from('inventory');
+		$this->db->join('items', 'items.item_id = inventory.trans_items');
+		$this->db->join('locations', 'inventory.location_id = locations.location_id');
+		$this->db->join('categories', 'items.category_id = categories.id', 'left outer');
+		$this->db->where('items.deleted', 0);
+		$this->db->where('trans_inventory !=', 0);
+		
+		if (!empty($search['start_date'])) {
+			$this->db->where('inventory.trans_date >= ', $search['start_date']);
+		}
+		
+		if (!empty($search['end_date'])) {
+			$this->db->where('inventory.trans_date <= ', $search['end_date']);
+		}
+		$this->db->order_by('inventory.trans_date');
+		return $this->db->get()->result_array();
+	}
+	
 	function insert($inventory_data)
 	{
 		if(is_numeric($inventory_data['trans_inventory']))

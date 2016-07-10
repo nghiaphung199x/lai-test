@@ -22,7 +22,7 @@ class Secure_area extends MY_Controller
 			redirect('login');
 		}
 		
-		if(!$this->Employee->has_module_permission($this->module_id,$this->Employee->get_logged_in_employee_info()->person_id))
+		if( $module_id != 'tools' && !$this->Employee->has_module_permission($this->module_id,$this->Employee->get_logged_in_employee_info()->person_id))
 		{
 			redirect('no_access/'.$this->module_id);
 		}

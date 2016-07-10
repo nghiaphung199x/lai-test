@@ -60,6 +60,28 @@ class BizReceiving extends Receiving
 		
 		return $transferingList;
 	}
+	
+	public function getHistoryTransfersByAllItems($search = []) {
+		$this->db->from('receivings_items');
+		$this->db->join('receivings', 'receivings_items.receiving_id = receivings.receiving_id');
+		$this->db->join('items', 'receivings_items.item_id = items.item_id');
+		
+		if (!empty($search['start_date'])) {
+			$this->db->where('receiving_time >= ', $search['start_date']);
+		}
+		
+		if (!empty($search['end_date'])) {
+			$this->db->where('receiving_time <= ', $search['end_date']);
+		}
+		
+		$this->db->where('receivings.deleted', 0);
+		$this->db->where('receivings.transfer_status', 'approved');
+		$this->db->where('receivings.transfer_to_location_id > 0');
+		$this->db->where('receivings.location_id > 0');
+		$this->db->order_by('receiving_time');
+		return $this->db->get()->result_array();
+	}
+	
 	public function getAllTransferings()
 	{		
 		$location_id = $this->Employee->get_logged_in_employee_current_location_id();		
