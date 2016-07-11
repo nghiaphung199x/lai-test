@@ -472,7 +472,7 @@ class BizSale extends Sale
 				$cur_item_info = $this->Item->get_info($item['item_id']);
 				$cur_item_location_info = $this->Item_location->get_info($item['item_id']);
 				$qtyOriginal = $item['quantity'];
-				if( (int) $item['measure_id'] && $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
+				if( (int) $item['measure_id'] && (int) $cur_item_info->measure_id && $cur_item_info->measure_id != $item['measure_id'] /* && ($mode == 'receive' || $mode == 'purchase_order') */)
 				{
 					$convertedValue = $this->ItemMeasures->getConvertedValue($item['item_id'], $item['measure_id']);
 					$cost_price = $cost_price * $convertedValue->unit_price_percentage_converted / 100;
@@ -674,7 +674,7 @@ class BizSale extends Sale
 					
 					$reorder_level = ($cur_item_location_info && $cur_item_location_info->reorder_level !== NULL) ? $cur_item_location_info->reorder_level : $cur_item_info->reorder_level;
 					
-					if( $cur_item_info->measure_id != $item_kit_item->measure_id /* && ($mode == 'receive' || $mode == 'purchase_order') */)
+					if( (int) $item_kit_item->measure_id && (int) $cur_item_info->measure_id && $cur_item_info->measure_id != $item_kit_item->measure_id /* && ($mode == 'receive' || $mode == 'purchase_order') */)
 					{
 						$convertedValue = $this->ItemMeasures->getConvertedValue($item_kit_item->item_id, $item_kit_item->measure_id);
 						$item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
