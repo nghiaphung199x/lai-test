@@ -16,6 +16,7 @@ class BizTools extends Secure_area {
 		$this->load->model('Receiving');
 		$this->load->model('Inventory');
 		$this->load->model('Customer');
+		$this->load->model('Sale');
 	}
 	
 	public function export($type = '') {
@@ -36,7 +37,295 @@ class BizTools extends Secure_area {
 			case 'account_payment':
 				$this->exportAccountPayment();
 				break;
+			case 'sales':
+				$this->exportSales();
+				break;
+			case 'receivings':
+				$this->exportReceivings();
+				break;
 		}
+	}
+	
+	protected function exportReceivings() {
+		$bizExcel = new BizExcel('AReceivings.xlsx');
+	
+		$locations = $this->Location->get_all();
+		$bizExcel->setNumberRowStartBody(4)->setHeaderOfBody($this->getHeaderOfReceivings());
+	
+		foreach ($locations->result() as $index => $location)
+		{
+			$bizExcel->setDataExcel($this->getDetailReceivingsByLocation($location->location_id));
+			$bizExcel->setActiveSheet($index, $location->name)->generateFile(false, '', false);
+		}
+	
+		$excelContent = $bizExcel->generateFile(false);
+		$this->load->helper('download');
+		force_download('Receivings.xlsx', $excelContent);
+	}
+	
+	protected function getDetailReceivingsByLocation($locationId = 0) {
+		$search['start_date'] = '2016-06-01';
+		$search['end_date'] = date('Y-m-d');
+		$result = $this->Receiving->getDetailReceivingsByLocationId($locationId, $search);
+		
+		$items = [];
+		foreach ($result as $record) {
+			$item = [];
+			$item['recv_id'] = $record['receiving_id'];
+			$item['recv_time'] = $record['receiving_time'];
+			$item['recv_item'] = $record['name'];
+			$item['recv_item_category'] = $record['category'];
+			$item['recv_item_qty'] = (int) $record['quantity_received'] ? to_quantity($record['quantity_received']) : to_quantity($record['quantity_purchased']);
+			$item['recv_item_unit_price'] = to_currency($record['item_unit_price']);
+			$item['recv_item_cost_price'] = to_currency($record['item_cost_price']);
+			$item['recv_item_discount'] = $record['discount_percent'] . ' %';
+			$item['recv_item_payment'] = strip_tags($record['payment_type']);
+			$items[] = $item;
+		}
+		return $items;
+	}
+	
+	protected function getHeaderOfReceivings() {
+		return array(
+				array(
+						'col' => 'A',
+						'text' => 'STT',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => '__AUTO__',
+				),
+				array(
+						'col' => 'B',
+						'text' => 'ID Đơn Hàng',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'recv_id',
+				),
+				array(
+						'col' => 'C',
+						'text' => 'Ngày',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'recv_time',
+				),
+				array(
+						'col' => 'D',
+						'text' => 'Sản Phẩm',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'recv_item',
+				),
+	
+				array(
+						'col' => 'E',
+						'text' => 'Danh Mục',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'recv_item_category',
+				),
+				array(
+						'col' => 'F',
+						'text' => 'Số Lượng Nhập',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'recv_item_qty',
+				),
+				array(
+						'col' => 'G',
+						'text' => 'Giá Bán Chưa Thuế',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'recv_item_unit_price',
+				),
+				array(
+						'col' => 'H',
+						'text' => 'Giá Nhập Chưa Thuế',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'recv_item_cost_price',
+				),
+				array(
+						'col' => 'I',
+						'text' => 'Giảm Giá',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'recv_item_discount',
+				),
+	
+				array(
+						'col' => 'J',
+						'text' => 'Thanh Toán',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'recv_item_payment',
+				)
+		);
+	}
+	
+	protected function exportSales() {
+		$bizExcel = new BizExcel('ASales.xlsx');
+		
+		$locations = $this->Location->get_all();
+		$bizExcel->setNumberRowStartBody(4)->setHeaderOfBody($this->getHeaderOfSales());
+		
+		foreach ($locations->result() as $index => $location)
+		{
+			$bizExcel->setDataExcel($this->getDetailSalesByLocation($location->location_id));
+			$bizExcel->setActiveSheet($index, $location->name)->generateFile(false, '', false);
+		}
+		
+		$excelContent = $bizExcel->generateFile(false);
+		$this->load->helper('download');
+		force_download('Sales.xlsx', $excelContent);
+	}
+	
+	protected function getDetailSalesByLocation($locationId = 0) {
+		$search['start_date'] = '2016-06-01';
+		$search['end_date'] = date('Y-m-d');
+		$result = $this->Sale->getDetailSalesByLocationId($locationId, $search);
+		
+		$items = [];
+		foreach ($result as $record) {
+			$item = [];
+			$item['sale_id'] = $record['sale_id'];
+			$item['sale_time'] = $record['sale_time'];
+			$item['sale_item'] = $record['name'];
+			$item['sale_item_category'] = $record['category'];
+			$item['sale_item_qty'] = to_quantity($record['quantity_purchased']);
+			$item['sale_item_unit_price'] = to_currency($record['item_unit_price']);
+			$item['sale_item_discount'] = $record['discount_percent'] . ' %';
+			$item['sale_item_payment'] = strip_tags($record['payment_type']);
+			$items[] = $item;
+		}
+		
+		return $items;
+	}
+	
+	protected function getHeaderOfSales() {
+		return array(
+				array(
+						'col' => 'A',
+						'text' => 'STT',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => '__AUTO__',
+				),
+				array(
+						'col' => 'B',
+						'text' => 'ID Đơn Hàng',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'sale_id',
+				),
+				array(
+						'col' => 'C',
+						'text' => 'Ngày',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'sale_time',
+				),
+				array(
+						'col' => 'D',
+						'text' => 'Sản Phẩm',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'sale_item',
+				),
+		
+				array(
+						'col' => 'E',
+						'text' => 'Danh Mục',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'sale_item_category',
+				),
+				array(
+						'col' => 'F',
+						'text' => 'Số Lượng',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'sale_item_qty',
+				),
+				array(
+						'col' => 'G',
+						'text' => 'Giá Chưa Thuế',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'sale_item_unit_price',
+				),
+				array(
+						'col' => 'H',
+						'text' => 'Giảm Giá',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'sale_item_discount',
+				),
+				
+				array(
+						'col' => 'I',
+						'text' => 'Thanh Toán',
+						'styles' => array(
+								'color' => '75b6ed',
+								'bold' => true,
+								'is_fill' => true
+						),
+						'value_field' => 'sale_item_payment',
+				)
+		);
 	}
 	
 	protected function exportAccountPayment() {

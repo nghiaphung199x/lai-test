@@ -2,6 +2,27 @@
 require_once (APPPATH . "models/Sale.php");
 class BizSale extends Sale
 {
+	public function getDetailSalesByLocationId($locationId = 0, $search = []) {
+		$this->db->select('sales.*, items.*, sales_items.*, categories.name as category, sales_items.description as sales_items_description');
+		$this->db->from('sales_items');
+		$this->db->join('sales', 'sales_items.sale_id = sales.sale_id');
+		$this->db->join('items', 'items.item_id = sales_items.item_id');
+		$this->db->join('categories', 'categories.id = items.category_id');
+		
+		$this->db->where('sales.location_id', $locationId);
+		
+		if (!empty($search['start_date'])) {
+			$this->db->where('sales.sale_time >= ', $search['start_date']);
+		}
+			
+		if (!empty($search['end_date'])) {
+			$this->db->where('sales.sale_time <= ', $search['end_date']);
+		}
+		
+		$this->db->order_by('sales.sale_time');
+		return $this->db->get()->result_array();
+	}
+	
 	public function getInfo($sale_id)
 	{
 		$this->db->from('sales');

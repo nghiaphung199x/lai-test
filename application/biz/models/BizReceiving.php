@@ -2,6 +2,32 @@
 require_once (APPPATH . "models/Receiving.php");
 class BizReceiving extends Receiving
 {
+	public function getDetailReceivingsByLocationId($locationId = 0, $search = []) {
+		
+		$this->db->select('receivings.*, items.*, receivings_items.*, categories.name as category, receivings_items.description as receivings_items_description');
+		$this->db->from('receivings');
+		$this->db->join('receivings_items', 'receivings.receiving_id = receivings_items.receiving_id');
+		$this->db->join('items', 'items.item_id = receivings_items.item_id');
+		$this->db->join('categories', 'categories.id = items.category_id');
+		
+		$this->db->where('receivings.deleted', 0);
+		$this->db->where('receivings.suspended', '0');
+		$this->db->where('receivings.location_id', $locationId);
+		$this->db->where('receivings.transfer_to_location_id is NULL');
+		
+		if (!empty($search['start_date'])) {
+			$this->db->where('receivings.receiving_time >= ', $search['start_date']);
+		}
+			
+		if (!empty($search['end_date'])) {
+			$this->db->where('receivings.receiving_time <= ', $search['end_date']);
+		}
+		
+		$this->db->order_by('receivings.receiving_time');
+		
+		return $this->db->get()->result_array();
+		
+	}
 	function get_receiving_items_taxes($receiving_id, $line = FALSE)
 	{
 		$item_where = '';
