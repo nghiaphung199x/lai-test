@@ -2,11 +2,13 @@
 
 require_once (APPPATH . "controllers/Secure_area.php");
 
-class BizTools extends Secure_area {
-	
+class BizExtra_tools extends Secure_area 
+{
 	function __construct()
 	{
-		parent::__construct('tools');
+		ini_set('max_execution_time', 300);
+		
+		parent::__construct('extra_tools');
 		$this->load->helper('bizexcel');
 		$this->load->model('Item');
 		$this->load->model('Location');
@@ -17,6 +19,10 @@ class BizTools extends Secure_area {
 		$this->load->model('Inventory');
 		$this->load->model('Customer');
 		$this->load->model('Sale');
+	}
+	
+	public function index() {
+		$this->load->view('extra_tools/index');
 	}
 	
 	public function export($type = '') {
@@ -31,7 +37,6 @@ class BizTools extends Secure_area {
 				$this->exportHistoryAudits();
 				break;
 			case 'detail_inventory':
-				ini_set('max_execution_time', 300);
 				$this->exportDetailInventory();
 				break;
 			case 'account_payment':
@@ -45,6 +50,14 @@ class BizTools extends Secure_area {
 				break;
 		}
 	}
+	
+	protected function searchParams() {
+		$search = [];
+		$search['start_date'] = date('Y-m-01');
+		$search['end_date'] = date('Y-m-d');
+		return $search;
+	}
+	
 	
 	protected function exportReceivings() {
 		$bizExcel = new BizExcel('AReceivings.xlsx');
@@ -64,9 +77,7 @@ class BizTools extends Secure_area {
 	}
 	
 	protected function getDetailReceivingsByLocation($locationId = 0) {
-		$search['start_date'] = '2016-06-01';
-		$search['end_date'] = date('Y-m-d');
-		$result = $this->Receiving->getDetailReceivingsByLocationId($locationId, $search);
+		$result = $this->Receiving->getDetailReceivingsByLocationId($locationId, $this->searchParams());
 		
 		$items = [];
 		foreach ($result as $record) {
@@ -210,9 +221,7 @@ class BizTools extends Secure_area {
 	}
 	
 	protected function getDetailSalesByLocation($locationId = 0) {
-		$search['start_date'] = '2016-06-01';
-		$search['end_date'] = date('Y-m-d');
-		$result = $this->Sale->getDetailSalesByLocationId($locationId, $search);
+		$result = $this->Sale->getDetailSalesByLocationId($locationId, $this->searchParams());
 		
 		$items = [];
 		foreach ($result as $record) {
@@ -338,10 +347,7 @@ class BizTools extends Secure_area {
 	}
 	
 	protected function getDetailAccountPayment() {
-		$search['start_date'] = '2016-06-01';
-		$search['end_date'] = date('Y-m-d');
-		$results = $this->Customer->getStoreAccountDetail($search);
-		
+		$results = $this->Customer->getStoreAccountDetail();
 		$allItems = [];
 		foreach ($results as $record) {
 			foreach ($record['store_account_transactions'] as $transItem) {
@@ -521,9 +527,7 @@ class BizTools extends Secure_area {
 	}
 	
 	protected function getDetailInventory() {
-		$search['start_date'] = '2016-06-01';
-		$search['end_date'] = date('Y-m-d');
-		$allDetails = $this->Inventory->getAllDetail($search);
+		$allDetails = $this->Inventory->getAllDetail($this->searchParams());
 		$items = [];
 		
 		foreach ($allDetails as $row) {
@@ -550,9 +554,7 @@ class BizTools extends Secure_area {
 	}
 	
 	protected function getHistoryAudits() {
-		$search['start_date'] = '2016-06-01';
-		$search['end_date'] = date('Y-m-d');
-		$historyAudits = $this->Inventory->getHistoryAuditsByAllItems($search);
+		$historyAudits = $this->Inventory->getHistoryAuditsByAllItems($this->searchParams());
 		$auditItems = [];
 		foreach ($historyAudits as $audit) {
 			$auditRow = [];
@@ -655,9 +657,7 @@ class BizTools extends Secure_area {
 	}
 	
 	protected function getHistoryTransfers() {
-		$search['start_date'] = '2016-06-01';
-		$search['end_date'] = date('Y-m-d');
-		$historyTransfers = $this->Receiving->getHistoryTransfersByAllItems($search);
+		$historyTransfers = $this->Receiving->getHistoryTransfersByAllItems($this->searchParams());
 		
 		$transfers = [];
 		foreach ($historyTransfers as $transfer) {
@@ -862,3 +862,4 @@ class BizTools extends Secure_area {
         );
 	}
 }
+?>

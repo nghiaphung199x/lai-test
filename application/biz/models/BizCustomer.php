@@ -22,14 +22,6 @@ class BizCustomer extends Customer
 			$this->db->from('store_accounts');
 			$this->db->where('store_accounts.customer_id', $customer_id);
 			$this->db->join('sales', 'sales.sale_id = store_accounts.sale_id');
-		
-			if (!empty($search['start_date'])) {
-				$this->db->where('store_accounts.date >= ', $search['start_date']);
-			}
-			
-			if (!empty($search['end_date'])) {
-				$this->db->where('store_accounts.date <= ', $search['end_date']);
-			}
 			$result = $this->db->get()->result_array();
 			//If we don't have results from this month, pull the last store account entry we have
 			if (count($result) == 0)

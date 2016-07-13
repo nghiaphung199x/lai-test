@@ -95,5 +95,5 @@ $lang['module_items_transfer_pending'] = 'Duyệt đơn chuyển kho';
 $lang['module_view_scope_owner'] = 'Xem được khách hàng của nhân viên';
 $lang['module_view_scope_location'] = 'Xem được khách hàng theo điểm bán hàng';
 $lang['module_view_scope_all'] = 'Xem được khách hàng của hệ thống';
-
+$lang['module_extra_tools'] = 'Công cụ hỗ trợ';
 ?>
