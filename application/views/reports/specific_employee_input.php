@@ -94,7 +94,15 @@
 				<div class="form-group">
 					<?php echo form_label(lang('reports_employee_type').' :', 'employee_type', array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?> 
 					<div class="col-sm-9 col-md-2 col-lg-2">
-						<?php echo form_dropdown('employee_type',array( 'sale_person' => lang('reports_sale_person'), 'logged_in_employee' => lang('common_logged_in_employee')), 'sale_person', 'id="employee_type" class="form-control"'); ?>
+
+						<?php
+							$employeeTypes = ['sale_person' => lang('reports_sale_person'), 'logged_in_employee' => lang('common_logged_in_employee')];
+
+							if ($this->config->item('config_show_sale_supporter')) {
+								$employeeTypes['supporter'] = 'Nhân viên tư vấn';
+							}
+						?>
+						<?php echo form_dropdown('employee_type', $employeeTypes , 'sale_person', 'id="employee_type" class="form-control"'); ?>
 					</div>
 				</div>
 

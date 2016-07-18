@@ -29,6 +29,7 @@ class BizSale_lib extends Sale_lib
 		$this->clear_redeem();
 		$this->clear_deliverer();
 		$this->clear_delivery_date();
+		$this->clear_supporter();
 	}
 	
 	public function clear_delivery_date()
@@ -50,6 +51,11 @@ class BizSale_lib extends Sale_lib
 	{
 		$this->CI->session->unset_userdata('sale_deliverer_id');
 	}
+
+	public function clear_supporter()
+	{
+		$this->CI->session->unset_userdata('sale_supporter_id');
+	}
 	
 	public function set_deliverer($deliverer_id)
 	{
@@ -59,6 +65,16 @@ class BizSale_lib extends Sale_lib
 	public function get_deliverer()
 	{
 		return $this->CI->session->userdata('sale_deliverer_id');
+	}
+	
+	public function set_supporter($supporter_id)
+	{
+		$this->CI->session->set_userdata('sale_supporter_id', $supporter_id);
+	}
+	
+	public function get_supporter()
+	{
+		return $this->CI->session->userdata('sale_supporter_id');
 	}
 	
 	function copy_entire_sale($sale_id, $is_receipt = false)

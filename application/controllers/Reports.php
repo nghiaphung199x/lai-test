@@ -3062,8 +3062,15 @@ class Reports extends Secure_area
 			}
 		}
 		$employee_info = $this->Employee->get_info($employee_id);
+		
+		$title = $employee_info->first_name .' '. $employee_info->last_name.' '.lang('reports_report');
+		
+		if ($employee_type == 'supporter') {
+			$title = '(Tư vấn viên) ' . $title;
+		}
+		
 		$data = array(
-			"title" => $employee_info->first_name .' '. $employee_info->last_name.' '.lang('reports_report'),
+			"title" => $title,
 			"subtitle" => date(get_date_format(), strtotime($start_date)) .'-'.date(get_date_format(), strtotime($end_date)),
 			"headers" => $model->getDataColumns(),
 			"summary_data" => $summary_data,

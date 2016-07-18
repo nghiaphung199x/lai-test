@@ -9,6 +9,7 @@ $lang['config_website']='Website';
 $lang['config_fax']='Fax';
 $lang['config_default_tax_rate']='Thuế mặc định %';
 
+$lang['config_show_sale_supporter'] = 'Hiển thị nhân viên tư vấn ở màn hình bán hàng';
 
 $lang['config_company_required']='Tên công ty là một trường bắt buộc';
 

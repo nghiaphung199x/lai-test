@@ -140,6 +140,7 @@ class BizSale extends Sale
 			'tier_id' => $tier_id ? $tier_id : NULL,
 			'deleted_taxes' =>  $deleted_taxes? serialize($deleted_taxes) : NULL,
 			'deliverer' => $extraData['deliverer'],
+			'supporter' => $extraData['supporter'],
 			'delivery_date' => isset($extraData['delivery_date']) ? date('Y-m-d H:i:s', strtotime($extraData['delivery_date'])) : date('Y-m-d H:i:s'),
 		);
 		if ($suspended == 1) //Layaway
@@ -822,7 +823,7 @@ class BizSale extends Sale
 		$decimals = $this->config->item('number_of_decimals') !== NULL && $this->config->item('number_of_decimals') != '' ? (int)$this->config->item('number_of_decimals') : 2;
 		
 		return $this->db->query("CREATE TEMPORARY TABLE ".$this->db->dbprefix('sales_items_temp')."
-		(SELECT ".$this->db->dbprefix('sales').".location_id as location_id, ".$this->db->dbprefix('sales').".deleted as deleted,".$this->db->dbprefix('sales').".deleted_by as deleted_by, sale_time, date(sale_time) as sale_date, ".$this->db->dbprefix('registers').'.name as register_name,'.$this->db->dbprefix('sales_items').".sale_id, comment,payment_type, customer_id, employee_id, sold_by_employee_id,
+		(SELECT ".$this->db->dbprefix('sales').".location_id as location_id, ".$this->db->dbprefix('sales').".deleted as deleted,".$this->db->dbprefix('sales').".deleted_by as deleted_by, ".$this->db->dbprefix('sales').".supporter, sale_time, date(sale_time) as sale_date, ".$this->db->dbprefix('registers').'.name as register_name,'.$this->db->dbprefix('sales_items').".sale_id, comment,payment_type, customer_id, employee_id, sold_by_employee_id,
 		".$this->db->dbprefix('items').".item_id, NULL as item_kit_id, supplier_id, quantity_purchased, ". $this->db->dbprefix('sales_items') .".measure_id, ". $this->db->dbprefix('sales_items') .".measure_qty, item_cost_price, item_unit_price, ".$this->db->dbprefix('categories').'.name as category'.", ".$this->db->dbprefix('categories').'.id as category_id'.",
 				discount_percent, ROUND(item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100,CASE WHEN tax_included =1 THEN 10 ELSE $decimals END) as subtotal,
 				".$this->db->dbprefix('sales_items').".line as line, serialnumber, ".$this->db->dbprefix('sales_items').".description as description,
@@ -846,7 +847,7 @@ class BizSale extends Sale
 				$where
 				GROUP BY sale_id, item_id, line)
 				UNION ALL
-				(SELECT ".$this->db->dbprefix('sales').".location_id as location_id, ".$this->db->dbprefix('sales').".deleted as deleted,".$this->db->dbprefix('sales').".deleted_by as deleted_by, sale_time, date(sale_time) as sale_date, ".$this->db->dbprefix('registers').'.name as register_name,'.$this->db->dbprefix('sales_item_kits').".sale_id, comment,payment_type, customer_id, employee_id, sold_by_employee_id,
+				(SELECT ".$this->db->dbprefix('sales').".location_id as location_id, ".$this->db->dbprefix('sales').".deleted as deleted,".$this->db->dbprefix('sales').".deleted_by as deleted_by, ".$this->db->dbprefix('sales').".supporter, sale_time, date(sale_time) as sale_date, ".$this->db->dbprefix('registers').'.name as register_name,'.$this->db->dbprefix('sales_item_kits').".sale_id, comment,payment_type, customer_id, employee_id, sold_by_employee_id,
 		NULL as item_id, ".$this->db->dbprefix('item_kits').".item_kit_id, '' as supplier_id, quantity_purchased, '' as measure_id, '' as measure_qty, item_kit_cost_price, item_kit_unit_price,".$this->db->dbprefix('categories').'.name as category'.", ".$this->db->dbprefix('categories').'.id as category_id'.",
 				discount_percent, ROUND(item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100,CASE WHEN tax_included =1 THEN 10 ELSE $decimals END) as subtotal,
 				".$this->db->dbprefix('sales_item_kits').".line as line, '' as serialnumber, ".$this->db->dbprefix('sales_item_kits').".description as description,

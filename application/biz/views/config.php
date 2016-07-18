@@ -960,6 +960,18 @@ $this->load->helper('demo');
 					</div>
 					
 					<div class="form-group">	
+						<?php echo form_label(lang('config_show_sale_supporter').' :', 'config_show_sale_supporter',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+						<?php echo form_checkbox(array(
+							'name'=>'config_show_sale_supporter',
+							'id'=>'config_show_sale_supporter',
+							'value'=>'1',
+							'checked'=>$this->config->item('config_show_sale_supporter')));?>
+							<label for="config_show_sale_supporter"><span></span></label>
+						</div>
+					</div>
+					
+					<div class="form-group">	
 						<?php echo form_label(lang('config_show_warning_expire_time').' :', 'config_show_warning_expire_time',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
 						<div class="col-sm-9 col-md-9 col-lg-10">
 						<?php echo form_checkbox(array(

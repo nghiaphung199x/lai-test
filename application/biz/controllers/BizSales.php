@@ -28,6 +28,14 @@ class BizSales extends Sales
 		echo json_encode($suggestions);
 	}
 	
+	function supporter_search()
+	{
+		//allow parallel searchs to improve performance.
+		session_write_close();
+		$suggestions = $this->Employee->get_search_suggestions($this->input->get('term'),100);
+		echo json_encode($suggestions);
+	}
+	
 	function select_deliverer()
 	{
 		$data = array();
@@ -43,6 +51,20 @@ class BizSales extends Sales
 		$this->_reload($data);
 	}
 	
+	function select_supporter()
+	{
+		$data = array();
+		$supporter_id = $this->input->post("supporter");
+			
+		if ($this->Employee->exists($supporter_id))
+		{
+			$this->sale_lib->set_supporter($supporter_id);
+		} else
+		{
+			$data['error']=lang('sales_unable_to_add_customer');
+		}
+		$this->_reload($data);
+	}
 	
 	function change_sale($sale_id)
 	{
@@ -283,6 +305,7 @@ class BizSales extends Sales
 		
 		$extraData['deliverer'] = $this->sale_lib->get_deliverer();
 		$extraData['delivery_date'] = $this->sale_lib->get_delivery_date();
+		$extraData['supporter'] = $this->sale_lib->get_supporter();
 		
 		//SAVE sale to database
 		$sale_id_raw = $this->Sale->save($data['cart'], $customer_id, $employee_id, $sold_by_employee_id, $data['comment'],$data['show_comment_on_receipt'],$data['payments'], $suspended_change_sale_id, 0, $data['change_sale_date'], $data['balance'], $data['store_account_payment'], $extraData); 
@@ -1124,6 +1147,9 @@ class BizSales extends Sales
 		$data['fullscreen'] = $this->session->userdata('fullscreen');
 		$data['redeem'] = $this->sale_lib->get_redeem();
 		$data['deliverer'] = $this->Employee->get_info($this->sale_lib->get_deliverer());
+		
+		$data['supporter'] = $this->Employee->get_info($this->sale_lib->get_supporter());
+		
 		$data['delivery_date'] = $this->sale_lib->get_delivery_date();
 	
 		$totalItems = 0;

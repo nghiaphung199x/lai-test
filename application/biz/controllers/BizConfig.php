@@ -170,6 +170,8 @@ class BizConfig extends Config
 			'config_show_warning_expire_time' => (int) $this->input->post('config_show_warning_expire_time'),
 			'config_expire_time' => (int) $this->input->post('config_expire_time'),
 			
+			'config_show_sale_supporter' => (int) $this->input->post('config_show_sale_supporter'),
+			
 			'config_sms_brand_name'=>   $this->input->post('sms_brand_name'),
 			'config_sms_user'=>   $this->input->post('sms_user'),
 			'config_sms_pass'=>   $this->input->post('sms_pass'),

@@ -715,7 +715,26 @@ $this->load->helper('demo');
 	<?php 
 		}  ?>
 		<div class="register-right">
-		<div class="customer-form deliverer">
+		
+			<?php 
+				if ($this->config->item('config_show_sale_supporter')) {
+			?>
+			<div class="customer-form supporter">
+				<div class="input-group supporter">
+						<span class="input-group-addon">
+							<?php echo anchor("employees/view/-1","<i class='ion-person-add'></i>", array('class'=>'none','title'=>lang('common_new_customer'), 'id' => 'new-customer','tabindex' => '-1')); ?>
+						</span>
+						<input type="text" id="supporter" name="supporter" class="add-customer-input" placeholder="Nhân viên tư vấn">
+					</div>
+					<?php if($supporter) {?>
+					<div>
+						Nhân viên tư vấn: <?php echo $supporter->first_name . ' ' . $supporter->last_name ?>
+					</div>
+					<?php } ?>
+			</div>
+			<?php } ?>
+		
+			<div class="customer-form deliverer">
 				<div class="input-group contacts">
 						<span class="input-group-addon">
 							<?php echo anchor("employees/view/-1","<i class='ion-person-add'></i>", array('class'=>'none','title'=>lang('common_new_customer'), 'id' => 'new-customer','tabindex' => '-1')); ?>
@@ -1105,7 +1124,7 @@ $this->load->helper('demo');
 		});
 
 		// Customer form script
-		$('#item,#customer, #deliverer').click(function()
+		$('#item,#customer, #deliverer, #support').click(function()
 		{
 			$(this).attr('value','');
 		});
@@ -1257,6 +1276,42 @@ $this->load->helper('demo');
 		 		select: function( event, ui ) 
 		 		{
 		 			$.post('<?php echo site_url("sales/select_deliverer");?>', {deliverer: ui.item.value }, function(response)
+					{
+						$("#register_container").html(response);
+					});
+		 		},
+			}).data("ui-autocomplete")._renderItem = function (ul, item) {
+		         return $("<li class='customer-badge suggestions'></li>")
+		             .data("item.autocomplete", item)
+			           .append('<a class="suggest-item"><div class="avatar">' +
+									'<img src="' + item.avatar + '" alt="">' +
+								'</div>' +
+								'<div class="details">' +
+									'<div class="name">' + 
+										item.label +
+									'</div>' + 
+									'<span class="email">' +
+										item.subtitle + 
+									'</span>' +
+								'</div></a>')
+		             .appendTo(ul);
+		     };
+		}
+
+		if($( "#supporter" ).length) {
+			$('#supporter').blur(function()
+			{
+				$(this).attr('value',<?php echo json_encode('Nhân viên tư vấn'); ?>);
+			});
+			
+			$( "#supporter" ).autocomplete({
+		 		source: '<?php echo site_url("sales/supporter_search");?>',
+				delay: 150,
+		 		autoFocus: false,
+		 		minLength: 0,
+		 		select: function( event, ui ) 
+		 		{
+		 			$.post('<?php echo site_url("sales/select_supporter");?>', {supporter: ui.item.value }, function(response)
 					{
 						$("#register_container").html(response);
 					});

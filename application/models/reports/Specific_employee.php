@@ -68,9 +68,9 @@ class Specific_employee extends Report
 		if ($this->params['employee_type'] == 'logged_in_employee')
 		{
 			$this->db->where('employee_id', $this->params['employee_id']);
-		}
-		else
-		{
+		} elseif ($this->params['employee_type'] == 'supporter') {
+			$this->db->where('supporter', $this->params['employee_id']);
+		} else {
 			$this->db->where('sold_by_employee_id', $this->params['employee_id']);			
 		}
 
@@ -170,9 +170,9 @@ class Specific_employee extends Report
 		if ($this->params['employee_type'] == 'logged_in_employee')
 		{
 			$this->db->where('employee_id', $this->params['employee_id']);
-		}
-		else
-		{
+		} elseif ($this->params['employee_type'] == 'supporter') {
+			$this->db->where('supporter', $this->params['employee_id']);
+		} else {
 			$this->db->where('sold_by_employee_id', $this->params['employee_id']);			
 		}
 		
