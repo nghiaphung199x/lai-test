@@ -257,6 +257,10 @@ function create_breadcrumb()
 		elseif($ci->uri->segment(2) == 'summary_count_report')
 		{
 			$return.=create_report_breadcrumb(lang('reports_summary_count_report'));		
+		}
+		elseif($ci->uri->segment(2) == 'summary_inventory')
+		{
+			$return.=create_report_breadcrumb(lang('reports_summary_items_report'));		
 		}		
 		elseif($ci->uri->segment(2) == 'detailed_count_report')
 		{

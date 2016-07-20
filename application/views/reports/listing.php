@@ -331,7 +331,7 @@
 					<a href="<?php echo site_url('reports/summary_count_report');?>" class="list-group-item"><i class="icon ti-stats-down"></i> <?php echo lang('reports_summary_count_report'); ?></a>
 					<a class="list-group-item" href="<?php echo site_url('reports/detailed_count_report');?>" ><i class="icon ti-calendar"></i> <?php echo lang('reports_detailed_count_report'); ?></a>
 					<a href="<?php echo site_url('reports/expiring_inventory');?>" class="list-group-item"><i class="icon ti-receipt"></i> <?php echo lang('reports_expiring_items_report'); ?></a>
-				
+					<a href="<?php echo site_url('reports/summary_inventory');?>" class="list-group-item"><i class="icon ti-receipt"></i> <?php echo lang('reports_summary_items_report'); ?></a>
 				</div>
 				<div class="list-group giftcards hidden">
 					<a href="<?php echo site_url('reports/summary_giftcards');?>" class="list-group-item"><i class="icon ti-receipt"></i> <?php echo lang('reports_summary_reports'); ?></a>			

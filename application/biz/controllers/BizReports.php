@@ -6,6 +6,164 @@ class BizReports extends Reports
 	{
 		parent::__construct();
 		$this->load->helper('items');
+		$this->load->helper('bizexcel');
+	}
+	
+	function summary_inventory($start_date, $end_date, $export_excel=0, $offset = 0)
+	{
+		$start_date = rawurldecode($start_date);
+		$end_date = rawurldecode($end_date);
+		$this->check_action_permission('view_inventory_reports');
+		
+		$locationIds = Report::get_selected_location_ids();
+		
+		$historyTrans = $this->Inventory->getAllHistoryTrans(['start_date' => $start_date, 'end_date' => $end_date, 'locationIds' => $locationIds]);
+		
+		$historyTransBefore = $this->Inventory->getAllHistoryTransBefore(['end_date' => $start_date, 'locationIds' => $locationIds]);
+		
+		$allItems = [];
+		foreach ($historyTrans as $item) {
+			$allItems[$item['location_id']][$item['item_id']][] = $item;
+		}
+		
+		
+		$allTransItems = [];
+		foreach ($allItems as $locationId => $items) {
+			foreach ($items as $itemId => $rows) {
+				$totalIn = 0;
+				$totalOut = 0;
+				
+				foreach ($rows as $row) {
+					if ($row['trans_inventory'] > 0) {
+						$totalIn += $row['trans_inventory'];
+					} else {
+						$totalOut += $row['trans_inventory'];
+					}
+				}
+				$allTransItems[$locationId][$itemId] = [
+						'item_id' => $itemId,
+						'product_id' => $row['product_id'],
+						'name' => $row['name'],
+						'category' => $row['category'],
+						'cost_price' => $row['cost_price'],
+						'unit_price' => $row['unit_price'],
+						'total_qty_in' => to_quantity($totalIn),
+						'total_cost_in' => NumberFormatToCurrency($totalIn * $row['cost_price']),
+						'total_cost_in_origin' => $totalIn * $row['cost_price'],
+						'total_qty_out' => to_quantity($totalOut),
+						'total_price_out' => NumberFormatToCurrency($totalOut * $row['unit_price']),
+						'total_price_out_origin' => $totalOut * $row['unit_price']
+				];
+			}
+			
+		}
+		
+		$allItems = [];
+		foreach ($allTransItems as $locationId => $items) {
+			
+			foreach ($items as $_item) {
+				$item['trans_total_qty_before'] = 0;
+				foreach ($historyTransBefore as $beforeItem) {
+					if ($beforeItem['location_id'] == $locationId && $beforeItem['item_id'] == $_item['item_id'] ) {
+						$_item['trans_total_qty_before'] = to_quantity($beforeItem['trans_total_qty']);
+						$_item['trans_total_price_before'] = NumberFormatToCurrency($_item['trans_total_qty_before'] * $_item['unit_price']);
+						$_item['trans_total_price_before_origin'] = $_item['trans_total_qty_before'] * $_item['unit_price'];
+					}
+				}
+				$_item['trans_total_qty_after'] = to_quantity($_item['trans_total_qty_before'] + $_item['total_qty_in'] + $_item['total_qty_out']);
+				$_item['trans_total_price_after'] = NumberFormatToCurrency($_item['trans_total_qty_after'] * $_item['unit_price']);
+				$_item['trans_total_price_after_origin'] = $_item['trans_total_qty_after'] * $_item['unit_price'];
+				$allItems[$locationId][] = $_item;
+			}
+		}
+		
+		foreach ($locationIds as $locationId) {
+			if (!isset($allItems[$locationId])) {
+				$allItems[$locationId] = [];
+			}
+		}
+		
+		if ($export_excel) {
+			$bizExcel = new BizExcel('ASummaryInventory.xlsx');
+			$bizExcel->setNumberRowStartBody(5)->setHeaderOfBody($this->getHeaderOfSummaryInventory());
+			$index = 0;
+			foreach ($allItems as $locationId => $items)
+			{
+				$location = $this->Location->get_info($locationId);
+				$bizExcel->setDataExcel($items);
+				$bizExcel->addToNewSheet($location->name)->generateFile(false, '', false);
+				$index ++;
+			}
+			
+			$excelContent = $bizExcel->generateFile(false);
+			$this->load->helper('download');
+			force_download('SummaryInventory.xlsx', $excelContent);
+		} else {
+			
+			$data = array(
+				"title" => lang('reports_summary_inventory_report'),
+				"subtitle" => date(get_date_format(), strtotime($start_date)) .'-'.date(get_date_format(), strtotime($end_date)),
+				"data" => $allItems,
+			);
+			$this->load->view("reports/summary_inventory", $data);
+			
+		}
+		
+	}
+	
+	protected function getHeaderOfSummaryInventory() {
+		return array(
+				array(
+						'col' => 'A',
+						'value_field' => 'product_id',
+				),
+				array(
+						'col' => 'B',
+						'value_field' => 'name',
+				),
+				array(
+						'col' => 'C',
+						'value_field' => 'trans_total_qty_before',
+						'footer' => 'SUM'
+				),
+				array(
+						'col' => 'D',
+						'value_field' => 'trans_total_price_before',
+						'footer' => 'SUM'
+				),
+	
+				array(
+						'col' => 'E',
+						'value_field' => 'total_qty_in',
+						'footer' => 'SUM'
+				),
+				array(
+						'col' => 'F',
+						'value_field' => 'total_cost_in',
+						'footer' => 'SUM'
+				),
+				array(
+						'col' => 'G',
+						'value_field' => 'total_qty_out',
+						'footer' => 'SUM'
+				),
+				array(
+						'col' => 'H',
+						'value_field' => 'total_price_out',
+						'footer' => 'SUM'
+				),
+				array(
+						'col' => 'I',
+						'value_field' => 'trans_total_qty_after',
+						'footer' => 'SUM'
+				),
+	
+				array(
+						'col' => 'J',
+						'value_field' => 'trans_total_price_after',
+						'footer' => 'SUM'
+				)
+		);
 	}
 	
 	function detailed_suspended_receivings($start_date, $end_date, $supplier_id,$sale_type, $export_excel=0, $offset=0)

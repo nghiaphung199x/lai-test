@@ -60,6 +60,12 @@ class BizExcel {
 		
 		
 		if ($final) {
+			
+			$sheetNames = $this->oPHPExcel->getSheetNames();
+			if (in_array('___TEMPLATE', $sheetNames)) {
+				$this->oPHPExcel->removeSheetByIndex(array_search('___TEMPLATE', $sheetNames));
+			}
+			
 			$objWriter = PHPExcel_IOFactory::createWriter($this->oPHPExcel, 'Excel2007');
 			if ($saveToLocal) {
 				$objWriter->save($this->excelPath . $this->newFileName);
@@ -71,6 +77,19 @@ class BizExcel {
 				return $excelOutput;
 			}
 		}
+	}
+	
+	public function addToNewSheet($sheetName = '') {
+		$sheetCount = $this->oPHPExcel->getSheetCount();
+		$activeSheet = $this->oPHPExcel->getSheet(0)->copy();
+		$objWorkSheet = clone $activeSheet;
+		if ($sheetName) {
+			$objWorkSheet->setTitle($sheetName);
+		}
+		
+		$this->oPHPExcel->addSheet($objWorkSheet);
+		$this->oPHPExcel->setActiveSheetIndex($sheetCount);
+		return $this;
 	}
 	
 	public function setActiveSheet($index = 0, $sheetName = '') {
@@ -93,6 +112,10 @@ class BizExcel {
 					$this->oPHPExcel->getActiveSheet()->setCellValue($cell['col'] . ($this->numberRowStartBody + $index + 1), $index + 1);
 				} else {
 					$this->oPHPExcel->getActiveSheet()->setCellValue($cell['col'] . ($this->numberRowStartBody + $index + 1), isset($row[$cell['value_field']]) ? $row[$cell['value_field']] : '');
+				}
+				
+				if (!empty($cell['footer']) && $cell['footer'] == 'SUM' && isset($row[$cell['value_field']])) {
+					$$cell['col'] += $row[$cell['value_field']];
 				}
 			}
 		}
@@ -123,8 +146,10 @@ class BizExcel {
 	
 	public function buildHeaderOfTable() {
 		foreach ($this->headerOfBody as $headerCell) {
-			$this->oPHPExcel->getActiveSheet()->setCellValue($headerCell['col'] . $this->numberRowStartBody, $headerCell['text']);
-			$this->applyCellStyle($headerCell['col'] . $this->numberRowStartBody, $headerCell['styles']);
+			if (!empty($headerCell['text'])) {
+				$this->oPHPExcel->getActiveSheet()->setCellValue($headerCell['col'] . $this->numberRowStartBody, $headerCell['text']);
+				$this->applyCellStyle($headerCell['col'] . $this->numberRowStartBody, $headerCell['styles']);
+			}
 		}
 	}
 	

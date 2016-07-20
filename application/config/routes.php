@@ -97,6 +97,7 @@ $route['reports/inventory_summary'] = "reports/inventory_input";
 $route['reports/summary_count_report'] = "reports/date_input_no_sales";
 $route['reports/detailed_count_report'] = "reports/date_input_no_sales";
 $route['reports/expiring_inventory'] = 'reports/date_input_no_sales_expire';
+$route['reports/summary_inventory'] = 'reports/date_input_no_sales_expire';
 
 //Detailed report inputs
 $route['reports/detailed_register_log'] = 'reports/date_input_no_sales';

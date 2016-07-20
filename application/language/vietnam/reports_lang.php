@@ -18,8 +18,8 @@ $lang['reports_sold_by'] = 'Được bán bởi';
 $lang['reports_sold_to'] = 'Bán cho';
 $lang['reports_category'] = 'Loại';
 
-
-
+$lang['reports_summary_items_report'] = 'Báo cáo xuất nhập tồn';
+$lang['reports_summary_inventory_report'] = 'Xuất nhập tồn';
 
 $lang['reports_supplier'] = 'Nhà cung cấp';
 

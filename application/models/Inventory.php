@@ -1,6 +1,56 @@
 <?php
 class Inventory extends CI_Model 
-{	
+{
+	public function getAllHistoryTrans($search)
+	{
+		$this->db->select('locations.name as location_name, inventory.*, items.*, categories.name as category');
+		$this->db->from('inventory');
+		$this->db->join('items', 'items.item_id = inventory.trans_items');
+		$this->db->join('locations', 'inventory.location_id = locations.location_id');
+		$this->db->join('categories', 'items.category_id = categories.id', 'left outer');
+		$this->db->where('items.deleted', 0);
+		$this->db->where('trans_inventory !=', 0);
+	
+		if (!empty($search['start_date'])) {
+			$this->db->where('inventory.trans_date >= ', $search['start_date']);
+		}
+	
+		if (!empty($search['end_date']) && $search['end_date'] != $search['start_date']) {
+			$this->db->where('inventory.trans_date <= ', $search['end_date']);
+		}
+		
+		if (!empty($search['locationIds'])) {
+			$this->db->where_in('inventory.location_id', $search['locationIds']);
+		}
+		return $this->db->get()->result_array();
+	}
+	
+	public function getAllHistoryTransBefore($search)
+	{
+		$this->db->select('locations.name as location_name, inventory.*, items.*, categories.name as category, SUM(phppos_inventory.trans_inventory) as trans_total_qty');
+		$this->db->from('inventory');
+		$this->db->join('items', 'items.item_id = inventory.trans_items');
+		$this->db->join('locations', 'inventory.location_id = locations.location_id');
+		$this->db->join('categories', 'items.category_id = categories.id', 'left outer');
+		$this->db->where('items.deleted', 0);
+		$this->db->where('trans_inventory !=', 0);
+	
+		if (!empty($search['start_date'])) {
+			$this->db->where('inventory.trans_date >= ', $search['start_date']);
+		}
+	
+		if (!empty($search['end_date'])) {
+			$this->db->where('inventory.trans_date <= ', $search['end_date']);
+		}
+	
+		if (!empty($search['locationIds'])) {
+			$this->db->where_in('inventory.location_id', $search['locationIds']);
+		}
+	
+		$this->db->group_by('inventory.trans_items, locations.location_id');
+	
+		return $this->db->get()->result_array();
+	}
 	
 	public function getHistoryAuditsByAllItems($search) {
 		

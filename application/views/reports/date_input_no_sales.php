@@ -51,7 +51,7 @@
 						</div>
 						
 						<?php 
-						if (in_array($this->uri->segment(2), array('summary_count_report','detailed_count_report','expiring_inventory')) && $can_view_inventory_at_all_locations && $total_locations_in_system > 1) 	
+						if (in_array($this->uri->segment(2), array('summary_count_report','detailed_count_report','expiring_inventory', 'summary_inventory')) && $can_view_inventory_at_all_locations && $total_locations_in_system > 1) 	
 						{
 							$this->load->view('partial/reports/locations_select');
 						}
