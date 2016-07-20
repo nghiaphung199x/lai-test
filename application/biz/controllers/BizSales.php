@@ -1718,6 +1718,7 @@ class BizSales extends Sales
 			
 			$data['id'] = $cash_register->register_log_id;
 			$data['amount'] = $amount;
+			$data['mode'] = $mode;
 			$data['note'] = $this->input->post('note');
 			$typeOfPrint = 'added_A4.php';
 			$data['print_block_html'] = $this->load->view('sales/partials/cash_drawer/' . $typeOfPrint, $data, TRUE);
