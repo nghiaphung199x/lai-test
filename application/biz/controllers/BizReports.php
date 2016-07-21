@@ -25,7 +25,7 @@ class BizReports extends Reports
 		if ($export_excel) {
 			
 			$bizExcel = new BizExcel('ATonKho.xlsx');
-			$bizExcel->setNumberRowStartBody(5)->setHeaderOfBody($this->getHeaderOfDetailInventory());
+			$bizExcel->setNumberRowStartBody(4)->setHeaderOfBody($this->getHeaderOfDetailInventory());
 			$index = 0;
 			foreach ($allItems as $locationId => $items)
 			{
