@@ -61,7 +61,7 @@ class BizReceiving extends Receiving
 		}
 		
 		if (!empty($search['end_date'])) {
-			$this->db->where('receiving_time <= ', $search['end_date']);
+			$this->db->where('receiving_time <= ', $search['end_date'] . ' 23:59:59');
 		}
 		
 		$this->db->order_by('receiving_id');
