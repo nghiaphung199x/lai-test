@@ -7,6 +7,84 @@ class BizReports extends Reports
 		parent::__construct();
 		$this->load->helper('items');
 		$this->load->helper('bizexcel');
+		$this->load->model('Location');
+	}
+	
+	function detailed_inventory($item_id, $export_excel=0)
+	{
+		$this->check_action_permission('view_inventory_reports');
+		$locationIds = Report::get_selected_location_ids();
+		
+		$allItems = [];
+		
+		foreach ($locationIds as $locationId) {
+			$items = $this->Location->getAllQty($locationId, $item_id);
+			$allItems[$locationId] = $items; 
+		}
+		
+		if ($export_excel) {
+			
+			$bizExcel = new BizExcel('ATonKho.xlsx');
+			$bizExcel->setNumberRowStartBody(5)->setHeaderOfBody($this->getHeaderOfDetailInventory());
+			$index = 0;
+			foreach ($allItems as $locationId => $items)
+			{
+				$location = $this->Location->get_info($locationId);
+				$bizExcel->setDataExcel($items);
+				$bizExcel->addToNewSheet($location->name)->generateFile(false, '', false);
+				$index ++;
+			}
+				
+			$excelContent = $bizExcel->generateFile(false);
+			$this->load->helper('download');
+			force_download('DetailInventory.xlsx', $excelContent);
+		} else {
+			$data = array(
+				"title" => lang('reports_detail_inventory_report'),
+				"subtitle" => '',
+				"data" => $allItems,
+			);
+			$this->load->view("reports/detail_inventory", $data);
+		}
+	}
+	
+	protected function getHeaderOfDetailInventory() {
+		return array(
+				array(
+						'col' => 'A',
+						'value_field' => '__AUTO__',
+				),
+				array(
+						'col' => 'B',
+						'value_field' => 'product_id',
+				),
+				array(
+						'col' => 'C',
+						'value_field' => 'name',
+				),
+				array(
+						'col' => 'D',
+						'value_field' => 'measure_name',
+						'footer' => 'SUM'
+				),
+	
+				array(
+						'col' => 'E',
+						'value_field' => 'quantity',
+				),
+				array(
+						'col' => 'F',
+						'value_field' => 'cost_price',
+						'footer' => 'SUM',
+						'format' => 'price'
+				),
+				array(
+						'col' => 'G',
+						'value_field' => 'total_cost_price',
+						'footer' => 'SUM',
+						'format' => 'price'
+				)
+		);
 	}
 	
 	function summary_inventory($start_date, $end_date, $export_excel=0, $offset = 0)

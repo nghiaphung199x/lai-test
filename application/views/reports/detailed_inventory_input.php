@@ -13,6 +13,8 @@
 				}
 				?>
 				<form  class="form-horizontal form-horizontal-mobiles">
+				
+					<?php if ($this->uri->segment(2) != 'detailed_inventory') {?>
 					<div class="form-group">
 						<?php echo form_label(lang('reports_fixed_range').' :', 'simple_radio',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label   ')); ?>
 
@@ -52,6 +54,19 @@
 						</div>
 					</div>
 					
+					<div class="form-group">	
+						<?php echo form_label(lang('reports_show_manual_adjustments_only').' :', 'show_manual_adjustments_only',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
+						<div class="col-sm-9 col-md-9 col-lg-10">
+							<?php echo form_checkbox(array(
+								'name'=>'show_manual_adjustments_only',
+								'id'=>'show_manual_adjustments_only',
+								'value'=>'show_manual_adjustments_only',
+							));?>
+							<label for="show_manual_adjustments_only"><span></span></label>
+						</div>
+					</div>
+					
+					<?php } ?>
 					<div class="form-group">
 						<?php echo form_label($specific_input_name.' :', 'specific_input_data', array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?> 
 						<div class="col-sm-9 col-md-2 col-lg-2">
@@ -64,18 +79,6 @@
 								?>									
 							</div>
 						</div>
-					
-					<div class="form-group">	
-						<?php echo form_label(lang('reports_show_manual_adjustments_only').' :', 'show_manual_adjustments_only',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label ')); ?>
-						<div class="col-sm-9 col-md-9 col-lg-10">
-							<?php echo form_checkbox(array(
-								'name'=>'show_manual_adjustments_only',
-								'id'=>'show_manual_adjustments_only',
-								'value'=>'show_manual_adjustments_only',
-							));?>
-							<label for="show_manual_adjustments_only"><span></span></label>
-						</div>
-					</div>
 					
 					<?php if ($can_view_inventory_at_all_locations && $total_locations_in_system > 1) { ?>
 						<?php $this->load->view('partial/reports/locations_select');?>
@@ -159,7 +162,11 @@
 				var start_date = $("#start_date").val();
 				var end_date = $("#end_date").val();
 
-				window.location = window.location+'/'+start_date + '/'+ end_date + '/'+ specific_id+'/'+show_manual_adjustments_only + '/' + export_excel;
+				if (typeof start_date != 'undefined' &&  typeof end_date != 'undefined' &&  typeof specific_id != 'undefined') { 
+					window.location = window.location+'/'+start_date + '/'+ end_date + '/'+ specific_id+'/'+show_manual_adjustments_only + '/' + export_excel;
+				} else {
+					window.location = window.location+'/'+ specific_id + '/' + export_excel;	
+				}
 			}
 		});
 

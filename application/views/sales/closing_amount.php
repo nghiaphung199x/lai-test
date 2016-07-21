@@ -50,7 +50,7 @@
 						  <li class="list-group-item"><?php echo lang('common_total_cash_additions'); ?> [<?php echo anchor('sales/register_add_subtract/add/closeregister', lang('common_edit')); ?>]:  <span class="pull-right"><?php echo to_currency($total_cash_additions); ?> </span></li>
 						  <li class="list-group-item"><?php echo lang('common_total_cash_subtractions'); ?> [<?php echo anchor('sales/register_add_subtract/subtract/closeregister', lang('common_edit')); ?>]:  <span class="pull-right"><?php echo to_currency($total_cash_subtractions); ?> </span></li>
 						  <li class="list-group-item active"><?php echo sprintf(lang('sales_closing_amount_approx'), ''); ?> <span class="pull-right text-success total-amount"><?php echo to_currency($closeout); ?></span></li>
-						
+							<li class="list-group-item"><?php echo 'Chi phí' ?>:  <input id="other_amount" style="border: 1px solid #d7dce5; border-radius: 1px;" class="pull-right" type="text" /></li>
 						</ul>
 						
 
@@ -114,6 +114,14 @@
 //validation and submit handling
 $(document).ready(function(e)
 {
+	
+	$("#other_amount").change(function (e) {
+		var closeout = <?php echo $closeout; ?>;
+	    var finalCloseOut = parseInt(closeout) - parseInt($(this).val());
+	    $('#closing_amount').val(parseInt(finalCloseOut));
+	    $("#closing_amount").focus();
+	 });
+	 
 	$("#closing_amount").focus();
 	
 	$("#closing_amount").keypress(function (e) {

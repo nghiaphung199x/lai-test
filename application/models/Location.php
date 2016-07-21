@@ -1,6 +1,23 @@
 <?php
 class Location extends CI_Model
 {
+	public function getAllQty($locationId, $itemId = 0) {
+		
+		$this->db->select('items.*, locations.name as location_name, location_items.quantity, categories.name as category, measures.name as measure_name, (phppos_items.cost_price * phppos_location_items.quantity) as total_cost_price, (phppos_items.unit_price * phppos_location_items.quantity) as total_unit_price');
+		$this->db->from('locations');
+		$this->db->join('location_items', 'locations.location_id = location_items.location_id');
+		$this->db->join('items', 'items.item_id = location_items.item_id');
+		$this->db->join('categories', 'categories.id = items.category_id');
+		$this->db->join('measures', 'measures.id = items.measure_id', 'left');
+		
+		if (!empty($itemId) && $itemId > 0) {
+			$this->db->where('items.item_id = ', $itemId);
+		}
+		
+		$this->db->where('locations.deleted = ', 0);
+		$this->db->where('locations. location_id = ', $locationId);
+		return $this->db->get()->result_array();
+	}
 	/*
 	Determines if a given location_id is an location
 	*/

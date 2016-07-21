@@ -8,7 +8,7 @@ class BizItem_location extends Item_location
 		$this->db->from('location_items');
 		$this->db->join('locations', 'locations.location_id = location_items.location_id');
 		$this->db->join('items', 'items.item_id = location_items.item_id');
-		$this->db->where('items.item_id',$item_id);
+		$this->db->where('items.item_id', $item_id);
 		$this->db->where('locations.deleted', 0);
 		return $this->db->get()->result_array();
 	}

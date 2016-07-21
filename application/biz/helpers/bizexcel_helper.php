@@ -108,6 +108,8 @@ class BizExcel {
 	protected function buildBobyOfTable() {
 		foreach ($this->dataExcel as $index => $row) {
 			foreach ($this->headerOfBody as $cell) {
+				$row[$cell['value_field']] = $cell['format'] == 'price' ? NumberFormatToCurrency($row[$cell['value_field']]) : $row[$cell['value_field']];
+				
 				if($cell['value_field'] == '__AUTO__') {
 					$this->oPHPExcel->getActiveSheet()->setCellValue($cell['col'] . ($this->numberRowStartBody + $index + 1), $index + 1);
 				} else {
