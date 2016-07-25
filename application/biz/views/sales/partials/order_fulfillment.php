@@ -3,39 +3,47 @@
 		display: block;
 		overflow: hidden;
 		position: relative;
-                height: auto; width: 245px;
+                height: auto; width: 260px;
                 font-family: Arial;
-		font-size: 7px !important;
-                line-height: 17px !important;
+		font-size: 11px !important;
+                line-height: normal !important;
 	}
 	#pdf_logo  {
-		text-align: center;
-                width: 245px;
+                height: 62px;
 	}
         #pdf_logo img{
             width: 110px;
+            float: left;
+        }
+        #pdf_logo p{
+            font-size: 13px;
+        }
+        #pdf_company p{
+            font-size: 11px;
         }
 	#company_name {
 		text-transform: uppercase;
 		font-weight: bold;
 		color: #002FC2;
-                width: 245px;
-                text-align: center;
-                font-size: 7px;
+                font-size: 11px;
+                float: left;
+                padding-top: 21px;
+                width: 135px;
 	}
 	#pdf_content span {
 		color: #002FC2;
 	}
 	#pdf_title {
-		width: 245px;
+		width: 260px;
 		text-align: center;
 		text-transform: uppercase;
 		font-weight: bold;
-		font-size: 7px;
+		font-size: 11px;
+                margin-top: 10px;
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
-		font-size: 7px;
+		font-size: 11px;
 		margin: 10px 0;
 	}
 	#pdf_tbl_items tboby {
@@ -54,20 +62,19 @@
 		padding: 3px 0px;
                 font-weight: normal;
                 line-height: normal !important;
-                font-size: 7px !important;;
+                font-size: 11px !important;;
 	}
         #pdf_tbl_items th{
-            font-size: 7px !important; 
+            font-size: 11px !important; 
 			text-align: center !important;
         }
 
 	#pdf_signature {
 		min-height: 50px;
-                width: 245px;
+                width: 260px;
 	}
         #pdf_signature p{
             min-height: 50px !important;
-            margin-top: 10px;
         }
 	#pdf_signature div {
 		text-align: center;
@@ -88,6 +95,9 @@
 	.clb {
 		clear: both;
 	}
+        .clb p{
+            font-size: 11px;
+        }
 	.w50 {
 		width: 50%;
 	}
@@ -106,21 +116,23 @@
 	}
 
 	#pdf_header h3, #pdf_header p {
-		text-align: center;
 	}
 	#pdf_footer {
 		text-align: center;
-                margin-top: 10px;
 	}
 	#pdf_content table td, #pdf_content table th {
 		text-align: right;
 		height: auto !important;
 	}
+        .text-left{
+            text-align: left !important;
+        }
 	p {
 		margin: 2px 0;
 	}
 	.w150px {
-		width: 245px;
+		width: 260px;
+                margin-bottom: 10px;
 	}
 	.fontI {
 		font-style: italic;
@@ -140,8 +152,7 @@
         #policy{
                 font-weight: bold;
                 text-align: center;
-                font-size: 7px;
-                margin-top: 10px; 
+                font-size: 11px;
         }
         .text-center{
             text-align: center !important;
@@ -159,56 +170,40 @@
  <div id="pdf_content">
 		<div id="pdf_header">
 		<div>
-                    <div id="pdf_logo" class="clb text-center" style="">
-				<?php if($this->config->item('company_logo')) {?>
-					<?php echo img(array('src' => $this->Appconfig->get_logo_image())); ?>
-				<?php } ?>
-			</div>
+                    <div id="pdf_logo" class="clb" style="">
+                        <?php if($this->config->item('company_logo')) {?>
+                                <?php echo img(array('src' => $this->Appconfig->get_logo_image())); ?>
+                        <?php } ?>
+                        <p id="company_name"><?php echo $this->config->item('company'); ?></p>
+                    </div>
 			<div id="pdf_company">
-				<p id="company_name"><?php echo $this->config->item('company'); ?></p>
-				<p><span><?php echo nl2br($this->Location->get_info_for_key('address', isset($override_location_id) ? $override_location_id : FALSE)); ?></span></p>
-				<p>Điện Thoại: <span><?php echo $this->Location->get_info_for_key('phone', isset($override_location_id) ? $override_location_id : FALSE); ?></span></p>
+				<p><?php echo lang('locations_address').': ';?> <span><?php echo nl2br($this->Location->get_info_for_key('address', isset($override_location_id) ? $override_location_id : FALSE)); ?></span></p>
+				<p><?php echo lang('common_phone_number').': ';?> <span><?php echo $this->Location->get_info_for_key('phone', isset($override_location_id) ? $override_location_id : FALSE); ?></span></p>
 				<?php if($this->config->item('website')) { ?>
 					<p>Website: <span><?php echo $this->config->item('website'); ?></span></p>
 				<?php } ?>
 			</div>
 		</div>
-		<div class="clb">
-			<div class="fr w150px">
-				<p>Số: <?php echo $sale_id; ?></p>
-				<p>Ngày: <span><?php echo date(get_date_format(), strtotime($transaction_time)); ?></span></p>
-			</div>
-		</div>
+                <div class="fr w150px">
+                        <p>Số: <?php echo $sale_id; ?></p>
+                        <p>Ngày: <span><?php echo date(get_date_format(), strtotime($transaction_time)); ?></span></p>
+                </div>
 	</div>
 	<div id="pdf_title" class="clb">
-		<p>HÓA ĐƠN BÁN HÀNG(A8)</p>
+		<p>HÓA ĐƠN BÁN HÀNG</p>
 	</div>
-
-	<div id="pdf_customer">
-		<p>Họ tên khách hàng: <?php if ($customer) { ?> <span><?php echo $customer; ?></span> <?php } ?></p>
-		<p>Ghi chú: </p>
-		<p>Kho: <?php if ($this->Location->count_all() > 1) { ?><span><?php echo $this->Location->get_info_for_key('name', isset($override_location_id) ? $override_location_id : FALSE); ?></span><?php } ?></p>
-		<p>Địa chỉ kho: <span><?php echo nl2br($this->Location->get_info_for_key('address', isset($override_location_id) ? $override_location_id : FALSE)); ?></span></p>
-		<p><?php
-                if (isset($customer_balance_for_sale) && $customer_balance_for_sale !== FALSE && !$this->config->item('hide_store_account_balance_on_receipt')) {?>
-
-                          <?php $text = lang('sales_balance')?lang('sales_balance').': ':'Tổng nợ cũ: ';
-                          echo $text; ?><?php echo to_currency_abs($customer_balance_for_sale); ?>
-            <?php } ?>
-                </p>
-                <p class="text-right">Đơn vị: <?php echo $this->config->item('currency_symbol')?></p>
-	</div>	
+     <div>
+         <p><?php echo lang('common_sale_person').': ';echo $user_info->first_name." ".$user_info->last_name; ?></p>
+     </div>
 	<div class="w100 clb">
             <table id="pdf_tbl_items" class="w100" style="border-collapse: collapse; margin-top: 10px; ">
 			<tbody>
 				<tr>
 					<th >STT</th>
-                                        <th class="text-center">Mã MH</th>
 					<th ><?php echo lang('common_item_name'); ?></th>
                                         <th  ><?php echo SL; ?></th>
 					<th ><?php echo lang('common_unit_sales_a8'); ?></th>
                                         <th  class="text-center"><?php echo lang('common_unit_discount_a8').' %';?></th>
-                                        <th  class="text-center"><?php echo lang('reports_taxes') .' %'?></th>
 					<th ><?php echo lang('common_unit_total_a8'); ?></th>
 				</tr>
 				<?php
@@ -259,12 +254,10 @@
 
 					<tr>
                                             <td class="text-center"><?php echo $stt; ?></td>
-                                                <td><?php echo H($item['product_id']);?></td>
                                                 <td class="text-left"><?php echo $item['name']; ?><?php if ($item_number_for_receipt){ ?> - <?php echo $item_number_for_receipt; ?><?php } ?><?php if ($item['size']){ ?> (<?php echo $item['size']; ?>)<?php } ?></td>
                                                 <td><?php echo to_quantity(abs($item['quantity'])); ?></td>
                                                 <td><?php echo NumberFormatToCurrency($item['price']); ?></td>
                                                 <td><?php echo to_quantity($item['discount']);?></td>
-                                                <td><?php echo to_quantity($item['tax_included']);?></td>
                                                 <td><?php echo NumberFormatToCurrency(abs($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100)); ?></td>
 					</tr>
 					<?php if (!$item['description']=="" ||(isset($item['serialnumber']) && $item['serialnumber'] !="") ) {?>
@@ -393,33 +386,6 @@
     <?php if($this->config->item('hide_barcode_on_sales_and_recv_receipt')){ ?>
                 <div style="text-align: center;"><?php echo "<img src='".site_url('barcode')."?barcode=$sale_id&text=$sale_id' />"; ?></div>
     <?php }?>
-	<div class="clb">
-		<div class="fr">
-			<p>Ngày ..... tháng ..... năm .......</p>
-		</div>
-	</div>
-	<div id="pdf_signature" class="w100 clb">
-		<div class="w20 fl">
-			<p><lable>Người lập phiếu</lable></p>
-			<p class="fontI">(ký, họ tên)</p>
-		</div>
-		<div class="w20 fl">
-			<p><lable>Người nhận hàng</lable></p>
-			<p class="fontI">(ký, họ tên)</p>
-		</div>
-		<div class="w20 fl">
-			<p><lable>Thủ kho</lable></p>
-			<p class="fontI">(ký, họ tên)</p>
-		</div>
-		<div class="w20 fl">
-			<p><lable>Kế toán trưởng</lable></p>
-			<p class="fontI">(ký, họ tên)</p>
-		</div>
-		<div class="w20 fl">
-			<p><lable>Giám đốc</lable></p>
-			<p class="fontI">(ký, họ tên)</p>
-		</div>
-	</div>
 	<div id="pdf_footer" class="w100 clb">
 		<p class="fontI">(Cần kiểm tra đối chiếu khi lập, giao, nhận hàng hóa)</p>
 	</div>

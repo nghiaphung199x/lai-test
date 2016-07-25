@@ -400,6 +400,7 @@ $lang['common_unit_sales'] = 'Đơn giá';
 $lang['common_unit_total'] = 'Thành tiền';
 $lang['common_unit_sales_a8'] = 'Đ.G';
 $lang['common_unit_total_a8'] = 'T.tiền';
+$lang['common_sale_person'] = 'Người bán';
 $lang['common_unit_discount'] = 'Chiết khấu';
 $lang['common_unit_discount_a8'] = 'C.K';
 $lang['common_saled'] = 'Đã thanh toán';
