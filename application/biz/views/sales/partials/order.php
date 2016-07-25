@@ -120,7 +120,7 @@
         .border-top{
                 border-top: none !important;
         }
-        #policy{
+        #policy, #announcement{
                 font-weight: bold;
                 text-align: center;
                 font-size: 1.3em;
@@ -408,7 +408,18 @@
 	<div>
             <p>Số tiền viết bằng chữ: <span><?php echo getStringNumber($total_money_cash);?></span></p>
 	</div>
-		<div id="policy"><?php echo $this->config->item('return_policy'); ?></div>
+		<div id="policy">
+                    <?php if($this->config->item('return_policy')!=''):?>
+                    <p style=" font-weight: normal;"><?php echo lang('common_return_policy')?></p>
+                    <p><?php echo $this->config->item('return_policy'); ?></p>
+                    <?php endif;?>
+                </div>
+                <?php if($this->config->item('announcement_special')!=''):?>
+                            <div id="announcement">
+                                <p style="font-weight: normal;"><?php echo lang('common_announcement_special');?></p>
+                                <p><?php echo $this->config->item('announcement_special'); ?></p>
+                            </div>
+                <?php endif;?>
             <?php if($this->config->item('hide_barcode_on_sales_and_recv_receipt')==1){?>
                 <div style="text-align: center;">
                     <?php echo "<img src='".site_url('barcode')."?barcode=$sale_id&text=$sale_id' />"; ?>
