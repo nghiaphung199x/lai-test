@@ -331,6 +331,9 @@ ini_set("soap.wsdl_cache_enabled", 0);
 	define('BIZ_MODEL_PATH', APPPATH . 'biz/models'.DIRECTORY_SEPARATOR);
 	define('BIZ_HELPER_PATH', APPPATH . 'biz/helpers'.DIRECTORY_SEPARATOR);
 	define('BIZ_LIB_PATH', APPPATH . 'biz/libraries'.DIRECTORY_SEPARATOR);
+	
+	$disabledFile = __DIR__ . '/.disabled';
+	define('SERVICE_DISABLED', file_exists($disabledFile));
 /*
  * --------------------------------------------------------------------
  * LOAD THE BOOTSTRAP FILE

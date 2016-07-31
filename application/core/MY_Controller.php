@@ -23,6 +23,24 @@ function force_http_if_needed()
 	}
 }
 
+function checkServiceDisabled()
+{
+	if (SERVICE_DISABLED) {
+		$htmlContent = <<<EOD
+<html>
+	<body>
+			<div style="text-align: center; padding-top: 50px;">
+				<h2>DỊCH VỤ ĐÃ BỊ TẠM DỪNG</h2>
+				<p>Hãy liên hệ với chúng tôi để biết thêm chi tiết.</p>
+			</div>
+	</body>
+</html
+EOD;
+		echo $htmlContent;
+		exit;
+	}
+}
+
 $lazy_load = (!defined("LAZY_LOAD") or LAZY_LOAD == TRUE);
 
 if (!$lazy_load)
@@ -33,6 +51,7 @@ if (!$lazy_load)
 		{
 			parent::__construct();
 			force_http_if_needed();
+			checkServiceDisabled();
 		}
 	}
 }
@@ -51,6 +70,7 @@ else
 			$this->load = '';
 			parent::__construct();
 			force_http_if_needed();
+			checkServiceDisabled();
 		}
 	
 	
