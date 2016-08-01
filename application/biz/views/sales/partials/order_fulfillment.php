@@ -1,49 +1,76 @@
+<?php 
+$width = 0;
+$font_size = 0;
+$font_size_logo = 0;
+$width_image_logo= '94px';
+$commany_name_padding_top= 0;
+$commany_name_width= 0;
+$height= 0;
+if($this->config->item('config_sales_receipt_pdf_size')=='a8'){
+    $width = '260px';
+    $font_size = '11px';
+    $font_size_logo = '13px';
+    $commany_name_padding_top='21px';
+    $commany_name_width = '135px';
+    $commany_name_width_logo = '125px';
+    $height = '70px';
+}
+elseif($this->config->item('config_sales_receipt_pdf_size')=='a58'){
+    $width ='188px';
+    $font_size = '10px';
+    $font_size_logo = '11px';
+    $commany_name_padding_top='7px';
+    $commany_name_width = '94px';
+    $commany_name_width_logo = '94px';
+    $height = '53px';
+}
+?>
 <style type="text/css">
 	#pdf_content {
 		display: block;
 		overflow: hidden;
 		position: relative;
-                height: auto; width: 260px;
+                height: auto; width: <?php echo $width;?>;
                 font-family: Arial;
-		font-size: 11px !important;
+		font-size: <?php echo $font_size;?> !important;
                 line-height: normal !important;
 	}
 	#pdf_logo  {
-                height: 62px;
+                height: <?php echo $height?>;
 	}
         #pdf_logo img{
-            width: 110px;
+            width: <?php echo $commany_name_width_logo?>;
             float: left;
         }
         #pdf_logo p{
-            font-size: 13px;
+            font-size: <?php echo $font_size_logo;?>;
         }
         #pdf_company p{
-            font-size: 11px;
+            font-size: <?php echo $font_size;?>
         }
 	#company_name {
 		text-transform: uppercase;
 		font-weight: bold;
 		color: #002FC2;
-                font-size: 11px;
+                font-size: <?php echo $font_size;?>;
                 float: left;
-                padding-top: 21px;
-                width: 135px;
+                padding-top: <?php echo $commany_name_padding_top?>;
+                width: <?php echo $commany_name_width?>;
 	}
 	#pdf_content span {
 		color: #002FC2;
 	}
 	#pdf_title {
-		width: 260px;
+		width: <?php echo $width?>;
 		text-align: center;
 		text-transform: uppercase;
 		font-weight: bold;
-		font-size: 11px;
+		font-size: <?php echo $font_size;?>;
                 margin-top: 10px;
 	}
 	#pdf_tbl_items {
 		border-collapse: collapse;
-		font-size: 11px;
+		font-size: <?php echo $font_size;?>;
 		margin: 10px 0;
 	}
 	#pdf_tbl_items tboby {
@@ -62,16 +89,16 @@
 		padding: 3px 0px;
                 font-weight: normal;
                 line-height: normal !important;
-                font-size: 11px !important;;
+                font-size: <?php echo $font_size;?> !important;;
 	}
         #pdf_tbl_items th{
-            font-size: 11px !important; 
+            font-size: <?php echo $font_size;?> !important; 
 			text-align: center !important;
         }
 
 	#pdf_signature {
 		min-height: 50px;
-                width: 260px;
+                width: <?php echo $width?>;
 	}
         #pdf_signature p{
             min-height: 50px !important;
@@ -96,7 +123,7 @@
 		clear: both;
 	}
         .clb p{
-            font-size: 11px;
+            font-size: <?php echo $font_size;?>;
         }
 	.w50 {
 		width: 50%;
@@ -106,7 +133,7 @@
 		width: 20%;
 	}
 	.w100 {
-		width: 100%;
+		width: 99%;
 	}
 	.pb20 {
 		padding-bottom: 20px;
@@ -131,7 +158,7 @@
 		margin: 2px 0;
 	}
 	.w150px {
-		width: 260px;
+		width: <?php echo $width?>;
                 margin-bottom: 10px;
 	}
 	.fontI {
@@ -152,7 +179,7 @@
         #policy{
                 font-weight: bold;
                 text-align: center;
-                font-size: 11px;
+                font-size: <?php echo $font_size;?>;
         }
         .text-center{
             text-align: center !important;

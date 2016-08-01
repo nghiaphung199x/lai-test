@@ -424,7 +424,7 @@ class BizSales extends Sales
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['payments'], $sale_mode);
 		$typeOfViewFix = $typeOfView;
-		if($this->config->item('config_sales_receipt_pdf_size')=='a8'&&  !strpos($typeOfView, '_fulfillment'))$typeOfViewFix = $typeOfView .'_fulfillment';
+		if(($this->config->item('config_sales_receipt_pdf_size')=='a8'||($this->config->item('config_sales_receipt_pdf_size')=='a58'))&&  !strpos($typeOfView, '_fulfillment'))$typeOfViewFix = $typeOfView .'_fulfillment';
 		if($fulfillment!=NULL && $fulfillment==0)$typeOfViewFix = $typeOfView;
 		$data['pdf_block_html'] = $this->load->view('sales/partials/' . $typeOfViewFix, $data, TRUE);
 
@@ -595,9 +595,9 @@ class BizSales extends Sales
 		// [4biz] switch to correct view
 		$typeOfView = $this->getTypeOfOrder($data['payments'], $sale_mode, $sale_info['suspended'],$fulfillment);
 		$typeOfViewFix = $typeOfView;
-		if($this->config->item('config_sales_receipt_pdf_size')=='a8'&&  !strpos($typeOfView, '_fulfillment'))$typeOfViewFix = $typeOfView .'_fulfillment';
+		if(($this->config->item('config_sales_receipt_pdf_size')=='a8'||($this->config->item('config_sales_receipt_pdf_size')=='a58'))&&  !strpos($typeOfView, '_fulfillment'))$typeOfViewFix = $typeOfView .'_fulfillment';
 		if($fulfillment!=NULL && $fulfillment==0)$typeOfViewFix = $typeOfView;
-		$data['pdf_block_html'] = $this->load->view('sales/partials/' . $typeOfViewFix, $data, TRUE);
+                $data['pdf_block_html'] = $this->load->view('sales/partials/' . $typeOfViewFix, $data, TRUE);
 		
 		$this->load->view("sales/receipt",$data);
 		$this->sale_lib->clear_all();
