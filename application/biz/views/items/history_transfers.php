@@ -31,7 +31,23 @@
 	                                    <input type="text" class="form-control end_date" name="end_date" id="end_date" value="<?php echo $end_date;?>">
 	                                </div>	
 								</div>
-								<div class="col-md-6">
+								<div class="col-md-3">
+									<ul id="reports_locations_list" class="list-inline">
+										<li>
+											<input type="radio" name="transfer_dimension" value="from" id="transfer_dimension_from" <?php if ($transfer_dimension == 'from') echo 'checked="checked"'?>>
+											<label for="transfer_dimension_from"><span></span>Chuyển kho đi</label>
+										</li>
+										<li>
+											<input type="radio" name="transfer_dimension" value="to" id="transfer_dimension_to" <?php if ($transfer_dimension == 'to') echo 'checked="checked"'?>>
+											<label for="transfer_dimension_to"><span></span>Chuyển kho đến</label>
+										</li>
+										<li>
+											<input type="radio" name="transfer_dimension" value="all" <?php if ($transfer_dimension == 'all') echo 'checked="checked"'?> id="transfer_dimension_all">
+											<label for="transfer_dimension_all"><span></span>Tất cả</label>
+										</li>
+									</ul>
+								</div>
+								<div class="col-md-3">
 									<div class="form-actions pull-left">
 										<button style="height: 38px;" type="submit" id="search" class="btn btn-primary submit_button">Thực hiện</button>
 									</div>

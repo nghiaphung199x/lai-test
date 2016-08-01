@@ -52,9 +52,20 @@ class BizReceiving extends Receiving
 		$this->db->join('people', 'suppliers.person_id = people.person_id', 'left');
 		$this->db->where('receivings.deleted', 0);
 		$this->db->where('receivings.transfer_status', 'approved');
-		$this->db->where('receivings.transfer_to_location_id > 0');
-		$this->db->where('receivings.location_id > 0');
-		$this->db->where('transfer_to_location_id', $location_id);
+		
+		if (!empty($search['transfer_dimension']) && $search['transfer_dimension'] == 'from')
+		{
+			$this->db->where('receivings.transfer_to_location_id > 0');
+			$this->db->where('receivings.location_id > 0');
+			$this->db->where('receivings.location_id', $location_id);
+		} elseif (!empty($search['transfer_dimension']) && $search['transfer_dimension'] == 'to') {
+			$this->db->where('receivings.transfer_to_location_id > 0');
+			$this->db->where('receivings.location_id > 0');
+			$this->db->where('receivings.transfer_to_location_id', $location_id);
+		} else {
+			$this->db->where('receivings.transfer_to_location_id > 0');
+			$this->db->where('receivings.location_id > 0');
+		}
 		
 		if (!empty($search['start_date'])) {
 			$this->db->where('receiving_time >= ', $search['start_date']);

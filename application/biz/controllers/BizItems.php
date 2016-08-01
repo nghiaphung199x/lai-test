@@ -171,6 +171,7 @@ class BizItems extends Items
             $data['end_date'] = $this->input->get('end_date_formatted');
             $search['end_date'] = $this->input->get('end_date');
         }
+        $data['transfer_dimension'] = $search['transfer_dimension'] = $this->input->get('transfer_dimension', 'all');
         $data['history_transfers'] = $this->Receiving->getHistoryTransfers($search);
         $this->load->view('items/history_transfers', $data);
     }
