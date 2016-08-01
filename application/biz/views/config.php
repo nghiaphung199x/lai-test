@@ -952,7 +952,8 @@ $this->load->helper('demo');
 							<?php echo form_dropdown('config_sales_receipt_pdf_size', array(
 								'a4'   => 'A4', 
 								'a5'  => 'A5',
-                                                                'a8'    =>  'A8'
+								'a8'    =>  'A8',
+								'a58'   =>'A58'
 							),
 							$this->config->item('config_sales_receipt_pdf_size'), 'class="form-control" id="config_sales_receipt_pdf_size"');
 							?>
