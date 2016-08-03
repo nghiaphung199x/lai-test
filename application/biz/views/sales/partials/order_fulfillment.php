@@ -7,21 +7,21 @@ $commany_name_padding_top= 0;
 $commany_name_width= 0;
 $height= 0;
 if($this->config->item('config_sales_receipt_pdf_size')=='a8'){
-    $width = '260px';
+    $width = '245px';
     $font_size = '11px';
     $font_size_logo = '13px';
     $commany_name_padding_top='21px';
-    $commany_name_width = '135px';
-    $commany_name_width_logo = '125px';
+    $commany_name_width = '125px';
+    $commany_name_width_logo = '120px';
     $height = '70px';
 }
 elseif($this->config->item('config_sales_receipt_pdf_size')=='a58'){
-    $width ='188px';
+    $width ='172px';
     $font_size = '10px';
     $font_size_logo = '11px';
     $commany_name_padding_top='7px';
-    $commany_name_width = '94px';
-    $commany_name_width_logo = '94px';
+    $commany_name_width = '86px';
+    $commany_name_width_logo = '86px';
     $height = '53px';
 }
 ?>
