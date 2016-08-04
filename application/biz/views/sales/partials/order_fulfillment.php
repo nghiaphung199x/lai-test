@@ -16,12 +16,12 @@ if($this->config->item('config_sales_receipt_pdf_size')=='a8'){
     $height = '70px';
 }
 elseif($this->config->item('config_sales_receipt_pdf_size')=='a58'){
-    $width ='165px';
+    $width ='140px';
     $font_size = '9px';
     $font_size_logo = '11px';
     $commany_name_padding_top='7px';
-    $commany_name_width = '82px';
-    $commany_name_width_logo = '82px';
+    $commany_name_width = '67px';
+    $commany_name_width_logo = '67px';
     $height = '53px';
 }
 ?>
