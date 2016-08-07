@@ -7,21 +7,21 @@ $commany_name_padding_top= 0;
 $commany_name_width= 0;
 $height= 0;
 if($this->config->item('config_sales_receipt_pdf_size')=='a8'){
-    $width = '260px';
+    $width = '245px';
     $font_size = '11px';
     $font_size_logo = '13px';
     $commany_name_padding_top='21px';
-    $commany_name_width = '135px';
-    $commany_name_width_logo = '125px';
+    $commany_name_width = '125px';
+    $commany_name_width_logo = '120px';
     $height = '70px';
 }
 elseif($this->config->item('config_sales_receipt_pdf_size')=='a58'){
-    $width ='188px';
-    $font_size = '10px';
+    $width ='140px';
+    $font_size = '9px';
     $font_size_logo = '11px';
     $commany_name_padding_top='7px';
-    $commany_name_width = '94px';
-    $commany_name_width_logo = '94px';
+    $commany_name_width = '67px';
+    $commany_name_width_logo = '67px';
     $height = '53px';
 }
 ?>
@@ -408,7 +408,7 @@ elseif($this->config->item('config_sales_receipt_pdf_size')=='a58'){
             <p>Số tiền viết bằng chữ: <span><?php echo getStringNumber(round_to_nearest_05($total_money_cash));?></span></p>
 	</div>
 		<?php if($this->config->item('return_policy')){?>
-		<div id="policy"><?php echo $this->config->item('return_policy'); ?></div>
+		<div class="text-center"id=" policy"><?php echo $this->config->item('return_policy'); ?></div>
     <?php }?>     
     <?php if($this->config->item('hide_barcode_on_sales_and_recv_receipt')){ ?>
                 <div style="text-align: center;"><?php echo "<img src='".site_url('barcode')."?barcode=$sale_id&text=$sale_id' />"; ?></div>
