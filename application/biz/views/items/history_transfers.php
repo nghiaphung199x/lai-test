@@ -42,7 +42,7 @@
 											<label for="transfer_dimension_to"><span></span>Chuyển kho đến</label>
 										</li>
 										<li>
-											<input type="radio" name="transfer_dimension" value="all" <?php if ($transfer_dimension == 'all') echo 'checked="checked"'?> id="transfer_dimension_all">
+											<input type="radio" name="transfer_dimension" value="all" <?php if (empty($transfer_dimension) || $transfer_dimension == 'all') echo 'checked="checked"'?> id="transfer_dimension_all">
 											<label for="transfer_dimension_all"><span></span>Tất cả</label>
 										</li>
 									</ul>
