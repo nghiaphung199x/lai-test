@@ -240,7 +240,7 @@ if (!is_on_demo_host() && !$this->config->item('hide_test_mode_home')) { ?>
 
 <?php if($show_warning_orders_modal){ ?>
 <!-- Modal -->
-<div class="modal fade" id="warning_orders_modal" tabindex="-1" role="dialog" aria-labelledby="chooseLocation" data-keyboard="false" data-backdrop="static">
+<div class="modal fade" id="warning_orders_modal" tabindex="-1" role="dialog" aria-labelledby="chooseLocation" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -264,7 +264,7 @@ if (!is_on_demo_host() && !$this->config->item('hide_test_mode_home')) { ?>
 				<tbody>
 					<?php foreach ($warning_orders as $warning_order) {?>
 					<tr class="<?php echo getStatusOfDelivery($warning_order['delivery_date']) ?>">
-						<td><?php echo ($this->config->item('sale_prefix') ? $this->config->item('sale_prefix') : 'POS' ). ' '.$warning_order['sale_id'];?></td>
+						<td><a href="<?php echo site_url('sales/receipt/'.$warning_order['sale_id']); ?>"><?php echo ($this->config->item('sale_prefix') ? $this->config->item('sale_prefix') : 'POS' ). ' '.$warning_order['sale_id'];?></a></td>
 						<td class="hidden-xs"><?php echo date(get_date_format(). ' @ '.get_time_format(),strtotime($warning_order['sale_time']));?></td>
 						<td class="hidden-xs">
 							<?php
@@ -332,7 +332,7 @@ if (!is_on_demo_host() && !$this->config->item('hide_test_mode_home')) { ?>
 				<tbody>
 					<?php foreach ($expire_data as $warningItem) {?>
 					<tr>
-						<td><?php echo $warningItem['name'];?></td>
+						<td><a href="<?php echo site_url('items/view/'. $warningItem['item_id'] .'/2'); ?>"><?php echo $warningItem['name'];?></td>
 						<td class="hidden-xs"><?php echo $warningItem['category'];?></td>
 						<td class="hidden-xs"><?php echo $warningItem['company_name'];?></td>
 						<td><?php echo to_quantity($warningItem['quantity']); ?></td>
