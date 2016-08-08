@@ -99,6 +99,7 @@ $lang['common_announcement_special'] = 'Thông báo / Khuyến mãi';
 
 $lang['common_credit_card_processing'] = 'Xử lý thẻ tín dụng';
 
+$lang['common_sale_employee'] = 'Nhân viên bán hàng';
 $lang['common_name'] = 'Tên';
 $lang['common_birth_date'] = 'Ngày sinh';
 $lang['common_birth_day'] = 'Ngày sinh';
@@ -478,5 +479,7 @@ $lang['common_employees'] = 'Nhân viên';
 $lang['common_items'] = 'Sản phấm';
 $lang['common_item_kits'] = 'Gói sản phẩm';
 $lang['common_sex'] = 'Giới tính';
+
+$lang['common_total_price'] = 'Tổng giá tiền';
 
 ?>

@@ -2,6 +2,60 @@
 require_once (APPPATH . "models/Sale.php");
 class BizSale extends Sale
 {
+	function getOrders($search)
+	{
+		$location_id = $this->Employee->get_logged_in_employee_current_location_id();
+
+		$this->db->from('sales');
+		$this->db->join('customers', 'sales.customer_id = customers.person_id', 'left');
+		$this->db->join('people', 'customers.person_id = people.person_id', 'left');
+		$this->db->where('sales.deleted', 0);
+		$this->db->where('suspended', 0);
+		$this->db->where('location_id', $location_id);
+		
+		if (!empty($search['start_date'])) {
+			$this->db->where('sale_time >= ', $search['start_date']);
+		}
+
+		if (!empty($search['end_date'])) {
+			$this->db->where('sale_time <= ', $search['end_date']);
+		}
+
+		$this->db->order_by('sale_id');
+		$sales = $this->db->get()->result_array();
+
+		for($k=0;$k<count($sales);$k++)
+		{
+			$item_names = array();
+			$this->db->select('name, sales_items.*');
+			$this->db->from('items');
+			$this->db->join('sales_items', 'sales_items.item_id = items.item_id');
+			$this->db->where('sale_id', $sales[$k]['sale_id']);
+			
+			$totalPrice = 0;
+			$totalDiscount = 0;
+			foreach($this->db->get()->result_array() as $row)
+			{
+				$item_names[] = $row['name'];
+				$totalPrice = $totalPrice + $row['quantity_purchased'] * $row['item_unit_price'];
+				$totalDiscount = $totalDiscount + $row['quantity_purchased'] * $row['item_unit_price'] * $row['discount_percent'] / 100;
+			}
+			$sales[$k]['total_price'] = $totalPrice;
+			$sales[$k]['total_discount'] = $totalDiscount;
+			
+			$this->db->select('name');
+			$this->db->from('item_kits');
+			$this->db->join('sales_item_kits', 'sales_item_kits.item_kit_id = item_kits.item_kit_id');
+			$this->db->where('sale_id', $sales[$k]['sale_id']);
+			foreach($this->db->get()->result_array() as $row)
+			{
+				$item_names[] = $row['name'];
+			}
+			$sales[$k]['items'] = implode(', ', $item_names);
+		}
+		return $sales;
+	}
+
 	public function getDetailSalesByLocationId($locationId = 0, $search = []) {
 		$this->db->select('sales.*, items.*, sales_items.*, categories.name as category, sales_items.description as sales_items_description');
 		$this->db->from('sales_items');

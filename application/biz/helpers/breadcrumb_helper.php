@@ -554,6 +554,11 @@ function create_breadcrumb()
 			$return.=create_current_page_url(lang('batch_sale'));
 		}
 		
+		if($ci->uri->segment(2) == 'orders')
+		{
+			$return.=create_current_page_url(lang('sales_orders'));
+		}
+		
 		if($ci->uri->segment(2) == 'register_add_subtract' && $ci->uri->segment(3) == 'add')
 		{
 			$return.=create_current_page_url(lang('sales_add_cash_to_register'));

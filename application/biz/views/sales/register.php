@@ -370,7 +370,12 @@ $this->load->helper('demo');
 								</li>					
 						<?php } ?>
 
-						
+						<li>
+							<?php echo anchor("sales/orders/",
+								'<i class="ion-bag"></i> '.lang('sales_orders'),
+								array('class'=>'none suspended_sales_btn','title'=>lang('list_of_orders')));
+							?>
+						</li>
 
 						<li>
 							<?php echo '<a href="#look-up-receipt" class="look-up-receipt" data-toggle="modal"><i class="ion-document"></i> '.lang('lookup_receipt').'</a>';?>

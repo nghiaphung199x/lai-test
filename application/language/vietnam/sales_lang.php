@@ -9,6 +9,7 @@ $lang['sales_item_name'] = 'Tên';
 
 $lang['sales_tax_percent']='Thuế %';
 
+$lang['sale_orders_title'] = 'Hóa đơn bán hàng';
 
 
 $lang['sales_edit']='Sửa đơn hàng';
@@ -38,6 +39,7 @@ $lang['sales_return']='Trả hàng';
 $lang['sales_confirm_finish_sale'] = 'Bạn có chắc chắn muốn hoàn thành đơn hàng này?';
 $lang['sales_confirm_cancel_sale'] = 'Bạn có chắc chắn muốn hủy thao tác này?';
 
+$lang['sales_orders'] = 'Hóa đơn bán hàng';
 
 
 

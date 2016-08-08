@@ -10,6 +10,32 @@ class BizSales extends Sales
 		parent::__construct();
 		$this->load->helper('sale');
 	}
+
+	public function orders()
+	{
+		$data = array();
+		$start_date = $this->input->get('start_date');
+		if (empty($start_date)) {
+			$data['start_date'] = date('d-m-Y', strtotime("-30 days"));
+			$search['start_date'] = date('Y-m-d', strtotime("-30 days"));
+		} else {
+			$data['start_date'] = $this->input->get('start_date_formatted');
+			$search['start_date'] = $this->input->get('start_date');
+		}
+
+		$end_date = $this->input->get('end_date');
+
+		if (empty($end_date)) {
+			$data['end_date'] = date('d-m-Y');
+			$search['end_date'] = date('Y-m-d');
+		} else {
+			$data['end_date'] = $this->input->get('end_date_formatted');
+			$search['end_date'] = $this->input->get('end_date');
+		}
+
+		$data['orders'] = $this->Sale->getOrders($search);
+		$this->load->view('sales/orders', $data);
+	}
 	
 	public function set_sale_delivery_date()
 	{
