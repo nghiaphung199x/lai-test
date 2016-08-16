@@ -15,11 +15,6 @@ class BizMySession {
 	
 	function getValue($key)
 	{
-		if($this->CI->session->userdata($key) === NULL)
-		{
-			$this->setValue($key, null);
-			return null;
-		}
 		return $this->CI->session->userdata($key);
 	}
 }

@@ -480,6 +480,9 @@ $lang['common_items'] = 'Sản phấm';
 $lang['common_item_kits'] = 'Gói sản phẩm';
 $lang['common_sex'] = 'Giới tính';
 
+$lang['common_history_transfer'] = 'Lịch sử chuyển kho';
+$lang['common_history_stock_out'] = 'Lịch sử xuất kho';
+
 $lang['common_total_price'] = 'Tổng giá tiền';
 
 ?>

@@ -25,7 +25,7 @@ class BizItems extends Items
         $auditedIds = array_map(function ($item) {
             return $item['item_id'];
         }, $audit_items);
-        $extra['category_id'] = (int)$this->mysession->getValue('AUDIT_CATEGORY');
+        $extra['category_id'] = (int) $this->mysession->getValue('AUDIT_CATEGORY');
         $notAuditedItems = $this->Item->getNotAuditedInLocation($auditedIds, $extra);
 
         $bizExcel = new BizExcel('A1.xlsx');

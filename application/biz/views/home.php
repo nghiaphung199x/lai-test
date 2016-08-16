@@ -264,7 +264,7 @@ if (!is_on_demo_host() && !$this->config->item('hide_test_mode_home')) { ?>
 				<tbody>
 					<?php foreach ($warning_orders as $warning_order) {?>
 					<tr class="<?php echo getStatusOfDelivery($warning_order['delivery_date']) ?>">
-						<td><a href="<?php echo site_url('sales/receipt/'.$warning_order['sale_id']); ?>"><?php echo ($this->config->item('sale_prefix') ? $this->config->item('sale_prefix') : 'POS' ). ' '.$warning_order['sale_id'];?></a></td>
+						<td><a href="<?php echo site_url('sales/unsuspend/'.$warning_order['sale_id']); ?>"><?php echo ($this->config->item('sale_prefix') ? $this->config->item('sale_prefix') : 'POS' ). ' '.$warning_order['sale_id'];?></a></td>
 						<td class="hidden-xs"><?php echo date(get_date_format(). ' @ '.get_time_format(),strtotime($warning_order['sale_time']));?></td>
 						<td class="hidden-xs">
 							<?php

@@ -92,6 +92,9 @@ $lang['module_edit_giftcard_value'] = 'Sửa giá trị thẻ quà tặng';
 
 $lang['module_items_transfer_pending'] = 'Duyệt đơn chuyển kho';
 
+$lang['module_stock_out'] = 'Xuất kho';
+$lang['module_stock_out_desc'] = 'Xuất kho';
+
 $lang['module_view_scope_owner'] = 'Xem được khách hàng của nhân viên';
 $lang['module_view_scope_location'] = 'Xem được khách hàng theo điểm bán hàng';
 $lang['module_view_scope_all'] = 'Xem được khách hàng của hệ thống';

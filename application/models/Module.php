@@ -62,7 +62,7 @@ class Module extends CI_Model
         foreach ($modules as $module) {
             $allowed_modules[$module->module_id] = $module;
         }
-
+        
         /**
          * Level Group Modules
          **/

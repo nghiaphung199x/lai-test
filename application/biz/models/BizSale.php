@@ -2,6 +2,31 @@
 require_once (APPPATH . "models/Sale.php");
 class BizSale extends Sale
 {
+	
+	public function getSaleForStockOut($search = '') 
+	{
+		$location_id = $this->Employee->get_logged_in_employee_current_location_id();
+		
+		$this->db->from('sales');
+		$this->db->join('customers', 'sales.customer_id = customers.person_id', 'left');
+		$this->db->join('people', 'customers.person_id = people.person_id', 'left');
+		$this->db->where('sales.deleted', 0);
+		$this->db->where('suspended', 2);
+		$this->db->where('location_id', $location_id);
+		$this->db->order_by('sale_id');
+		$sales = [];
+		
+		foreach ($this->db->get()->result() as $row) {
+			$sales[] = array(
+					'label' => $row->sale_id.' ('.$row->sale_time.')',
+					'image' => base_url()."assets/img/item.png" ,
+					'category' => '',
+					'item_number' => '',
+			);
+		}
+		return $sales;
+	}
+	
 	function getOrders($search)
 	{
 		$location_id = $this->Employee->get_logged_in_employee_current_location_id();
