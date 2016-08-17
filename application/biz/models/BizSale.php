@@ -11,8 +11,9 @@ class BizSale extends Sale
 		$this->db->join('customers', 'sales.customer_id = customers.person_id', 'left');
 		$this->db->join('people', 'customers.person_id = people.person_id', 'left');
 		$this->db->where('sales.deleted', 0);
-		$this->db->where('suspended', 2);
+		$this->db->where('suspended', 1);
 		$this->db->where('location_id', $location_id);
+		$this->db->like('sale_id', $search);
 		$this->db->order_by('sale_id');
 		$sales = [];
 		

@@ -21,6 +21,26 @@ class BizStock_out extends Secure_area
 	}
 	
 	public function index() {
+		$saleId = $this->input->get('sId');
+		if (!empty($saleId)) {
+			$stockOutData = [];
+			$saleInfo = $this->Sale->get_info($saleId)->row();
+			if (!empty($saleInfo)) {
+				$stockOutData['mode'] = 'by_sale';
+				$stockOutData['customer'] = $saleInfo->customer_id;
+				$items = $this->Sale->get_sale_items($saleId)->result();
+				foreach ($items as $item) {
+					$stockOutData['items'][$item->item_id] = $this->Item->get_info($item->item_id);
+					$stockOutData['items'][$item->item_id]->totalQty = $item->measure_qty;
+					if (!empty($item->measure_id)) {
+						$stockOutData['items'][$item->item_id]->measure_id = $item->measure_id;
+					}
+				}
+				$this->mysession->setValue(self::STOCK_OUT_SESSION_KEY, $stockOutData);
+			}
+		}
+		
+		
 		$data['stock_out_data'] = $this->mysession->getValue(self::STOCK_OUT_SESSION_KEY);
 		
 		$deliverer = null;
@@ -54,7 +74,7 @@ class BizStock_out extends Secure_area
 		$stockOutData = $this->mysession->getValue(self::STOCK_OUT_SESSION_KEY);
 		if ($stockOutData['mode'] == 'by_sale') {
 			session_write_close();
-			$suggestions = $this->Sale->getSaleForStockOut();;
+			$suggestions = $this->Sale->getSaleForStockOut($this->input->get('term'));
 			echo json_encode($suggestions);
 		} else {
 			//allow parallel searchs to improve performance.
@@ -131,13 +151,18 @@ class BizStock_out extends Secure_area
 		
 		if ($stockOutData['mode'] == 'by_sale') {
 			// Get sale_items_kit
+			$saleInfo = $this->Sale->get_info($itemId)->row();
 			
-			$items = $this->Sale->get_sale_items($itemId)->result();
-			foreach ($items as $item) {
-				$stockOutData['items'][$item->item_id] = $this->Item->get_info($item->item_id);
-				$stockOutData['items'][$item->item_id]->totalQty = $item->measure_qty;
-				if (!empty($item->measure_id)) {
-					$stockOutData['items'][$item->item_id]->measure_id = $item->measure_id;
+			if (!empty($saleInfo)) {
+				$stockOutData['customer'] = $saleInfo->customer_id;
+					
+				$items = $this->Sale->get_sale_items($itemId)->result();
+				foreach ($items as $item) {
+					$stockOutData['items'][$item->item_id] = $this->Item->get_info($item->item_id);
+					$stockOutData['items'][$item->item_id]->totalQty = $item->measure_qty;
+					if (!empty($item->measure_id)) {
+						$stockOutData['items'][$item->item_id]->measure_id = $item->measure_id;
+					}
 				}
 			}
 		} else {

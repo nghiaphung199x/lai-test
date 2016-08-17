@@ -17,6 +17,9 @@ class Secure_area extends MY_Controller
 		$this->module_id = $module_id;	
 		$this->load->model('Employee');
 		$this->load->model('Location');
+		
+		$this->lang->load('module');
+		
 		if(!$this->Employee->is_logged_in())
 		{
 			redirect('login');
