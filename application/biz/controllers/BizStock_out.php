@@ -55,6 +55,7 @@ class BizStock_out extends Secure_area
 		
 		$data['deliverer'] = $deliverer;
 		$data['customer'] = $customer;
+		
 		$data['selected_tml'] = $this->load->view('stock_out/partials/selected_items', $data['stock_out_data'], TRUE);
 		$this->load->view('stock_out/index', $data);
 	}
