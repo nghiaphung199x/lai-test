@@ -23,7 +23,12 @@
 				</div>
 				<span class="help-block" style="margin-left: 35px"><?php echo lang('item_kits_desc'); ?></span>
 				<div class="form-group">
-					<?php echo form_label(lang('item_kits_add_item').' :', 'item',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label  ')); ?>
+					<?php
+					$text = lang('item_kits_add_item');
+					if ($type == 'bom') {
+						$text = 'Thêm mới BOM';
+					}
+					echo form_label($text . ' :', 'item',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label  ')); ?>
 					<div class="col-sm-9 col-md-9 col-lg-10">
 						<?php echo form_input(array(
 							'class'=>'form-control form-inps',
@@ -39,7 +44,7 @@
 				<div class="panel-heading">
 	                <h3 class="panel-title">
 	                    <i class="ion-ios-list-outline"></i> 
-	                    <?php echo lang('item_kits_items_added');?>
+	                    <?php echo ($type == 'bom') ? 'Thêm mới nguyên vật liệu' : lang('item_kits_items_added');?>
 	                </h3>
 		        </div>
 
@@ -47,7 +52,7 @@
 				<table id="item_kit_items" class="table table-bordered table-striped text-success text-center">
 					<tr>
 						<th><?php echo lang('common_delete');?></th>
-						<th><?php echo lang('item_kits_item');?></th>
+						<th><?php echo ($type == 'bom') ? 'Nguyên vật liệu' : lang('item_kits_item');?></th>
 						<th><?php echo lang('item_kits_available_qty');?></th>
 						<th><?php echo lang('item_kits_quantity');?></th>
 						<th><?php echo 'Đơn vị tính';?></th>
@@ -97,6 +102,7 @@
 
 		<div class="panel">
 			<div class="panel-body">
+				<input type="hidden" value="<?php echo empty($item_kit_info->type) ? $type : $item_kit_info->type;?>" name="kit_type"/>
 				<div class="form-group">
 					<?php echo form_label(lang('common_item_number_expanded').' :', 'name',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label  ')); ?>
 					<div class="col-sm-9 col-md-9 col-lg-10">
@@ -123,7 +129,12 @@
 				</div>
 
 				<div class="form-group">
-					<?php echo form_label(lang('item_kits_name').' :', 'name',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label  required')); ?>
+					<?php
+					$text = lang('item_kits_name');
+					if ($type == 'bom') {
+						$text = 'Tên sản phẩm';
+					}
+					echo form_label($text.' :', 'name',array('class'=>'col-sm-3 col-md-3 col-lg-2 control-label  required')); ?>
 					<div class="col-sm-9 col-md-9 col-lg-10">
 					<?php echo form_input(array(
 						'class'=>'form-control form-inps',

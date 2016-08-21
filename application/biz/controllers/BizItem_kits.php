@@ -38,7 +38,7 @@ class BizItem_kits extends Item_kits
 		echo json_encode($suggestions);
 	}
 	
-	function view($item_kit_id=-1,$redirect=0)
+	function view($item_kit_id=-1,$redirect=0, $type = '')
 	{
 		$this->load->model('Item_kit_items');
 		$this->load->model('Item_kit_taxes');
@@ -56,6 +56,7 @@ class BizItem_kits extends Item_kits
 		$this->check_action_permission('add_update');
 		$data = $this->_get_item_kit_data($item_kit_id);
 		$data['redirect']=$redirect;
+		$data['type'] = $type;
 		
 		$this->load->view("item_kits/form",$data);
 	}
@@ -86,6 +87,7 @@ class BizItem_kits extends Item_kits
 				'product_id'=>$this->input->post('product_id')=='' ? null:$this->input->post('product_id'),
 				'attribute_set_id'=>$this->input->post('attribute_set_id')=='' ? null:$this->input->post('attribute_set_id'),
 				'name'=>$this->input->post('name'),
+				'type' => $this->input->post('kit_type'),
 				'category_id'=>$category_id,
 				'tax_included'=>$this->input->post('tax_included') ? $this->input->post('tax_included') : 0,
 				'unit_price'=>$this->input->post('unit_price')=='' ? null:$this->input->post('unit_price'),

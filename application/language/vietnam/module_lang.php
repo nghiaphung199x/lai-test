@@ -49,7 +49,7 @@ $lang['module_receivings_desc']='Quy trình xử lý các đơn đặt hà
 $lang['module_giftcards']='Thẻ quà tặng';
 $lang['module_giftcards_desc']='Thêm, Sửa, Xóa, và Tìm kiếm thẻ quà tặng';
 
-$lang['module_item_kits']='Gói sản phẩm';
+$lang['module_item_kits']='BOM & Gói sản phẩm';
 $lang['module_item_kits_desc']='Thêm, Sửa, Xóa, và Tìm kiếm gói sản phẩm';
 
 
