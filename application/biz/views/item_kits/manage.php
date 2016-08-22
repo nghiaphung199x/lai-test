@@ -226,9 +226,16 @@ function init_table_sorting()
 		<div class="row manage-table">
 			<div class="panel panel-piluku">
 				<div class="panel-heading">
-				<h3 class="panel-title">
-					<?php echo lang('common_list_of').' '.lang('module_'.$controller_name); ?>
-					<span title="<?php echo $total_rows; ?> total <?php echo $controller_name?>" class="badge bg-primary tip-left"><?php echo $total_rows; ?></span>
+				<h3 id="item_kit_header" class="panel-title">
+					<span id="item_kit_all" class="item-tabs <?php echo $type == 'all' ? 'selected' : ''; ?>"><?php echo lang('common_list_of').' '.lang('module_'.$controller_name); ?></span>
+					<span id="totalItemKitAll" title="<?php echo $totalItemKitAll; ?> total <?php echo $controller_name?>" class="badge bg-primary tip-left"><?php echo $totalItemKitAll; ?></span>
+					
+					<span id="item_kit_bom" class="item-tabs <?php echo $type == 'bom' ? 'selected' : ''; ?>">D/S BOM</span>
+					<span id="totalItemKitBom" title="<?php echo $totalItemKitBom; ?> total <?php echo $controller_name?>" class="badge bg-primary tip-left"><?php echo $totalItemKitBom; ?></span>
+					
+					<span id="item_kit" class="item-tabs <?php echo $type == 'kit' ? 'selected' : ''; ?>">D/S GÓI</span>
+					<span id="totalItemKitKit" title="<?php echo $totalItemKitKit; ?> total <?php echo $controller_name?>" class="badge bg-primary tip-left"><?php echo $totalItemKitKit; ?></span>
+					
 					<span class="panel-options custom">
 						<?php if($pagination) {  ?>
 							<div class="pagination pagination-top hidden-print  text-center" id="pagination_top">
@@ -239,7 +246,7 @@ function init_table_sorting()
 				</h3>
 			</div>
 			<div class="panel-body nopadding  table_holder table-responsive"  >
-						<?php echo $manage_table; ?>			
+				<?php echo $manage_table; ?>			
 			</div>
 			
 		</div>
@@ -253,4 +260,48 @@ function init_table_sorting()
 </div>
 <?php } ?>
 </div>
+
+<script type="text/javascript">
+var ITEM_KIT = {
+	init: function()
+	{
+		// TODO
+		$('#item_kit_bom').unbind('click').bind('click', function() {
+			$('.item-tabs').removeClass('selected');
+			$('#sortable_table tbody').html('<img src="assets/img/ajax-loader.gif"  width="16" height="16" />');
+			var table_column_index = $('#sortable_table tr th.header').parent().children().index($('#sortable_table tr th.header'));
+			var sort_dir = $('#sortable_table tr th.headerSortDown').length == 1 ? 'desc' : 'asc';
+			do_sorting('<?php echo site_url("item_kits/getlist/bom");?>', '<?php echo $params['offset'];?>', 0, sort_dir);
+			$(this).addClass('selected');
+			$('#sortable_table thead span.badge').hide();
+		});
+
+		$('#item_kit_all').unbind('click').bind('click', function() {
+			$('.item-tabs').removeClass('selected');
+			$('#sortable_table tbody').html('<img src="assets/img/ajax-loader.gif"  width="16" height="16" />');
+			var table_column_index = $('#sortable_table tr th.header').parent().children().index($('#sortable_table tr th.header'));
+			var sort_dir = $('#sortable_table tr th.headerSortDown').length == 1 ? 'desc' : 'asc';
+			do_sorting('<?php echo site_url("item_kits/getlist/all");?>', '<?php echo $params['offset'];?>', 0, sort_dir);
+			$(this).addClass('selected');
+			$('#sortable_table thead span.badge').hide();
+		});
+
+		$('#item_kit').unbind('click').bind('click', function() {
+			$('.item-tabs').removeClass('selected');
+			$('#sortable_table tbody').html('<img src="assets/img/ajax-loader.gif"  width="16" height="16" />');
+			var table_column_index = $('#sortable_table tr th.header').parent().children().index($('#sortable_table tr th.header'));
+			var sort_dir = $('#sortable_table tr th.headerSortDown').length == 1 ? 'desc' : 'asc';
+			do_sorting('<?php echo site_url("item_kits/getlist/kit");?>', '<?php echo $params['offset'];?>', 0, sort_dir);
+			$(this).addClass('selected');
+			$('#sortable_table thead span.badge').hide();
+		});
+	}
+}
+
+$( document ).ready(function() {
+	ITEM_KIT.init();
+});
+
+</script>
+
 <?php $this->load->view("partial/footer"); ?>

@@ -7,10 +7,146 @@ class BizItem_kits extends Item_kits
 		parent::__construct();
 		$this->load->model('Measure');
 	}
+	
+	function index($offset = 0)
+	{
+		$params = $this->session->userdata('item_kit_search_data') ? $this->session->userdata('item_kit_search_data') : array('offset' => 0, 'order_col' => 'name', 'order_dir' => 'asc', 'search' => FALSE, 'category_id' => FALSE, 'fields' => 'all', 'type' => 'all');
+		if ($offset != $params['offset']) {
+			redirect('item_kits/index/' . $params['offset']);
+		}
+		$this->check_action_permission('search');
+		$config['base_url'] = site_url('item_kits/sorting');
+		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+	
+		$data['controller_name'] = $this->_controller_name;
+		$data['per_page'] = $config['per_page'];
+		$data['search'] = $params['search'] ? $params['search'] : "";
+		$data['category_id'] = $params['category_id'] ? $params['category_id'] : "";
+		$data['categories'][''] = lang('common_all');
+		$categories = $this->Category->sort_categories_and_sub_categories($this->Category->get_all_categories_and_sub_categories());
+		$data['fields'] = $params['fields'] ? $params['fields'] : "all";
+	
+		foreach ($categories as $key => $value) {
+			$name = str_repeat('&nbsp;&nbsp;', $value['depth']) . $value['name'];
+			$data['categories'][$key] = $name;
+		}
+	
+		$type = !empty($params['type']) ? $params['type'] : 'all';
+		if ($data['search'] || $data['category_id']) {
+			$config['total_rows'] = $this->Item_kit->search_count_all($data['search'], 10000, $type);
+			$table_data = $this->Item_kit->search($data['search'], $data['category_id'], $data['per_page'], $params['offset'], $params['order_col'], $params['order_dir'], $data['fields'], $type);
+		} else {
+			
+			$config['total_rows'] = $this->Item_kit->count_all($type);
+			$table_data = $this->Item_kit->get_all($data['per_page'], $params['offset'], $params['order_col'], $params['order_dir'], $type);
+		}
+	
+		
+		$data['totalItemKitBom'] = $this->Item_kit->count_all('bom');
+		$data['totalItemKitAll'] = $this->Item_kit->count_all('all');
+		$data['totalItemKitKit'] = $this->Item_kit->count_all('kit');
+		$data['type'] = $type;
+		$data['total_rows'] = $config['total_rows'];
+		$this->load->library('pagination');
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['order_col'] = $params['order_col'];
+		$data['order_dir'] = $params['order_dir'];
+		$data['manage_table'] = get_item_kits_manage_table($table_data, $this);
+		$this->load->view('item_kits/manage', $data);
+	}
+	
+	function getlist($type = 'all')
+	{
+		$this->check_action_permission('search');
+		$search = $this->input->post('search');
+		$category_id = $this->input->post('category_id');
+		$offset = $this->input->post('offset') ? $this->input->post('offset') : 0;
+		$order_col = $this->input->post('order_col') ? $this->input->post('order_col') : 'name';
+		$order_dir = $this->input->post('order_dir') ? $this->input->post('order_dir') : 'asc';
+		$fields = $this->input->post('fields') ? $this->input->post('fields') : 'all';
+		$per_page = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+	
+		$item_kit_search_data = array(
+				'offset' => $offset,
+				'order_col' => $order_col,
+				'order_dir' => $order_dir,
+				'search' => $search,
+				'category_id' => $category_id,
+				'fields' => $fields,
+				'type' => $type
+		);
+	
+		$this->session->set_userdata("item_kit_search_data", $item_kit_search_data);
+		
+		$table_data = $this->Item_kit->search(
+				$item_kit_search_data['search'], 
+				$item_kit_search_data['category_id'], 
+				$per_page, 
+				$item_kit_search_data['offset'], 
+				$item_kit_search_data['order_col'], 
+				$item_kit_search_data['order_dir'], 
+				$item_kit_search_data['fields'], $type);
+		
+		$config['base_url'] = site_url('item_kits/search');
+		$config['total_rows'] = $this->Item_kit->search_count_all($search, 10000, $type);
+		$config['per_page'] = $per_page;
+		
+		$this->load->library('pagination');
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['manage_table'] = get_item_kits_manage_table_data_rows($table_data, $this);
+		
+		$response = array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']);
+		$key = '';
+		if ($type == 'all') {
+			$key = 'totalItemKitAll';
+		} elseif ($type == 'bom') {
+			$key = 'totalItemKitBom';
+		} elseif ($type == 'kit') {
+			$key = 'totalItemKitKit';
+		}
+		
+		$response[$key] = $config['total_rows'];
+		
+		echo json_encode($response);
+		
+	}
+	
 	public function count_available_kits()
 	{
 		$items = $this->input->post('items');
 		echo json_encode(array('success' => 1, 'available_kits' => $this->Item_kit->countAvailableKits($items)));
+	}
+	
+	function search()
+	{
+		$this->check_action_permission('search');
+		
+		$params = $this->session->userdata('item_kit_search_data');
+		$type = !empty($params['type']) ? $params['type'] : 'all'; 
+		
+		$search = $this->input->post('search');
+		$offset = $this->input->post('offset') ? $this->input->post('offset') : 0;
+		$order_col = $this->input->post('order_col') ? $this->input->post('order_col') : 'name';
+		$order_dir = $this->input->post('order_dir') ? $this->input->post('order_dir') : 'asc';
+		$category_id = $this->input->post('category_id');
+		$fields = $this->input->post('fields') ? $this->input->post('fields') : 'all';
+	
+		$item_kit_search_data = array('offset' => $offset, 'order_col' => $order_col, 'order_dir' => $order_dir, 'search' => $search, 'category_id' => $category_id, 'fields' => $fields, 'type' => $type);
+	
+		$this->session->set_userdata("item_kit_search_data", $item_kit_search_data);
+		$per_page = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
+		$search_data = $this->Item_kit->search($search, $category_id, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'name', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'asc', $fields, $type);
+		$config['base_url'] = site_url('item_kits/search');
+		$config['total_rows'] = $this->Item_kit->search_count_all($search);
+		$config['per_page'] = $per_page;
+	
+		$this->load->library('pagination');
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		$data['manage_table'] = get_Item_kits_manage_table_data_rows($search_data, $this);
+		echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
 	}
 	
 	function item_search()

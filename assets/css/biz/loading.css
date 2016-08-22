@@ -111,7 +111,7 @@ a, a:HOVER {cursor: pointer; text-decoration: none}
 	cursor: pointer;
 }
 
-#all_items.selected, #low_inventory.selected {
+#all_items.selected, #low_inventory.selected, #item_kit_header .selected {
 	background-color: orange;
 }
 
