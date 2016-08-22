@@ -97,7 +97,7 @@ class BizItem_kit extends Item_kit
 		if (!empty($type) && $type == 'bom') {
 			$this->db->where('item_kits.type', 'bom');
 		} elseif (!empty($type) && $type == 'kit') {
-			$this->db->where('item_kits.type IS NULL');
+			$this->db->where('( item_kits.type IS NULL OR item_kits.type = "")');
 		}
 	
 		$this->db->limit($limit);
@@ -130,7 +130,7 @@ class BizItem_kit extends Item_kit
 		if (!empty($type) && $type == 'bom') {
 			$this->db->where('item_kits.type', 'bom');
 		} elseif (!empty($type) && $type == 'kit') {
-			$this->db->where('item_kits.type IS NULL');
+			$this->db->where('( item_kits.type IS NULL OR item_kits.type = "")');
 		}
 		
 		$result = $this->db->get();
@@ -159,7 +159,7 @@ class BizItem_kit extends Item_kit
 		if (!empty($type) && $type == 'bom') {
 			$this->db->where('item_kits.type', 'bom');
 		} elseif (!empty($type) && $type == 'kit') {
-			$this->db->where('item_kits.type IS NULL');
+			$this->db->where('( item_kits.type IS NULL OR item_kits.type = "")');
 		}
 		
 		$this->db->limit($limit);
@@ -175,7 +175,7 @@ class BizItem_kit extends Item_kit
 		if (!empty($type) && $type == 'bom') {
 			$this->db->where('item_kits.type', 'bom');
 		} elseif (!empty($type) && $type == 'kit') {
-			$this->db->where('item_kits.type IS NULL');
+			$this->db->where('( item_kits.type IS NULL OR item_kits.type = "")');
 		}
 		
 		return $this->db->count_all_results();
