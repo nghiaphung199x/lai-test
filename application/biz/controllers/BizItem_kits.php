@@ -6,6 +6,7 @@ class BizItem_kits extends Item_kits
 	{
 		parent::__construct();
 		$this->load->model('Measure');
+		$this->load->model('KitBom');
 	}
 	
 	function index($offset = 0)
@@ -156,8 +157,21 @@ class BizItem_kits extends Item_kits
 		//allow parallel searchs to improve performance.
 		session_write_close();
 		$suggestions = $this->Item->get_item_search_suggestions($this->input->get('term'),100);
+		
+		$suggestions_bom = $this->Item_kit->get_bom_search_suggestions($this->input->get('term'),100);
+		
+		$suggestions = array_merge($suggestions, $suggestions_bom);
+		
 		$this->load->model('Item_location');
 		foreach ($suggestions as &$item) {
+			if ($item['type'] == 'kit')
+			{
+				$item['qty'] = '-';
+				$item['measures']['-1'] = lang('common_not_set');
+				
+				continue;
+			}
+			
 			$item['qty'] = (int) $this->Item_location->get_location_quantity($item['value']);
 			$measures = $this->Measure->getAvailableMeasuresByItemId($item['value']);
 			$item['measures'] = null;
@@ -393,16 +407,30 @@ class BizItem_kits extends Item_kits
 				$measures = $this->input->post('item_kit_measue');
 				
 				$item_kit_items = array();
+				$item_kit_boms = [];
 				foreach($this->input->post('item_kit_item') as $item_id => $quantity)
 				{
-					$item_kit_items[] = array(
+					if (strpos($item_id, 'kit') !== false) {
+						$kit_id = substr($item_id, 4);
+						$item_kit_boms[] = array(
+							'bom_id' => $kit_id,
+							'quantity' => $quantity
+						);
+						
+					} else {
+						$item_kit_items[] = array(
 							'item_id' => $item_id,
 							'quantity' => $quantity,
 							'measure_id' => (isset($measures[$item_id]) && $measures[$item_id] > 0) ? $measures[$item_id] : null
-					);
+						);
+					}
 				}
-					
+				
 				$this->Item_kit_items->save($item_kit_items, $item_kit_id);
+				
+				if (!empty($item_kit_boms)) {
+					$this->KitBom->save($item_kit_boms, $item_kit_id);
+				}
 			}
 				
 			$item_kits_taxes_data = array();

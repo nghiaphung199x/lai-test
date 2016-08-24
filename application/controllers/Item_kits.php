@@ -276,6 +276,7 @@ class Item_kits extends Secure_area implements Idata_controller
 
     function view($item_kit_id = -1, $redirect = 0)
     {
+    	$this->load->model('KitBom');
         $this->load->model('Item_kit_items');
         $this->load->model('Item_kit_taxes');
         $this->load->model('Tier');
@@ -294,6 +295,7 @@ class Item_kits extends Secure_area implements Idata_controller
 
     function clone_item_kit($item_kit_id)
     {
+    	$this->load->model('KitBom');
         $this->load->model('Item_kit_items');
         $this->load->model('Item_kit_taxes');
         $this->load->model('Tier');

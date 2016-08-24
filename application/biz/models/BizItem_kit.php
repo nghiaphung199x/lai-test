@@ -3,6 +3,37 @@ require_once (APPPATH . "models/Item_kit.php");
 
 class BizItem_kit extends Item_kit
 {
+	public function getKitBomItems($kit_id = 0) {
+		$this->db->from('item_kit_boms');
+		$this->db->where('item_kit_boms.item_kit_id', $kit_id);
+		return $this->db->get()->result();
+	}
+	
+	public function get_bom_search_suggestions($search = '') {
+		
+		$this->db->from('item_kits');
+		$this->db->where('item_kits.deleted', 0);
+		$this->db->where('item_kits.type', 'bom');
+		$this->db->like('name', $search);
+		
+		$temp_suggestions = [];
+		
+		foreach($this->db->get()->result() as $row)
+		{
+			$data = array(
+					'value' => $row->item_kit_id,
+					'label' => empty($row->item_kit_number) ? $row->name : $row->item_kit_number.'-'.$row->name,
+					'image' => base_url()."assets/img/item.png" ,
+					'category' => $row->category_id,
+					'item_number' => $row->item_kit_number,
+					'type' => 'kit'
+			);
+		
+			$temp_suggestions[$row->item_id] = $data;
+		}
+		return $temp_suggestions;
+	}
+	
 	public function countAvailableKits($items = null)
 	{
 		$availableKits = 0;

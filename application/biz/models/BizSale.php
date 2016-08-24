@@ -748,8 +748,22 @@ class BizSale extends Sale
 
 				$this->db->insert('sales_item_kits',$sales_item_kits_data);
 				
-				foreach($this->Item_kit_items->get_info($item['item_kit_id']) as $item_kit_item)
+				$listItems = $this->Item_kit_items->get_info($item['item_kit_id']);
+				$listItemsOfBom = [];
+				foreach ($this->Item_kit->getKitBomItems($item['item_kit_id']) as $kitBom) {
+					$tmpItems = $this->Item_kit_items->get_info($kitBom->bom_id);
+					foreach ($tmpItems as $tmpItem) {
+						$tmpItem->quantity = $tmpItem->quantity * $kitBom->quantity;
+					}
+					
+					$listItemsOfBom = array_merge($listItemsOfBom, $tmpItems);
+				}
+				
+				$listItems = array_merge($listItems, $listItemsOfBom);
+				
+				foreach($listItems as $item_kit_item)
 				{
+					
 					$cur_item_info = $this->Item->get_info($item_kit_item->item_id);
 					$cur_item_location_info = $this->Item_location->get_info($item_kit_item->item_id);
 					
@@ -758,7 +772,7 @@ class BizSale extends Sale
 					if( (int) $item_kit_item->measure_id && (int) $cur_item_info->measure_id && $cur_item_info->measure_id != $item_kit_item->measure_id /* && ($mode == 'receive' || $mode == 'purchase_order') */)
 					{
 						$convertedValue = $this->ItemMeasures->getConvertedValue($item_kit_item->item_id, $item_kit_item->measure_id);
-						$item['quantity'] = $item['quantity'] * (int)$convertedValue->qty_converted;
+						$item_kit_item->quantity = $item_kit_item->quantity * (int)$convertedValue->qty_converted;
 					}
 					
 					//Only do stock check + inventory update if we are NOT an estimate

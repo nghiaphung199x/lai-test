@@ -93,6 +93,30 @@
 							</td>
 						</tr>
 					<?php } ?>
+					
+					
+					<?php foreach ($this->Item_kit->getKitBomItems($item_kit_info->item_kit_id) as $item_kit_bom) { ?>
+						
+						<tr>
+							<?php
+							$bom_info = $this->Item_kit->get_info($item_kit_bom->bom_id);
+							?>
+							<td><a  href="#" onclick='return deleteItemKitRow(this);'><i class='ion-ios-trash-outline fa-2x text-danger'></i></a></td>
+							<td><?php echo H($bom_info->name); ?></td>
+							<td>-</td>
+							<td>
+								<div class="form-group table-form-group">
+									<input class='form-control quantity' id='item_kit_item_<?php echo $item_kit_bom->bom_id ?>' type='number' name=item_kit_item[kit_<?php echo $item_kit_item->item_id ?>] value='<?php echo to_quantity($item_kit_bom->quantity); ?>'/>	
+								</div>
+							</td>
+							<td>
+								<select class="form-control form-inps">
+										<option value="-1">Chưa thiết lập</option>
+								</select>
+							</td>
+						</tr>
+					
+					<?php } ?>
 				</table>
 				<div id="numberOfAvailableKits">
 					<span><?php echo empty($items) ? '' : '(Tối đa được '. $this->Item_kit->countAvailableKits($items) .' gói)'; ?></span>
@@ -988,6 +1012,11 @@ function calculate_margin_price()
  		minLength: 0,
  		select: function( event, ui ) 
  		{
+ 			if (ui.item.type)
+			{
+				ui.item.value = ui.item.type + '_' + ui.item.value;
+			}
+			
  	 		var select_html = '<select name="item_kit_measue['+ ui.item.value +']" class="form-control form-inps" onchange="countAvailablePackages();">';
  	 		for(var id in ui.item.measures) {
  	 			select_html += '<option value="'+ id +'">'+ ui.item.measures[id] +'</option>';
@@ -1001,7 +1030,7 @@ function calculate_margin_price()
 			}
 			else
 			{
-				$("#item_kit_items").append("<tr class='item_kit_item_row'><td><a  href='#' onclick='return deleteItemKitRow(this);'><i class='ion-ios-trash-outline fa-2x text-danger'></i></a></td><td>"+ui.item.label+"</td><td>"+ui.item.qty+"</td><td><div class='form-group table-form-group'><input class='quantity form-control' onchange='calculateSuggestedPrices(); countAvailablePackages();' id='item_kit_item_"+ui.item.value+"' type='number' name=item_kit_item["+ui.item.value+"] value='1'/></td><td>"+ select_html +"</td></tr>");
+				$("#item_kit_items").append("<tr class='item_kit_item_row'><td><a href='#' onclick='return deleteItemKitRow(this);'><i class='ion-ios-trash-outline fa-2x text-danger'></i></a></td><td>"+ui.item.label+"</td><td>"+ui.item.qty+"</td><td><div class='form-group table-form-group'><input class='quantity form-control' onchange='calculateSuggestedPrices(); countAvailablePackages();' id='item_kit_item_"+ui.item.value+"' type='number' name=item_kit_item["+ui.item.value+"] value='1'/></td><td>"+ select_html +"</td></tr>");
 			}
 		
 			calculateSuggestedPrices();
@@ -1235,7 +1264,7 @@ function deleteItemKitRow(link)
 function calculateSuggestedPrices()
 {
 	var items = [];
-	$("#item_kit_items").find('input').each(function(index, element)
+	$("#item_kit_items").find('input[type="number"]').each(function(index, element)
 	{
 		var quantity = parseFloat($(element).val());
 		var item_id = $(element).attr('id').substring($(element).attr('id').lastIndexOf('_') + 1);
@@ -1313,7 +1342,7 @@ $('#grid-loader').hide();
 function countAvailablePackages()
 {
 	var items = [];
-	$("#item_kit_items").find('input').each(function(index, element)
+	$("#item_kit_items").find('input[type="number"]').each(function(index, element)
 	{
 		var quantity = parseFloat($(element).val());
 		var item_id = $(element).attr('id').substring($(element).attr('id').lastIndexOf('_') + 1);
