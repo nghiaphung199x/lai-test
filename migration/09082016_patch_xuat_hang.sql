@@ -1,5 +1,5 @@
 
-INSERT INTO `phppos_modules` (`name_lang_key`, `desc_lang_key`, `sort`, `icon`, `module_id`, `main_menu`) VALUES('module_stock_out', 'module_stock_out_desc', '125', 'printer', 'stock_out', 1);
+INSERT INTO `phppos_modules` (`name_lang_key`, `desc_lang_key`, `sort`, `icon`, `module_id`, `main_menu`) VALUES('module_stock_out', 'module_stock_out_desc', '71', 'printer', 'stock_out', 1);
 INSERT INTO `phppos_modules_actions` (`action_id`, `module_id`, `action_name_key`, `sort`) VALUES ('search', 'stock_out', 'stock_out_search', 1010);
 
 

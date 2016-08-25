@@ -81,47 +81,49 @@ class BizStockOut extends CI_Model
 			];
 			$this->db->insert('stock_out_items',$stockItemsData);
 			
+			$stock_recorder_check=false;
+			$out_of_stock_check=false;
+			
+			
+			if (!empty($item->item_id)) {
+			
+				$cur_item_info = $this->Item->get_info($item->item_id);
+				$cur_item_location_info = $this->Item_location->get_info($item->item_id);
+					
+				//checks if the quantity is greater than reorder level
+				if(!$cur_item_info->is_service && $cur_item_location_info->quantity > $reorder_level)
+				{
+					$stock_recorder_check=true;
+				}
+					
+				//checks if the quantity is greater than 0
+				if(!$cur_item_info->is_service && $cur_item_location_info->quantity > 0)
+				{
+					$out_of_stock_check=true;
+				}
+					
+				if (!$cur_item_info->is_service)
+				{
+					$cur_item_location_info->quantity = $cur_item_location_info->quantity !== NULL ? $cur_item_location_info->quantity : 0;
+					$this->Item_location->save_quantity($cur_item_location_info->quantity - $item->totalQty, $item->item_id);
+				}
+			} elseif (!empty($item->item_kit_id)) {
+				$cur_item_kit_info = $this->Item_kit->get_info($item->item_kit_id);
+				$cur_item_kit_location_info = $this->Item_kit_location->get_info($item->item_kit_id);
+					
+				foreach($cur_item_kit_info as $item_kit_item)
+				{
+					$cur_item_info = $this->Item->get_info($item_kit_item->item_id);
+					$cur_item_location_info = $this->Item_location->get_info($item_kit_item->item_id);
+					$cur_item_location_info->quantity = $cur_item_location_info->quantity !== NULL ? $cur_item_location_info->quantity : 0;
+					$this->Item_location->save_quantity($cur_item_location_info->quantity - ((int) $item->totalQty * $item_kit_item->quantity), $item_kit_item->item_id);
+				}
+			}
 		}
 		
-		$stock_recorder_check=false;
-		$out_of_stock_check=false;
-		
-		
-		if (!empty($item->item_id)) {
-		
-			$cur_item_info = $this->Item->get_info($item->item_id);
-			$cur_item_location_info = $this->Item_location->get_info($item->item_id);
-			
-			//checks if the quantity is greater than reorder level
-			if(!$cur_item_info->is_service && $cur_item_location_info->quantity > $reorder_level)
-			{
-				$stock_recorder_check=true;
-			}
-			
-			//checks if the quantity is greater than 0
-			if(!$cur_item_info->is_service && $cur_item_location_info->quantity > 0)
-			{
-				$out_of_stock_check=true;
-			}
-			
-			if (!$cur_item_info->is_service)
-			{
-				$cur_item_location_info->quantity = $cur_item_location_info->quantity !== NULL ? $cur_item_location_info->quantity : 0;
-				$this->Item_location->save_quantity($cur_item_location_info->quantity - $item->totalQty, $item->item_id);
-			}
-		} elseif (!empty($item->item_kit_id)) {
-			$cur_item_kit_info = $this->Item_kit->get_info($item->item_kit_id);
-			$cur_item_kit_location_info = $this->Item_kit_location->get_info($item->item_kit_id);
-			
-			foreach($cur_item_kit_info as $item_kit_item)
-			{
-				$cur_item_info = $this->Item->get_info($item_kit_item->item_id);
-				$cur_item_location_info = $this->Item_location->get_info($item_kit_item->item_id);
-				$cur_item_location_info->quantity = $cur_item_location_info->quantity !== NULL ? $cur_item_location_info->quantity : 0;
-				$this->Item_location->save_quantity($cur_item_location_info->quantity - ((int) $item->totalQty * $item_kit_item->quantity), $item_kit_item->item_id);
-			}
+		if ($stockOutData['mode'] == 'by_sale') {
+			$this->Sale->StockOut($stockOutData['sale_id']);
 		}
-		
 		return $stockId;
 	}
 }

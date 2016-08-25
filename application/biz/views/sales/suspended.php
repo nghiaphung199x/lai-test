@@ -48,14 +48,16 @@
 				foreach ($suspended_sales as $suspended_sale)
 				{
 				?>
-					<tr class="<?php echo getStatusOfDelivery($suspended_sale['delivery_date']) ?>">
+					<tr class="<?php echo empty($suspended_sale['is_stock_out']) ? getStatusOfDelivery($suspended_sale['delivery_date']) : '' ?>">
 						<td><?php echo ($this->config->item('sale_prefix') ? $this->config->item('sale_prefix') : 'POS' ). ' '.$suspended_sale['sale_id'];?></td>
 						<td><?php echo date(get_date_format(). ' @ '.get_time_format(),strtotime($suspended_sale['sale_time']));?></td>
 						<td width="15%">
 							<?php if ($suspended_sale['suspended']== 1) 
 							{
 								echo lang('common_layaway');
-								echo '<a style="margin:0 5px;" href="'. site_url("stock_out?sId=" . $suspended_sale['sale_id']) .'" class="btn btn-primary">Xuất hàng</a>';
+								if (!$suspended_sale['is_stock_out']) {
+									echo '<a style="margin:0 5px;" href="'. site_url("stock_out?sId=" . $suspended_sale['sale_id']) .'" class="btn btn-primary">Xuất hàng</a>';
+								}
 							?>
 							<?php } else { ?>
 								<?php echo anchor('/sales/report_quotes/'. $suspended_sale['sale_id'], lang('module_customers_quotes'), array('id' => 'make_sales_quotes','class' => 'btn btn-primary', 'data-toggle'=>"modal",'data-target'=>"#myModal"));?>

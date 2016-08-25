@@ -36,6 +36,7 @@ class BizStock_out extends Secure_area
 						$stockOutData['items'][$item->item_id]->measure_id = $item->measure_id;
 					}
 				}
+				$stockOutData['sale_id'] = $saleId;
 				$this->mysession->setValue(self::STOCK_OUT_SESSION_KEY, $stockOutData);
 			}
 		}
@@ -165,6 +166,8 @@ class BizStock_out extends Secure_area
 						$stockOutData['items'][$item->item_id]->measure_id = $item->measure_id;
 					}
 				}
+				
+				$stockOutData['sale_id'] = $itemId;
 			}
 		} else {
 			if (isset($stockOutData['items'][$itemId]))
