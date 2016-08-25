@@ -121,7 +121,7 @@ class BizSale extends Sale
 	
 	public function getWarningOrder($intervalDays = 7)
 	{
-		$query = "select * from " . $this->db->dbprefix('sales') . " WHERE location_id = ". $this->Employee->get_logged_in_employee_current_location_id() ." AND is_stock_out = 0 AND delivery_date IS NOT NULL AND DATE(delivery_date) >= CURRENT_DATE() AND DATE(delivery_date) <= CURRENT_DATE() + INTERVAL ". $intervalDays ." DAY";
+		$query = "select * from " . $this->db->dbprefix('sales') . " WHERE location_id = ". $this->Employee->get_logged_in_employee_current_location_id() ." AND is_stock_out = 0 AND suspended = 1 AND deleted = 0 AND delivery_date IS NOT NULL AND DATE(delivery_date) >= CURRENT_DATE() AND DATE(delivery_date) <= CURRENT_DATE() + INTERVAL ". $intervalDays ." DAY";
 		$query = $this->db->query($query);
 		
 		if (!empty($query)) {
