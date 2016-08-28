@@ -23,12 +23,20 @@
 					</h3>
 				</div>
 				<div class="panel-body nopadding table_holder table-responsive" >
-					
+				
+				<div class="col-lg-12" style="padding-top: 20px;">
+					<div id="filter-by-category-block" class="col-lg-4 form-group" style="padding-left: 0px;">
+						<label for="by-category">Lọc Loại Đơn Hàng</label>
+					</div>
+				</div>	
 
-						<table class="table table-bordered table-striped table-hover data-table" id="dTable">
+				<table class="table table-bordered table-striped table-hover data-table" id="dTable">
 				<thead>	<tr>
 					<th><?php echo lang('sales_suspended_sale_id'); ?></th>
 					<th><?php echo lang('common_date'); ?></th>
+					
+					<th class="hide">Loại Đơn Hàng</th>
+					
 					<th><?php echo lang('common_type'); ?></th>
 					<th><?php echo lang('sales_customer'); ?></th>
 					
@@ -51,6 +59,18 @@
 					<tr class="<?php echo empty($suspended_sale['is_stock_out']) ? getStatusOfDelivery($suspended_sale['delivery_date']) : '' ?>">
 						<td><?php echo ($this->config->item('sale_prefix') ? $this->config->item('sale_prefix') : 'POS' ). ' '.$suspended_sale['sale_id'];?></td>
 						<td><?php echo date(get_date_format(). ' @ '.get_time_format(),strtotime($suspended_sale['sale_time']));?></td>
+						<td class="hide">
+						<?php if ($suspended_sale['suspended']== 2) { 
+							echo lang('module_customers_quotes');
+						} else if ($suspended_sale['suspended']== 1 && $suspended_sale['is_stock_out']) {
+							echo 'Đã Xuất Hàng';
+						} else if ($suspended_sale['suspended']== 1) {
+							echo 'Đặt Hàng';
+						}
+							
+						?>
+							
+						</td>
 						<td width="15%">
 							<?php if ($suspended_sale['suspended']== 1) 
 							{
@@ -167,6 +187,26 @@ $(".form_email_receipt_suspended_sale").ajaxForm({success: function()
 }});	
 
 $('#dTable').dataTable({
+	initComplete: function () {
+        this.api().column(2).every( function () {
+            var column = this;
+            var select = $('<select id="by-category" class="select2" name="subject" style="width: 100%; padding: 5px 3px;"><option value="">Tất Cả</option></select>')
+                .appendTo( $('#filter-by-category-block') )
+                .on( 'change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append( '<option value="'+d+'">'+d+'</option>' )
+            } );
+        } );
+    },
 	"sPaginationType": "bootstrap"
 });
 
