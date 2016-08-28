@@ -1309,6 +1309,13 @@ class BizSales extends Sales
 	
 		$data['discount_editable_placement'] = $this->agent->is_mobile() && !$this->agent->is_tablet() ? 'top' : 'left';
 	
+		$saleId = $this->sale_lib->get_suspended_sale_id() ? $this->sale_lib->get_suspended_sale_id() : 0;
+		
+		$saleInfo = $this->Sale->get_info($saleId)->row();
+	
+		$data['isStockOut'] = !empty($saleInfo->is_stock_out) ? $saleInfo->is_stock_out : 0;
+		
+		
 		if ($is_ajax)
 		{
 			$this->load->view("sales/register",$data);

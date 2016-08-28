@@ -17,10 +17,11 @@ $this->load->helper('demo');
 
 <div class="row register">
 	<div class="col-lg-8 col-md-7 col-sm-12 col-xs-12 no-padding-right no-padding-left">
+	<?php if (!$isStockOut) {?>
 		<div class="register-box register-items-form">
 			<div class="item-form">
 				<!-- Item adding form -->
-				
+			
 				<?php
 				$cart_count = 0;
 				?>
@@ -81,8 +82,11 @@ $this->load->helper('demo');
 
 					
 				</form>
+				
+				
 			</div>
 		</div>
+		<?php } ?>
 		<!-- Register Items. @contains : Items table -->
 		<div class="register-box register-items paper-cut">
 			<div class="register-items-holder">
@@ -124,27 +128,34 @@ $this->load->helper('demo');
 							 }
 							?>
 							<tr class="register-item-details">
-								<td class="text-center"> <?php echo anchor("sales/delete_item/$line",'<i class="icon ion-android-cancel"></i>', array('class' => 'delete-item', 'tabindex' => '-1'));?> </td>
+								<td class="text-center">
+								<?php if (!$isStockOut) {?>
+									<?php echo anchor("sales/delete_item/$line",'<i class="icon ion-android-cancel"></i>', array('class' => 'delete-item', 'tabindex' => '-1'));?> </td>
+								<?php }?>
 								<td> 
 									<a tabindex = "-1" href="<?php echo isset($item['item_id']) ? site_url('home/view_item_modal/'.$item['item_id']) : site_url('home/view_item_kit_modal/'.$item['item_kit_id']) ; ?>" data-toggle="modal" data-target="#myModal" class="register-item-name" ><?php echo H($item['name']); ?><?php echo $item['size'] ? ' ('.H($item['size']).')': ''; ?></a>
 								</td>
 								<td class="text-center">
-									<?php if ($this->Employee->has_module_action_permission('sales', 'edit_sale_price', $this->Employee->get_logged_in_employee_info()->person_id)) { ?>
+									<?php if (!$isStockOut && $this->Employee->has_module_action_permission('sales', 'edit_sale_price', $this->Employee->get_logged_in_employee_info()->person_id)) { ?>
 											<a href="#" id="price_<?php echo $line;?>" class="xeditable xeditable-price" data-validate-number="true" data-type="text" data-value="<?php echo H(to_currency_no_money($item['price'],10)); ?>" data-pk="1" data-name="price" data-url="<?php echo site_url('sales/edit_item/'.$line); ?>" data-title="<?php echo H(lang('common_price')); ?>"><?php echo to_currency($item['price'],10); ?></a>
 									<?php } else { 
 											echo to_currency($item['price'],10); 
 									 }	?>
 								</td>
 								<td class="text-center">
+									<?php if (!$isStockOut) {?>
 										<a href="#" id="quantity_<?php echo $line;?>" class="xeditable" data-type="text"  data-validate-number="true"  data-pk="1" data-name="quantity" data-url="<?php echo site_url('sales/edit_item/'.$line); ?>" data-title="<?php echo lang('common_quantity') ?>"><?php echo to_quantity($item['quantity']); ?></a>
+										<?php } else { echo to_quantity($item['quantity']); }?>
 								</td>
 								
 								<td class="text-center">
+									<?php if (!$isStockOut) {?>
 										<a id="measure_<?php echo $line; ?>" class="measure_item <?php echo empty($item['measure_id']) ? 'editable-disabled' : 'xeditable'; ?>" data-type="select"  data-validate-number="true"  data-value="<?php echo $item['measure_id']; ?>" data-pk="2" data-source="<?php echo site_url("items/measures/" . $item['item_id']);?>" data-name="measure" data-url="<?php echo site_url('sales/edit_item/'.$line); ?>" data-title="<?php echo lang('common_measure') ?>"><?php echo $item['measure']; ?></a>
+									<?php } else { echo $item['measure']; }?>
 								</td>
 								
 								<td class="text-center">
-									<?php if ($line != $line_for_flat_discount_item && $this->Employee->has_module_action_permission('sales', 'give_discount', $this->Employee->get_logged_in_employee_info()->person_id)){ ?>
+									<?php if (!$isStockOut && $line != $line_for_flat_discount_item && $this->Employee->has_module_action_permission('sales', 'give_discount', $this->Employee->get_logged_in_employee_info()->person_id)){ ?>
 											<a href="#" id="discount_<?php echo $line;?>" class="xeditable" data-type="text"  data-validate-number="true"  data-pk="1" data-name="discount" data-value="<?php echo to_quantity($item['discount']); ?>" data-url="<?php echo site_url('sales/edit_item/'.$line); ?>" data-title="<?php echo lang('common_discount_percent') ?>"><?php echo to_quantity($item['discount']); ?>%</a>						
 									<?php }else{ ?>
 									
