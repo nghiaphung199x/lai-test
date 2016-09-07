@@ -484,5 +484,6 @@ $lang['common_history_transfer'] = 'Lịch sử chuyển kho';
 $lang['common_history_stock_out'] = 'Lịch sử xuất kho';
 
 $lang['common_total_price'] = 'Tổng giá tiền';
+$lang['common_approved'] = 'Đã phê duyệt';
 
 ?>
