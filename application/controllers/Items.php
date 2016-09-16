@@ -366,6 +366,7 @@ class Items extends Secure_area implements Idata_controller
         $data['decimals'] = $decimals;
 
         return $data;
+
     }
 
     function view($item_id = -1, $redirect = 0, $sale_or_receiving = 'sale')

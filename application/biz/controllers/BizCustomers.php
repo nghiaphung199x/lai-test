@@ -768,7 +768,6 @@ class BizCustomers extends Customers
 
     function manage_mail()
     {
-
         $config['total_rows'] = $this->Customer->count_all_mail();
         $config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20;
         $config['base_url'] = site_url('customers/sorting_mail');

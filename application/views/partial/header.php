@@ -11,7 +11,7 @@
 	<link rel="icon" href="<?php echo base_url();?>favicon.ico" type="image/x-icon"/>
 	<script type="text/javascript">
 		var SITE_URL= "<?php echo site_url(); ?>";
-		var BASE_URL= "<?php echo base_url(); ?>";
+		var BASE_URL=  "<?php echo base_url(); ?>";
 		var ENABLE_SOUNDS = <?php echo $this->config->item('enable_sounds') ? 'true' : 'false'; ?>;
 		var JS_DATE_FORMAT = <?php echo json_encode(get_js_date_format()); ?>;
 		var JS_TIME_FORMAT = <?php echo json_encode(get_js_time_format()); ?>;
@@ -22,9 +22,9 @@
 	<?php 
 	$this->load->helper('assets');
 	foreach(get_css_files() as $css_file) { ?>
-		<link rel="stylesheet" type="text/css" href="<?php echo base_url().$css_file['path'].'?'.ASSET_TIMESTAMP;?>" />
+		<link rel="stylesheet" type="text/ css" href="<?php echo base_url().$css_file['path'].'?'.ASSET_TIMESTAMP;?>" />
 	<?php } ?>
-	<?php foreach(get_js_files() as $js_file) { ?>
+	<?php foreach(get_js_files() as $js_file) {?>
 		<script src="<?php echo base_url().$js_file['path'].'?'.ASSET_TIMESTAMP;?>" type="text/javascript" charset="UTF-8"></script>
 	<?php } ?>
 	<script type="text/javascript">
