@@ -339,7 +339,6 @@
 							<a tabindex = "-1" href="#" class="dropdown-toggle avatar_width" data-toggle="dropdown" role="button" aria-expanded="false"><span class="avatar-holder">
 
 							<?php echo $user_info->image_id ? img(array('src' => site_url('app_files/view/'.$user_info->image_id))) : img(array('src' => base_url('assets/assets/images/avatar-default.jpg'))); ?></span>
-
 							<span class="avatar_info hidden-sm"><?php echo $user_info->first_name." ".$user_info->last_name; ?></span></a>
 							<ul class="dropdown-menu user-dropdown animated fadeInUp wow avatar_drop neat_drop" data-wow-duration="1500ms"  role="menu">
 								<?php if ($this->Employee->has_module_permission('config', $user_info->person_id)) {?>

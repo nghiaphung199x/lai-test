@@ -41,6 +41,7 @@ class Customers extends Person_controller
 		
 		$data['manage_table']=get_people_manage_table($table_data,$this);
 		$data['total_rows'] = $config['total_rows'];
+
 		$this->load->view('people/manage',$data);
 	}
 

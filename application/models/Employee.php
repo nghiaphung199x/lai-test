@@ -862,7 +862,7 @@ class Employee extends Person
 		}
 		
 		static $cache;
-		
+
 		if (isset($cache[$module_id . '|' . $action_id . '|' . $person_id])) {
 			return $cache[$module_id . '|' . $action_id . '|' . $person_id];
 		}

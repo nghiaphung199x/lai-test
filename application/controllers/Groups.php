@@ -113,11 +113,13 @@ class Groups extends Secure_area implements Idata_controller
 
     function _get_data($group_id)
     {
+
         $data = array();
         $data['entity'] = $this->Group->get_info($group_id);
         $data['all_modules'] = $this->Module->get_all_modules();
         $data['controller_name'] = $this->_controller_name;
         $data['logged_in_employee_id'] = $this->Employee->get_logged_in_employee_info()->person_id;
+
         return $data;
     }
 
@@ -131,7 +133,9 @@ class Groups extends Secure_area implements Idata_controller
         $this->load->model('Module_action');
         $this->check_action_permission('add_update');
         $data = $this->_get_data($group_id);
+
         $data['redirect_code'] = $redirect_code;
+
         $this->load->view("groups/form", $data);
     }
 

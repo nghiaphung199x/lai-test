@@ -61,6 +61,7 @@ class Secure_area extends MY_Controller
 		$data['current_logged_in_location_id'] = $location_id;
 		$data['current_employee_location_info'] = $loc_info;
 		$data['location_color'] = $loc_info->color;
+
 		$this->load->vars($data);
 	}
 	

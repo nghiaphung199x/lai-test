@@ -81,6 +81,7 @@
                                 }
                             }
                         }
+                        
                         ?>
                         <li>
                             <?php echo form_checkbox($checkbox_options).'<label for="permissions'.$module->module_id.'"><span></span></label>'; ?>
