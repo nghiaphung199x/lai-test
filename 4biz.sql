@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 17, 2016 at 12:24 PM
+-- Generation Time: Sep 19, 2016 at 01:51 AM
 -- Server version: 5.6.20
 -- PHP Version: 5.5.15
 
@@ -538,7 +538,15 @@ CREATE TABLE IF NOT EXISTS `phppos_customers` (
   `company_birth_date` date DEFAULT NULL,
   `position` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `code_tax` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `phppos_customers`
+--
+
+INSERT INTO `phppos_customers` (`id`, `attribute_set_id`, `person_id`, `account_number`, `override_default_tax`, `company_name`, `balance`, `credit_limit`, `points`, `current_spend_for_points`, `current_sales_for_discount`, `taxable`, `tax_certificate`, `cc_token`, `cc_preview`, `card_issuer`, `tier_id`, `created_by`, `created_location_id`, `deleted`, `type_customer`, `sex`, `family_info`, `company_manage_name`, `company_birth_date`, `position`, `code_tax`) VALUES
+(1, NULL, 368, NULL, 0, '', '0.0000000000', NULL, '0.0000000000', '0.0000000000', 0, 1, '', NULL, NULL, '', NULL, 1, NULL, 0, 0, '1', '', '', '2016-09-18', '', ''),
+(2, NULL, 369, NULL, 0, '', '0.0000000000', NULL, '0.0000000000', '0.0000000000', 0, 1, '', NULL, NULL, '', NULL, 1, NULL, 0, 0, '1', '', '', '2016-09-18', '', '');
 
 -- --------------------------------------------------------
 
@@ -621,7 +629,7 @@ CREATE TABLE IF NOT EXISTS `phppos_employees` (
   `birthday` date DEFAULT NULL,
   `termination_date` date DEFAULT NULL,
   `deleted` int(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=7 ;
 
 --
 -- Dumping data for table `phppos_employees`
@@ -630,7 +638,9 @@ CREATE TABLE IF NOT EXISTS `phppos_employees` (
 INSERT INTO `phppos_employees` (`id`, `attribute_set_id`, `username`, `password`, `force_password_change`, `person_id`, `department_id`, `group_id`, `language`, `commission_percent`, `commission_percent_type`, `hourly_pay_rate`, `inactive`, `reason_inactive`, `hire_date`, `employee_number`, `birthday`, `termination_date`, `deleted`) VALUES
 (1, NULL, 'admin', '241b67e32b98a9e620cc8a1e85d4f64a', 0, 1, 4, 5, 'vietnam', '5.0000000000', 'selling_price', '0.0000000000', 0, NULL, '2016-04-28', NULL, '2016-04-28', NULL, 0),
 (2, NULL, 'quanminh', '25d55ad283aa400af464c76d713c07ad', 0, 5, 0, 5, 'vietnam', '0.0000000000', 'selling_price', '0.0000000000', 0, NULL, NULL, 'LT0002', NULL, NULL, 0),
-(4, 0, 'anhdt', 'ceea23519f6f86ad67e9f798bf8002cb', 0, 33, 0, 0, NULL, '0.0000000000', '', '0.0000000000', 0, NULL, NULL, NULL, NULL, NULL, 0);
+(4, 0, 'anhdt', 'ceea23519f6f86ad67e9f798bf8002cb', 0, 33, 0, 0, NULL, '0.0000000000', '', '0.0000000000', 0, NULL, NULL, NULL, NULL, NULL, 0),
+(5, NULL, 'nghiaphung', '241b67e32b98a9e620cc8a1e85d4f64a', 0, 367, 4, 6, 'vietnam', '0.0000000000', 'selling_price', '0.0000000000', 0, NULL, NULL, NULL, NULL, NULL, 0),
+(6, NULL, 'nhan_vien', '241b67e32b98a9e620cc8a1e85d4f64a', 0, 370, 4, 4, 'vietnam', '0.0000000000', 'selling_price', '0.0000000000', 0, NULL, NULL, NULL, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -649,6 +659,8 @@ CREATE TABLE IF NOT EXISTS `phppos_employees_locations` (
 
 INSERT INTO `phppos_employees_locations` (`employee_id`, `location_id`) VALUES
 (1, 1),
+(367, 1),
+(370, 1),
 (1, 5),
 (1, 6),
 (1, 7);
@@ -746,7 +758,7 @@ CREATE TABLE IF NOT EXISTS `phppos_groups` (
   `name` varchar(255) DEFAULT NULL,
   `description` varchar(525) DEFAULT NULL,
   `deleted` tinyint(1) unsigned DEFAULT '0'
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 --
 -- Dumping data for table `phppos_groups`
@@ -754,7 +766,8 @@ CREATE TABLE IF NOT EXISTS `phppos_groups` (
 
 INSERT INTO `phppos_groups` (`group_id`, `name`, `description`, `deleted`) VALUES
 (4, 'Giao Hàng', 'AAA', 0),
-(5, 'Bán Hàng', '', 0);
+(5, 'Bán Hàng', '', 0),
+(6, 'Quản lý', '', 0);
 
 -- --------------------------------------------------------
 
@@ -775,7 +788,8 @@ INSERT INTO `phppos_group_permissions` (`module_id`, `group_id`) VALUES
 ('customers', 5),
 ('items', 5),
 ('sales', 5),
-('tasks', 5);
+('tasks', 5),
+('tasks', 6);
 
 -- --------------------------------------------------------
 
@@ -820,7 +834,9 @@ INSERT INTO `phppos_group_permissions_actions` (`module_id`, `group_id`, `action
 ('tasks', 5, 'permisson_project'),
 ('tasks', 5, 'update_all_task'),
 ('tasks', 5, 'update_brand_task'),
-('tasks', 5, 'update_project');
+('tasks', 5, 'update_project'),
+('tasks', 6, 'permission_brand_task'),
+('tasks', 6, 'update_brand_task');
 
 -- --------------------------------------------------------
 
@@ -1480,7 +1496,7 @@ CREATE TABLE IF NOT EXISTS `phppos_people` (
   `image_id` int(10) DEFAULT NULL,
 `person_id` int(10) NOT NULL,
   `birth_date` date DEFAULT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=367 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=371 ;
 
 --
 -- Dumping data for table `phppos_people`
@@ -1851,7 +1867,11 @@ INSERT INTO `phppos_people` (`first_name`, `last_name`, `phone_number`, `email`,
 ('', '', '', '', '', '', '', '', '', '', '', NULL, 363, '2016-09-07'),
 ('', '', '', '', '', '', '', '', '', '', '', NULL, 364, '2016-09-07'),
 ('', '', '', '', '', '', '', '', '', '', '', NULL, 365, '2016-09-07'),
-('', '', '', '', '', '', '', '', '', '', '', NULL, 366, '2016-09-07');
+('', '', '', '', '', '', '', '', '', '', '', NULL, 366, '2016-09-07'),
+('Nghĩa', 'Phùng', '0924872848', 'nghiaphung1990@gmail.com', '', '', 'Tiên LãngTien Lang', 'Hải Phòng', '', '', '', NULL, 367, NULL),
+('Toàn', 'Khánh Nguyễn', '', '', '', '', '', '', '', '', '', NULL, 368, '2016-09-18'),
+('Mến', 'Đoàn', '', '', '', '', '', '', '', '', '', NULL, 369, '2016-09-18'),
+('Nhân', 'Viên', '0924872848', 'nghiaphung1990@gmail.com', '', '', 'Tiên LãngTien Lang', 'Hải Phòng', '', '', '', NULL, 370, NULL);
 
 -- --------------------------------------------------------
 
@@ -2384,9 +2404,13 @@ CREATE TABLE IF NOT EXISTS `phppos_sessions` (
 --
 
 INSERT INTO `phppos_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
+('06526246b83b103eb3981ed3966e914d1c8b8ccd', '127.0.0.1', 1474230112, 0x706572736f6e5f69647c733a333a22333730223b6b6565705f616c6976657c693a313437343233303131323b),
 ('30390815cd6ef6d34958cd5582fbefd40fd2bb5d', '117.6.1.149', 1473939016, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c623a303b737570706c6965725f7365617263685f646174617c613a343a7b733a363a226f6666736574223b693a303b733a393a226f726465725f636f6c223b733a31323a22636f6d70616e795f6e616d65223b733a393a226f726465725f646972223b733a333a22617363223b733a363a22736561726368223b733a303a22223b7d6b6565705f616c6976657c693a313437333933393031363b63617274526563767c613a303a7b7d726563765f6d6f64657c733a373a2272656365697665223b69735f706f7c623a303b726563765f73656c65637465645f7061796d656e747c733a303a22223b737570706c6965727c693a2d313b6c6f636174696f6e7c693a2d313b66756c6c73637265656e7c733a313a2230223b6c6f636174696f6e5f7365617263685f646174617c613a343a7b733a363a226f6666736574223b693a303b733a393a226f726465725f636f6c223b733a343a226e616d65223b733a393a226f726465725f646972223b733a343a2264657363223b733a363a22736561726368223b733a303a22223b7d),
 ('587e1500c4ce5afca4f100a48752038ac9e79a78', '117.6.1.149', 1473992734, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c623a303b6b6565705f616c6976657c693a313437333939323533383b),
+('69c0661f9e5b017e6d5e5360ddcc658db00b3860', '127.0.0.1', 1474145706, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c733a313a2231223b6b6565705f616c6976657c693a313437343134353730363b637573746f6d65727c693a2d313b6974656d5f7365617263685f646174617c613a373a7b733a363a226f6666736574223b693a303b733a393a226f726465725f636f6c223b733a343a226e616d65223b733a393a226f726465725f646972223b733a343a2264657363223b733a363a22736561726368223b733a303a22223b733a31313a2263617465676f72795f6964223b733a303a22223b733a363a226669656c6473223b733a333a22616c6c223b733a31333a226c6f775f696e76656e746f7279223b693a303b7d63617274526563767c613a303a7b7d726563765f6d6f64657c733a373a2272656365697665223b69735f706f7c623a303b726563765f73656c65637465645f7061796d656e747c733a303a22223b737570706c6965727c693a2d313b6c6f636174696f6e7c693a2d313b66756c6c73637265656e7c733a313a2230223b636172747c613a303a7b7d73616c655f6d6f64657c733a343a2273616c65223b7061796d656e74737c613a303a7b7d73616c655f73656c65637465645f7061796d656e747c733a303a22223b),
+('709aae5d172b0fe4f88834e8c2ac17c7f09c51bf', '127.0.0.1', 1474116063, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c623a303b6b6565705f616c6976657c693a313437343131353631393b),
 ('bd7a38618338489dc731b8d3322d1fa85f4cc487', '::1', 1474023883, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c623a303b6974656d5f6b69745f7365617263685f646174617c613a373a7b733a363a226f6666736574223b693a303b733a393a226f726465725f636f6c223b733a343a226e616d65223b733a393a226f726465725f646972223b733a333a22617363223b733a363a22736561726368223b733a303a22223b733a31313a2263617465676f72795f6964223b733a303a22223b733a363a226669656c6473223b733a333a22616c6c223b733a343a2274797065223b733a333a22616c6c223b7d6b6565705f616c6976657c693a313437343032333838333b),
+('d2528c26accec5c925e464dda988e32581f5c8e9', '127.0.0.1', 1474232856, 0x706572736f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f6c6f636174696f6e5f69647c733a313a2231223b656d706c6f7965655f63757272656e745f72656769737465725f69647c623a303b637573746f6d65727c693a2d313b73657175656e63655f6e6f7c733a31303a2230303130303130303130223b6b6565705f616c6976657c693a313437343233323835363b63617274526563767c613a303a7b7d726563765f6d6f64657c733a373a2272656365697665223b69735f706f7c623a303b726563765f73656c65637465645f7061796d656e747c733a303a22223b737570706c6965727c693a2d313b6c6f636174696f6e7c693a2d313b66756c6c73637265656e7c733a313a2230223b636172747c613a303a7b7d656d706c6f7965655f7365617263685f646174617c613a343a7b733a363a226f6666736574223b693a303b733a393a226f726465725f636f6c223b733a393a226c6173745f6e616d65223b733a393a226f726465725f646972223b733a343a2264657363223b733a363a22736561726368223b733a303a22223b7d),
 ('fab095644fdc91bbd49a4dec0c49d51ceae20c6b', '::1', 1474107780, 0x706572736f6e5f69647c733a313a2231223b6b6565705f616c6976657c693a313437343130373738303b);
 
 -- --------------------------------------------------------
@@ -2570,6 +2594,7 @@ INSERT INTO `phppos_tags` (`id`, `deleted`, `name`) VALUES
 CREATE TABLE IF NOT EXISTS `phppos_tasks` (
 `id` int(11) unsigned NOT NULL,
   `name` varchar(250) CHARACTER SET utf8 NOT NULL,
+  `color` varchar(20) NOT NULL,
   `detail` mediumtext CHARACTER SET utf8 NOT NULL,
   `percent` float NOT NULL,
   `progress` float unsigned NOT NULL,
@@ -2597,12 +2622,12 @@ CREATE TABLE IF NOT EXISTS `phppos_tasks` (
 -- Dumping data for table `phppos_tasks`
 --
 
-INSERT INTO `phppos_tasks` (`id`, `name`, `detail`, `percent`, `progress`, `lft`, `rgt`, `level`, `parent`, `project_id`, `date_start`, `date_end`, `duration`, `created`, `created_by`, `modified`, `modified_by`, `status`, `trangthai`, `prioty`, `pheduyet`, `type`, `customer_ids`) VALUES
-(1, 'Project 1', '', 1, 0, 0, 17, 0, 0, 1, '2016-08-31 00:00:00', '2016-09-30 00:00:00', 31, '2016-09-05 04:27:52', 1, '2016-09-11 12:41:13', 0, 1, 1, 2, 1, 1, NULL),
-(2, 'Project 2', '', 1, 0, 0, 1, 0, 0, 2, '2016-09-01 00:00:00', '2016-09-17 00:00:00', 17, '2016-09-05 04:28:30', 1, '2016-09-05 06:09:59', 1, 1, 0, 2, 1, 1, NULL),
-(3, 'Công việc 1', '', 0.6, 0, 1, 4, 1, 1, 1, '2016-09-01 00:00:00', '2016-09-10 00:00:00', 10, '2016-09-05 04:33:05', 54, '2016-09-14 19:38:58', 0, 1, 1, 2, 1, 1, NULL),
-(4, 'Công việc 1.1', '', 1, 0, 2, 3, 2, 3, 1, '2016-09-02 00:00:00', '2016-09-10 00:00:00', 9, '2016-09-05 04:38:26', 111, '2016-09-14 19:27:00', 0, 1, 1, 2, 0, 1, NULL),
-(5, 'Công việc 2', '', 0.4, 0, 15, 16, 1, 1, 1, '2016-09-15 00:00:00', '2016-09-30 00:00:00', 15, '2016-09-13 22:46:23', 1, '2016-09-13 22:46:23', 1, 1, 0, 2, 1, 1, NULL);
+INSERT INTO `phppos_tasks` (`id`, `name`, `color`, `detail`, `percent`, `progress`, `lft`, `rgt`, `level`, `parent`, `project_id`, `date_start`, `date_end`, `duration`, `created`, `created_by`, `modified`, `modified_by`, `status`, `trangthai`, `prioty`, `pheduyet`, `type`, `customer_ids`) VALUES
+(1, 'Project 1', '#489ee7', '', 1, 0, 0, 17, 0, 0, 1, '2016-08-31 00:00:00', '2016-09-30 00:00:00', 31, '2016-09-05 04:27:52', 1, '2016-09-18 23:44:11', 0, 1, 0, 2, 1, 1, NULL),
+(2, 'Project 2', '#489ee7', '', 1, 0, 0, 1, 0, 0, 2, '2016-09-01 00:00:00', '2016-09-17 00:00:00', 17, '2016-09-05 04:28:30', 1, '2016-09-05 06:09:59', 1, 1, 0, 2, 1, 1, NULL),
+(3, 'Công việc 1', '#489ee7', '', 0.6, 0, 1, 4, 1, 1, 1, '2016-09-01 00:00:00', '2016-09-10 00:00:00', 10, '2016-09-05 04:33:05', 54, '2016-09-19 00:36:44', 0, 1, 0, 2, 1, 1, NULL),
+(4, 'Công việc 1.1', '#489ee7', '', 1, 0, 2, 3, 2, 3, 1, '2016-09-02 00:00:00', '2016-09-10 00:00:00', 9, '2016-09-05 04:38:26', 111, '2016-09-14 19:27:00', 0, 1, 1, 2, 0, 1, NULL),
+(5, 'Công việc 2', '#489ee7', '', 0.4, 0, 15, 16, 1, 1, 1, '2016-09-15 00:00:00', '2016-09-30 00:00:00', 15, '2016-09-13 22:46:23', 1, '2016-09-13 22:46:23', 1, 1, 0, 2, 1, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -2747,10 +2772,9 @@ CREATE TABLE IF NOT EXISTS `phppos_task_user_relations` (
 --
 
 INSERT INTO `phppos_task_user_relations` (`task_id`, `user_id`, `is_xem`, `is_implement`, `is_create_task`, `is_pheduyet`, `is_progress`, `created`) VALUES
-(1, 54, 0, 1, 0, 0, 0, '2016-09-11 12:41:13'),
-(1, 82, 1, 0, 0, 0, 0, '2016-09-11 12:41:13'),
-(3, 1, 0, 0, 0, 0, 1, '2016-09-14 19:38:58'),
-(3, 111, 0, 1, 0, 0, 0, '2016-09-14 19:38:58'),
+(1, 5, 0, 1, 0, 0, 0, '2016-09-18 23:44:11'),
+(3, 1, 0, 0, 0, 0, 1, '2016-09-19 00:36:44'),
+(3, 6, 0, 1, 0, 0, 0, '2016-09-19 00:36:44'),
 (4, 1, 0, 0, 1, 0, 0, '2016-09-14 19:27:00');
 
 --
@@ -3322,7 +3346,7 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=114;
 -- AUTO_INCREMENT for table `phppos_customers`
 --
 ALTER TABLE `phppos_customers`
-MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
+MODIFY `id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `phppos_customers_taxes`
 --
@@ -3342,7 +3366,7 @@ MODIFY `department_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1
 -- AUTO_INCREMENT for table `phppos_employees`
 --
 ALTER TABLE `phppos_employees`
-MODIFY `id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+MODIFY `id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT for table `phppos_employees_reset_password`
 --
@@ -3372,7 +3396,7 @@ MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
 -- AUTO_INCREMENT for table `phppos_groups`
 --
 ALTER TABLE `phppos_groups`
-MODIFY `group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
+MODIFY `group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT for table `phppos_inventory`
 --
@@ -3462,7 +3486,7 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 -- AUTO_INCREMENT for table `phppos_people`
 --
 ALTER TABLE `phppos_people`
-MODIFY `person_id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=367;
+MODIFY `person_id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=371;
 --
 -- AUTO_INCREMENT for table `phppos_price_tiers`
 --

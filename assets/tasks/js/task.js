@@ -1,24 +1,57 @@
+	var taskId = null;
+	var frame_id = null;
+	var type = null;
+	var deny_items = new Array();
+	var drag_task = new Array();
+	
+
+	function add_item(obj, frame_id) {
+		var item_name = $(obj).attr('data-name');
+		var item_id   = $(obj).attr('data-id');
+		var array = new Array();
+		array['customer_list'] 	    = 'customer';
+		array['xem_list'] 		    = 'xem';
+		array['implement_list']     = 'implement';
+		array['create_task_list']   = 'create_task';
+		array['pheduyet_task_list'] = 'pheduyet_task';
+		array['progress_list'] 		= 'progress_task';
+
+		var detect_element 	 = $(obj).parents('.result').prev();
+		var result_frame   	 = $(obj).parents('.result');
+		var class_name 	 	 = array[frame_id];
+		if(!$('#'+class_name+'_'+item_id).length){
+			var html = '<span class="item"><input type="hidden" name="'+class_name+'[]" class="'+class_name+'" id="'+class_name+'_'+item_id+'" value="'+item_id+'"><a>'+item_name+'</a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>';
+			$( html ).insertBefore( detect_element );
+			result_frame.hide();
+			detect_element.val('');
+			detect_element.focus();
+		}
+	}
+
+	function delete_item(obj) {
+		$(obj).parents('span.item').remove();
+	}
+	
 	function create_layer(type) {
 		if(type == 'quick')
 			var classLayer = 'overlay';
 		else
-			var classLayer = 'dhx_modal_cover';
+			var classLayer = 'overlay1';
 		
 		if($('.'+classLayer).length)
 			$('.'+classLayer).css('display', 'inline-block');
 		else {
 			$( "body" ).append( '<div class="'+classLayer+'" style="display: inline-block;"></div>' );
-
 		}
 	}	
 	
 	function css_form(obj_id) {
 		  if($('#'+obj_id).length) {
 			   var top = $("#"+obj_id+" .quick_search").offset().top - $("#"+obj_id).offset().top + 20;
-			   var left = $("#"+obj_id+" .quick_search").offset().left - $("#"+obj_id).offset().left;
+			   //var left = $("#"+obj_id+" .quick_search").offset().left - $("#"+obj_id).offset().left;
 
 			   var styles = {
-			      left : left + "px",
+			     // left : left + "px",
 			      top : top + 'px'
 			   };
 			   
@@ -47,12 +80,11 @@
 
 		}
 
-	
 	function close_layer(type) {
 		if(type == 'quick')
 			var classLayer = 'overlay';
 		else
-			var classLayer = 'dhx_modal_cover';
+			var classLayer = 'overlay1';
 
 		$('.'+classLayer).remove();
 	}
@@ -78,13 +110,13 @@
 		if(frame_id == 'customer_list')
 			var url = BASE_URL + 'tasks/customers/danhsach';
 		else {
-			var url = BASE_URL + 'tasks/users/danhsach';
+			var url = BASE_URL + 'tasks/userList';
 		}
 
 		$('#'+frame_id+' .result').html('');
 		$('#'+frame_id+' .result').hide();
 		var keywords = $.trim($('#'+frame_id+' .quick_search').val());
-		//console.log(keywords);
+
 		if (keywords) {
 			$.ajax({
 				type: "POST",
@@ -94,14 +126,14 @@
 				},
 				success: function(string){
 					array = $.parseJSON(string);
-					css_form(frame_id)
+					css_form(frame_id);
 					if(array.length) {
 						var html = new Array();
 						$.each(array, function( index, value ) {
-							html[html.length] = '<li><a href="javascript:;" data-id="'+value.id+'" data-name="'+value.name+'" onclick="add_item(this, \''+frame_id+'\');">'+value.name+'</a></li>';
+							html[html.length] = '<li><a href="javascript:;" data-id="'+value.id+'" data-name="'+value.name+'" onclick="add_item(this, \''+frame_id+'\');">'+value.name+' - '+value.fullname+'</a></li>';
 						});
 
-						html = html.join('')
+						html = html.join('');
 						html = '<ul class="list">'+html+'</ul>'; 
 	
 						$('#'+frame_id+' .result').html(html);
@@ -140,29 +172,34 @@
 					parent: parent
 				},
 				success: function(html){
+				  
 				   if(type == 'new') {
 					   create_layer();
 					   $('#my-form').removeClass('quickInfo');
 					   $('#my-form').html(html);
 					   $('#my-form').show();
-					   
+
+					   $('#color').colorpicker({color: '#489ee7',});
 				   }else {
 					   if(html != '') {   
 						   create_layer();
 						   $('#my-form').removeClass('quickInfo');
 						   $('#my-form').html(html);
-						   if ( $( "#my-form input[name='quickInfo']" ).length ) {
-							   $('#my-form').addClass('quickInfo');
-						   }
 						   
 						   $('#my-form').show();
+						   
+						   $('#color').colorpicker();
 					   }else {
 						   gantt.alert({
-							    text: 'Bạn không có quyền với chức năng này.', title:"Error!",
-							    ok:"Yes", callback:function(){}
+							    text: 'Bạn không có quyền với chức năng này.', title:"Cảnh báo!",
+							    ok:"Đóng", callback:function(){}
 							});
 					   }
 				   }
+				   
+				   // picker
+				   date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
+				   // end picker
 				   
 				   var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
 				   $.each(frame_array, function( index, value ) {
@@ -183,7 +220,7 @@
 			url: BASE_URL + 'tasks/danhsach',
 			data: {
 			},
-			success: function(string){
+			success: function(string){ 
 			   var result = $.parseJSON(string);
 			   var data 	  = new Array();
 			   var deny_items = new Array();
@@ -200,7 +237,7 @@
 			   task.links = result.links;
 			   
 			   gantt.config.columns = [
-			 				          {name:"text",       label:"Dự án/Công việc",  width: 350, tree:true},
+			 				          {name:"text",       label:"Tiêu đề",  width: 350, tree:true},
 			 						  {name:"start_date", label:"Bắt đầu",   align: "center" },
 			 						  {name:"duration",   label:"Số ngày",   align: "center" },
 			 						  {name:"add",        label:"",          width:44 }
@@ -384,3 +421,358 @@
 		});	
 	}
 	
+	function add_congviec() {
+		var checkOptions = {
+		        url : BASE_URL+'tasks/addcongviec',
+		        dataType: "json",  
+		        success: congviecData
+		    };
+	    $("#task_form").ajaxSubmit(checkOptions); 
+	    return false; 
+	}
+	
+	function congviecData(data) {
+		if(data.flag == 'false') {
+			gantt.alert({
+			    text: data.message,
+			    title:"Lỗi!",
+			    ok:"Đóng",
+			    callback:function(){}
+			});
+		}else {
+			//gantt.alert("Cập nhật thành công.");
+			toastr.success('Cập nhật thành công!', 'Thông báo');
+			$('#my-form').html('');
+			$('#my-form').hide();
+			gantt.deleteTask(taskId);
+			load_task();
+			close_layer();
+		}
+	}
+	
+	function edit_congviec() {
+		var url = BASE_URL + 'tasks/editcongviec'
+		var checkOptions = {
+		        url : url,
+		        dataType: "json",  
+		        success: taskData
+		    };
+	    $("#task_form").ajaxSubmit(checkOptions); 
+	    return false; 
+	}
+	
+	function taskData(data) {
+		if(data.flag == 'false') {
+			gantt.alert({
+			    text: data.message,
+			    title:"Lỗi!",
+			    ok:"Đóng",
+			    callback:function(){}
+			});
+		}else {
+			toastr.success('Cập nhật thành công!', 'Thông báo');
+			$('#my-form').html('');
+			$('#my-form').hide();
+
+			load_task();
+			close_layer();
+		}
+	}	
+	
+	function countTiendo() {
+		var task_id = $('#task_id').val();
+		var url = BASE_URL + 'tasks/countTiendo';
+		$.ajax({
+			type: "POST",
+			url: url,
+			data: {
+				task_id : task_id
+			},
+			success: function(string){
+				var result = $.parseJSON(string);
+				//console.log(result);
+				$('#count_tiendo').text(result.tiendo_total);
+				$('#count_request').text(result.request_total);
+				$('#count_pheduyet').text(result.pheduyet_total);
+		    }
+		});
+	}
+	
+	function load_pagination(pagination, template) {
+		if(jQuery.type(pagination) == 'object') {
+			var string = new Array();
+			$.each( pagination, function( key, page ) {
+				if(template == 'comment') {
+					if(key == 'prev')
+						string[string.length] = '<li><a class="none fn-prev fn-page" data-page="'+page+'" href="javascript:;">&lt;</a></li>';
+					else if(key == 'next')
+						string[string.length] = '<li><a class="fn-next fn-page" data-page="'+page+'" href="javascript:;">&gt;</a></li>';
+					else if(key == 'current')
+						string[string.length] = '<li><a class="fn-page active" data-page="'+page+'" href="javascript:;">'+page+'</a></li>';
+					else 
+						string[string.length] = '<li><a class="fn-page" data-page="'+page+'" href="javascript:;">'+page+'</a></li>';
+					
+				}else {
+					if(key == 'prev')
+						string[string.length] = '<a href="javascript:;" data-page="'+page+'">&lt;</a>';
+					else if(key == 'next')
+						string[string.length] = '<a href="javascript:;" data-page="'+page+'">&gt;</a>';
+					else if(key == 'current')
+						string[string.length] = '<strong>'+page+'</strong>';
+					else 
+						string[string.length] = '<a href="javascript:;" data-page="'+page+'">'+page+'</a>';
+				}
+			});
+			
+			string = string.join("");
+			
+			if(template == 'comment') {
+				string = '<ul>'+string+'</ul>';
+			}else
+				string = '<div class="text-center"><div class="pagination hidden-print alternate text-center">' + string + '</div></div>';
+
+			return string;
+		}else
+			return '';
+	}
+	
+	function load_template_file(items) {
+		 var string = new Array();
+		 $.each(items, function( index, value ) {
+			  var id      		= value.id;
+			  var name 			= value.name;
+			  var link 			= value.link;
+			  var file_name 	= value.file_name;
+			  var size 			= value.size;
+			  var progress  	= value.progress;
+			  var created_name 	= value.created_name;
+			  var created 		= value.created;
+			  var modified_name = value.modified_name;
+			  var modified 		= value.modified;
+
+			  string[string.length] = '<tr style="cursor: pointer;">'
+											+'<td class="center cb"><input type="checkbox" id="file_'+id+'" class="file_checkbox" value="'+id+'"><label for="file_'+id+'"><span></span></label></td>'
+											+'<td class="cb">'+name+'</td>'
+											+'<td><a href="'+link+'" class="download"><i class="fa fa-download" aria-hidden="true"></i></a>'+file_name+'</td>'
+											+'<td class="center cb">'+size+' Kb</td>'
+											+'<td class="center cb">'+created+'</td>'
+											+'<td class="center cb">'+created_name+'</td>'
+											+'<td class="center cb">'+modified+'</td>'
+											+'<td class="center cb">'+modified_name+'</td>'
+										+'</tr>';
+
+		 });
+		 
+		 string = string.join("");
+		 
+		 return string;	
+	}
+	
+	function load_template_request(items) {
+		 var string = new Array();
+		 $.each(items, function( index, value ) {
+			  var id      				= value.id;
+			  var task_name      		= value.task_name;
+			  var progress      		= value.progress;
+			  var trangthai      		= value.trangthai;
+			  var prioty      			= value.prioty;
+			  var created      		    = value.created;
+			  var user_pheduyet_name    = value.user_pheduyet_name;
+			  var date_pheduyet      	= value.date_pheduyet;
+			  
+			  string[string.length] = '<tr>'
+											+'<td>'+task_name+'</td>'
+											+'<td class="center">'+progress+'</td>'
+											+'<td class="center">'+trangthai+'</td>'
+											+'<td class="center">'+prioty+'</td>'
+											+'<td class="center">'+created+'</td>'
+											+'<td class="center">'+user_pheduyet_name+'</td>'
+											+'<td class="center">'+date_pheduyet+'</td>'
+											+'<td class="center">'
+												+'<a href="javascript:;" onclick="note('+id+');">Ghi chú</a>'
+											+'</td>'
+										+'</tr>';
+		 });
+		 
+		 string = string.join("");
+		 
+		 return string;
+	}
+	
+	function load_template_pheduyet(items) {
+		 var string = new Array();
+		 $.each(items, function( index, value ) {
+			  var id      			= value.id;
+			  var date_pheduyet     = value.date_pheduyet;
+			  var created      		= value.created;
+			  var task_name      	= value.task_name;
+			  var progress          = value.progress;
+			  var trangthai      	= value.trangthai;
+			  var prioty    		= value.prioty;
+			  var user_name      	= value.user_name;
+			  var pheduyet      	= value.pheduyet;
+			  
+			  if(value.is_xuly == true)
+				  var control = '<a href="javascript:;" onclick="note('+id+');">Ghi chú</a> | <a href="javascript:;" onclick="xuly_tiendo('+id+');">Phê duyệt</a>';
+			  else
+				  var control = '<a href="javascript:;" onclick="note('+id+');">Ghi chú</a>';
+
+			  string[string.length] = '<tr>'
+											+'<td>'+task_name+'</td>'
+											+'<td class="center">'+progress+'</td>'
+											+'<td class="center">'+trangthai+'</td>'
+											+'<td class="center">'+prioty+'</td>'
+											+'<td class="center">'+user_name+'</td>'
+											+'<td class="center">'+created+'</td>'
+											+'<td class="center">'+pheduyet+'</td>'
+											+'<td class="center">'+date_pheduyet+'</td>'
+											+'<td class="center">'
+												+control
+											+'</td>'
+										+'</tr>';
+		 });
+		 
+		 string = string.join("");
+		 
+		 return string;
+	}
+	
+	function load_template_progress(items) {
+		 var string = new Array();
+		 $.each(items, function( index, value ) {
+			  var id      	= value.id;
+			  var user_id 	= value.created_by;
+			  var user_name = value.user_name;
+			  var created 	= value.created;
+			  var progress  = value.progress;
+			  var trangthai = value.trangthai;
+			  var pheduyet 	= value.pheduyet;
+			  var note 		= value.note;
+			  
+			  var prioty 	 = value.prioty;
+			  var task_name  = value.task_name;
+			  var task_name  = value.task_name;
+			  	  
+			  user_name = '<span style="font-weight: bold">'+user_name+'</span>';
+			  string[string.length] = '<tr style="cursor: pointer;">'		
+											+'<td class="cb">'+task_name+'</td>'
+											+'<td class="center cb">'+progress+'</td>'
+											+'<td class="center cb">'+trangthai+'</td>'
+											+'<td class="center cb">'+prioty+'</td>'
+											+'<td class="center cb">'+user_name+'</td>'
+											+'<td class="center cb">'+created+'</td>'
+										+'</tr>	';
+		 });
+		 
+		 string = string.join("");
+		 
+		 return string;
+	}
+	
+	function load_tempate_comment(items) {
+		 var string = new Array();
+		 $.each(items, function( index, value ) {
+			  var id      	= value.id;
+			  var username 	= value.username;
+			  var name 		= value.name;
+			  var content 	= value.content;
+			  var created 	= value.created;
+
+			  string[string.length] = 
+	 				  '<li class="item-comment">' 
+	 					+'<a target="_blank" rel="nofollow" href="javascript:;" class="thumb-user" title="'+name+'">' 
+	 						+'<img class="fn-thumb" width="50" src="http://s120.avatar.zdn.vn/avatar_files/3/b/b/e/caonaman369_120_1.jpg" alt="'+name+'">' 
+	 					+'</a>' 
+	 					+'<div class="post-comment">' 
+	 						+'<a target="_blank" rel="nofollow" class="fn-link" href="http://me.zing.vn/u/caonaman369" title="'+name+'">'+username+'</a>' 
+	 						+'<p class="fn-content">'+content+'</p>' 
+	 						+'<span class="fn-time">'+created+'</span>' 
+	 					+'</div>' 
+	 				 +'</li>' ; 
+
+		 });
+
+		 string = string.join("");	
+		 return string;
+	}
+	
+	function load_comment(task_id, page) {
+		var url = BASE_URL + 'tasks/commentlist/'+page;
+		$.ajax({
+			type: "POST",
+			url: url,
+			data: {
+				task_id : task_id,
+			},
+			success: function(string){
+				var result = $.parseJSON(string);
+				var items = result.items;
+				if(items.length) {
+					var html_string = load_tempate_comment(items);
+					var pagination = load_pagination(pagination);
+					
+					$('#commentList').html(html_string);	
+					$('#commentList').html(html_string);	
+				}
+		    }
+		});
+	}
+	
+	function load_list(keyword, page) {
+		var task_id = $('#task_id').val();
+		if(keyword == 'progress') {
+			var url	        = BASE_URL + 'tasks/progresslist/'+page;
+			var manager_div = 'progress_danhsach';
+			var count_span  = 'count_tiendo';
+		}else if(keyword == 'file') {
+			var url 		  = BASE_URL + 'tasks/filelist/'+page;
+			var manager_div   = 'file_manager';
+			var count_span 	  = 'count_tailieu';
+		}else if(keyword == 'request') {
+			var url 		  = BASE_URL + 'tasks/requestlist/'+page;
+			var manager_div   = 'request_list';
+			var count_span 	  = 'count_request';
+		}else if(keyword == 'pheduyet') {
+			var url 		  = BASE_URL + 'tasks/pheduyetlist/'+page;
+			var manager_div   = 'pheduyet_list';
+			var count_span 	  = 'count_pheduyet';
+		}
+
+		$.ajax({
+			type: "POST",
+			url: url,
+			data: {
+				task_id : task_id,
+			},
+			success: function(string){
+				 var result = $.parseJSON(string);
+				 var items = result.items; 
+				 var pagination = result.pagination;
+
+				 if(items.length) {
+					 if(keyword == 'progress') {
+						 var html_string = load_template_progress(items);
+						 var pagination = load_pagination(pagination);
+
+					 }else if(keyword == 'file') {
+						 var html_string = load_template_file(items);
+						 var pagination = load_pagination(pagination);
+					 }else if(keyword == 'request') {
+						 var html_string = load_template_request(items);
+						 var pagination = load_pagination(pagination);
+					 }else if(keyword == 'pheduyet') {
+						 var html_string = load_template_pheduyet(items);;
+						 var pagination = load_pagination(pagination);
+					 }
+	
+					 $('#'+manager_div+' .table tbody').html(html_string);
+					 if($('#'+manager_div+' .text-center').length)
+						 $('#'+manager_div+' .text-center').replaceWith( pagination );
+					 else
+						 $('#'+manager_div).append(pagination);
+					 
+					 $('#'+count_span).text(result.count);
+				 }
+		    }
+		});
+	}

@@ -6,14 +6,13 @@ class MY_System_Info{
 	protected $_group_id;
 	
 	public function __construct(){
-		session_start();
 		$this->_CI= &get_instance();
 	}
 	
 	public function getInfo() {
 		$task_permission = array();
 		$person_id = $_SESSION['person_id'];
-		$this->_CI->db->select('*')
+		$this->_CI->db-> select('*')
 				       ->where('person_id', (int)$person_id);
 
 		$result =  $this->_CI->db->get('employees')->row_array();
@@ -52,6 +51,7 @@ class MY_System_Info{
 		}
 		
 		$array['task_permission'] = $task_permission;
+		$array['id'] 			  = $result['id'];
 		
 		return $array;
 	} 

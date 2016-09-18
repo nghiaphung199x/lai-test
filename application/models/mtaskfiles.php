@@ -6,8 +6,6 @@ class MTaskFiles extends CI_Model{
 		parent::__construct();
 	}
 	
-	
-	
 	public function countItem($arrParam = null, $options = null){
 		if($options['task'] == 'public-list'){
 			$ssFilter  = $arrParam['ssFilter'];

@@ -12,7 +12,7 @@ class MTasks extends MNested2{
 		$info 			 = new MY_System_Info();
 		$user_info 		 = $info->getInfo();
 
-		$this->_id_admin = $_SESSION['person_id'];
+		$this->_id_admin = $user_info['id'];
 		$this->_task_permission  = $user_info['task_permission'];
 	}
 	
@@ -50,6 +50,7 @@ class MTasks extends MNested2{
 				$data['type']					= 		$arrParam['type'];
 				$data['project_id']				= 		0;
 				$data['customer_ids']			= 		$customer_ids;
+				$data['color']					= 		$arrParam['color'];
 
 				$this->db->insert($this->_table,$data);
 				$lastId = $this->db->insert_id();
@@ -79,8 +80,8 @@ class MTasks extends MNested2{
 				$data['type']					= 		$arrParam['type'];
 				$data['project_id']				= 		$arrParam['project_id'];
 				$data['customer_ids']			= 		$customer_ids;
-		
-
+				$data['color']					= 		$arrParam['color'];
+	
 				$lastId = $this->insertNode($data,$arrParam['parent'], $arrParam['project_id']);
 			}
 			
@@ -386,6 +387,7 @@ class MTasks extends MNested2{
 			$data['modified_by']			= 		$arrParam['user_info']['id'];
 			$data['trangthai']				= 		$arrParam['trangthai'];
 			$data['type']					= 		$arrParam['type'];
+			$data['color']					= 		$arrParam['color'];
 			$data['customer_ids']			= 		$customer_ids;
 			if($arrParam['parent'] != 0)
 				$data['percent']				= 		$arrParam['percent'] / 100;
@@ -710,13 +712,12 @@ class MTasks extends MNested2{
 			$lastId = $arrParam['id'];
 		}
 	}
-	
+
 	public function listItem($options = null, $arrParams = null) {
 		if($options == null) {
 			$flagAll = true;
 			if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission))) 
 				$flagAll = false;
-
 			// không có toàn quyền
 			if($flagAll == false) {
 				// project, task user có liên quan
@@ -728,6 +729,7 @@ class MTasks extends MNested2{
 				$query = $this->db->get();
 				
 				$resultTmp = $query->result_array();
+
 				$this->db->flush_cache();
 				
 				$project_ids = $implement_ids = $create_task_ids = array();
@@ -743,7 +745,6 @@ class MTasks extends MNested2{
 				}
 
 				$project_ids = array_unique($project_ids);
-				
 			}
 
 			if(in_array('update_project', $this->_task_permission) || in_array('update_all_task', $this->_task_permission)) {
@@ -778,7 +779,6 @@ class MTasks extends MNested2{
 					}
 					
 					$val['text'] = $val['text'] . ' ('.($val['progress'] * 100).'%)';
-					$val['color'] = '#489ee7';
 					$task_list[$val['id']] = $val;
 				}
 					
@@ -974,13 +974,12 @@ class MTasks extends MNested2{
 			$result =  $query->row_array();
 			$this->db->flush_cache();
 			if($options['brand'] == 'detail' || $options['brand'] == 'full') {
-				$customerTable = $this->model_load_model('MCustomers');
 				if(!empty($result)) {
 					if(!empty($result['customer_ids'])) {
 						$cid 		  = explode(',', $result['customer_ids']);
-						$tblCustomers = $this->model_load_model('MCustomers');
-						
-						$result['customers'] = $tblCustomers->getItems(array('cid'=>$cid));
+	
+						$this->load->model('MTaskCustomers', 'MTaskCustomers');
+						$result['customers'] = $this->MTaskCustomers->getItems(array('cid'=>$cid));
 					}
 
 					// tất cả task bao gồm task ở bên trên
@@ -1004,36 +1003,40 @@ class MTasks extends MNested2{
 							$user_ids[] = $val['user_id'];
 						
 						$user_ids = array_unique($user_ids);
-						$tblUser  = $this->model_load_model('MUser');
+						$this->load->model('MTaskUser', 'MTaskUser');
+						$tblUser  = $this->MTaskUser;
 						$users 	  = $tblUser->getItems(array('user_ids'=>$user_ids));
-						
-						$result['created_by_name'] = $users[$result['created_by']]['user_name'];
+
+						$result['created_by_name'] = $users[$result['created_by']]['username'];
 
 						foreach($resultTmp as $val) {	
 							$user_id  = $val['user_id'];
-							$keywords = $val['task_id'] . '-' . $val['user_id'];
-
-							if($val['is_xem'] == 1) 
-								$result['is_xem'][$keywords] = $users[$user_id];
-
-							if($val['is_implement'] == 1) 
-								$result['is_implement'][$keywords] = $users[$user_id];
-	
-							if($val['is_create_task'] == 1)
-								$result['is_create_task'][$keywords] = $users[$user_id];
-
-							if($val['is_pheduyet'] == 1)
-								$result['is_pheduyet'][$keywords] = $users[$user_id];
 							
-							if($val['is_progress'] == 1)
-								$result['is_progress'][$keywords] = $users[$user_id];
+							$keywords = $val['task_id'] . '-' . $val['user_id'];
+							
+							if(isset($users[$user_id])) {
+								if($val['is_xem'] == 1)
+									$result['is_xem'][$keywords] = $users[$user_id];
+								
+								if($val['is_implement'] == 1)
+									$result['is_implement'][$keywords] = $users[$user_id];
+								
+								if($val['is_create_task'] == 1)
+									$result['is_create_task'][$keywords] = $users[$user_id];
+								
+								if($val['is_pheduyet'] == 1)
+									$result['is_pheduyet'][$keywords] = $users[$user_id];
+									
+								if($val['is_progress'] == 1)
+									$result['is_progress'][$keywords] = $users[$user_id];	
+							}
 						}
-						
 					}else {
-						$tblUser  = $this->model_load_model('MUser');
+						$this->load->model('MTaskUser', 'MTaskUser');
+						$tblUser  = $this->MTaskUser;
 						$users 	  = $tblUser->getItems(array('user_ids'=>$user_ids));
 						
-						$result['created_by_name'] = $users[$result['created_by']]['user_name'];
+						$result['created_by_name'] = $users[$result['created_by']]['username'];
 					}
 				}
 			}

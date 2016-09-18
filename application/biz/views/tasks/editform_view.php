@@ -1,6 +1,7 @@
 <?php 
 	$id   		= $item['id'];
 	$name   	= $item['name'];
+	$color   	= $item['color'];
 	$detail 	= nl2br($item['detail']);
 	$progress 	= $item['progress'] * 100;
 	$percent 	= $item['percent'] * 100;
@@ -13,12 +14,8 @@
 	$prioty 	= $item['prioty'];
 	$pheduyet   = $item['pheduyet'];
 	
-	$task_permission = array();
-	if(!empty($user_info['task_permission'])) {
-		$task_permission = $user_info['task_permission'];
-		$task_permission = explode(',', $task_permission);
-	}
-
+	$task_permission = $user_info['task_permission'];
+	
 	$btnPheduyet = true;
 	$is_create_task = false; // có được cấp quyền tạo việc hay không
 	if($parent > 0) {
@@ -38,7 +35,6 @@
 				
 			if(in_array('permission_brand_task', $task_permission) && in_array($user_info['id'], $project_implement))
 				$is_create_task = true;
-		
 		}
 		
 		//check phê duyệt
@@ -104,6 +100,14 @@
 								</div>
 							</div>
 						</div>
+						<div class="col-lg-12">
+							<div class="form-group">
+								<label for="first_name" class="col-md-3 col-lg-2 control-label">Màu sắc</label>			
+								<div class="col-md-9 col-lg-10">
+									<input type="text" name="color" id="color" value="<?php echo $color; ?>" class="form-control" />
+								</div>
+							</div>
+						</div>	
 <?php if($parent > 0):?>	
 						<div class="col-lg-12">
 							<div class="form-group">
@@ -155,8 +159,8 @@
 		foreach($item['is_xem'] as $key => $val) {
 			$keyArr = explode('-', $key);
 			if($keyArr[0] == $id) {
-				$user_id   = $val['user_id'];
-				$user_name = $val['user_name'];
+				$user_id   = $val['id'];
+				$user_name = $val['username'];
 ?>
 										<span class="item"><input type="hidden" name="xem[]" class="xem" id="xem_<?php echo $user_id; ?>" value="<?php echo $user_id; ?>"><a><?php echo $user_name; ?></a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>
 
@@ -183,8 +187,8 @@
 		foreach($item['is_implement'] as $key => $val) {
 			$keyArr = explode('-', $key);
 			if($keyArr[0] == $id) {
-				$user_id   = $val['user_id'];
-				$user_name = $val['user_name'];		
+				$user_id   = $val['id'];
+				$user_name = $val['username'];		
 ?>
 										<span class="item"><input type="hidden" name="implement[]" class="implement" id="implement_<?php echo $user_id; ?>" value="<?php echo $user_id; ?>"><a><?php echo $user_name; ?></a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>
 
@@ -210,8 +214,8 @@
 		foreach($item['is_progress'] as $key => $val) {
 			$keyArr = explode('-', $key);
 			if($keyArr[0] == $id) {
-				$user_id   = $val['user_id'];
-				$user_name = $val['user_name'];		
+				$user_id   = $val['id'];
+				$user_name = $val['username'];		
 ?>
 										<span class="item"><input type="hidden" name="progress_task[]" class="progress_task" id="progress_task_<?php echo $user_id; ?>" value="<?php echo $user_id; ?>"><a><?php echo $user_name; ?></a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>								
 
@@ -244,8 +248,8 @@
 		foreach($item['is_create_task'] as $key => $val) {
 			$keyArr = explode('-', $key);
 			if($keyArr[0] == $id) {
-				$user_id   = $val['user_id'];
-				$user_name = $val['user_name'];
+				$user_id   = $val['id'];
+				$user_name = $val['username'];
 ?>
 										<span class="item"><input type="hidden" name="create_task[]" class="create_task" id="create_task_<?php echo $user_id; ?>" value="<?php echo $user_id; ?>"><a><?php echo $user_name; ?></a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>
 
@@ -271,8 +275,8 @@
 		foreach($item['is_pheduyet'] as $key => $val) {
 			$keyArr = explode('-', $key);
 			if($keyArr[0] == $id) {
-				$user_id   = $val['user_id'];
-				$user_name = $val['user_name'];		
+				$user_id   = $val['id'];
+				$user_name = $val['username'];		
 ?>
 										<span class="item"><input type="hidden" name="pheduyet_task[]" class="pheduyet_task" id="pheduyet_task_<?php echo $user_id; ?>" value="<?php echo $user_id; ?>"><a><?php echo $user_name; ?></a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>								
 
@@ -408,6 +412,8 @@ $( document ).ready(function() {
 	load_list('progress', 1);
 	countTiendo();
 	load_list('file', 1);
+
+	$('#color').colorpicker({color: '<?php echo $color; ?>',});
 	$('#add_navigation .title').click(function(e){
 		$('#add_navigation .active').parent().find('.content').slideUp();
 	    $('#add_navigation .active').removeClass('active');
