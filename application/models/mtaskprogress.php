@@ -6,21 +6,16 @@ class MTaskProgress extends CI_Model{
 	protected $_task_ids    = null;
 	protected $_is_progress = null;
 	protected $_id_admin    = null;
+	
 	public function __construct(){
 		parent::__construct();
 		
 		$this->load->library('MY_System_Info');
 		$info 			 = new MY_System_Info();
-		$user_info 		 = $info->getMemberInfo();
-		
-		$task_permission = array();
-		if(!empty($user_info['task_permission'])) {
-			$task_permission = $user_info['task_permission'];
-			$task_permission = explode(',', $task_permission);
-		}
+		$user_info 		 = $info->getInfo();
 		
 		$this->_id_admin = $user_info['id'];
-		$this->_task_permission  = $task_permission;
+		$this->_task_permission  = $user_info['task_permission'];
 	}
 	
 	public function getItem($arrParam = null, $options = null) {
@@ -48,7 +43,7 @@ class MTaskProgress extends CI_Model{
 		$task_ids = $taskTable->getIds(array('lft'=>$item['lft'], 'rgt'=>$item['rgt'], 'project_id'=>$item['project_id']));
 		
 		$this->_task_ids = $task_ids;
-		
+
 		// user có quyền phê duyệt
 		$is_progress  = array();
 		
@@ -98,7 +93,7 @@ class MTaskProgress extends CI_Model{
 				$this->db->flush_cache();
 			}else
 				$result = 0;
-	
+			
 		}
 		return $result;
 	}
@@ -142,17 +137,16 @@ class MTaskProgress extends CI_Model{
 		$prioty_arr    = array('Rất cao', 'Cao', 'Trung bình', 'Thấp', 'Rất thấp');
 		$ssFilter  = $arrParam['ssFilter'];
 		if($options['task'] == 'public-list'){
-
-
 			$paginator = $arrParam['paginator'];
 			$this->db->select("DATE_FORMAT(p.date_pheduyet, '%d/%m/%Y %H:%i:%s') as created", FALSE);
-			$this->db -> select('p.id, p.created_by, p.trangthai, t.name as task_name,p.progress, p.pheduyet, p.key, u.user_name, p.prioty')
+			$this->db -> select('p.id, p.created_by, p.trangthai, t.name as task_name,p.progress, p.pheduyet, p.key, e.username, p.prioty')
 					  -> from($this->_table . ' AS p')
 					  -> join('tasks as t', 't.id = p.task_id', 'left')
-					  -> join('users AS u', 'u.id = p.created_by', 'left')
+					  -> join('employees AS e', 'e.id = p.created_by', 'left')
 					  -> where('p.task_id IN ('.implode(', ', $this->_task_ids).')')
 					  -> where('p.pheduyet IN (1, 3)')
-					  -> order_by('p.date_pheduyet', 'DESC');
+					  -> order_by('p.date_pheduyet', 'DESC')
+					  -> order_by('p.id', 'DESC');
 	
 			$page = (empty($arrParam['start'])) ? 1 : $arrParam['start'];
 			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
@@ -215,10 +209,10 @@ class MTaskProgress extends CI_Model{
 			if(in_array($this->_id_admin, $this->_is_progress)) {
 				$this->db->select("DATE_FORMAT(p.date_pheduyet, '%d/%m/%Y %H:%i:%s') as date_pheduyet", FALSE);
 				$this->db->select("DATE_FORMAT(p.created, '%d/%m/%Y %H:%i:%s') as created", FALSE);
-				$this->db -> select('p.id,t.name as task_name, p.progress, p.trangthai, p.prioty, u.user_name, p.pheduyet')
+				$this->db -> select('p.id,t.name as task_name, p.progress, p.trangthai, p.prioty, u.username, p.pheduyet')
 						  -> from($this->_table . ' AS p')
 						  -> join('tasks as t', 't.id = p.task_id', 'left')
-						  -> join('users AS u', 'u.id = p.created_by', 'left')
+						  -> join('employees as e', 'e.id = p.created_by', 'left')
 						  -> where('p.task_id IN ('.implode(', ', $this->_task_ids).')')
 						  -> where('p.pheduyet = 2')
 						  -> or_where('p.pheduyet IN (0, 1) AND p.user_pheduyet = ' . $this->_id_admin);
@@ -271,8 +265,9 @@ class MTaskProgress extends CI_Model{
 				foreach($last_level as $task) {
 					$new_parent_progress = $new_parent_progress + $task['percent'] * $task['progress'];
 				}
-					
+				
 				$new_parent_progress = $new_parent_progress * 100;
+
 				//update parent
 				$taskTable->saveItem(array('id'=>$parent_id, 'progress'=>$new_parent_progress), array('task'=>'update-progress'));
 	
@@ -298,7 +293,7 @@ class MTaskProgress extends CI_Model{
 						'note' 				 => '',
 						'reply' 			 => '',
 						'created'			 => @date("Y-m-d H:i:s"),
-						'created_by'		 => 0,
+						'created_by'		 => $this->_id_admin,
 						'user_pheduyet'		 => 0,
 						'user_pheduyet_name' => '',	
 						'date_pheduyet'	     => @date("Y-m-d H:i:s"),
@@ -312,12 +307,36 @@ class MTaskProgress extends CI_Model{
 		}
 	}
 	
+// 	function test($arrParam) {
+// 		// lấy ra các task cha
+// 		// tạo 1 số các record progress. pheduyet = 3
+// 		$progressTmp = array(
+// 				'task_id' 			 => $parent_item['id'],
+// 				'trangthai' 		 => $parent_item['trangthai'],
+// 				'prioty' 			 => $parent_item['prioty'],
+// 				'progress' 			 => $parent_item['progress'] / 100,
+// 				'pheduyet'			 => 3,
+// 				'note' 				 => '',
+// 				'reply' 			 => '',
+// 				'created'			 => @date("Y-m-d H:i:s"),
+// 				'created_by'		 => $this->_id_admin,
+// 				'user_pheduyet'		 => 0,
+// 				'user_pheduyet_name' => '',
+// 				'date_pheduyet'	     => @date("Y-m-d H:i:s"),
+// 				'key' 			 	 => '',
+// 		);
+// 		// cập nhật các task parent
+		
+// 	}
+	
 	function handling($arrParam = null, $options = null) {
 		if($options == null)
 			$progress_item = $this->getItem(array('id'=>$arrParam['id']), array('task'=>'public-info'));
-		elseif($options['task'] == 'progress')
-			$progress_item = $arrParam;
-		
+		elseif($options['task'] == 'progress'){
+			$progress_item 			   = $arrParam;
+			$progress_item['progress'] = $progress_item['progress'] / 100;
+		}
+
 		$taskTable = $this->model_load_model('MTasks');
 		$task = $taskTable->getItem(array('id'=>$progress_item['task_id']), array('task'=>'public-info'));
 		$task_items = $taskTable->getItems(array('project_id'=>$task['project_id']), array('task'=>'by-project'));
@@ -327,19 +346,41 @@ class MTaskProgress extends CI_Model{
 				$task['progress']  = $progress_item['progress'] * 100;
 				$task['prioty']    = $progress_item['prioty'];
 				$task['trangthai'] = $progress_item['trangthai'];
-				
+
+				// cập nhật tiến độ task
 				$taskTable->saveItem($task, array('task'=>'update-tiendo'));
 				
 				$task['progress']  = $progress_item['progress'];
+				
+				$progressTmp = array(
+						'task_id' 			 => $progress_item['task_id'],
+						'trangthai' 		 => $progress_item['trangthai'],
+						'prioty' 			 => $progress_item['prioty'],
+						'progress' 			 => $progress_item['progress'],
+						'pheduyet'			 => $arrParam['pheduyet'],
+						'note' 				 => '',
+						'reply' 			 => '',
+						'created'			 => @date("Y-m-d H:i:s"),
+						'created_by'		 => $this->_id_admin,
+						'user_pheduyet'		 => 0,
+						'user_pheduyet_name' => '',
+						'date_pheduyet'	     => @date("Y-m-d H:i:s"),
+						'key' 			 	 => '',
+				);
+				
+				$this->_items[] = $progressTmp;
 			}
 			$level[$task['level']][] = $task;
 		}
 
+		
 		$this->do_progress($level);
 		
 		// cập nhật progress
-		if($options['task'] == 'progress')
+		if($options['task'] == 'progress'){
 			$this->db->insert_batch($this->_table, $this->_items);
+		}
+			
 	}
 	
 	function model_load_model($model_name)

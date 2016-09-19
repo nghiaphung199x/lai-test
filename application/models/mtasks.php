@@ -749,7 +749,7 @@ class MTasks extends MNested2{
 
 			if(in_array('update_project', $this->_task_permission) || in_array('update_all_task', $this->_task_permission)) {
 	    		$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
-	    		$this->db->select("id, name as text, duration, progress, level, parent, type, project_id, lft, rgt, created, pheduyet")
+	    		$this->db->select("id, name as text, duration, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color")
 			    		 ->from($this->_table)
 			    		 ->order_by("lft",'ASC');
 	    		
@@ -759,7 +759,7 @@ class MTasks extends MNested2{
 			}else {
 				if(!empty($project_ids)) {
 					$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
-					$this->db->select("id, name as text, duration, progress, level, parent, type, project_id, lft, rgt, created, pheduyet")
+					$this->db->select("id, name as text, duration, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color")
 							->from($this->_table)
 							->where('project_id IN ('.implode(', ', $project_ids).')')
 							->order_by("lft",'ASC');
@@ -966,8 +966,8 @@ class MTasks extends MNested2{
 					 ->from($this->_table . ' as t')
 					 ->where('t.id',$arrParam['id']);
 			
-			$this->db->select("DATE_FORMAT(t.date_start, '%d/%m/%Y') as date_start", FALSE);
-			$this->db->select("DATE_FORMAT(t.date_end, '%d/%m/%Y') as date_end", FALSE);
+			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as date_start", FALSE);
+			$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as date_end", FALSE);
 
 			$query = $this->db->get();
 				
@@ -1043,6 +1043,28 @@ class MTasks extends MNested2{
 		}
 	
 		return $result;
+	}
+	
+	public function getMaxPercent($parent_id, $project_id) {
+		$this->db->select("t.percent")
+				 ->from($this->_table . ' as t')
+				 ->where('t.parent', $parent_id)
+				 ->where('t.project_id', $project_id);
+		
+		$query = $this->db->get();
+		$result =  $query->result_array();
+		$this->db->flush_cache();
+
+		if(empty($result))
+			$percent = 0;
+		else {
+			foreach($result as $value)
+				$percent = $percent + 100 * $value['percent']; 
+		}
+		
+		$percent = 100 - $percent;
+		
+		return $percent;
 	}
 
 }

@@ -25,6 +25,21 @@
 	font-size: 14px;
 }
 
+.gantt_title {
+	border-bottom: 1px solid #e9e9e9;
+    background: white;
+    width: 100%;
+    padding: 10px 15px;
+}
+
+.gantt_title .panel-title {
+	font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    padding-top: 5px;
+    color: #555555;
+}
+
 .manage-table .panel-heading {
     border: 1px solid #d7dce5;
     border-bottom: 0;
@@ -251,7 +266,7 @@ display: block;
     top: 36px;
     left: 50%;
     transform: translate(-50%, 0);
-    z-index: 29999;
+    z-index: 299990;
     height: auto;
     font-size: 14px;
 }
@@ -290,6 +305,8 @@ display: block;
     height: 45px;
     line-height: 44px;
     border-bottom: 1px solid #ccc;
+	list-style: none;
+	padding-left: 0px;
 }
 
 #quick-form .toolbars .list li {
@@ -902,19 +919,26 @@ div.dhx_modal_cover {
 	border-radius: 0;
 }
 
-div.overlay1 {
+div.overlay1, div.overlay2 {
     background-color: #000;
     cursor: default;
     filter: alpha(opacity=40);
     opacity: .4;
     position: fixed;
-    z-index: 10000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     border: none;
     zoom: 1;
+}
+
+div.overlay1 {
+	 z-index: 10000;
+}
+
+div.overlay2 {
+	 z-index: 100000;
 }
 
 .colorpicker {

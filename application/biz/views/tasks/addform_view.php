@@ -96,9 +96,9 @@
 <?php if($parent > 0):?>
 						<div class="col-lg-12">
 							<div class="form-group">
-								<label for="first_name" class="col-md-3 col-lg-2 control-label ">Quy mô</label>			
+								<label for="first_name" class="col-md-3 col-lg-2 control-label ">Tỷ lệ</label>			
 								<div class="col-md-9 col-lg-10">
-									<input type="number" name="percent" value="" class="form-control" />
+									<input type="number" name="percent" value="<?php echo $percent; ?>" class="form-control" />
 								</div>
 							</div>
 						</div>

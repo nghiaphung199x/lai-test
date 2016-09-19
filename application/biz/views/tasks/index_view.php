@@ -8,22 +8,7 @@
 	
 	<script src="<?php echo base_url();?>assets/scripts/tasks/codebase/dhtmlxgantt.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/task.js" ></script>
-<style>
-.gantt_title {
-	border-bottom: 1px solid #e9e9e9;
-    background: white;
-    width: 100%;
-    padding: 10px 15px;
-}
 
-.gantt_title .panel-title {
-	font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    padding-top: 5px;
-    color: #555555;
-}
-</style>
 	<div class="gantt_title">
 		<h3 class="panel-title">
 			Thông tin Dự án/ Công việc

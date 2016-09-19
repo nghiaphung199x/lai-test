@@ -3,7 +3,89 @@
 	var type = null;
 	var deny_items = new Array();
 	var drag_task = new Array();
-	
+
+	$( document ).ready(function() {
+		// xử lý checkbox
+		$('body').on('click','.manage-table .check_tatca',function(){
+			 var checkbox = $(this).closest('th').find('input[type="checkbox"]'); 
+			
+			 if (checkbox.prop('checked') == true){ 
+				 checkbox.prop('checked', false);
+				 $(this).parents('.table').find('td input[type="checkbox"]').prop('checked', false);
+			  }else{
+				  checkbox.prop('checked', true);
+				  $(this).parents('.table').find('td input[type="checkbox"]').prop('checked', true);
+			  }
+	    });
+
+		$('body').on('click','.manage-table tbody tr td.cb',function(){
+			 var checkbox = $(this).closest('tr').find('input[type="checkbox"]');
+			 var manage_tab = checkbox.closest('.manage-table');
+			 var manage_tab_id = manage_tab.attr('id');
+
+			 if (checkbox.prop('checked')==true){ 
+				  checkbox.prop('checked', false);
+			 }else
+				  checkbox.prop('checked', true);
+			 
+			 // xử lý phân quyền với các task
+			 var cb_progress = $(".progress_checkbox:checked");
+			 if(cb_progress.length == 0) {
+				 $('#progress_manager .button').hide();
+			 }else {
+				 if(cb_progress.length == 1) {
+					 var per_xuly   = checkbox.attr('data-xuly');
+					 if(per_xuly == 1)
+						 $('#btn_edit_xuly').show(); 
+				 }else {
+					 $('#btn_edit_xuly').hide(); 
+				 }
+			 }
+	    });
+		
+		var array_list = ['progress', 'file'];
+		
+		// phân trang file, progress
+		$.each( array_list, function( key, keyword ) {
+			if(keyword == 'progress') {
+				var manager_div = 'progress_manager';
+			}else if(keyword == 'file') {
+				var manager_div   = 'file_manager';
+			}
+			
+			$('body').on('click','#'+manager_div+' .pagination a',function(){
+				var page = $(this).attr('data-page');
+				
+				load_list(keyword, page);
+			});
+		});
+		
+		// comment
+		$('body').on('click','#btnComment',function(){
+			 comment();
+			 return false; 
+	    });
+		
+		// progress
+		$('body').on('click','#progress_manager .panel-title span.tieude',function(){
+			$('#progress_manager .panel-title span.tieude').removeClass('active');
+			var content_id = $(this).attr('data-id');
+			$('#progress_manager .table_list').hide();
+			
+			//console.log($('#'+content_id).html());
+			$('#'+content_id).css('display', 'block');
+				
+			$(this).addClass('active');
+			
+			if(content_id == 'progress_danhsach') {
+				load_list('progress', 1);
+			}else if(content_id == 'request_list')
+				load_list('request', 1);
+			else if(content_id == 'pheduyet_list'){
+				load_list('pheduyet', 1);
+			}
+		});
+	});
 
 	function add_item(obj, frame_id) {
 		var item_name = $(obj).attr('data-name');
@@ -34,7 +116,7 @@
 	
 	function create_layer(type) {
 		if(type == 'quick')
-			var classLayer = 'overlay';
+			var classLayer = 'overlay2';
 		else
 			var classLayer = 'overlay1';
 		
@@ -82,7 +164,7 @@
 
 	function close_layer(type) {
 		if(type == 'quick')
-			var classLayer = 'overlay';
+			var classLayer = 'overlay2';
 		else
 			var classLayer = 'overlay1';
 
@@ -183,7 +265,6 @@
 				   }else {
 					   if(html != '') {   
 						   create_layer();
-						   $('#my-form').removeClass('quickInfo');
 						   $('#my-form').html(html);
 						   
 						   $('#my-form').show();
@@ -498,6 +579,149 @@
 		});
 	}
 	
+	function save_tiendo(task) {
+		if(task == 'edit')
+			var url = BASE_URL + 'tasks/edittiendo';
+		else if(task == 'xuly')
+			var url = BASE_URL + 'tasks/xulytiendo';
+		else
+			var url = BASE_URL + 'tasks/addtiendo';
+		
+		var checkOptions = {
+		        url : url,
+		        dataType: "json",  
+		        success: tiendoData
+		    };
+	    $("#progress_form").ajaxSubmit(checkOptions); 
+	    return false; 
+	}
+	
+	function tiendoData(data) {
+		if(data.flag == 'false') {
+			toastr.error(data.message, 'Lỗi!')
+			
+		}else {
+			toastr.success(data.message, 'Thông báo');
+			$('#quick-form').html('');
+			$('#quick-form').hide();
+			
+			var content_id = $('#progress_manager span.tieude.active').attr('data-id');
+			if(content_id == 'progress_danhsach')
+				load_list('progress', 1);
+			else if(content_id == 'request_list')
+				load_list('request', 1);
+			else if(content_id == 'pheduyet_list')
+				load_list('pheduyet', 1);
+			
+			countTiendo();
+			if(data.reload == 'true')
+				load_task();
+			
+			close_layer('quick');
+			
+			$('#progress_manager .button').hide();
+		}
+	}
+	
+	function add_tiendo() {
+		var task_id = $('#task_id').val();
+		var url = BASE_URL + 'tasks/addtiendo'
+		$.ajax({
+			type: "GET",
+			url: url,
+			data: {
+				task_id : task_id
+			},
+			success: function(html){
+				  $('#quick-form').html(html);
+				  $('#quick-form').show();
+				  create_layer('quick');
+		    }
+		});
+	}
+	
+	function add_file() {
+		var task_id = $('#task_id').val();
+		var url = BASE_URL + 'tasks/addfile'
+		$.ajax({
+			type: "GET",
+			url: url,
+			data: {
+				task_id : task_id
+			},
+			success: function(html){
+				  $('#quick-form').html(html);
+				  $('#quick-form').show();
+				  create_layer('quick');
+		    }
+		});
+	}
+	
+	function edit_file() {
+		var checkbox = $(".file_checkbox:checked");
+		var url = base_url + 'tasks/index/editfile';
+		
+		if(checkbox.length == 1) {
+			$(checkbox).each(function( index ) {
+				 file_id = $(this).val();
+			});
+
+			$.ajax({
+				type: "GET",
+				url: url,
+				data: {
+					id : file_id,
+				},
+				success: function(string){
+					  $('#quick-form').html(string);
+					  $('#quick-form').show();
+					  create_layer('quick');
+			    }
+			});
+		}else {
+			gantt.alert({
+			    text: 'Chọn một bản ghi.',
+			    title:"Lỗi!",
+			    ok:"Đóng",
+			    callback:function(){}
+			});
+		}
+	}
+	
+	function save_file(task) {
+		if(task == 'edit') 
+			var url = BASE_URL + 'tasks/editfile'
+		else 
+			var url = BASE_URL + 'tasks/addfile'
+
+		var checkOptions = {
+		        url : url,
+		        dataType: "json",  
+		        success: fileData
+		    };
+	    $("#file_form").ajaxSubmit(checkOptions); 
+	    return false; 
+	}
+	
+	function fileData(data) {
+		if(data.flag == 'false') {
+			gantt.alert({
+			    text: data.message,
+			    title:"Error!",
+			    ok:"Yes",
+			    callback:function(){}
+			});
+			
+		}else {
+			toastr.success('Cập nhật thành công!', 'Thông báo');
+			$('#quick-form').html('');
+			$('#quick-form').hide();
+
+			load_list('file', 1);
+			close_layer('quick');
+		}
+	}
+	
 	function load_pagination(pagination, template) {
 		if(jQuery.type(pagination) == 'object') {
 			var string = new Array();
@@ -609,7 +833,7 @@
 			  var progress          = value.progress;
 			  var trangthai      	= value.trangthai;
 			  var prioty    		= value.prioty;
-			  var user_name      	= value.user_name;
+			  var user_name      	= value.username;
 			  var pheduyet      	= value.pheduyet;
 			  
 			  if(value.is_xuly == true)
@@ -642,7 +866,7 @@
 		 $.each(items, function( index, value ) {
 			  var id      	= value.id;
 			  var user_id 	= value.created_by;
-			  var user_name = value.user_name;
+			  var user_name = value.username;
 			  var created 	= value.created;
 			  var progress  = value.progress;
 			  var trangthai = value.trangthai;

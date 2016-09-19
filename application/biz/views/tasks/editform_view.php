@@ -111,7 +111,7 @@
 <?php if($parent > 0):?>	
 						<div class="col-lg-12">
 							<div class="form-group">
-								<label for="first_name" class="col-md-3 col-lg-2 control-label ">Quy mô</label>			
+								<label for="first_name" class="col-md-3 col-lg-2 control-label ">Tỷ lệ</label>			
 								<div class="col-md-9 col-lg-10">
 									<input type="number" name="percent" value="<?php echo $percent; ?>" class="form-control" />
 								</div>
@@ -136,7 +136,7 @@
 										<div class="form-group">
 											<label class="col-md-3 col-lg-4 control-label">Bắt đầu</label>
 											<div class="col-md-9 col-lg-8">
-												<input type="text" name="date_start" value="<?php echo $date_start; ?>" class="form-control" />
+												<input type="text" name="date_start" value="<?php echo $date_start; ?>" class="form-control datepicker" />
 											</div>
 										</div>
 		
@@ -145,7 +145,7 @@
 										<div class="form-group">
 											<label class="col-md-3 col-lg-4 control-label">Kết thúc</label>
 											<div class="col-md-9 col-lg-8">
-												<input type="text" name="date_end" value="<?php echo $date_end; ?>" class="form-control" />
+												<input type="text" name="date_end" value="<?php echo $date_end; ?>" class="form-control datepicker" />
 											</div>
 										</div>
 									</div>
