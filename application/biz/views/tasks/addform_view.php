@@ -195,18 +195,6 @@
 											</div>
 										</div>						
 									</div>
-									<div class="col-lg-12">
-										<div class="form-group">
-											<label class="col-md-3 col-lg-2 control-label">Phê duyệt tiến độ</label>
-											<div class="col-md-9 col-lg-10">
-												<div class="x-select-users" x-name="progress_list" id="progress_list" x-title="" style="display: inline-block; width: 100%;" onclick="foucs(this);">	
-													<input type="text" autocomplete="off" id="progress_result" class="quick_search" />
-													<div class="result">			
-													</div>
-												</div>
-											</div>
-										</div>						
-									</div>	
 								</div>
 							</div>
 	<?php if($is_create_task == true):?>
@@ -237,7 +225,18 @@
 											</div>
 										</div>						
 									</div>	
-
+									<div class="col-lg-12">
+										<div class="form-group">
+											<label class="col-md-3 col-lg-2 control-label">Phê duyệt tiến độ</label>
+											<div class="col-md-9 col-lg-10">
+												<div class="x-select-users" x-name="progress_list" id="progress_list" x-title="" style="display: inline-block; width: 100%;" onclick="foucs(this);">	
+													<input type="text" autocomplete="off" id="progress_result" class="quick_search" />
+													<div class="result">			
+													</div>
+												</div>
+											</div>
+										</div>						
+									</div>	
 								</div>
 							</div>
 	<?php endif;?>

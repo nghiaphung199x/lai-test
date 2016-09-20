@@ -677,6 +677,17 @@ class MTasks extends MNested2{
 			$this->db->flush_cache();
 			
 			
+		}elseif($options['task'] == 'quick-update') {
+			$this->db->where("id",$arrParam['id']);
+			$data['date_start']			= 		$arrParam['date_start'];
+			$data['date_end']			= 		$arrParam['date_end'];
+			$data['duration']			= 		$arrParam['duration'];
+				
+			$this->db->update($this->_table,$data);
+				
+			$this->db->flush_cache();
+				
+			$lastId = $arrParam['id'];
 		}elseif($options['task'] == 'pheduyet') {
 			$this->db->where("id",$arrParam['id']);
 			$data['pheduyet']			= 		1;
@@ -711,6 +722,8 @@ class MTasks extends MNested2{
 				
 			$lastId = $arrParam['id'];
 		}
+
+		return $lastId;
 	}
 
 	public function listItem($options = null, $arrParams = null) {
@@ -721,7 +734,7 @@ class MTasks extends MNested2{
 			// không có toàn quyền
 			if($flagAll == false) {
 				// project, task user có liên quan
-				$this->db->select("t.project_id, t.parent, r.task_id, r.is_implement, r.is_create_task, r.is_pheduyet, r.is_progress, t.type")
+				$this->db->select("t.project_id, t.parent, r.task_id, r.is_implement, r.is_create_task, r.is_pheduyet, r.is_progress, t.type, r.is_xem")
 						->from('task_user_relations as r')
 						->join('tasks as t', 't.id = r.task_id', 'left')
 						->where('r.user_id', $this->_id_admin);
@@ -729,10 +742,9 @@ class MTasks extends MNested2{
 				$query = $this->db->get();
 				
 				$resultTmp = $query->result_array();
-
 				$this->db->flush_cache();
 				
-				$project_ids = $implement_ids = $create_task_ids = array();
+				$project_ids = $implement_ids = $create_task_ids = $is_xem_ids = array();
 				if(!empty($resultTmp)) {
 					foreach($resultTmp as $val) {
 						$project_ids[] = $val['project_id'];
@@ -741,6 +753,9 @@ class MTasks extends MNested2{
 						
 						if($val['is_create_task'] == 1)
 							$create_task_ids[] = $val['task_id'];
+						
+						if($val['is_xem'] == 1)
+							$is_xem_ids[] = $val['task_id'];
 					}
 				}
 
@@ -779,6 +794,8 @@ class MTasks extends MNested2{
 					}
 					
 					$val['text'] = $val['text'] . ' ('.($val['progress'] * 100).'%)';
+					if($val['pheduyet'] == 0)
+						$val['text'] = $val['text'] . ' - Chưa phê duyệt';
 					$task_list[$val['id']] = $val;
 				}
 					
@@ -823,7 +840,6 @@ class MTasks extends MNested2{
 								}
 							}
 						}
-
 					}
 
 					// create_task
@@ -836,6 +852,17 @@ class MTasks extends MNested2{
 							}
 						}
 					}
+					
+					// is xem
+					if(!empty($is_xem_ids)) {
+						foreach($task_list as $task_id => $task_detail) {
+							foreach($is_xem_ids as $t_id) {
+								if($task_detail['lft'] >=  $task_list[$t_id]['lft'] && $task_detail['rgt'] <=  $task_list[$t_id]['rgt']){
+									$click_task[] = $task_detail['id'];
+								}
+							}
+						}
+					}
 		
 					foreach($task_list as $value) {
 						if(!in_array($value['id'], $allow_tasks))
@@ -844,13 +871,12 @@ class MTasks extends MNested2{
 
 					$drag_task = array_unique($drag_task);
 				}
-				
-				if(!empty($deny_task)) {
-					foreach($task_list as &$val){
-						if(!in_array($val['id'], $click_task))
-							$val['color'] = '#cccccc';
-					}	
-				}
+	
+				foreach($task_list as &$val){
+					if(!in_array($val['id'], $click_task))
+						$val['color'] = '#cccccc';
+				}	
+
 				$result = array('ketqua'=>$task_list, 'deny'=>$deny_task, 'drag_task'=>$drag_task);
 			}else {
 				$deny_task = array();
@@ -887,6 +913,7 @@ class MTasks extends MNested2{
 				$result['created']  = $created;
 			}else
 				$result = array();
+
 		}
 		
 		return $result;
@@ -975,6 +1002,20 @@ class MTasks extends MNested2{
 			$this->db->flush_cache();
 			if($options['brand'] == 'detail' || $options['brand'] == 'full') {
 				if(!empty($result)) {
+					// tất cả task bao gồm task ở bên trên
+					$task_ids = $this->getIds(array('lft'=>$result['lft'], 'rgt'=>$result['rgt'], 'project_id'=>$result['project_id']), array('task'=>'up-branch'));
+	
+					// file list
+					$this->db->select('f.*')
+							->from('task_files as f')
+							->where('f.task_id IN ('.implode(',', $task_ids).')')
+							->order_by('f.modified', 'DESC');
+					
+					$query = $this->db->get();
+					$result['files'] = $query->result_array();
+					
+					$this->db->flush_cache();
+					// end file list
 					if(!empty($result['customer_ids'])) {
 						$cid 		  = explode(',', $result['customer_ids']);
 	
@@ -982,9 +1023,6 @@ class MTasks extends MNested2{
 						$result['customers'] = $this->MTaskCustomers->getItems(array('cid'=>$cid));
 					}
 
-					// tất cả task bao gồm task ở bên trên
-					$task_ids = $this->getIds(array('lft'=>$result['lft'], 'rgt'=>$result['rgt'], 'project_id'=>$result['project_id']), array('task'=>'up-branch'));
-					
 					$this->db->select('r.*')
 							->from('task_user_relations as r')
 							->where('r.task_id IN ('.implode(',', $task_ids).')')

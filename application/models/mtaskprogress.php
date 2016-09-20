@@ -40,7 +40,7 @@ class MTaskProgress extends CI_Model{
 			
 		$taskTable = $this->model_load_model('MTasks');
 			
-		$item = $taskTable->getItem(array('id'=>$arrParam['task_id']), array('task'=>'public-info', 'brand'=>'detail'));
+		$item = $taskTable->getItem(array('id'=>$arrParam['task_id']), array('task'=>'public-info', 'brand'=>'full'));
 			
 		$task_ids = $taskTable->getIds(array('lft'=>$item['lft'], 'rgt'=>$item['rgt'], 'project_id'=>$item['project_id']));
 		
@@ -135,6 +135,13 @@ class MTaskProgress extends CI_Model{
 			$this->db->update($this->_table,$data);
 				
 			$this->db->flush_cache();
+		}elseif($options['task'] == 'progress-1') {
+			$task_ids = implode(', ', $arrParam['task_ids']);
+			$sqlString   = 'UPDATE ' .$this->db->dbprefix($this->_table)
+						  . ' SET progress = -1'
+						  . ' WHERE task_ids IN ('.$task_ids.')';
+			
+			$this->db->query($sqlString);
 		}
 	}
 	
@@ -258,7 +265,7 @@ class MTaskProgress extends CI_Model{
 		return $result;
 	}
 	
-	function do_progress($level) {
+	function do_progress($level, $options) {
 		$taskTable = $this->model_load_model('MTasks');
 		if(!empty($level)) {
 			$last_level = end($level);
@@ -289,6 +296,16 @@ class MTaskProgress extends CI_Model{
 				}
 				
 				// progress data
+				if($options['task'] != 'progress') {
+					$created_by 		= $options['created_by'];
+					$user_pheduyet 		= $this->_id_admin;
+					$user_pheduyet_name = $this->_admin_name;
+				}else {
+					$created_by 		= $this->_id_admin;
+					$user_pheduyet 		= 0;
+					$user_pheduyet_name = '';
+				}
+					
 				$progressTmp = array(
 						'task_id' 			 => $parent_item['id'],
 						'trangthai' 		 => $parent_item['trangthai'],
@@ -298,9 +315,9 @@ class MTaskProgress extends CI_Model{
 						'note' 				 => '',
 						'reply' 			 => '',
 						'created'			 => @date("Y-m-d H:i:s"),
-						'created_by'		 => $this->_id_admin,
-						'user_pheduyet'		 => 0,
-						'user_pheduyet_name' => '',	
+						'created_by'		 => $created_by,
+						'user_pheduyet'		 => $user_pheduyet,
+						'user_pheduyet_name' => $user_pheduyet_name,	
 						'date_pheduyet'	     => @date("Y-m-d H:i:s"),
 						'key' 			 	 => '',
 						);
@@ -309,6 +326,43 @@ class MTaskProgress extends CI_Model{
 
 				$this->do_progress($level);	
 			}
+		}
+	}
+
+	public function solve($arrParam) {
+		$taskTable 		= $this->model_load_model('MTasks');
+		$arrParam['id'] = $arrParam['last_id'];
+		$task 			= $arrParam;
+		$task_items 	= $taskTable->getItems(array('project_id'=>$task['project_id']), array('task'=>'by-project'));
+		
+		foreach($task_items as $task_id => $task) {
+			if($task_id == $task['id']){
+				$task['progress']  = $task['progress'] / 100;
+				
+					
+				if($options != null) {
+					$progressTmp = array(
+							'task_id' 			 => $progress_item['task_id'],
+							'trangthai' 		 => $progress_item['trangthai'],
+							'prioty' 			 => $progress_item['prioty'],
+							'progress' 			 => $progress_item['progress'],
+							'pheduyet'			 => $arrParam['pheduyet'],
+							'note' 				 => '',
+							'reply' 			 => '',
+							'created'			 => @date("Y-m-d H:i:s"),
+							'created_by'		 => $this->_id_admin,
+							'user_pheduyet'		 => 0,
+							'user_pheduyet_name' => '',
+							'date_pheduyet'	     => @date("Y-m-d H:i:s"),
+							'key' 			 	 => 'add',
+					);
+						
+					$this->_items[] = $progressTmp;
+				}else{
+					$options['created_by'] = $progress_item['created_by'];
+				}
+			}
+			$level[$task['level']][] = $task;
 		}
 	}
 
@@ -361,12 +415,14 @@ class MTaskProgress extends CI_Model{
 						);
 							
 						$this->_items[] = $progressTmp;
+					}else{
+						$options['created_by'] = $progress_item['created_by'];
 					}
 				}
 				$level[$task['level']][] = $task;
 			}
 
-			$this->do_progress($level);
+			$this->do_progress($level, $options);
 			
 			// cập nhật progress
 			if(!empty($this->_items))

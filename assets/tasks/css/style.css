@@ -3,8 +3,19 @@
 	background: white;
 }
 
-.gantt_cal_ltitle span.gantt_mark {
+.attach-file {
+	line-height: 22px;
+	margin-bottom: 0;
+}
+
+.attach-file li i {
+	color: #338ecf;
+	margin-right: 5px;
+}
+
+.gantt_cal_ltitle span.gantt_mark, .x-info-top span.gantt_mark {
 	float: right;
+    cursor: pointer;
 }
 
 .gantt_cal_light select {

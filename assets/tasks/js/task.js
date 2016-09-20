@@ -344,7 +344,7 @@
 					task_id = task.id;
 					if ($.inArray(task_id, deny_items) != -1)
 					{
-						 return "nested_task"
+						 return "nested_task";
 					}
 					
 				    return "";
@@ -440,8 +440,7 @@
 
 					}
 					var start_date = start_date_original.getFullYear() + '-' + (start_date_original.getMonth() + 1) + '-' + start_date_original.getDate();
-					
-					
+
 					if(end_hour < 12){
 						end_date_original.setDate(end_date_original.getDate() - 1);
 					}
@@ -480,9 +479,7 @@
 										date_end   : end_date,
 									},
 									success: function(string){
-										var res = $.parseJSON(string);
-										if(res.flag == 'true')
-											gantt.alert("Cập nhật thành công.");
+										gantt.alert("Cập nhật thành công.");
 								    }
 								});
 				        	}else{
@@ -497,6 +494,38 @@
 				
 		    }
 		});	
+	}
+	
+	function pheduyet() {
+	    gantt.confirm({
+	        text: 'Phê duyệt cho công việc này?',
+	        ok:"Đồng ý", 
+	        cancel:"Hủy bỏ",
+	        callback: function(result){
+	        	if(result == true) {
+	    			var task_id = $('#task_id').val();
+	    			$.ajax({
+	    				type: "POST",
+	    				url: BASE_URL + 'tasks/pheduyet',
+	    				data: {
+	    					id 		   : task_id,
+	    				},
+	    				success: function(string){
+	    					var res = $.parseJSON(string);
+							if(res.flag == 'true'){
+								gantt.alert("Công việc đã được phê duyệt.");
+								
+								$('#my-form').html('');
+								$('#my-form').hide();
+								load_task();
+								close_layer();
+							}
+	    			    }
+	    			});
+	        	}
+
+	        }
+	    });
 	}
 	
 	function add_congviec() {

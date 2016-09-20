@@ -40,30 +40,32 @@
 	if($pheduyet == 1)
 		$btnPheduyet = false;
 
+	if($is_xem == true && $task != 'quick')
+		$style = ' padding-top: 0';
+	else
+		$style = ' padding-top: 5px';
+
 ?>	
-<?php if($task == 'quick'):?>
+<?php if($arrParam['t'] != 'quick' && $btnPheduyet == true):?>
 		<div class="gantt_cal_ltitle" style="cursor: pointer;"><span class="gantt_mark">&nbsp;</span>
 			<span class="gantt_time"><?php echo $title; ?></span>
 		</div>
 		<div class="toolbars">
 			<ul class="list clearfix">
-<?php if($no_update == false):?>
-				<li class="btn-save"><a href="javascript:;" onclick="edit();"><i class="fa fa-floppy-o"></i>Sửa</a></li>
-<?php endif;?>	
-				<li class="btn-cancel"><a href="javascript:;" onclick="cancel();"><i class="fa fa-times-circle"></i>Hủy bỏ</a></li>
-<?php if($btnPheduyet == true):?>			
+
+				<li class="btn-cancel"><a href="javascript:;" onclick="cancel();"><i class="fa fa-times-circle"></i>Hủy bỏ</a></li>		
 				<li class="btn-pheduyet right"><a href="javascript:;"><i class="fa fa-gavel"></i>Phê duyệt</a></li>
-<?php endif;?>
 			</ul>
 		</div>
 <?php endif;?>
 
-		<div class="gantt_cal_larea" style="height: 450px; overflow: auto; padding-top: 0; padding-top: 5px;">
+		<div class="gantt_cal_larea" style="height: 450px; overflow: auto;<?php echo $style; ?>">
 			<table width="100%" cellpadding="7" class="x-info" style="border:0">
 		        <tbody>
 		            <tr>
 		                <td class="x-info-top" colspan="4" style="background: #489ee7; color: white; border: 0 !important;">
-		                <span class="tl">Thông tin chi tiết</span>
+			                <span class="tl">Thông tin chi tiết</span>
+			                <span class="gantt_mark" onclick="cancel();"><i class="fa fa-times"></i></span>
 		                </td>
 		            </tr>
 		            <tr>
@@ -83,8 +85,6 @@
 		                <td class="x-info-label no-border-left">Khách hàng</td>
 		                <td class="x-info-content" style="font-weight: bold;" colspan="3"><?php echo $customer_names; ?></td>
 		            </tr>
-
-
 		            <tr>
 		                <td class="x-info-label  no-border-left">Bắt đầu</td>
 		                <td class="x-info-content"><?php echo $date_start; ?></td>
@@ -167,9 +167,27 @@
 		            </tr>
 		            <tr>
 		                <td class="x-info-label  no-border-left">Tài liệu đính kèm</td>
-		                <td class="x-info-content" colspan="3">
-<!-- 		                     <i>Không có file đính kèm.</i> -->
-		                	
+		                <td class="x-info-content" colspan="3" style="vertical-align: middle;">
+<?php 
+		if(!empty($item['files'])) {
+?>
+		                	<ul class="attach-file">
+<?php 
+			foreach($item['files'] as $file) {
+				$link 		= base_url() . 'assets/tasks/files/' . $file['file_name'];
+				$file_name  = $file['file_name'];
+?>
+		                		<li><i class="fa fa-file-code-o"></i><a href="<?php echo $link; ?>" target="_blank"><?php echo $file_name; ?></a></li>
+<?php 
+			}
+?>
+
+		                	</ul>
+<?php 
+		}else 
+			echo ' <i>Không có file đính kèm.</i>';
+?>
+
 		                </td>
 		            </tr>
 		        </tbody>

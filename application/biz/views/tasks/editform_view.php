@@ -58,6 +58,7 @@
 	if($pheduyet == 1)
 		$btnPheduyet = false;
 
+
 ?>	
 <?php if($arrParam['t'] != 'quick'):?>
 		<div class="gantt_cal_ltitle" style="cursor: pointer;"><span class="gantt_mark">&nbsp;</span>
@@ -204,34 +205,6 @@
 											</div>
 										</div>						
 									</div>
-									<div class="col-lg-12">
-										<div class="form-group">
-											<label class="col-md-3 col-lg-2 control-label">Phê duyệt tiến độ</label>
-											<div class="col-md-9 col-lg-10">
-												<div class="x-select-users" x-name="progress_list" id="progress_list" x-title="" style="display: inline-block; width: 100%;" onclick="foucs(this);">	
-<?php 
-	if(!empty($item['is_progress'])) {
-		foreach($item['is_progress'] as $key => $val) {
-			$keyArr = explode('-', $key);
-			if($keyArr[0] == $id) {
-				$user_id   = $val['id'];
-				$user_name = $val['username'];		
-?>
-										<span class="item"><input type="hidden" name="progress_task[]" class="progress_task" id="progress_task_<?php echo $user_id; ?>" value="<?php echo $user_id; ?>"><a><?php echo $user_name; ?></a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>								
-
-<?php 
-			}
-
-		}
-	}
-?>
-													<input type="text" autocomplete="off" id="progress_result" class="quick_search" />
-													<div class="result">			
-													</div>
-												</div>
-											</div>
-										</div>						
-									</div>
 								</div>
 							</div>
 	<?php if($is_create_task == true):?>
@@ -291,8 +264,37 @@
 													</div>
 												</div>
 											</div>
+										</div>	
+															
+									</div>	
+									<div class="col-lg-12">
+										<div class="form-group">
+											<label class="col-md-3 col-lg-2 control-label">Phê duyệt tiến độ</label>
+											<div class="col-md-9 col-lg-10">
+												<div class="x-select-users" x-name="progress_list" id="progress_list" x-title="" style="display: inline-block; width: 100%;" onclick="foucs(this);">	
+<?php 
+	if(!empty($item['is_progress'])) {
+		foreach($item['is_progress'] as $key => $val) {
+			$keyArr = explode('-', $key);
+			if($keyArr[0] == $id) {
+				$user_id   = $val['id'];
+				$user_name = $val['username'];		
+?>
+										<span class="item"><input type="hidden" name="progress_task[]" class="progress_task" id="progress_task_<?php echo $user_id; ?>" value="<?php echo $user_id; ?>"><a><?php echo $user_name; ?></a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>								
+
+<?php 
+			}
+
+		}
+	}
+?>
+													<input type="text" autocomplete="off" id="progress_result" class="quick_search" />
+													<div class="result">			
+													</div>
+												</div>
+											</div>
 										</div>						
-									</div>		
+									</div>	
 								</div>
 							</div>
 	<?php endif;?>

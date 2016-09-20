@@ -713,27 +713,29 @@ class MNested2 extends CI_Model{
 	
 	protected function insertRight(){
 		$parentInfo  = $this->getNodeInfo($this->_parent_id);
+
 		$parentRight = $parentInfo['rgt'];
 		 
-		$sqlUpdateLeft = 'UPDATE ' .$this->_table
+		$sqlUpdateLeft = 'UPDATE ' .$this->db->dbprefix($this->_table)
 					  . ' SET lft = (lft + 2) '
 					  . ' WHERE lft > ' . $parentRight . ' AND project_id = ' . $this->_project_id;
-		 
+		
 		$this->db->query($sqlUpdateLeft);
 	
 		 
-		$sqlUpdateRight = 'UPDATE ' .$this->_table
+		$sqlUpdateRight = 'UPDATE ' .$this->db->dbprefix($this->_table)
 					   . ' SET rgt = (rgt + 2) '
 					   . ' WHERE rgt >= ' . $parentRight . ' AND project_id = ' . $this->_project_id;
-	   
+		
+
 		$this->db->query($sqlUpdateRight);
-	
-		 
+	 
 		$data = $this->_data;
 		$data['parent'] 	= $parentInfo['id']; //$this->_parent_id
 		$data['lft'] 		= $parentRight;
 		$data['rgt'] 		= $parentRight + 1;
 		$data['level'] 		= $parentInfo['level'] + 1;
+		
 		
 		$this->db->insert($this->_table,$data);
 		$newId = $this->db->insert_id();
