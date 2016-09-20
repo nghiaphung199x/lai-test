@@ -705,11 +705,14 @@ class BizTasks extends Secure_area
 	public function xulytiendo() {
 		$post  = $this->input->post();
 		if(!empty($post)) {
+			$arrParam = $this->_data['arrParam'];
 			$this->load->model('MTaskProgress');
-			$this->MTaskProgress->saveItem($this->_data['arrParam'], array('task'=>'update-pheduyet'));
-			$this->MTaskProgress->handling($this->_data['arrParam'], array('task'=>'progress'));
+			$this->MTaskProgress->saveItem($arrParam, array('task'=>'update-pheduyet'));
+			
+			if($arrParam['pheduyet'] != 0)
+				$this->MTaskProgress->handling($arrParam);
 				
-			if($post['pheduyet'] == 1)
+			if($arrParam['pheduyet'] == 1)
 				$respon = array('flag'=>'true', 'message'=>'Cập nhật thành công', 'reload'=>'true');
 			else
 				$respon = array('flag'=>'true', 'message'=>'Cập nhật thành công');
@@ -717,5 +720,120 @@ class BizTasks extends Secure_area
 			echo json_encode($respon);
 		}else
 			$this->load->view('tasks/xulytiendo_view',$this->_data);
+	}
+	
+
+	public function detail() {
+		$post  = $this->input->post();
+		if(!empty($post)) {
+			$arrParam = $this->_data['arrParam'];
+			$this->load->library('MY_System_Info');
+			$info 		= new MY_System_Info();
+			$this->_data['user_info'] = $user_info = $info->getInfo();
+				
+			$this->load->model('MTasks');
+			$item = $this->MTasks->getItem(array('id'=>$arrParam['id']), array('task'=>'public-info', 'brand'=>'detail'));
+				
+			if($item['parent'] > 0){
+				$cid 						 = array($item['parent'], $item['project_id']);
+				$items 						 = $this->MTasks->getItems(array('cid'=>$cid), array('task'=>'public-info'));
+				$this->_data['project_item'] = $items[$item['project_id']];
+				$this->_data['parent_item']  = $items[$item['parent']];
+	
+				$is_pheduyet_parent = array();
+				if(!empty($item['is_pheduyet'])) {
+					foreach($item['is_pheduyet'] as $key => $val){
+						$is_pheduyet[] = $val['id'];
+	
+						$keyArr = explode('-', $key);
+						if($keyArr[0] != $arrParam['id'])
+							$is_pheduyet_parent[] = $val['id'];
+					}
+						
+					$is_pheduyet_parent = array_unique($is_pheduyet_parent);
+					$is_pheduyet 		= array_unique($is_pheduyet);
+				}
+	
+				$item['is_pheduyet_parent'] = $is_pheduyet_parent;
+			}
+	
+			$this->_data['item'] = $item;
+			$this->load->view('tasks/detail_view',$this->_data);
+		}
+	}
+	
+	public function commentlist() {
+		$this->load->model('MTaskComment');
+		$post  = $this->input->post();
+		if(!empty($post)) {
+			$config['base_url'] = base_url() . 'tasks/commentlist';
+			$config['total_rows'] = $this->MTaskComment->countItem($this->_data['arrParam'], array('task'=>'public-list'));
+			$config['per_page'] = $this->_paginator['per_page'];
+			$config['uri_segment'] = $this->_paginator['uri_segment'];
+			$config['use_page_numbers'] = TRUE;
+				
+			$this->load->library("pagination");
+			$this->pagination->initialize($config);
+			$this->pagination->createConfig('front-end');
+				
+			$pagination = $this->pagination->create_ajax();
+	
+			$this->_data['arrParam']['start'] = $this->uri->segment(3);
+			$items = $this->MTaskComment->listItem($this->_data['arrParam'], array('task'=>'public-list'));
+	
+			$result = array('items'=>$items, 'pagination'=>$pagination);
+				
+			echo json_encode($result);
+		}
+	}
+	
+	public function addcomment() {
+		$this->load->model('MTaskComment');
+		$post  	  = $this->input->post();
+		$arrParam = $this->_data['arrParam'];
+	
+		if(!empty($post)) {
+			$this->form_validation->set_rules('content', 'Nội dung', 'required');
+				
+			if($this->form_validation->run($this) == FALSE){
+				$errors = $this->form_validation->error_array();
+	
+				$response = array('flag'=>'false', 'msg'=>current($errors));
+			}else {
+				$this->MTaskComment->saveItem($arrParam, array('task'=>'add'));
+				$response = array('flag'=>'true', 'msg'=>'Bình luận thành công', 'task_id'=>$arrParam['task_id']);
+	
+			}
+				
+			echo json_encode($response);
+		}
+	}
+	
+	public function link()  {
+		$post  = $this->input->post();
+		$this->load->library('MY_System_Info');
+		$info 		= new MY_System_Info();
+		$user_info = $info->getInfo();
+	
+		if(!empty($post)) {
+			$this->load->model('MTasksLinks');
+	
+			$arrParam = $post;
+			$arrParam['user_info'] = $user_info;
+			$this->MTasksLinks->saveItem($arrParam, array('task'=>'add'));
+				
+			$response = array('flag'=>'true');
+			echo json_encode($response);
+		}
+	}
+	
+	public function delete() {
+		$post  = $this->input->post();
+		if(!empty($post)) {
+			$this->load->model('MTasksLinks');
+	
+			$arrParam['id'] = $post['link_id'];
+			$this->MTasksLinks->deleteItem($arrParam, array('task'=>'delete'));
+		}
 	}
 }

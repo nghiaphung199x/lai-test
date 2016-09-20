@@ -15,11 +15,7 @@
 	$project_name   	= $project_item['name'];
 	$created_by_name   	= $item['created_by_name'];
 	
-	$task_permission = array();
-	if(!empty($user_info['task_permission'])) {
-		$task_permission = $user_info['task_permission'];
-		$task_permission = explode(',', $task_permission);
-	}
+	$task_permission = $user_info['task_permission'];
 
 	$btnPheduyet = true;
 
@@ -117,9 +113,9 @@
 			$keyArr = explode('-', $key);
 
 			if($keyArr[0] == $id)
-				$implement_ids[] = $val['user_id'];
+				$implement_ids[] = $val['id'];
 			
-			$implement[$val['user_id']] = $val['user_name'];
+			$implement[$val['id']] = $val['username'];
 		}
 
 		foreach($implement as $user_id => $user_name) {
@@ -143,9 +139,9 @@
 			$keyArr = explode('-', $key);
 
 			if($keyArr[0] == $id)
-				$xem_ids[] = $val['user_id'];
+				$xem_ids[] = $val['id'];
 			
-			$xem[$val['user_id']] = $val['user_name'];
+			$xem[$val['id']] = $val['username'];
 		}
 
 		foreach($xem as $user_id => $user_name) {
@@ -172,7 +168,8 @@
 		            <tr>
 		                <td class="x-info-label  no-border-left">Tài liệu đính kèm</td>
 		                <td class="x-info-content" colspan="3">
-		                     <i>Không có file đính kèm.</i>
+<!-- 		                     <i>Không có file đính kèm.</i> -->
+		                	
 		                </td>
 		            </tr>
 		        </tbody>

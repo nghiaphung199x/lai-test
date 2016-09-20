@@ -373,8 +373,8 @@
 					else{
 						gantt.alert({
 						    text:"Bạn không có quyền với chức năng này.",
-						    title:"Error!",
-						    ok:"Yes",
+						    title:"Lỗi!",
+						    ok:"Đóng",
 						    callback:function(){}
 						});
 						return false;
@@ -483,11 +483,9 @@
 										var res = $.parseJSON(string);
 										if(res.flag == 'true')
 											gantt.alert("Cập nhật thành công.");
-											
 								    }
 								});
 				        	}else{
-				        		
 				        		//task.start_date = $('#start_date_original').val();
 				        		//gantt.refreshData();
 				        	}
@@ -931,14 +929,14 @@
 		 $.each(items, function( index, value ) {
 			  var id      	= value.id;
 			  var username 	= value.username;
-			  var name 		= value.name;
 			  var content 	= value.content;
 			  var created 	= value.created;
+			  var image     = value.image;
 
 			  string[string.length] = 
 	 				  '<li class="item-comment">' 
 	 					+'<a target="_blank" rel="nofollow" href="javascript:;" class="thumb-user" title="'+name+'">' 
-	 						+'<img class="fn-thumb" width="50" src="http://s120.avatar.zdn.vn/avatar_files/3/b/b/e/caonaman369_120_1.jpg" alt="'+name+'">' 
+	 						+'<img class="fn-thumb" width="50" src="'+image+'">' 
 	 					+'</a>' 
 	 					+'<div class="post-comment">' 
 	 						+'<a target="_blank" rel="nofollow" class="fn-link" href="http://me.zing.vn/u/caonaman369" title="'+name+'">'+username+'</a>' 
@@ -1065,3 +1063,77 @@
 		    }
 		});
 	}
+	
+	function detail() {
+		var task_id = $('#task_id').val();
+		$.ajax({
+			type: "POST",
+			url: BASE_URL + 'tasks/detail?task=quick',
+			data: {
+				id 		   : task_id,
+			},
+			success: function(string){
+				$('#my-form .arrord_nav').remove();
+				$('#my-form .gantt_cal_larea').remove();
+				$('#my-form').append(string);	
+				if($('#my-form .btn-save').length)
+					$('#my-form .btn-save').html('<a href="javascript:;" onclick="edit();"><i class="fa fa-edit"></i>Sửa</a>');
+				else{
+					var btn = '<li class="btn-back"><a href="javascript:;" onclick="edit();"><i class="fa fa-calendar"></i>Tiến độ</a></li>';
+					$(btn).insertBefore( ".btn-detail" );
+				}	
+		    }
+		});
+	}
+	
+	function comment() {
+		var checkOptions = {
+				url : BASE_URL + 'tasks/addcomment',
+		        dataType: "json",  
+		        success: commentData
+		    };
+	    $("#task_comment").ajaxSubmit(checkOptions); 
+	}
+	
+	function commentData(data) {
+		gantt.alert(data.msg);
+		if(data.flag == 'true') {
+			load_comment(data.task_id, 1);
+		}
+		$('#comment_content').val('');
+	}
+	
+	function edit() {
+		$('.btn-back').remove();
+		var task_id = $('#task_id').val();
+		var parent = $('#parent').val();
+
+		var url = BASE_URL+'tasks/editcongviec?t=quick'
+
+		$.ajax({
+			type: "GET",
+			url: url,
+			data: {
+				id 		   : task_id,
+				parent 	   : parent,
+			},
+			success: function(string){
+				$('#my-form .arrord_nav').remove();
+				$('#my-form .gantt_cal_larea').remove();
+				$('#my-form').append(string);	
+				
+				$('#my-form .btn-save').html('<a href="javascript:;" onclick="edit_congviec();"><i class="fa fa-floppy-o"></i>Lưu</a>');
+
+			    var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
+			    $.each(frame_array, function( index, value ) {
+				   css_form(value);
+				   press(value);
+			    });
+			    
+			    // picker
+				date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
+				// end picker
+		    }
+		});
+	}
+	

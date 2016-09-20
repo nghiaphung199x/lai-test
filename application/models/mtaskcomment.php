@@ -8,7 +8,7 @@ class MTaskComment extends CI_Model{
 		
 		$this->load->library('MY_System_Info');
 		$info 			 = new MY_System_Info();
-		$user_info 		 = $info->getMemberInfo();
+		$user_info 		 = $info->getInfo();
 		
 		$this->_id_admin = $user_info['id'];
 	}
@@ -68,9 +68,10 @@ class MTaskComment extends CI_Model{
 			$paginator = $arrParam['paginator'];
 			$this->db->select("DATE_FORMAT(c.created, '%d/%m/%Y %H:%i:%s') as created", FALSE);
 			$this->db->select("DATE_FORMAT(c.modified, '%d/%m/%Y %H:%i:%s') as modified", FALSE);
-			$this->db -> select('c.id, u.user_name as username, c.content, u.user_avatar, u.name')
+			$this->db -> select('c.id, e.username, c.content, p.image_id')
 					  -> from($this->_table . ' AS c')
-					  -> join('users AS u', 'c.user_id = u.id', 'left')
+					  -> join('employees AS e', 'c.user_id = e.id', 'left')
+					  -> join('people AS p', 'e.person_id = p.person_id', 'left')
 					  -> where('c.task_id', $arrParam['task_id'])
 					  -> order_by('c.id DESC');
 			
@@ -86,13 +87,16 @@ class MTaskComment extends CI_Model{
 			if(!empty($result)) {
 				foreach($result as &$val){
 					$val['content'] = nl2br($val['content']);
+					if($val['image_id'] == NULL)
+						$val['image'] = base_url() . 'assets/assets/images/avatar-default.jpg';
+					else
+						$val['image'] = base_url() . 'app_files/view/'.$val['image_id'];
 				}
 			}
 		}
 		return $result;
 	}
-	
-	
+
 	public function deleteItem($arrParam = null, $options = null){
 		if($options['task'] == 'delete-multi'){
 // 			$items = $this->getItems($arrParam, array('task'=>'public-info'));
