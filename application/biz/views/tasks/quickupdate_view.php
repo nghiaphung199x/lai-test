@@ -32,7 +32,6 @@
 	</div>
 	<div class="toolbars">
 		<ul class="list clearfix">
-		    <li class="btn-save"><a href="javascript:;" onclick="edit_congviec();"><i class="fa fa-floppy-o"></i>Lưu</a></li>
 <?php if($btnPheduyet == true):?>		
 			<li class="btn-pheduyet"><a href="javascript:;" onclick="pheduyet();"><i class="fa fa-gavel"></i>Phê duyệt</a></li>
 <?php endif;?>
@@ -120,7 +119,7 @@
 								<th style="width: 10%;">Ưu tiên</th>						
 								<th style="width: 10%;">Người gửi</th>
 								<th style="width: 10%;">Ngày gửi</th>
-								<th style="width: 5%;">Phê duyệt</th>
+								<th style="width: 10%;">Phê duyệt</th>
 								<th style="width: 10%;">Phê duyệt</th>
 								<th style="width: 20%;"></th>
 							</tr>

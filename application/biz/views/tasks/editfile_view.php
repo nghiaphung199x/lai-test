@@ -17,7 +17,7 @@
 			</ul>
 		</div>
 		<div class="gantt_cal_larea">
-			<form method="POST" name="file_form" id="file_form" action="" class="form-horizontal">
+			<form method="POST" name="file_form" id="file_form" action="" class="form-horizontal" enctype="multipart/form-data">
 				<input type="hidden" name="id" value="<?php echo $id; ?>" />
 				<div class="clearfix hang" style="margin-bottom: 10px;">
 					<div class="row">

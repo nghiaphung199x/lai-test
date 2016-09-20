@@ -73,51 +73,6 @@ class BizTasks extends Secure_area
 		}
 	}
 
-	public function quickupdate() {
-		$post = $this->input->post();
-		$this->load->model('MTasks');
-		if(!empty($post)) {
-			$arrParam = $post;
-				
-			$this->load->library("form_validation");
-			$this->form_validation->set_rules('date_start', 'Bắt đầu', 'required');
-			$this->form_validation->set_rules('date_end', 'Kết thúc', 'required');
-			if(isset($post['trangthai'])) {
-				$this->form_validation->set_rules('progress', 'Tiến độ', 'required|greater_than[-1]|less_than[101]');
-			}
-				
-			$flagError = false;
-				
-			if($this->form_validation->run($this) == FALSE){
-				$errors = $this->form_validation->error_array();
-				$flagError = true;
-			}else {
-				// kiểm tra time
-				$date_start = str_replace('/', '-', $arrParam['date_start']);
-				$arrParam['date_start'] = date('Y-m-d', strtotime($date_start));
-					
-				$date_end = str_replace('/', '-', $arrParam['date_end']);
-				$arrParam['date_end'] = date('Y-m-d', strtotime($date_end));
-					
-				$datediff = strtotime($arrParam['date_end']) - strtotime($arrParam['date_start']);
-				$arrParam['duration'] = floor($datediff/(60*60*24)) + 1;
-				if($arrParam['duration'] < 0) {
-					$flagError = true;
-					$errors['date'] = 'Ngày kết thúc phải sau ngày bắt đầu.';
-				}
-			}
-	
-			if($flagError == false) {
-				$this->MTasks->saveItem($arrParam, array('task'=>'quick-update'));
-				$respon = array('flag'=>'true');
-			}else {
-				$respon = array('flag'=>'false', 'message'=>current($errors));
-			}
-				
-			echo json_encode($respon);
-		}
-	}
-	
 	public function addcongviec() {
 		$post = $this->input->post();
 		$get  = $this->input->get();
@@ -234,7 +189,7 @@ class BizTasks extends Secure_area
 			}else {
 				// kiểm tra time
 				$arrParam['date_start'] = date('Y-m-d', strtotime($arrParam['date_start']));
-				$arrParam['date_end'] = date('Y-m-d', strtotime($arrParam['date_end']));
+				$arrParam['date_end']   = date('Y-m-d', strtotime($arrParam['date_end']));
 
 				$datediff = strtotime($arrParam['date_end']) - strtotime($arrParam['date_start']);
 				$arrParam['duration'] = floor($datediff/(60*60*24)) + 1;
@@ -254,25 +209,26 @@ class BizTasks extends Secure_area
 			echo json_encode($respon);
 		}else {
 			$item = $this->MTasks->getItem(array('id'=>$arrParam['id']), array('task'=>'public-info', 'brand'=>'detail'));
+
 			$is_xem 	  = $is_implement = $is_create_task = $is_pheduyet = $is_progress = array();
 			$is_create_task_parent = $is_pheduyet_parent = $is_progress_parent = array();
 			if(!empty($item['is_xem'])) {
 				foreach($item['is_xem'] as $val)
-					$is_xem[] = $val['user_id'];
+					$is_xem[] = $val['id'];
 					
 				$is_xem = array_unique($is_xem);
 			}
 
 			if(!empty($item['is_implement'])) {
 				foreach($item['is_implement'] as $val)
-					$is_implement[] = $val['user_id'];
+					$is_implement[] = $val['id'];
 					
 				$is_implement = array_unique($is_implement);
 			}
 
 			if(!empty($item['is_create_task'])) {
 				foreach($item['is_create_task'] as $key => $val){
-					$is_create_task[] = $val['user_id'];
+					$is_create_task[] = $val['id'];
 					$keyArr = explode('-', $key);
 					if($keyArr[0] != $arrParam['id'])
 						$is_create_task_parent[] = $val['user_id'];
@@ -284,11 +240,11 @@ class BizTasks extends Secure_area
 
 			if(!empty($item['is_pheduyet'])) {
 				foreach($item['is_pheduyet'] as $key => $val){
-					$is_pheduyet[] = $val['user_id'];
+					$is_pheduyet[] = $val['id'];
 
 					$keyArr = explode('-', $key);
 					if($keyArr[0] != $arrParam['id'])
-						$is_pheduyet_parent[] = $val['user_id'];
+						$is_pheduyet_parent[] = $val['id'];
 				}
 					
 				$is_pheduyet_parent = array_unique($is_pheduyet_parent);
@@ -299,11 +255,11 @@ class BizTasks extends Secure_area
 
 			if(!empty($item['is_progress'])) {
 				foreach($item['is_progress'] as $key => $val){
-					$is_progress[] = $val['user_id'];
+					$is_progress[] = $val['id'];
 
 					$keyArr = explode('-', $key);
 					if($keyArr[0] != $arrParam['id'])
-						$is_progress_parent[] = $val['user_id'];
+						$is_progress_parent[] = $val['id'];
 				}
 					
 				$is_progress_parent = array_unique($is_progress_parent);
@@ -340,7 +296,8 @@ class BizTasks extends Secure_area
 					$view = 'tasks/detail_view';
 				}
 				
-				$this->load->view($view,$this->_data);
+				if(!empty($view))
+					$this->load->view($view,$this->_data);
 
 			}else { // công việc thuộc dự án
 				if(in_array('update_all_task', $task_permission))
@@ -350,17 +307,18 @@ class BizTasks extends Secure_area
 				elseif(in_array($user_info['id'], $is_create_task_parent)){
 					$view = 'tasks/editform_view';
 				}elseif(in_array($user_info['id'], $is_implement))
-					$view = 'tasks/editform_view';
+					$view = 'tasks/quickupdate_view';
 				elseif(in_array($user_info['id'], $is_xem) || in_array($user_info['id'], $is_pheduyet_parent)) {
 					$this->_data['no_comment'] = $this->_data['no_update'] = true;	
 					$view = 'tasks/detail_view';
 				}
-				
-				$this->load->view($view,$this->_data);
+
+				if(!empty($view))
+					$this->load->view($view,$this->_data);
 			}
 		}
 	}
-	
+	//labeaute1212@gmail.com : labeaute
 	public function progresslist() {
 		$this->load->model('MTaskProgress');
 		$post  = $this->input->post();
@@ -491,10 +449,7 @@ class BizTasks extends Secure_area
 			if($arrParam['progress'] != -1) {
 				$this->form_validation->set_rules('progress', 'Tiến độ', 'required|greater_than[-1]|less_than[101]');
 			}
-			
 
-			
-			
 			$item = $this->MTasks->getItem(array('id'=>$this->_data['arrParam']['task_id']), array('task'=>'public-info', 'brand'=>'detail'));
 
 			$is_progress = $is_progress_parent = $is_implement = array();
@@ -576,7 +531,7 @@ class BizTasks extends Secure_area
 				$flagError = true;
 			}else {
 				if($_FILES["file_upload"]['name'] != ""){
-					$upload_dir = base_url() . '/assets/tasks/files/';
+					$upload_dir = FILE_PATH;
 					$config['upload_path'] = $upload_dir;
 					$config['allowed_types'] = 'jpg|png|pdf|docx|doc|xls|xlsx|zip|zar';
 					$config['max_size']	= '10240';
@@ -612,7 +567,8 @@ class BizTasks extends Secure_area
 	
 				$respon = array('flag'=>'true', 'message'=>'Cập nhật thành công');
 			}
-				
+			
+
 			echo json_encode($respon);
 	
 		}else
@@ -637,29 +593,43 @@ class BizTasks extends Secure_area
 	
 			$this->load->library("form_validation");
 			$flagError = false;
-			$stringValidate = 'taskfiles-name-' . $arrParam['id'];
+
 			if($_FILES["file_upload"]['name'] != ""){
-				$this->form_validation->set_rules('name', 'Tên tài liệu', 'required|max_length[255]|unique_check['.$stringValidate.']');
-				$this->form_validation->set_rules('file_name', 'Tên file', 'required|max_length[255]|is_unique[task_files.file_name]');
-	
+				$this->form_validation->set_rules('name', 'Tên tài liệu', 'required|max_length[255]');
+				$this->form_validation->set_rules('file_name', 'Tên file', 'required|max_length[255]');
+				
 				if($this->form_validation->run($this) == FALSE){
 					$errors = $this->form_validation->error_array();
 					$flagError = true;
-				}else {
-					$upload_dir = FILE_PATH . '/document/';
+				}
+					
+				if($flagError == false){
+					$flagError = $this->MTaskFiles->validate($arrParam['name'], 'name', $arrParam['id']);
+					if($flagError == true)
+						$errors[] = 'Tên tài liệu đã tồn tại.';
+				}
+				
+				if($flagError == false){
+					$flagError = $this->MTaskFiles->validate($arrParam['file_name'], 'file_name', $arrParam['id']);
+					if($flagError == true)
+						$errors[] = 'Tên tài file đã tồn tại.';
+				}
+
+				if($flagError == false) {
+					$upload_dir = FILE_PATH;
 					// remove file cũ
 					@unlink($upload_dir . $item['file_name']);
-						
+					
 					$config['upload_path'] = $upload_dir;
 					$config['allowed_types'] = 'jpg|png|pdf|docx|doc|xls|xlsx|zip|zar';
 					$config['max_size']	= '10240';
 					$config['encrypt_name'] = TRUE;
 					$config['file_name'] = 'test-1.docx';
-	
+					
 					$this->load->library('upload', $config);
-						
+					
 					if($this->upload->do_upload("file_upload")){
-						// đổi tên file vì config file_name ứ hoạt động
+						// đổi tên file vì config file_name không hoạt động
 						$file_info = $this->upload->data();
 						$old_file_name = $file_info['file_name'];
 						rename($upload_dir . $old_file_name, $upload_dir . $post['file_name']);
@@ -672,18 +642,27 @@ class BizTasks extends Secure_area
 						$errors[] = $fileError[$err];
 					}
 				}
+					
 			}else {
-				$this->form_validation->set_rules('name', 'Tên tài liệu', 'required|max_length[255]|unique_check['.$stringValidate.']');
+				$this->form_validation->set_rules('name', 'Tên tài liệu', 'required|max_length[255]');
 	
 				if($this->form_validation->run($this) == FALSE){
 					$errors = $this->form_validation->error_array();
 					$flagError = true;
-				}else {
+				}
+		
+				if($flagError == false){
+					$flagError = $this->MTaskFiles->validate($arrParam['name'], 'name', $arrParam['id']);
+					if($flagError == true)
+						$errors[] = 'Tên tài liệu đã tồn tại.';
+				}
+				
+				if($flagError == false) {
 					$arrParam['file_name'] = $item['file_name'];
 					$arrParam['size'] 	   = $item['size'];
 				}
 			}
-	
+
 			if($flagError == true) {
 				$respon = array('flag'=>'false', 'message'=>current($errors));
 			}else {
@@ -698,7 +677,7 @@ class BizTasks extends Secure_area
 		}else {
 			$this->_data['item'] = $item;
 	
-			$this->load->view('index/editfile_view',$this->_data);
+			$this->load->view('tasks/editfile_view',$this->_data);
 		}
 	}
 	
@@ -713,20 +692,30 @@ class BizTasks extends Secure_area
 		}
 	}
 	
-	// call back
-	public function unique_check($value, $param){
-		$param = explode('.', $param);
-		$table = $param[0];
-		$field = $param[1];
-		$id    = (int)$param[2];
+	public function note() {
+		$post  = $this->input->post();
+		if(!empty($post)) {
+			$this->load->model('MTaskProgress');
+			$item = $this->MTaskProgress->getItem($this->_data['arrParam'], array('task'=>'public-info'));
+			$this->_data['item'] = $item;
+			$this->load->view('tasks/note_view',$this->_data);
+		}
+	}
 	
-		$this->db->where("$field LIKE '$value' AND id != $id");
-		$result = $this->db->get($table)->row_array();
-	
-		if(!empty($result)){
-			$this->form_validation->set_message('unique_check', '%s đã tồn tại giá trị ' . $value);
-			return false;
+	public function xulytiendo() {
+		$post  = $this->input->post();
+		if(!empty($post)) {
+			$this->load->model('MTaskProgress');
+			$this->MTaskProgress->saveItem($this->_data['arrParam'], array('task'=>'update-pheduyet'));
+			$this->MTaskProgress->handling($this->_data['arrParam'], array('task'=>'progress'));
+				
+			if($post['pheduyet'] == 1)
+				$respon = array('flag'=>'true', 'message'=>'Cập nhật thành công', 'reload'=>'true');
+			else
+				$respon = array('flag'=>'true', 'message'=>'Cập nhật thành công');
+				
+			echo json_encode($respon);
 		}else
-			return true;
+			$this->load->view('tasks/xulytiendo_view',$this->_data);
 	}
 }

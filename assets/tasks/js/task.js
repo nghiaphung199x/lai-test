@@ -266,10 +266,9 @@
 					   if(html != '') {   
 						   create_layer();
 						   $('#my-form').html(html);
-						   
-						   $('#my-form').show();
-						   
+						   $('#my-form').show(); 
 						   $('#color').colorpicker();
+						   
 					   }else {
 						   gantt.alert({
 							    text: 'Bạn không có quyền với chức năng này.', title:"Cảnh báo!",
@@ -521,7 +520,6 @@
 			    callback:function(){}
 			});
 		}else {
-			//gantt.alert("Cập nhật thành công.");
 			toastr.success('Cập nhật thành công!', 'Thông báo');
 			$('#my-form').html('');
 			$('#my-form').hide();
@@ -532,7 +530,7 @@
 	}
 	
 	function edit_congviec() {
-		var url = BASE_URL + 'tasks/editcongviec'
+		var url = BASE_URL + 'tasks/editcongviec';
 		var checkOptions = {
 		        url : url,
 		        dataType: "json",  
@@ -659,7 +657,7 @@
 	
 	function edit_file() {
 		var checkbox = $(".file_checkbox:checked");
-		var url = base_url + 'tasks/index/editfile';
+		var url = BASE_URL + 'tasks/editfile';
 		
 		if(checkbox.length == 1) {
 			$(checkbox).each(function( index ) {
@@ -680,7 +678,7 @@
 			});
 		}else {
 			gantt.alert({
-			    text: 'Chọn một bản ghi.',
+			    text: 'Chỉ chọn một bản ghi',
 			    title:"Lỗi!",
 			    ok:"Đóng",
 			    callback:function(){}
@@ -705,12 +703,7 @@
 	
 	function fileData(data) {
 		if(data.flag == 'false') {
-			gantt.alert({
-			    text: data.message,
-			    title:"Error!",
-			    ok:"Yes",
-			    callback:function(){}
-			});
+			toastr.error(data.message, 'Lỗi');
 			
 		}else {
 			toastr.success('Cập nhật thành công!', 'Thông báo');
@@ -719,6 +712,46 @@
 
 			load_list('file', 1);
 			close_layer('quick');
+		}
+	}
+	
+	function delete_file() {
+		var checkbox = $(".file_checkbox:checked");
+
+		if(checkbox.length) {
+			var file_ids = new Array();
+			$(checkbox).each(function( index ) {
+				file_ids[file_ids.length] = $(this).val();
+			});
+			
+		    gantt.confirm({
+		        text: 'Xóa tài liệu',
+		        ok:"Đồng ý", 
+		        cancel:"Hủy bỏ",
+		        callback: function(result){
+		        	if(result == true) {
+						$.ajax({
+							type: "POST",
+							url: BASE_URL + 'tasks/deletefile',
+							data: {
+								file_ids   : file_ids,
+							},
+							success: function(string){
+								toastr.success('Cập nhật thành công!', 'Thông báo');
+								load_list('file', 1);
+						    }
+						});
+		        	}
+		        }
+		    });
+			
+		}else {
+			gantt.alert({
+			    text: 'Chọn ít nhất một bản ghi',
+			    title:"Lỗi!",
+			    ok:"Đóng",
+			    callback:function(){}
+			});
 		}
 	}
 	
@@ -997,6 +1030,38 @@
 					 
 					 $('#'+count_span).text(result.count);
 				 }
+		    }
+		});
+	}
+	
+	function xuly_tiendo(id) {
+		var url = BASE_URL + 'tasks/xulytiendo';
+		$.ajax({
+			type: "GET",
+			url: url,
+			data: {
+				id : id
+			},
+			success: function(html){
+				  $('#quick-form').html(html);
+				  $('#quick-form').show();
+				  create_layer('quick');
+		    }
+		});
+	}
+	
+	function note(id) {
+		var url = BASE_URL + 'tasks/note';
+		$.ajax({
+			type: "POST",
+			url: url,
+			data: {
+				id : id
+			},
+			success: function(html){
+				  $('#quick-form').html(html);
+				  $('#quick-form').show();
+				  create_layer('quick');
 		    }
 		});
 	}

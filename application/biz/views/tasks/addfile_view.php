@@ -10,7 +10,7 @@
 			</ul>
 		</div>
 		<div class="gantt_cal_larea">
-			<form method="POST" name="file_form" id="file_form" class="form-horizontal">
+			<form method="POST" name="file_form" id="file_form" class="form-horizontal" enctype="multipart/form-data">
 				<input type="hidden" name="task_id" value="<?php echo $arrParam['task_id']; ?>" />
 				<div class="clearfix hang" style="margin-bottom: 10px;">
 					<div class="row">

@@ -89,8 +89,8 @@ class MTaskFiles extends CI_Model{
 			$this->db->flush_cache();
 		
 			if(!empty($result)) {
-				$upload_dir = base_url() . 'public/files/document/';
-				$userTable = $this->model_load_model('MUser');
+				$upload_dir = base_url() . 'assets/tasks/files/';
+				$userTable = $this->model_load_model('MTaskUser');
 				foreach($result as $val) {
 					$user_ids[] = $val['created_by'];
 					$user_ids[] = $val['modified_by'];
@@ -100,8 +100,8 @@ class MTaskFiles extends CI_Model{
 				$user_infos = $userTable->getItems(array('user_ids'=>$user_ids));
 				
 				foreach($result as &$val) {
-					$val['created_name']  = $user_infos[$val['created_by']]['user_name'];
-					$val['modified_name'] = $user_infos[$val['modified_by']]['user_name'];
+					$val['created_name']  = $user_infos[$val['created_by']]['username'];
+					$val['modified_name'] = $user_infos[$val['modified_by']]['username'];
 					$val['link']		  = $upload_dir . $val['file_name'];
 				}
 					
@@ -154,11 +154,25 @@ class MTaskFiles extends CI_Model{
 				$this->db->flush_cache();
 				
 				// xóa file
-				$upload_dir = FILE_PATH . '/document/';
+				$upload_dir = FILE_PATH;
 				foreach($file_names as $file_name)
 					@unlink($upload_dir . $file_name);
 			}
 		}
+	}
+	
+	public function validate($value, $field_name, $id) {
+		$this->db->select('f.*')
+				->from($this->_table . ' as f')
+				->where("f.$field_name LIKE '$value' AND id != $id");
+		
+		$query = $this->db->get();
+		$result = $query->row_array();
+		
+		if(!empty($result))
+			return true;
+		else
+			return false;
 	}
 	
 	function model_load_model($model_name)
