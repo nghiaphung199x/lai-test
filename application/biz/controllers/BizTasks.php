@@ -46,6 +46,13 @@ class BizTasks extends Secure_area
 	
 	function index() {
 		$this->load->view('tasks/index_view', $this->_data);
+		
+		$this->load->library('MY_System_Info');
+		$info 					  = new MY_System_Info();
+		$user_info = $info->getInfo();
+		if(!in_array('tasks_view', $user_info['task_permission']))
+			redirect('/no_access/tasks');
+		
 	}
 	
 	function danhsach() {
@@ -929,11 +936,22 @@ class BizTasks extends Secure_area
 				
 			$datediff = strtotime($arrParam['date_end']) - strtotime($arrParam['date_start']);
 			$arrParam['duration'] = floor($datediff/(60*60*24)) + 1;
-			
+
 			$this->MTasks->saveItem($arrParam, array('task'=>'quick-update'));
 		}
 	}
 	
-	// helper function
+	public function deletecv() {
+		$post 	  = $this->input->post();
+		$this->load->model('MTasks');
+		if(!empty($post)) {
+			$arrParam['cid'] = array($this->_data['arrParam']['id']);
+			$this->MTasks->deleteItem($arrParam, null);
+		}
+	}
 	
+	public function test() {
+		$this->load->model('MTasks');
+		$this->MTasks->test();
+	}
 }

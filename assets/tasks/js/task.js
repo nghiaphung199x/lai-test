@@ -168,6 +168,65 @@
 		        }
 		    });
 		});
+		
+		// link
+		gantt.attachEvent("onBeforeLinkAdd", function(id,link){
+			var task_id = link.source;
+			
+			if($.inArray(task_id, deny_items) == -1){
+				$.ajax({
+					type: "POST",
+					url: BASE_URL + 'tasks/link',
+					data: {
+						source   : link.source,
+						target   : link.target,
+						type     : parseInt(link.type),
+					},
+					success: function(string){
+						var res = $.parseJSON(string);
+						if(res.flag == 'true')
+							gantt.alert("Cập nhật thành công.");
+				    }
+				});
+				return true;
+			}
+			else{
+				gantt.alert({
+				    text:"Bạn không có quyền với chức năng này.",
+				    title:"Lỗi!",
+				    ok:"Đóng",
+				    callback:function(){}
+				});
+				return false;
+			}
+		});
+		
+		gantt.attachEvent("onBeforeLinkDelete", function(id,item){
+		    var task_id = item.source;
+			if($.inArray(task_id, deny_items) == -1){
+				$.ajax({
+					type: "POST",
+					url: BASE_URL + 'tasks/delete',
+					data: {
+						link_id   : id,
+
+					},
+					success: function(string){
+						//console.log(string);
+				    }
+				});
+				return true;
+			}
+			else{
+				gantt.alert({
+				    text:"Bạn không có quyền với chức năng này.",
+				    title:"Error!",
+				    ok:"Yes",
+				    callback:function(){}
+				});
+				return false;
+			}
+		});
 	});
 
 	function add_item(obj, frame_id) {
@@ -431,64 +490,7 @@
 					
 				    return "";
 				};
-				// link
-				gantt.attachEvent("onBeforeLinkAdd", function(id,link){
-					var task_id = link.source;
-					
-					if($.inArray(task_id, deny_items) == -1){
-						$.ajax({
-							type: "POST",
-							url: BASE_URL + 'tasks/link',
-							data: {
-								source   : link.source,
-								target   : link.target,
-								type     : parseInt(link.type),
-							},
-							success: function(string){
-								var res = $.parseJSON(string);
-								if(res.flag == 'true')
-									gantt.alert("Cập nhật thành công.");
-						    }
-						});
-						return true;
-					}
-					else{
-						gantt.alert({
-						    text:"Bạn không có quyền với chức năng này.",
-						    title:"Lỗi!",
-						    ok:"Đóng",
-						    callback:function(){}
-						});
-						return false;
-					}
-				});
-				
-				gantt.attachEvent("onBeforeLinkDelete", function(id,item){
-				    var task_id = item.source;
-					if($.inArray(task_id, deny_items) == -1){
-						$.ajax({
-							type: "POST",
-							url: BASE_URL + 'tasks/delete',
-							data: {
-								link_id   : id,
-	
-							},
-							success: function(string){
-								//console.log(string);
-						    }
-						});
-						return true;
-					}
-					else{
-						gantt.alert({
-						    text:"Bạn không có quyền với chức năng này.",
-						    title:"Error!",
-						    ok:"Yes",
-						    callback:function(){}
-						});
-						return false;
-					}
-				});
+
 				
 				//drag
 
@@ -569,6 +571,31 @@
 	    $("#task_form").ajaxSubmit(checkOptions); 
 	    return false; 
 	}
+	
+	function delete_congviec(id) {
+	    gantt.confirm({
+	        text: 'Bạn có chắc muốn xóa?',
+	        ok:"Đồng ý", 
+	        cancel:"Hủy bỏ",
+	        callback: function(result){
+	        	if(result == true) {
+					$.ajax({
+						type: "POST",
+						url: BASE_URL + 'tasks/deletecv',
+						data: {
+							id 	 : id,
+						},
+						success: function(string){
+							console.log(string);
+//							toastr.success('Xóa thành công.', 'Thông báo');
+//							load_task();
+					    }
+					});
+	        	}
+	        }
+	    });
+	}
+	
 	
 	function taskData(data) {
 		if(data.flag == 'false') {

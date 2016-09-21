@@ -14,7 +14,7 @@
 			Thông tin Dự án/ Công việc
 		</h3>
 	</div>
-	<div id="gantt_here" style='width:100%; min-height: 300px;'></div>
+	<div id="gantt_here" style='width:100%; min-height: 700px;'></div>
 	<div id="my-form" class="gantt_cal_light" style=""></div>
 	<div id="quick-form" class="gantt_cal_light" style=""></div>
 	<div>

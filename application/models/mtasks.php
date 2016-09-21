@@ -1105,4 +1105,10 @@ class MTasks extends MNested2{
 		return $percent;
 	}
 
+	public function deleteItem($arrParam = null, $options = null) {
+		if($options == null) {
+			foreach($arrParam['cid'] as $id)
+				echo '<br />' . $id;
+		}
+	}
 }

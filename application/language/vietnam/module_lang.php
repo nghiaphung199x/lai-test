@@ -93,6 +93,7 @@ $lang['module_edit_giftcard_value'] = 'Sửa giá trị thẻ quà tặng';
 // task
 $lang['module_tasks']='Công việc';
 $lang['module_tasks_desc']='&nbsp';
+$lang['module_tasks_view'] 	   	       = 'Danh sách Dự án/Công việc';
 $lang['module_update_project'] 	   	   = 'Cập nhật Dự án';
 $lang['module_permisson_project'] 	   = 'Cấp phép cập nhật công việc trong dự án';
 $lang['module_update_all_task'] 	   = 'Cập nhật toàn bộ công việc';
@@ -101,7 +102,6 @@ $lang['module_update_brand_task'] 	   = 'Cập nhật công việc trong dự á
 $lang['module_permission_brand_task']  = 'Cấp phép cập nhật công việc trong dự án phụ trách';
 
 //end task
-
 $lang['module_items_transfer_pending'] = 'Duyệt đơn chuyển kho';
 
 $lang['module_stock_out'] = 'Xuất kho';

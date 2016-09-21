@@ -57,8 +57,7 @@
 
 	if($pheduyet == 1)
 		$btnPheduyet = false;
-
-
+	
 ?>	
 <?php if($arrParam['t'] != 'quick'):?>
 		<div class="gantt_cal_ltitle" style="cursor: pointer;"><span class="gantt_mark">&nbsp;</span>
@@ -70,7 +69,7 @@
 <?php if($btnPheduyet == true):?>		
 				<li class="btn-pheduyet"><a href="javascript:;" onclick="pheduyet();"><i class="fa fa-gavel"></i>Phê duyệt</a></li>
 <?php endif;?>
-				<li class="btn-delete"><a href="javascript:;"><i class="fa fa-times"></i>Xóa</a></li>
+				<li class="btn-delete"><a href="javascript:;" onclick="delete_congviec(<?php echo $id; ?>);"><i class="fa fa-times"></i>Xóa</a></li>
 				<li class="btn-detail"><a href="javascript:;" onclick="detail();"><i class="fa fa-info"></i>Chi tiết</a></li>
 				<li class="btn-cancel"><a href="javascript:;" onclick="cancel('full');"><i class="fa fa-times-circle"></i>Đóng</a></li>
 				
@@ -84,7 +83,6 @@
 				<li data-id="file_manager"><span class="title">Tài liệu</span></li>
 			</ul>
 		</div>
-		
 		<div class="gantt_cal_larea">
 			<form method="POST" name="task_form" id="task_form" class="form-horizontal">
 				<input type="hidden" name="id" id="task_id" value="<?php echo $id; ?>" />
@@ -112,7 +110,7 @@
 <?php if($parent > 0):?>	
 						<div class="col-lg-12">
 							<div class="form-group">
-								<label for="first_name" class="col-md-3 col-lg-2 control-label ">Tỷ lệ</label>			
+								<label for="first_name" class="col-md-3 col-lg-2 control-label">Tỷ lệ</label>			
 								<div class="col-md-9 col-lg-10">
 									<input type="number" name="percent" value="<?php echo $percent; ?>" class="form-control" />
 								</div>

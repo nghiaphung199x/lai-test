@@ -42,7 +42,7 @@ class MY_System_Info{
 		$query = $this->_CI->db->get();
 		
 		$resultTmp = $query->result_array();
-		
+
 		$this->_CI->db->flush_cache();
 		
 		if(!empty($resultTmp)) {
