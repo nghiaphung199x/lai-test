@@ -3,7 +3,7 @@
 	if(!empty($item['reply'])) {
 		$user_pheduyet_name = $item['user_pheduyet_name'];
 		$reply			    = $item['reply'];
-		$note = $note . '<br />@'.$user_pheduyet_name . ' : ' . $reply;
+		$note = $note . '&#13;&#10;@'.$user_pheduyet_name . ' : ' . $reply;
 	}
 ?>
 		<div class="gantt_cal_ltitle" style="cursor: pointer;">

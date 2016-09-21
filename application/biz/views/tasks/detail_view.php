@@ -65,7 +65,9 @@
 		            <tr>
 		                <td class="x-info-top" colspan="4" style="background: #489ee7; color: white; border: 0 !important;">
 			                <span class="tl">Thông tin chi tiết</span>
+<?php if($arrParam['t'] == 'quick'):?>
 			                <span class="gantt_mark" onclick="cancel();"><i class="fa fa-times"></i></span>
+<?php endif;?>		                
 		                </td>
 		            </tr>
 		            <tr>

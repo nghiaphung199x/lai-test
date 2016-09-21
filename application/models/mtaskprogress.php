@@ -173,12 +173,17 @@ class MTaskProgress extends CI_Model{
 			$this->db->flush_cache();
 			
 			if(!empty($result)) {
-				$trangthai_arr = array('-1'=>'_','0'=>'Chưa thực hiện', '1'=>'Đang thực hiện', '2'=>'Hoàn thành', '3'=>'Đóng/dừng', '4'=>'Không thực hiện');
+				$trangthai_arr = array('0'=>'Chưa thực hiện', '1'=>'Đang thực hiện', '2'=>'Hoàn thành', '3'=>'Đóng/dừng', '4'=>'Không thực hiện');
 				foreach($result as &$val) {
 					$val['trangthai'] = $trangthai_arr[$val['trangthai']];
-					$val['progress'] = $val['progress'] * 100 . '%';
+					
+					if($val['progress'] == -0.01)
+						$val['progress'] = '_';
+					else
+						$val['progress'] = $val['progress'] * 100 . '%';
 						
 					$val['prioty'] = $prioty_arr[$val['prioty']];
+
 				}
 			}
 		
@@ -207,13 +212,17 @@ class MTaskProgress extends CI_Model{
 			$this->db->flush_cache();
 			
 			if(!empty($result)) {
-				$trangthai_arr = array('-1'=>'_','0'=>'Chưa thực hiện', '1'=>'Đang thực hiện', '2'=>'Hoàn thành', '3'=>'Đóng/dừng', '4'=>'Không thực hiện');
+				$trangthai_arr = array('0'=>'Chưa thực hiện', '1'=>'Đang thực hiện', '2'=>'Hoàn thành', '3'=>'Đóng/dừng', '4'=>'Không thực hiện');
 				foreach($result as &$val) {
 					$val['trangthai'] = $trangthai_arr[$val['trangthai']];
-					$val['progress'] = $val['progress'] * 100 . '%';
+					if($val['progress'] == -0.01)
+						$val['progress'] = '_';
+					else
+						$val['progress'] = $val['progress'] * 100 . '%';
 			
 					$val['prioty'] = $prioty_arr[$val['prioty']];
 					$val['date_pheduyet'] = ($val['date_pheduyet'] == '00/00/0000 00:00:00') ? '' : $val['date_pheduyet'];
+
 				}
 			}
 		}elseif($options['task'] == 'pheduyet-list') {
@@ -236,11 +245,10 @@ class MTaskProgress extends CI_Model{
 				
 				if(!empty($result)) {
 					foreach($result as &$val) {
-						$trangthai_arr = array('-1'=>'_','0'=>'Chưa thực hiện', '1'=>'Đang thực hiện', '2'=>'Hoàn thành', '3'=>'Đóng/dừng', '4'=>'Không thực hiện');
+						$trangthai_arr = array('0'=>'Chưa thực hiện', '1'=>'Đang thực hiện', '2'=>'Hoàn thành', '3'=>'Đóng/dừng', '4'=>'Không thực hiện');
 						foreach($result as &$val) {
 							$val['trangthai'] = $trangthai_arr[$val['trangthai']];
-							$val['progress'] = $val['progress'] * 100 . '%';
-								
+	
 							$val['prioty'] = $prioty_arr[$val['prioty']];
 							if($val['date_pheduyet'] == '00/00/0000 00:00:00') {
 								$val['date_pheduyet'] = '';
@@ -255,6 +263,11 @@ class MTaskProgress extends CI_Model{
 								$val['pheduyet'] = '<i class="fa fa-times"></i>';
 							elseif($val['pheduyet'] == 1)
 								$val['pheduyet'] = '<i class="fa fa-check"></i>';
+							
+							if($val['progress'] == -0.01)
+								$val['progress'] = '_';
+							else
+								$val['progress'] = $val['progress'] * 100 . '%';
 
 						}
 					}
@@ -265,7 +278,7 @@ class MTaskProgress extends CI_Model{
 		return $result;
 	}
 	
-	function do_progress($level, $options) {
+	function do_progress($level, $options, $key = null) {
 		$taskTable = $this->model_load_model('MTasks');
 		if(!empty($level)) {
 			$last_level = end($level);
@@ -294,7 +307,6 @@ class MTaskProgress extends CI_Model{
 						}
 					}
 				}
-				
 				// progress data
 				if($options['task'] != 'progress') {
 					$created_by 		= $options['created_by'];
@@ -305,6 +317,8 @@ class MTaskProgress extends CI_Model{
 					$user_pheduyet 		= 0;
 					$user_pheduyet_name = '';
 				}
+				
+				$key_value = ($key == null) ? '' : $key;
 					
 				$progressTmp = array(
 						'task_id' 			 => $parent_item['id'],
@@ -319,7 +333,7 @@ class MTaskProgress extends CI_Model{
 						'user_pheduyet'		 => $user_pheduyet,
 						'user_pheduyet_name' => $user_pheduyet_name,	
 						'date_pheduyet'	     => @date("Y-m-d H:i:s"),
-						'key' 			 	 => '',
+						'key' 			 	 => $key_value,
 						);
 				
 				$this->_items[] = $progressTmp;
@@ -329,41 +343,46 @@ class MTaskProgress extends CI_Model{
 		}
 	}
 
-	public function solve($arrParam) {
+	public function solve($arrParam, $options = null) {
 		$taskTable 		= $this->model_load_model('MTasks');
-		$arrParam['id'] = $arrParam['last_id'];
 		$task 			= $arrParam;
-		$task_items 	= $taskTable->getItems(array('project_id'=>$task['project_id']), array('task'=>'by-project'));
-		
+		if($options['task'] == 'edit'){
+			$task_items 	= $taskTable->getItems(array('project_id'=>$task['project_id'], 'level'=>$task['level']), array('task'=>'by-project'));
+		}else{
+			$task_items 	= $taskTable->getItems(array('project_id'=>$task['project_id']), array('task'=>'by-project'));
+		}
+			
 		foreach($task_items as $task_id => $task) {
-			if($task_id == $task['id']){
-				$task['progress']  = $task['progress'] / 100;
-				
-					
-				if($options != null) {
-					$progressTmp = array(
-							'task_id' 			 => $progress_item['task_id'],
-							'trangthai' 		 => $progress_item['trangthai'],
-							'prioty' 			 => $progress_item['prioty'],
-							'progress' 			 => $progress_item['progress'],
-							'pheduyet'			 => $arrParam['pheduyet'],
-							'note' 				 => '',
-							'reply' 			 => '',
-							'created'			 => @date("Y-m-d H:i:s"),
-							'created_by'		 => $this->_id_admin,
-							'user_pheduyet'		 => 0,
-							'user_pheduyet_name' => '',
-							'date_pheduyet'	     => @date("Y-m-d H:i:s"),
-							'key' 			 	 => 'add',
-					);
-						
-					$this->_items[] = $progressTmp;
-				}else{
-					$options['created_by'] = $progress_item['created_by'];
-				}
-			}
 			$level[$task['level']][] = $task;
 		}
+		
+		if($options['task'] != 'edit') {
+			$progressTmp = array(
+					'task_id' 			 => $task['id'],
+					'trangthai' 		 => $task['trangthai'],
+					'prioty' 			 => $task['prioty'],
+					'progress' 			 => $task['progress'],
+					'pheduyet'			 => 3,
+					'note' 				 => '',
+					'reply' 			 => '',
+					'created'			 => @date("Y-m-d H:i:s"),
+					'created_by'		 => $this->_id_admin,
+					'user_pheduyet'		 => 0,
+					'user_pheduyet_name' => '',
+					'date_pheduyet'	     => @date("Y-m-d H:i:s"),
+					'key' 			 	 => '',
+			);
+				
+			$this->_items[] = $progressTmp;
+		}
+		
+		$this->do_progress($level, array('task'=>'progress'), $arrParam['key']);
+		
+		// cập nhật progress
+		if(!empty($this->_items)){
+			$this->db->insert_batch($this->_table, $this->_items);
+		}
+			
 	}
 
 	function handling($arrParam = null, $options = null) {

@@ -22,11 +22,6 @@ class MTasks extends MNested2{
 				$customer_ids = implode(',', $arrParam['customer']);
 			}
 				
-			if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
-				$arrParam['trangthai'] = 2;
-				$arrParam['progress'] = 100;
-			}
-
 			if($arrParam['parent'] == 0) {
 				$data['name']  					= 		stripslashes($arrParam['name']);
 				$data['detail'] 				= 		stripslashes($arrParam['detail']);
@@ -965,13 +960,15 @@ class MTasks extends MNested2{
 			
 
 		}elseif($options['task'] == 'by-project') {
+			$this->db->select("DATE_FORMAT(t.date_start, '%d/%m/%Y') as date_start", FALSE);
+			$this->db->select("DATE_FORMAT(t.date_end, '%d/%m/%Y') as date_end", FALSE);
 			$this->db->select("t.*")
 						->from($this->_table . ' as t')
 						->where('t.project_id', $arrParam['project_id']);
 			
-			$this->db->select("DATE_FORMAT(t.date_start, '%d/%m/%Y') as date_start", FALSE);
-			$this->db->select("DATE_FORMAT(t.date_end, '%d/%m/%Y') as date_end", FALSE);
-				
+			if(!empty($arrParam['level']))
+				$this->db->where('t.level <= ' . $arrParam['level']);
+
 			$query = $this->db->get();
 				
 			$resultTmp =  $query->result_array();
@@ -1083,11 +1080,14 @@ class MTasks extends MNested2{
 		return $result;
 	}
 	
-	public function getMaxPercent($parent_id, $project_id) {
+	public function getMaxPercent($parent_id, $project_id, $id = null) {
 		$this->db->select("t.percent")
 				 ->from($this->_table . ' as t')
 				 ->where('t.parent', $parent_id)
 				 ->where('t.project_id', $project_id);
+		
+		if($id > 0)
+			$this->db->where('t.id != ' . $id);
 		
 		$query = $this->db->get();
 		$result =  $query->result_array();

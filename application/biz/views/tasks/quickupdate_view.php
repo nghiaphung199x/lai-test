@@ -120,7 +120,7 @@
 								<th style="width: 10%;">Người gửi</th>
 								<th style="width: 10%;">Ngày gửi</th>
 								<th style="width: 10%;">Phê duyệt</th>
-								<th style="width: 10%;">Phê duyệt</th>
+								<th style="width: 10%;">Ngày phê duyệt</th>
 								<th style="width: 20%;"></th>
 							</tr>
 						</thead>

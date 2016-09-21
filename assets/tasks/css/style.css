@@ -93,8 +93,8 @@
 .manage-table > .panel-heading h3 {
     font-size: 15px;
     font-weight: bold;
-    margin-bottom: 5px;
     padding-top: 5px;
+	padding-bottom: 5px;
     color: #555555;
 }
 #my-form {
@@ -264,6 +264,8 @@ display: block;
 	border: 0;
 	height: auto;
 	padding: 10px 0 20px;
+	padding-bottom: 6px;
+	overflow: inherit;
 }
 
 #my-form.detail .gantt_cal_larea {
@@ -368,11 +370,13 @@ display: block;
 
 #progress_manager .table {
 	margin-bottom: 0;
+    border: 1px solid #d7dce5 !important;
 }
 
 #progress_manager .panel-body {
-    padding-top: 0;
-    border: 1px solid #d7dce5;
+    padding-top: 0 !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
 }
 
 #file_manager {

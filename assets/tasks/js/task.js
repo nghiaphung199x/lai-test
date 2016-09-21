@@ -85,6 +85,89 @@
 				load_list('pheduyet', 1);
 			}
 		});
+		
+		// gantt
+		gantt.attachEvent("onBeforeTaskDrag", function(id, mode, task){
+			 if(mode == 'move' || mode == 'resize') {
+				if ($.inArray(id, deny_items) == -1){
+					var task  =gantt.getTask(id);
+					return true;
+				}
+				else{
+					gantt.alert({
+					    text:"Bạn không có quyền với chức năng này.",
+					    title:"Error!",
+					    ok:"Yes",
+					    callback:function(){}
+					});
+					return false;
+				}
+			}else if(mode == 'progress')
+				return false;
+
+		});
+
+		gantt.attachEvent("onTaskDrag", function(id, mode, task, original){
+			var start_date_original = new Date(task.start_date);
+			var end_date_original   = new Date(task.end_date);
+			var start_hour 		    = start_date_original.getHours();
+			var end_hour 			= end_date_original.getHours();
+
+			if(start_hour >= 12){
+				start_date_original.setDate(start_date_original.getDate() + 1);
+
+			}
+			var start_date = start_date_original.getFullYear() + '-' + (start_date_original.getMonth() + 1) + '-' + start_date_original.getDate();
+
+			if(end_hour < 12){
+				end_date_original.setDate(end_date_original.getDate() - 1);
+			}
+
+			var end_date = end_date_original.getFullYear() + '-' + (end_date_original.getMonth()+1) + '-' + end_date_original.getDate();
+			
+			$('#start_date_original').val(original.start_date);
+			$('#start_date_drag').val(start_date);
+			$('#end_date_drag').val(end_date);
+												
+		    return true;
+		});		
+			
+		gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
+		    var start_date = $('#start_date_drag').val();
+		    var end_date   = $('#end_date_drag').val();
+		    
+		    var res_start = start_date.split("-");
+		    var res_end   = end_date.split("-");
+		    
+		    var new_start_date = res_start[2] + '/' + res_start[1] + '/' + res_start[0];
+		    var new_end_date   = res_end[2] + '/' + res_end[1] + '/' + res_end[0];
+
+		    gantt.confirm({
+		        text: 'Cập nhật "'+new_start_date+' đến '+new_end_date+'"',
+		        ok:"Đồng ý", 
+		        cancel:"Hủy bỏ",
+		        callback: function(result){
+		        	if(result == true) {
+						$.ajax({
+							type: "POST",
+							url: BASE_URL + 'tasks/quickupdate',
+							data: {
+								id 		   : id,
+								date_start : start_date,
+								date_end   : end_date,
+							},
+							success: function(string){
+								gantt.alert("Cập nhật thành công.");
+						    }
+						});
+		        	}else{
+		        		//task.start_date = $('#start_date_original').val();
+		        		//gantt.refreshData();
+		        	}
+
+		        }
+		    });
+		});
 	});
 
 	function add_item(obj, frame_id) {
@@ -142,25 +225,24 @@
 	}
 	
 	function press(frame_id) {
-		   if($('#'+frame_id).length) {
-			   var typingTimer;                
-			   var doneTypingInterval = 1000;  
+	   if($('#'+frame_id).length) {
+		   var typingTimer;                
+		   var doneTypingInterval = 1000;  
 
-			   $('#'+frame_id+' .quick_search').on('keyup', function () {
-				   clearTimeout(typingTimer);
-				   typingTimer = setTimeout(function(){
-					   doneTyping(frame_id)
-				    },doneTypingInterval);
+		   $('#'+frame_id+' .quick_search').on('keyup', function () {
+			   clearTimeout(typingTimer);
+			   typingTimer = setTimeout(function(){
+				   doneTyping(frame_id)
+			    },doneTypingInterval);
 
-				 });
+			 });
 
-			   //on keydown, clear the countdown 
-			   $('#'+frame_id+' .quick_search').on('keydown', function () {
-			   	  clearTimeout(typingTimer);
-			   });
-		   }
-
-		}
+		   //on keydown, clear the countdown 
+		   $('#'+frame_id+' .quick_search').on('keydown', function () {
+		   	  clearTimeout(typingTimer);
+		   });
+	   }
+	}
 
 	function close_layer(type) {
 		if(type == 'quick')
@@ -409,92 +491,13 @@
 				});
 				
 				//drag
-				gantt.attachEvent("onBeforeTaskDrag", function(id, mode, task){
-					 if(mode == 'move' || mode == 'resize') {
-						if ($.inArray(id, deny_items) == -1){
-							var task  =gantt.getTask(id);
-							return true;
-						}
-						else{
-							gantt.alert({
-							    text:"Bạn không có quyền với chức năng này.",
-							    title:"Error!",
-							    ok:"Yes",
-							    callback:function(){}
-							});
-							return false;
-						}
-					}else if(mode == 'progress')
-						return false;
 
-				});
 
-				gantt.attachEvent("onTaskDrag", function(id, mode, task, original){
-					var start_date_original = new Date(task.start_date);
-					var end_date_original   = new Date(task.end_date);
-					var start_hour 		    = start_date_original.getHours();
-					var end_hour 			= end_date_original.getHours();
-
-					if(start_hour >= 12){
-						start_date_original.setDate(start_date_original.getDate() + 1);
-
-					}
-					var start_date = start_date_original.getFullYear() + '-' + (start_date_original.getMonth() + 1) + '-' + start_date_original.getDate();
-
-					if(end_hour < 12){
-						end_date_original.setDate(end_date_original.getDate() - 1);
-					}
-
-					var end_date = end_date_original.getFullYear() + '-' + (end_date_original.getMonth()+1) + '-' + end_date_original.getDate();
-					
-					$('#start_date_original').val(original.start_date);
-					$('#start_date_drag').val(start_date);
-					$('#end_date_drag').val(end_date);
-														
-				    return true;
-				});		
-					
-				gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
-				    var start_date = $('#start_date_drag').val();
-				    var end_date   = $('#end_date_drag').val();
-				    
-				    var res_start = start_date.split("-");
-				    var res_end   = end_date.split("-");
-				    
-				    var new_start_date = res_start[2] + '/' + res_start[1] + '/' + res_start[0];
-				    var new_end_date   = res_end[2] + '/' + res_end[1] + '/' + res_end[0];
-
-				    gantt.confirm({
-				        text: 'Cập nhật "'+new_start_date+' đến '+new_end_date+'"',
-				        ok:"Đồng ý", 
-				        cancel:"Hủy bỏ",
-				        callback: function(result){
-				        	if(result == true) {
-								$.ajax({
-									type: "POST",
-									url: BASE_URL + 'tasks/quickupdate',
-									data: {
-										id 		   : id,
-										date_start : start_date,
-										date_end   : end_date,
-									},
-									success: function(string){
-										gantt.alert("Cập nhật thành công.");
-								    }
-								});
-				        	}else{
-				        		//task.start_date = $('#start_date_original').val();
-				        		//gantt.refreshData();
-				        	}
-
-				        }
-				    });
-				});
-				
-				
 		    }
 		});	
 	}
+	
+	
 	
 	function pheduyet() {
 	    gantt.confirm({
@@ -623,7 +626,7 @@
 	
 	function tiendoData(data) {
 		if(data.flag == 'false') {
-			toastr.error(data.message, 'Lỗi!')
+			toastr.error(data.message, 'Lỗi!');
 			
 		}else {
 			toastr.success(data.message, 'Thông báo');
@@ -1108,8 +1111,10 @@
 				if($('#my-form .btn-save').length)
 					$('#my-form .btn-save').html('<a href="javascript:;" onclick="edit();"><i class="fa fa-edit"></i>Sửa</a>');
 				else{
-					var btn = '<li class="btn-back"><a href="javascript:;" onclick="edit();"><i class="fa fa-calendar"></i>Tiến độ</a></li>';
-					$(btn).insertBefore( ".btn-detail" );
+					if(!$('.btn-back').length) {
+						var btn = '<li class="btn-back"><a href="javascript:;" onclick="edit();"><i class="fa fa-calendar"></i>Tiến độ</a></li>';
+						$(btn).insertBefore( ".btn-detail" );
+					}
 				}	
 		    }
 		});

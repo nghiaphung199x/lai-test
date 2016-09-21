@@ -417,13 +417,14 @@ $( document ).ready(function() {
 
 	$('#color').colorpicker({color: '<?php echo $color; ?>',});
 	$('#add_navigation .title').click(function(e){
-		$('#add_navigation .active').parent().find('.content').slideUp();
-	    $('#add_navigation .active').removeClass('active');
-	    $(this).addClass('active');
-	    
-	    var content_show = $(this).attr('data-id');
-	    $('#add_navigation #'+ content_show).slideDown();
-	    
+		if(!$( this ).hasClass( "active" )) {
+			$('#add_navigation .active').parent().find('.content').slideUp();
+		    $('#add_navigation .active').removeClass('active');
+		    $(this).addClass('active');
+		    
+		    var content_show = $(this).attr('data-id');
+		    $('#add_navigation #'+ content_show).slideDown();
+		}
 	});
 
 	$( "#my-form .arrord_nav ul.list > li" ).click(function() {
