@@ -48,10 +48,10 @@ class BizTasks extends Secure_area
 		$this->load->view('tasks/index_view', $this->_data);
 		
 		$this->load->library('MY_System_Info');
-		$info 					  = new MY_System_Info();
-		$user_info = $info->getInfo();
-		if(!in_array('tasks_view', $user_info['task_permission']))
-			redirect('/no_access/tasks');
+// 		$info 					  = new MY_System_Info();
+// 		$user_info = $info->getInfo();
+// 		if(!in_array('tasks_view', $user_info['task_permission']))
+// 			redirect('/no_access/tasks');
 		
 	}
 	
@@ -549,12 +549,23 @@ class BizTasks extends Secure_area
 					elseif(count($is_progress) == 0)
 						$arrParam['pheduyet'] = 3;
 
+					if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
+						$arrParam['trangthai'] = 2;
+						$arrParam['progress'] = 100;
+					}	
+
+					if($item['lft'] == $item['rgt'] + 1)
+						$arrParam['progress'] = -1;
+
 					if($arrParam['pheduyet'] == 3) { // không cần phải gửi request
 						// cập nhật tiến độ cho task
 						// nếu proress == -1 thì chỉ cập nhật trạng thái + progress, ngược lại handling
 						$params 	  = $arrParam;
 						$params['id'] = $arrParam['task_id'];
+						// check cv có còn là cv cuối ko
+
 						if($arrParam['progress'] == -1) {
+							$arrParam['progress'] = $item['progress'] * 100; // progress mới nhất
 							$this->MTasks->saveItem($params, array('task'=>'update-tiendo'));
 							
 							$arrParam['key'] = '';
@@ -573,7 +584,7 @@ class BizTasks extends Secure_area
 						$arrParam['date_pheduyet'] = '0000-00-00 00:00:00';
 					
 						$this->MTaskProgress->saveItem($arrParam, array('task'=>'add'));
-						$respon = array('flag'=>'true', 'message'=>'Cập nhật tiến độ đang được phê duyệt.');
+						$respon = array('flag'=>'true', 'message'=>'Yêu cầu đang được phê duyệt.');
 					}
 				}else
 					$respon = array('flag'=>'false', 'message'=>current($errors));
@@ -783,14 +794,13 @@ class BizTasks extends Secure_area
 			$this->load->model('MTaskProgress');
 			$this->MTaskProgress->saveItem($arrParam, array('task'=>'update-pheduyet'));
 			
-			if($arrParam['pheduyet'] != 0)
+			if($arrParam['pheduyet'] == 1){
 				$this->MTaskProgress->handling($arrParam);
-				
-			if($arrParam['pheduyet'] == 1)
 				$respon = array('flag'=>'true', 'message'=>'Cập nhật thành công', 'reload'=>'true');
-			else
+			}else {
 				$respon = array('flag'=>'true', 'message'=>'Cập nhật thành công');
-				
+			}
+	
 			echo json_encode($respon);
 		}else
 			$this->load->view('tasks/xulytiendo_view',$this->_data);

@@ -100,6 +100,7 @@
 								<th style="width: 10%;">Tình trạng</th>
 								<th style="width: 10%;">Ưu tiên</th>						
 								<th style="width: 15%;">Ngày gửi</th>
+								<th style="width: 15%;">Phê duyệt</th>
 								<th style="width: 10%;">Người phê duyệt</th>
 								<th style="width: 10%;">Ngày phê duyệt</th>
 								<th style="width: 10%;"></th>

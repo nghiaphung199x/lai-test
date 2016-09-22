@@ -87,6 +87,62 @@
 		});
 		
 		// gantt
+		gantt.showLightbox = function(id) {
+		    taskId = id;
+
+		    var task   = gantt.getTask(id);
+		    var parent = parseInt(task.parent);
+
+		    if(task.$new == true){
+		    	type = 'new';
+		    	url = BASE_URL + 'tasks/addcongviec';
+		    } else
+			    url = BASE_URL + 'tasks/editcongviec';
+		    
+		    parent = task.parent;
+			$.ajax({
+				type: "GET",
+				url: url,
+				data: {
+					id : id,
+					parent: parent
+				},
+				success: function(html){
+				   if(type == 'new') {
+					   create_layer();
+					   $('#my-form').removeClass('quickInfo');
+					   $('#my-form').html(html);
+					   $('#my-form').show();
+
+					   $('#color').colorpicker({color: '#489ee7',});
+				   }else {
+					   if(html != '') {   
+						   create_layer();
+						   $('#my-form').html(html);
+						   $('#my-form').show(); 
+						   $('#color').colorpicker();
+						   
+					   }else {
+						   gantt.alert({
+							    text: 'Bạn không có quyền với chức năng này.', title:"Cảnh báo!",
+							    ok:"Đóng", callback:function(){}
+							});
+					   }
+				   }
+				   
+				   // picker
+				   date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
+				   // end picker
+				   
+				   var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
+				   $.each(frame_array, function( index, value ) {
+					  css_form(value);
+					  press(value);
+				   });
+			    }
+			});
+		};
+		
 		gantt.attachEvent("onBeforeTaskDrag", function(id, mode, task){
 			 if(mode == 'move' || mode == 'resize') {
 				if ($.inArray(id, deny_items) == -1){
@@ -373,64 +429,7 @@
 	
 	$( document ).ready(function() {
 		load_task();
-		
-		gantt.showLightbox = function(id) {
-		    taskId = id;
 
-		    var task   = gantt.getTask(id);
-		    var parent = parseInt(task.parent);
-
-		    if(task.$new == true){
-		    	type = 'new';
-		    	url = BASE_URL + 'tasks/addcongviec';
-		    } else
-			    url = BASE_URL + 'tasks/editcongviec';
-		    
-		    parent = task.parent;
-			$.ajax({
-				type: "GET",
-				url: url,
-				data: {
-					id : id,
-					parent: parent
-				},
-				success: function(html){
-				  
-				   if(type == 'new') {
-					   create_layer();
-					   $('#my-form').removeClass('quickInfo');
-					   $('#my-form').html(html);
-					   $('#my-form').show();
-
-					   $('#color').colorpicker({color: '#489ee7',});
-				   }else {
-					   if(html != '') {   
-						   create_layer();
-						   $('#my-form').html(html);
-						   $('#my-form').show(); 
-						   $('#color').colorpicker();
-						   
-					   }else {
-						   gantt.alert({
-							    text: 'Bạn không có quyền với chức năng này.', title:"Cảnh báo!",
-							    ok:"Đóng", callback:function(){}
-							});
-					   }
-				   }
-				   
-				   // picker
-				   date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
-				   // end picker
-				   
-				   var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
-				   $.each(frame_array, function( index, value ) {
-					  css_form(value);
-					  press(value);
-				   });
-			    }
-			});
-		};
-		
 		gantt.templates.quick_info_date = function(start, end, task){
 		       return gantt.templates.task_time(start, end, task);
 		};
@@ -893,6 +892,7 @@
 			  var created      		    = value.created;
 			  var user_pheduyet_name    = value.user_pheduyet_name;
 			  var date_pheduyet      	= value.date_pheduyet;
+			  var pheduyet      		= value.pheduyet;
 			  
 			  string[string.length] = '<tr>'
 											+'<td>'+task_name+'</td>'
@@ -900,6 +900,7 @@
 											+'<td class="center">'+trangthai+'</td>'
 											+'<td class="center">'+prioty+'</td>'
 											+'<td class="center">'+created+'</td>'
+											+'<td class="center">'+pheduyet+'</td>'
 											+'<td class="center">'+user_pheduyet_name+'</td>'
 											+'<td class="center">'+date_pheduyet+'</td>'
 											+'<td class="center">'

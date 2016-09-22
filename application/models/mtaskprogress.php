@@ -138,7 +138,7 @@ class MTaskProgress extends CI_Model{
 		}elseif($options['task'] == 'progress-1') {
 			$task_ids = implode(', ', $arrParam['task_ids']);
 			$sqlString   = 'UPDATE ' .$this->db->dbprefix($this->_table)
-						  . ' SET progress = -1'
+						  . ' SET progress = -0.01'
 						  . ' WHERE task_ids IN ('.$task_ids.')';
 			
 			$this->db->query($sqlString);
@@ -192,12 +192,12 @@ class MTaskProgress extends CI_Model{
 			$this->db->select("DATE_FORMAT(p.date_pheduyet, '%d/%m/%Y %H:%i:%s') as date_pheduyet", FALSE);
 			$this->db->select("DATE_FORMAT(p.created, '%d/%m/%Y %H:%i:%s') as created", FALSE);
 			$this->db -> select('p.id, p.created_by, p.trangthai, t.name as task_name,p.progress, p.pheduyet, p.key, p.prioty, p.user_pheduyet_name')
-					-> from($this->_table . ' AS p')
-					-> join('tasks as t', 't.id = p.task_id', 'left')
-					-> where('p.task_id IN ('.implode(', ', $this->_task_ids).')')
-					-> where('p.pheduyet IN (0, 1, 2)')
-					-> where('p.created_by', $this->_id_admin)
-					-> order_by('p.created', 'DESC');
+					  -> from($this->_table . ' AS p')
+					  -> join('tasks as t', 't.id = p.task_id', 'left')
+					  -> where('p.task_id IN ('.implode(', ', $this->_task_ids).')')
+					  -> where('p.pheduyet IN (0, 1, 2)')
+					  -> where('p.created_by', $this->_id_admin)
+					  -> order_by('p.created', 'DESC');
 			
 			$page = (empty($arrParam['start'])) ? 1 : $arrParam['start'];
 			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
@@ -223,6 +223,12 @@ class MTaskProgress extends CI_Model{
 					$val['prioty'] = $prioty_arr[$val['prioty']];
 					$val['date_pheduyet'] = ($val['date_pheduyet'] == '00/00/0000 00:00:00') ? '' : $val['date_pheduyet'];
 
+					if($val['pheduyet'] == 2)
+						$val['pheduyet'] = '<i class="fa fa-clock-o" aria-hidden="true"></i>';
+					elseif($val['pheduyet'] == 0)
+						$val['pheduyet'] = '<i class="fa fa-times"></i>';
+					elseif($val['pheduyet'] == 1)
+						$val['pheduyet'] = '<i class="fa fa-check"></i>';
 				}
 			}
 		}elseif($options['task'] == 'pheduyet-list') {
@@ -308,14 +314,14 @@ class MTaskProgress extends CI_Model{
 					}
 				}
 				// progress data
-				if($options['task'] != 'progress') {
-					$created_by 		= $options['created_by'];
-					$user_pheduyet 		= $this->_id_admin;
-					$user_pheduyet_name = $this->_admin_name;
-				}else {
+				if($options['task'] == 'progress') {
 					$created_by 		= $this->_id_admin;
 					$user_pheduyet 		= 0;
 					$user_pheduyet_name = '';
+				}else {
+					$created_by 		= $options['created_by'];
+					$user_pheduyet 		= $this->_id_admin;
+					$user_pheduyet_name = $this->_admin_name;
 				}
 				
 				$key_value = ($key == null) ? '' : $key;
@@ -338,7 +344,7 @@ class MTaskProgress extends CI_Model{
 				
 				$this->_items[] = $progressTmp;
 
-				$this->do_progress($level);	
+				$this->do_progress($level, $options);	
 			}
 		}
 	}
@@ -416,7 +422,7 @@ class MTaskProgress extends CI_Model{
 			
 					$task['progress']  = $progress_item['progress'];
 					
-					if($options != null) {
+					if($options['task'] == 'progress') {
 						$progressTmp = array(
 								'task_id' 			 => $progress_item['task_id'],
 								'trangthai' 		 => $progress_item['trangthai'],
@@ -444,9 +450,10 @@ class MTaskProgress extends CI_Model{
 			$this->do_progress($level, $options);
 			
 			// cập nhật progress
-			if(!empty($this->_items))
+			if(!empty($this->_items)){
 				$this->db->insert_batch($this->_table, $this->_items);
-			
+			}
+
 		}	
 	}
 	

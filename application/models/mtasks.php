@@ -755,6 +755,7 @@ class MTasks extends MNested2{
 				}
 
 				$project_ids = array_unique($project_ids);
+
 			}
 
 			if(in_array('update_project', $this->_task_permission) || in_array('update_all_task', $this->_task_permission)) {
@@ -1110,5 +1111,19 @@ class MTasks extends MNested2{
 			foreach($arrParam['cid'] as $id)
 				echo '<br />' . $id;
 		}
+	}
+	
+	public function test() {
+// 		$sql = 'DELETE FROM phppos_tasks WHERE id != 1';
+// 		$this->db->query($sql);
+		
+		echo '<br />'.$sql = 'DELETE FROM phppos_task_user_relations WHERE task_id != 1';
+		$this->db->query($sql);
+		
+		echo '<br />'.$sql = 'DELETE FROM phppos_task_progress';
+		$this->db->query($sql);
+		
+		echo '<br />'.$sql = 'UPDATE phppos_tasks SET progress = 0';
+		$this->db->query($sql);
 	}
 }
