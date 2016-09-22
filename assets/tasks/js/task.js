@@ -905,7 +905,7 @@
 			 
 			 string = string.join("");	
 		}else
-			var string = '<tr style="cursor: pointer;"><td colspan="9"><span class="col-md-12 text-center text-warning" style="margin-top: 0;">Không có yêu cầu nào để hiển thị</span></td></tr>';
+			var string = '<tr style="cursor: pointer;"><td colspan="9"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
  
 		 return string;
 	}
@@ -946,7 +946,7 @@
 			 
 			 string = string.join(""); 
 		 }else
-			 var string = '<tr style="cursor: pointer;"><td colspan="8"><span class="col-md-12 text-center text-warning">Chưa có dữ liệu hiển thị</span></td></tr>';
+			 var string = '<tr style="cursor: pointer;"><td colspan="9"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
 	
 		 return string;
 	}
@@ -981,7 +981,7 @@
 			 
 			 string = string.join("");
 		 }else 
-			 var string = '<tr style="cursor: pointer;"><td colspan="6"><span class="col-md-12 text-center text-warning">Chưa có dữ liệu hiển thị</span></td></tr>';
+			 var string = '<tr style="cursor: pointer;"><td colspan="6"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
 		 
 		 return string;
 	}
@@ -1079,7 +1079,8 @@
 					 var pagination = load_pagination(pagination);
 					 	
 				 }else if(keyword == 'pheduyet') {
-					 var html_string = load_template_pheduyet(items);;
+					 var html_string = load_template_pheduyet(items);
+					 
 					 var pagination = load_pagination(pagination);
 				 }
 

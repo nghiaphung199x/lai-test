@@ -48,10 +48,10 @@ class BizTasks extends Secure_area
 		$this->load->view('tasks/index_view', $this->_data);
 		
 		$this->load->library('MY_System_Info');
-		$info 					  = new MY_System_Info();
-		$user_info = $info->getInfo();
-		if(!in_array('tasks_view', $user_info['task_permission']))
-			redirect('/no_access/tasks');
+// 		$info 					  = new MY_System_Info();
+// 		$user_info = $info->getInfo();
+// 		if(!in_array('tasks_view', $user_info['task_permission']))
+// 			redirect('/no_access/tasks');
 		
 	}
 	
