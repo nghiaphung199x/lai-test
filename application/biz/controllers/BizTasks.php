@@ -48,10 +48,10 @@ class BizTasks extends Secure_area
 		$this->load->view('tasks/index_view', $this->_data);
 		
 		$this->load->library('MY_System_Info');
-// 		$info 					  = new MY_System_Info();
-// 		$user_info = $info->getInfo();
-// 		if(!in_array('tasks_view', $user_info['task_permission']))
-// 			redirect('/no_access/tasks');
+		$info 					  = new MY_System_Info();
+		$user_info = $info->getInfo();
+		if(!in_array('tasks_view', $user_info['task_permission']))
+			redirect('/no_access/tasks');
 		
 	}
 	
@@ -257,13 +257,13 @@ class BizTasks extends Secure_area
 				$this->MTasks->saveItem($arrParam, array('task'=>'edit'));
 
 				// cập nhật lại tiến độ
-				if($arrParam['percent'] != $item['percent']) {
+				if($arrParam['percent'] != $item['percent'] * 100) {
 					$arrParam['key']   = 'pencil-square-o';
 					$arrParam['level'] = $item['level'];
 
-
 					$this->MTaskProgress->solve($arrParam, array('task'=>'edit'));
 				}
+
 				$respon = array('flag'=>'true');
 			}else {
 				$respon = array('flag'=>'false', 'message'=>current($errors));
@@ -273,6 +273,7 @@ class BizTasks extends Secure_area
 		}else {
 			$is_xem 	  = $is_implement = $is_create_task = $is_pheduyet = $is_progress = array();
 			$is_create_task_parent = $is_pheduyet_parent = $is_progress_parent = array();
+
 			if(!empty($item['is_xem'])) {
 				foreach($item['is_xem'] as $val)
 					$is_xem[] = $val['id'];
@@ -512,6 +513,10 @@ class BizTasks extends Secure_area
 				$respon = array('flag'=>'false', 'message'=>'Công việc chưa được phê duyệt.');
 			}else {
 				$flagError = false;
+				// check cv cuối
+				if($item['lft'] == $item['rgt'] + 1)
+						$arrParam['progress'] = -1;
+
 				if($arrParam['progress'] != -1) {
 					$this->form_validation->set_rules('progress', 'Tiến độ', 'required|greater_than[-1]|less_than[101]');
 					
@@ -551,19 +556,16 @@ class BizTasks extends Secure_area
 
 					if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
 						$arrParam['trangthai'] = 2;
-						$arrParam['progress'] = 100;
+						$arrParam['progress']  = 100;
 					}	
 
-					if($item['lft'] == $item['rgt'] + 1)
-						$arrParam['progress'] = -1;
 
 					if($arrParam['pheduyet'] == 3) { // không cần phải gửi request
 						// cập nhật tiến độ cho task
 						// nếu proress == -1 thì chỉ cập nhật trạng thái + progress, ngược lại handling
 						$params 	  = $arrParam;
 						$params['id'] = $arrParam['task_id'];
-						// check cv có còn là cv cuối ko
-
+					
 						if($arrParam['progress'] == -1) {
 							$arrParam['progress'] = $item['progress'] * 100; // progress mới nhất
 							$this->MTasks->saveItem($params, array('task'=>'update-tiendo'));

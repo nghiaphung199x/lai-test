@@ -1002,7 +1002,7 @@ class MTasks extends MNested2{
 				if(!empty($result)) {
 					// tất cả task bao gồm task ở bên trên
 					$task_ids = $this->getIds(array('lft'=>$result['lft'], 'rgt'=>$result['rgt'], 'project_id'=>$result['project_id']), array('task'=>'up-branch'));
-	
+				
 					// file list
 					$this->db->select('f.*')
 							->from('task_files as f')
@@ -1028,7 +1028,7 @@ class MTasks extends MNested2{
 
 					$query = $this->db->get();
 					$resultTmp = $query->result_array();
-	
+
 					$this->db->flush_cache();
 					$user_ids = array();
 						
@@ -1047,7 +1047,6 @@ class MTasks extends MNested2{
 
 						foreach($resultTmp as $val) {	
 							$user_id  = $val['user_id'];
-							
 							$keywords = $val['task_id'] . '-' . $val['user_id'];
 							
 							if(isset($users[$user_id])) {
@@ -1109,7 +1108,7 @@ class MTasks extends MNested2{
 	public function deleteItem($arrParam = null, $options = null) {
 		if($options == null) {
 			foreach($arrParam['cid'] as $id)
-				echo '<br />' . $id;
+				$this->removeNode($id);
 		}
 	}
 	

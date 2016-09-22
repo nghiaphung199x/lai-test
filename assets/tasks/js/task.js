@@ -7,9 +7,9 @@
 	$( document ).ready(function() {
 		// xử lý checkbox
 		$('body').on('click','.manage-table .check_tatca',function(){
-			 var checkbox = $(this).closest('th').find('input[type="checkbox"]'); 
+			  var checkbox = $(this).closest('th').find('input[type="checkbox"]'); 
 			
-			 if (checkbox.prop('checked') == true){ 
+			  if (checkbox.prop('checked') == true){ 
 				 checkbox.prop('checked', false);
 				 $(this).parents('.table').find('td input[type="checkbox"]').prop('checked', false);
 			  }else{
@@ -220,7 +220,6 @@
 		        		//task.start_date = $('#start_date_original').val();
 		        		//gantt.refreshData();
 		        	}
-
 		        }
 		    });
 		});
@@ -463,11 +462,10 @@
 			 						  {name:"add",        label:"",          width:44 }
 			 				   ];
 
-		
+			   console.log(data);
 			   gantt.init("gantt_here");
-			   
 			   gantt.parse(task);
-
+			   
 			   drag_task = result.drag_task;
 			  
 			   if(result.deny.length) {
@@ -489,10 +487,6 @@
 					
 				    return "";
 				};
-
-				
-				//drag
-
 
 		    }
 		});	
@@ -542,24 +536,6 @@
 	    return false; 
 	}
 	
-	function congviecData(data) {
-		if(data.flag == 'false') {
-			gantt.alert({
-			    text: data.message,
-			    title:"Lỗi!",
-			    ok:"Đóng",
-			    callback:function(){}
-			});
-		}else {
-			toastr.success('Cập nhật thành công!', 'Thông báo');
-			$('#my-form').html('');
-			$('#my-form').hide();
-			gantt.deleteTask(taskId);
-			load_task();
-			close_layer();
-		}
-	}
-	
 	function edit_congviec() {
 		var url = BASE_URL + 'tasks/editcongviec';
 		var checkOptions = {
@@ -570,31 +546,6 @@
 	    $("#task_form").ajaxSubmit(checkOptions); 
 	    return false; 
 	}
-	
-	function delete_congviec(id) {
-	    gantt.confirm({
-	        text: 'Bạn có chắc muốn xóa?',
-	        ok:"Đồng ý", 
-	        cancel:"Hủy bỏ",
-	        callback: function(result){
-	        	if(result == true) {
-					$.ajax({
-						type: "POST",
-						url: BASE_URL + 'tasks/deletecv',
-						data: {
-							id 	 : id,
-						},
-						success: function(string){
-							console.log(string);
-//							toastr.success('Xóa thành công.', 'Thông báo');
-//							load_task();
-					    }
-					});
-	        	}
-	        }
-	    });
-	}
-	
 	
 	function taskData(data) {
 		if(data.flag == 'false') {
@@ -614,6 +565,49 @@
 		}
 	}	
 	
+	function congviecData(data) {
+		if(data.flag == 'false') {
+			gantt.alert({
+			    text: data.message,
+			    title:"Lỗi!",
+			    ok:"Đóng",
+			    callback:function(){}
+			});
+		}else {
+			toastr.success('Cập nhật thành công!', 'Thông báo');
+			$('#my-form').html('');
+			$('#my-form').hide();
+			gantt.deleteTask(taskId);
+			load_task();
+			close_layer();
+		}
+	}
+	
+	function delete_congviec(id) {
+	    gantt.confirm({
+	        text: 'Bạn có chắc muốn xóa?',
+	        ok:"Đồng ý", 
+	        cancel:"Hủy bỏ",
+	        callback: function(result){
+	        	if(result == true) {
+					$.ajax({
+						type: "POST",
+						url: BASE_URL + 'tasks/deletecv',
+						data: {
+							id 	 : id
+						},
+						success: function(string){
+							toastr.success('Xóa thành công.', 'Thông báo');
+							load_task();
+							cancel();
+					    }
+					});
+	        	}
+	        }
+	    });
+	}
+	
+
 	function countTiendo() {
 		var task_id = $('#task_id').val();
 		var url = BASE_URL + 'tasks/countTiendo';

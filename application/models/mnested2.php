@@ -23,8 +23,9 @@ class MNested2 extends CI_Model{
 		 *  1. Lay thong cua node bi xoa
 		/*================================================*/
 		$infoNodeRemove  = $this->getNodeInfo($this->_id);
-		
+
 		if(!empty($infoNodeRemove)) {
+			$this->_project_id = $infoNodeRemove['project_id'];
 			/*================================================
 			 *  2. Tinh chieu dai cua nhanh chung muon xoa
 			/*================================================*/
@@ -33,25 +34,23 @@ class MNested2 extends CI_Model{
 			/*================================================
 			 *  3. Xoa nhanh
 			/*================================================*/
-			$sqlDelete = 'DELETE FROM ' .$this->_table . '
-						  WHERE lft BETWEEN ' . $infoNodeRemove['lft'] . ' AND ' . $infoNodeRemove['rgt'];
-
-			
+			$sqlDelete = 'DELETE FROM ' .$this->db->dbprefix($this->_table) . '
+						  WHERE lft BETWEEN ' . $infoNodeRemove['lft'] . ' AND ' . $infoNodeRemove['rgt'] . ' AND project_id = ' . $this->_project_id;
+		
 			$this->db->query($sqlDelete);
 			
 			/*================================================
 			 *  4. Cap nhat lai cai gia tri left - right của cay
 			/*================================================*/
-			$sqlUpdateLeft = ' UPDATE ' . $this->_table . '
+			$sqlUpdateLeft = ' UPDATE ' . $this->db->dbprefix($this->_table) . '
 							   SET lft = (lft - ' . $widthNodeRemove . ')
-							   WHERE lft > ' . $infoNodeRemove['rgt'];
+							   WHERE lft > ' . $infoNodeRemove['rgt'] . ' AND project_id = '. $this->_project_id;
 			
 			$this->db->query($sqlUpdateLeft);
-			
-			
-			$sqlUpdateRight = ' UPDATE ' . $this->_table . '
+	
+			$sqlUpdateRight = ' UPDATE ' . $this->db->dbprefix($this->_table) . '
 								SET rgt = (rgt - ' . $widthNodeRemove . ')
-								WHERE rgt > ' . $infoNodeRemove['rgt'];
+								WHERE rgt > ' . $infoNodeRemove['rgt'] . ' AND project_id = ' . $this->_project_id;
 			
 			$this->db->query($sqlUpdateRight);
 		}

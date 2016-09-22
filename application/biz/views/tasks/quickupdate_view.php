@@ -68,7 +68,7 @@
 						<span class="tieude active" data-id="progress_danhsach">Lịch sử tiến độ</span>
 						<span id="count_tiendo" title="22 total suppliers" class="badge bg-primary tip-left">0</span>
 						
-						<span class="tieude" style="margin-left: 10px;" data-id="request_list">Request</span>
+						<span class="tieude" style="margin-left: 10px;" data-id="request_list">Yêu cầu phê</span>
 						<span id="count_request" title="22 total suppliers" class="badge bg-primary tip-left">0</span>
 						
 						<span class="tieude" style="margin-left: 10px;" data-id="pheduyet_list">Phê duyệt</span>
