@@ -462,7 +462,6 @@
 			 						  {name:"add",        label:"",          width:44 }
 			 				   ];
 
-			   console.log(data);
 			   gantt.init("gantt_here");
 			   gantt.parse(task);
 			   
@@ -590,16 +589,16 @@
 	        cancel:"Hủy bỏ",
 	        callback: function(result){
 	        	if(result == true) {
+	        		var ids = new Array();
+	        		ids[0] = id;
 					$.ajax({
 						type: "POST",
 						url: BASE_URL + 'tasks/deletecv',
 						data: {
-							id 	 : id
+							ids  : ids
 						},
 						success: function(string){
-							toastr.success('Xóa thành công.', 'Thông báo');
-							load_task();
-							cancel();
+							location.reload();
 					    }
 					});
 	        	}
@@ -876,104 +875,113 @@
 	}
 	
 	function load_template_request(items) {
-		 var string = new Array();
-		 $.each(items, function( index, value ) {
-			  var id      				= value.id;
-			  var task_name      		= value.task_name;
-			  var progress      		= value.progress;
-			  var trangthai      		= value.trangthai;
-			  var prioty      			= value.prioty;
-			  var created      		    = value.created;
-			  var user_pheduyet_name    = value.user_pheduyet_name;
-			  var date_pheduyet      	= value.date_pheduyet;
-			  var pheduyet      		= value.pheduyet;
-			  
-			  string[string.length] = '<tr>'
-											+'<td>'+task_name+'</td>'
-											+'<td class="center">'+progress+'</td>'
-											+'<td class="center">'+trangthai+'</td>'
-											+'<td class="center">'+prioty+'</td>'
-											+'<td class="center">'+created+'</td>'
-											+'<td class="center">'+pheduyet+'</td>'
-											+'<td class="center">'+user_pheduyet_name+'</td>'
-											+'<td class="center">'+date_pheduyet+'</td>'
-											+'<td class="center">'
-												+'<a href="javascript:;" onclick="note('+id+');">Ghi chú</a>'
-											+'</td>'
-										+'</tr>';
-		 });
-		 
-		 string = string.join("");
-		 
+		if(items.length) {
+			 var string = new Array();
+			 $.each(items, function( index, value ) {
+				  var id      				= value.id;
+				  var task_name      		= value.task_name;
+				  var progress      		= value.progress;
+				  var trangthai      		= value.trangthai;
+				  var prioty      			= value.prioty;
+				  var created      		    = value.created;
+				  var user_pheduyet_name    = value.user_pheduyet_name;
+				  var date_pheduyet      	= value.date_pheduyet;
+				  var pheduyet      		= value.pheduyet;
+				  
+				  string[string.length] = '<tr>'
+												+'<td>'+task_name+'</td>'
+												+'<td class="center">'+progress+'</td>'
+												+'<td class="center">'+trangthai+'</td>'
+												+'<td class="center">'+prioty+'</td>'
+												+'<td class="center">'+created+'</td>'
+												+'<td class="center">'+pheduyet+'</td>'
+												+'<td class="center">'+user_pheduyet_name+'</td>'
+												+'<td class="center">'+date_pheduyet+'</td>'
+												+'<td class="center">'
+													+'<a href="javascript:;" onclick="note('+id+');">Ghi chú</a>'
+												+'</td>'
+											+'</tr>';
+			 });
+			 
+			 string = string.join("");	
+		}else
+			var string = '<tr style="cursor: pointer;"><td colspan="9"><span class="col-md-12 text-center text-warning" style="margin-top: 0;">Không có yêu cầu nào để hiển thị</span></td></tr>';
+ 
 		 return string;
 	}
 	
 	function load_template_pheduyet(items) {
-		 var string = new Array();
-		 $.each(items, function( index, value ) {
-			  var id      			= value.id;
-			  var date_pheduyet     = value.date_pheduyet;
-			  var created      		= value.created;
-			  var task_name      	= value.task_name;
-			  var progress          = value.progress;
-			  var trangthai      	= value.trangthai;
-			  var prioty    		= value.prioty;
-			  var user_name      	= value.username;
-			  var pheduyet      	= value.pheduyet;
-			  
-			  if(value.is_xuly == true)
-				  var control = '<a href="javascript:;" onclick="note('+id+');">Ghi chú</a> | <a href="javascript:;" onclick="xuly_tiendo('+id+');">Phê duyệt</a>';
-			  else
-				  var control = '<a href="javascript:;" onclick="note('+id+');">Ghi chú</a>';
+		 if(items.length) {
+			 var string = new Array();
+			 $.each(items, function( index, value ) {
+				  var id      			= value.id;
+				  var date_pheduyet     = value.date_pheduyet;
+				  var created      		= value.created;
+				  var task_name      	= value.task_name;
+				  var progress          = value.progress;
+				  var trangthai      	= value.trangthai;
+				  var prioty    		= value.prioty;
+				  var user_name      	= value.username;
+				  var pheduyet      	= value.pheduyet;
+				  
+				  if(value.is_xuly == true)
+					  var control = '<a href="javascript:;" onclick="note('+id+');">Ghi chú</a> | <a href="javascript:;" onclick="xuly_tiendo('+id+');">Phê duyệt</a>';
+				  else
+					  var control = '<a href="javascript:;" onclick="note('+id+');">Ghi chú</a>';
 
-			  string[string.length] = '<tr>'
-											+'<td>'+task_name+'</td>'
-											+'<td class="center">'+progress+'</td>'
-											+'<td class="center">'+trangthai+'</td>'
-											+'<td class="center">'+prioty+'</td>'
-											+'<td class="center">'+user_name+'</td>'
-											+'<td class="center">'+created+'</td>'
-											+'<td class="center">'+pheduyet+'</td>'
-											+'<td class="center">'+date_pheduyet+'</td>'
-											+'<td class="center">'
-												+control
-											+'</td>'
-										+'</tr>';
-		 });
-		 
-		 string = string.join("");
-		 
+				  string[string.length] = '<tr>'
+												+'<td>'+task_name+'</td>'
+												+'<td class="center">'+progress+'</td>'
+												+'<td class="center">'+trangthai+'</td>'
+												+'<td class="center">'+prioty+'</td>'
+												+'<td class="center">'+user_name+'</td>'
+												+'<td class="center">'+created+'</td>'
+												+'<td class="center">'+pheduyet+'</td>'
+												+'<td class="center">'+date_pheduyet+'</td>'
+												+'<td class="center">'
+													+control
+												+'</td>'
+											+'</tr>';
+			 });
+			 
+			 string = string.join(""); 
+		 }else
+			 var string = '<tr style="cursor: pointer;"><td colspan="8"><span class="col-md-12 text-center text-warning">Chưa có dữ liệu hiển thị</span></td></tr>';
+	
 		 return string;
 	}
 	
 	function load_template_progress(items) {
-		 var string = new Array();
-		 $.each(items, function( index, value ) {
-			  var id      	= value.id;
-			  var user_id 	= value.created_by;
-			  var user_name = value.username;
-			  var created 	= value.created;
-			  var progress  = value.progress;
-			  var trangthai = value.trangthai;
-			  var pheduyet 	= value.pheduyet;
-			  var note 		= value.note;
-			  
-			  var prioty 	 = value.prioty;
-			  var task_name  = value.task_name;
-			  var task_name  = value.task_name;
-			  	  
-			  user_name = '<span style="font-weight: bold">'+user_name+'</span>';
-			  string[string.length] = '<tr style="cursor: pointer;">'		
-											+'<td class="cb">'+task_name+'</td>'
-											+'<td class="center cb">'+progress+'</td>'
-											+'<td class="center cb">'+trangthai+'</td>'
-											+'<td class="center cb">'+prioty+'</td>'
-											+'<td class="center cb">'+user_name+'</td>'
-											+'<td class="center cb">'+created+'</td>'
-										+'</tr>	';
-		 });
-		 
-		 string = string.join("");
+		 if(items.length) {
+			 var string = new Array();
+			 $.each(items, function( index, value ) {
+				  var id      	= value.id;
+				  var user_id 	= value.created_by;
+				  var user_name = value.username;
+				  var created 	= value.created;
+				  var progress  = value.progress;
+				  var trangthai = value.trangthai;
+				  var pheduyet 	= value.pheduyet;
+				  var note 		= value.note;
+				  
+				  var prioty 	 = value.prioty;
+				  var task_name  = value.task_name;
+				  var task_name  = value.task_name;
+				  	  
+				  user_name = '<span style="font-weight: bold">'+user_name+'</span>';
+				  string[string.length] = '<tr style="cursor: pointer;">'		
+												+'<td class="cb">'+task_name+'</td>'
+												+'<td class="center cb">'+progress+'</td>'
+												+'<td class="center cb">'+trangthai+'</td>'
+												+'<td class="center cb">'+prioty+'</td>'
+												+'<td class="center cb">'+user_name+'</td>'
+												+'<td class="center cb">'+created+'</td>'
+											+'</tr>	';
+			 });
+			 
+			 string = string.join("");
+		 }else 
+			 var string = '<tr style="cursor: pointer;"><td colspan="6"><span class="col-md-12 text-center text-warning">Chưa có dữ liệu hiển thị</span></td></tr>';
 		 
 		 return string;
 	}
@@ -1002,6 +1010,7 @@
 		 });
 
 		 string = string.join("");	
+		 
 		 return string;
 	}
 	
@@ -1058,30 +1067,30 @@
 				 var items = result.items; 
 				 var pagination = result.pagination;
 
-				 if(items.length) {
-					 if(keyword == 'progress') {
-						 var html_string = load_template_progress(items);
-						 var pagination = load_pagination(pagination);
+				 if(keyword == 'progress') {
+					 var html_string = load_template_progress(items);
+					 var pagination = load_pagination(pagination);
 
-					 }else if(keyword == 'file') {
-						 var html_string = load_template_file(items);
-						 var pagination = load_pagination(pagination);
-					 }else if(keyword == 'request') {
-						 var html_string = load_template_request(items);
-						 var pagination = load_pagination(pagination);
-					 }else if(keyword == 'pheduyet') {
-						 var html_string = load_template_pheduyet(items);;
-						 var pagination = load_pagination(pagination);
-					 }
-	
-					 $('#'+manager_div+' .table tbody').html(html_string);
-					 if($('#'+manager_div+' .text-center').length)
-						 $('#'+manager_div+' .text-center').replaceWith( pagination );
-					 else
-						 $('#'+manager_div).append(pagination);
-					 
-					 $('#'+count_span).text(result.count);
+				 }else if(keyword == 'file') {
+					 var html_string = load_template_file(items);
+					 var pagination = load_pagination(pagination);
+				 }else if(keyword == 'request') {
+					 var html_string = load_template_request(items);
+					 var pagination = load_pagination(pagination);
+					 	
+				 }else if(keyword == 'pheduyet') {
+					 var html_string = load_template_pheduyet(items);;
+					 var pagination = load_pagination(pagination);
 				 }
+
+				 $('#'+manager_div+' .table tbody').html(html_string);
+				 if($('#'+manager_div+' .text-center').length)
+					 $('#'+manager_div+' .text-center').replaceWith( pagination );
+				 else
+					 $('#'+manager_div).append(pagination);
+				 
+				 $('#'+count_span).text(result.count);
+				 
 		    }
 		});
 	}

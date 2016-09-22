@@ -40,7 +40,7 @@ class MTaskProgress extends CI_Model{
 			
 		$taskTable = $this->model_load_model('MTasks');
 			
-		$item 	   = $taskTable->getItem(array('id'=>$arrParam['task_id']), array('task'=>'public-info', 'brand'=>'full'));
+		$item 	   = $taskTable->getItem(array('id'=>$arrParam['task_id']), array('task'=>'public-info', 'brand'=>'detail'));
 
 		$task_ids  = $taskTable->getIds(array('lft'=>$item['lft'], 'rgt'=>$item['rgt'], 'project_id'=>$item['project_id']));
 
@@ -179,6 +179,7 @@ class MTaskProgress extends CI_Model{
 					
 					$val['progress'] = $val['progress'] * 100 . '%';
 					$val['prioty'] = $prioty_arr[$val['prioty']];
+
 					if(!empty($val['key']))
 						$val['task_name'] = $val['task_name'] . ' <i class="fa fa-'.$val['key'].'" aria-hidden="true"></i>';
 				}
@@ -344,10 +345,10 @@ class MTaskProgress extends CI_Model{
 		}
 	}
 
-	public function solve($arrParam, $options = null) {
+	public function solve($arrParam = null, $options = null) {
 		$taskTable 		= $this->model_load_model('MTasks');
 		$task 			= $arrParam;
-		if($options['task'] == 'edit'){
+		if($options['task'] == 'edit' || $options['task'] == 'remove'){
 			$task_items 	= $taskTable->getItems(array('project_id'=>$task['project_id'], 'level'=>$task['level']), array('task'=>'by-project'));
 		}else{
 			$task_items 	= $taskTable->getItems(array('project_id'=>$task['project_id']), array('task'=>'by-project'));
@@ -356,10 +357,10 @@ class MTaskProgress extends CI_Model{
 		foreach($task_items as $task_id => $task) {
 			$level[$task['level']][] = $task;
 		}
-
+		
 		$key = (!empty($arrParam['key'])) ? $arrParam['key'] : '';
 		
-		if($options['task'] != 'edit') {
+		if($options['task'] != 'edit' && $options['task'] != 'remove') {
 			$progressTmp = array(
 					'task_id' 			 => $task['id'],
 					'trangthai' 		 => $task['trangthai'],
@@ -380,7 +381,7 @@ class MTaskProgress extends CI_Model{
 		}
 		
 		$this->do_progress($level, array('task'=>'progress'), $arrParam['key']);
-		
+	
 		// cập nhật progress
 		if(!empty($this->_items)){
 			$this->db->insert_batch($this->_table, $this->_items);
@@ -432,7 +433,7 @@ class MTaskProgress extends CI_Model{
 								'progress' 			 => $progress_item['progress'],
 								'pheduyet'			 => $arrParam['pheduyet'],
 								'note' 				 => '',
-								'ro0eply' 			 => '',
+								'reply' 			 => '',
 								'created'			 => @date("Y-m-d H:i:s"),
 								'created_by'		 => $this->_id_admin,
 								'user_pheduyet'		 => 0,

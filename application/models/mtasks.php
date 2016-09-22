@@ -1001,7 +1001,10 @@ class MTasks extends MNested2{
 			if($options['brand'] == 'detail' || $options['brand'] == 'full') {
 				if(!empty($result)) {
 					// tất cả task bao gồm task ở bên trên
-					$task_ids = $this->getIds(array('lft'=>$result['lft'], 'rgt'=>$result['rgt'], 'project_id'=>$result['project_id']), array('task'=>'up-branch'));
+					if($options['brand'] == 'full')
+						$task_ids = $this->getIds(array('lft'=>$result['lft'], 'rgt'=>$result['rgt'], 'project_id'=>$result['project_id']), array('task'=>'up-branch'));
+					elseif($options['brand'] == 'detail')
+						$task_ids = $this->getIds(array('lft'=>$result['lft'], 'rgt'=>$result['rgt'], 'project_id'=>$result['project_id']));
 				
 					// file list
 					$this->db->select('f.*')
@@ -1105,11 +1108,8 @@ class MTasks extends MNested2{
 		return $percent;
 	}
 
-	public function deleteItem($arrParam = null, $options = null) {
-		if($options == null) {
-			foreach($arrParam['cid'] as $id)
-				$this->removeNode($id);
-		}
+	public function deleteItem($id) {
+		$this->removeNode($id);
 	}
 	
 	public function test() {

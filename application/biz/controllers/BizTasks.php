@@ -956,9 +956,22 @@ class BizTasks extends Secure_area
 	public function deletecv() {
 		$post 	  = $this->input->post();
 		$this->load->model('MTasks');
+		$this->load->model('MTaskProgress');
+		$arrParam = $this->_data['arrParam'];
 		if(!empty($post)) {
-			$arrParam['cid'] = array($this->_data['arrParam']['id']);
-			$this->MTasks->deleteItem($arrParam, null);
+			$items = $this->MTasks->getItems(array('cid'=>$arrParam['ids']), array('task'=>'public-info'));
+
+			foreach($arrParam['ids'] as $id){
+				$this->MTasks->deleteItem($id);
+				$item = $items[$id];
+	
+				if($item['parent'] > 0) {
+					$params 	   = $item;
+					$params['key'] = 'trash-o';
+					
+					$this->MTaskProgress->solve($params, array('task'=>'remove'));
+				}
+			}
 		}
 	}
 	
