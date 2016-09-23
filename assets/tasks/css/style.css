@@ -168,6 +168,14 @@
 
 #my-form .form-group .form-control {
 	border-radius: 0;
+	
+}
+
+#my-form .form-control.has-error, #quick-form .form-control.has-error{    
+	border-color: #e19092;
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
 }
 
 #my-form .form-group select[name="trangthai"] {
@@ -288,6 +296,10 @@ display: block;
     font-size: 14px;
 }
 
+#quick-form .input-group {
+	margin-bottom: 10px;
+}
+
 #quick-form .gantt_cal_ltitle {
     background: #489ee7;
     color: white;
@@ -393,7 +405,7 @@ display: block;
 }
 
 #file_manager .panel-body {
-	padding-top: 0;
+	padding: 0 !important;
 	border: 1px solid #d7dce5;
 }
 
@@ -591,6 +603,28 @@ div.dhx_modal_cover {
 
 .gantt_cal_larea .tcontent textarea.textarea {
 	height: 30px;
+}
+
+.manage-row-options {
+	display: none;
+}
+
+.manage-row-options .control {
+	position: absolute;
+    width: 100%;
+    background: white;
+}
+
+.manage-row-options .control a.btn-red {
+	background: #fa4444 !important;
+}
+
+.manage-row-options .control a.btn-warning {
+	background: #ec971f !important;
+}
+
+.manage-row-options .control a:hover {
+	opacity: 0.9;
 }
 
 .x-select-users,.x-select-user{

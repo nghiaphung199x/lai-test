@@ -10,9 +10,11 @@
 			  var checkbox = $(this).closest('th').find('input[type="checkbox"]'); 
 			
 			  if (checkbox.prop('checked') == true){ 
+				  $('.manage-row-options').hide();
 				 checkbox.prop('checked', false);
 				 $(this).parents('.table').find('td input[type="checkbox"]').prop('checked', false);
 			  }else{
+				  $('.manage-row-options').show();
 				  checkbox.prop('checked', true);
 				  $(this).parents('.table').find('td input[type="checkbox"]').prop('checked', true);
 			  }
@@ -25,22 +27,14 @@
 
 			 if (checkbox.prop('checked')==true){ 
 				  checkbox.prop('checked', false);
-			 }else
-				  checkbox.prop('checked', true);
-			 
-			 // xử lý phân quyền với các task
-			 var cb_progress = $(".progress_checkbox:checked");
-			 if(cb_progress.length == 0) {
-				 $('#progress_manager .button').hide();
-			 }else {
-				 if(cb_progress.length == 1) {
-					 var per_xuly   = checkbox.attr('data-xuly');
-					 if(per_xuly == 1)
-						 $('#btn_edit_xuly').show(); 
-				 }else {
-					 $('#btn_edit_xuly').hide(); 
-				 }
+			 }else{
+				 $('.manage-row-options').show();
+				 checkbox.prop('checked', true);
 			 }
+
+			var checked_box = $(".file_checkbox:checked");
+			if(checked_box.length == 0) 
+				$('.manage-row-options').hide();
 	    });
 		
 		var array_list = ['progress', 'file'];
@@ -357,6 +351,13 @@
 		   });
 	   }
 	}
+	
+	function reset_error() {
+		$('#my-form .form-control').removeClass('has-error');
+		$('#my-form span.errors').text('');
+		$('#quick-form .form-control').removeClass('has-error');
+		$('#quick-form span.errors').text('');
+	}
 
 	function close_layer(type) {
 		if(type == 'quick')
@@ -490,9 +491,7 @@
 		    }
 		});	
 	}
-	
-	
-	
+
 	function pheduyet() {
 	    gantt.confirm({
 	        text: 'Phê duyệt cho công việc này?',
@@ -526,6 +525,7 @@
 	}
 	
 	function add_congviec() {
+		reset_error();
 		var checkOptions = {
 		        url : BASE_URL+'tasks/addcongviec',
 		        dataType: "json",  
@@ -535,7 +535,25 @@
 	    return false; 
 	}
 	
+	function congviecData(data) {
+		if(data.flag == 'false') {
+			$.each(data.errors, function( index, value ) {	
+				element = $( '#my-form span[for="'+index+'"]' );
+				element.prev().addClass('has-error');
+				element.text(value);
+			});	
+		}else {
+			toastr.success('Cập nhật thành công!', 'Thông báo');
+			$('#my-form').html('');
+			$('#my-form').hide();
+			gantt.deleteTask(taskId);
+			load_task();
+			close_layer();
+		}
+	}
+	
 	function edit_congviec() {
+		reset_error();
 		var url = BASE_URL + 'tasks/editcongviec';
 		var checkOptions = {
 		        url : url,
@@ -548,12 +566,11 @@
 	
 	function taskData(data) {
 		if(data.flag == 'false') {
-			gantt.alert({
-			    text: data.message,
-			    title:"Lỗi!",
-			    ok:"Đóng",
-			    callback:function(){}
-			});
+			$.each(data.errors, function( index, value ) {	
+				element = $( '#my-form span[for="'+index+'"]' );
+				element.prev().addClass('has-error');
+				element.text(value);
+			});	
 		}else {
 			toastr.success('Cập nhật thành công!', 'Thông báo');
 			$('#my-form').html('');
@@ -563,25 +580,7 @@
 			close_layer();
 		}
 	}	
-	
-	function congviecData(data) {
-		if(data.flag == 'false') {
-			gantt.alert({
-			    text: data.message,
-			    title:"Lỗi!",
-			    ok:"Đóng",
-			    callback:function(){}
-			});
-		}else {
-			toastr.success('Cập nhật thành công!', 'Thông báo');
-			$('#my-form').html('');
-			$('#my-form').hide();
-			gantt.deleteTask(taskId);
-			load_task();
-			close_layer();
-		}
-	}
-	
+
 	function delete_congviec(id) {
 	    gantt.confirm({
 	        text: 'Bạn có chắc muốn xóa?',
@@ -736,6 +735,7 @@
 	}
 	
 	function save_file(task) {
+		reset_error();
 		if(task == 'edit') 
 			var url = BASE_URL + 'tasks/editfile'
 		else 
@@ -752,7 +752,16 @@
 	
 	function fileData(data) {
 		if(data.flag == 'false') {
-			toastr.error(data.message, 'Lỗi');
+			$.each(data.errors, function( index, value ) {	
+				element = $( '#quick-form span[for="'+index+'"]' );
+				if(index == 'file_upload')
+					$('#file_display').addClass('has-error');
+				else	
+					element.prev().addClass('has-error');
+				
+				element.text(value);
+			});	
+			
 			
 		}else {
 			toastr.success('Cập nhật thành công!', 'Thông báo');
@@ -843,33 +852,37 @@
 	}
 	
 	function load_template_file(items) {
-		 var string = new Array();
-		 $.each(items, function( index, value ) {
-			  var id      		= value.id;
-			  var name 			= value.name;
-			  var link 			= value.link;
-			  var file_name 	= value.file_name;
-			  var size 			= value.size;
-			  var progress  	= value.progress;
-			  var created_name 	= value.created_name;
-			  var created 		= value.created;
-			  var modified_name = value.modified_name;
-			  var modified 		= value.modified;
+		if(items.length) {
+			 var string = new Array();
+			 $.each(items, function( index, value ) {
+				  var id      		= value.id;
+				  var name 			= value.name;
+				  var link 			= value.link;
+				  var file_name 	= value.file_name;
+				  var size 			= value.size;
+				  var progress  	= value.progress;
+				  var created_name 	= value.created_name;
+				  var created 		= value.created;
+				  var modified_name = value.modified_name;
+				  var modified 		= value.modified;
 
-			  string[string.length] = '<tr style="cursor: pointer;">'
-											+'<td class="center cb"><input type="checkbox" id="file_'+id+'" class="file_checkbox" value="'+id+'"><label for="file_'+id+'"><span></span></label></td>'
-											+'<td class="cb">'+name+'</td>'
-											+'<td><a href="'+link+'" class="download"><i class="fa fa-download" aria-hidden="true"></i></a>'+file_name+'</td>'
-											+'<td class="center cb">'+size+' Kb</td>'
-											+'<td class="center cb">'+created+'</td>'
-											+'<td class="center cb">'+created_name+'</td>'
-											+'<td class="center cb">'+modified+'</td>'
-											+'<td class="center cb">'+modified_name+'</td>'
-										+'</tr>';
+				  string[string.length] = '<tr style="cursor: pointer;">'
+												+'<td class="center cb"><input type="checkbox" id="file_'+id+'" class="file_checkbox" value="'+id+'"><label for="file_'+id+'"><span></span></label></td>'
+												+'<td class="cb">'+name+'</td>'
+												+'<td><a href="'+link+'" class="download"><i class="fa fa-download" aria-hidden="true"></i></a>'+file_name+'</td>'
+												+'<td class="center cb">'+size+' Kb</td>'
+												+'<td class="center cb">'+created+'</td>'
+												+'<td class="center cb">'+created_name+'</td>'
+												+'<td class="center cb">'+modified+'</td>'
+												+'<td class="center cb">'+modified_name+'</td>'
+											+'</tr>';
 
-		 });
-		 
-		 string = string.join("");
+			 });
+			 
+			 string = string.join("");
+		}else
+			string = '<tr style="cursor: pointer;"><td colspan="8"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
+
 		 
 		 return string;	
 	}
@@ -1038,6 +1051,8 @@
 	
 	function load_list(keyword, page) {
 		var task_id = $('#task_id').val();
+		var data = new Object();
+		data.task_id = task_id;
 		if(keyword == 'progress') {
 			var url	        = BASE_URL + 'tasks/progresslist/'+page;
 			var manager_div = 'progress_danhsach';

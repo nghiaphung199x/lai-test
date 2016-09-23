@@ -69,7 +69,6 @@
 				<li class="active" data-id="basic_manager"><span class="title">Cơ bản</span></li>
 			</ul>
 		</div>
-
 		<div class="gantt_cal_larea">
 			<form method="POST" name="task_form" id="task_form" class="form-horizontal">
 				<input type="hidden" name="parent" value="<?php echo $parent; ?>" />
@@ -79,9 +78,10 @@
 					<div class="clearfix hang" style="margin-bottom: 10px;">
 						<div class="col-lg-12">
 							<div class="form-group">
-								<label for="first_name" class="col-md-3 col-lg-2 control-label"><?php echo $congviec_title; ?></label>			
+								<label for="name" class="col-md-3 col-lg-2 control-label"><?php echo $congviec_title; ?></label>			
 								<div class="col-md-9 col-lg-10">
 									<input type="text" name="name" value="" class="form-control" />
+									<span for="name" class="text-danger errors"></span>
 								</div>
 							</div>
 						</div>
@@ -90,6 +90,7 @@
 								<label for="first_name" class="col-md-3 col-lg-2 control-label">Màu sắc</label>			
 								<div class="col-md-9 col-lg-10">
 									<input type="text" name="color" id="color" value="#489ee7" class="form-control" />
+									<span for="color" class="text-danger errors"></span>
 								</div>
 							</div>
 						</div>
@@ -99,6 +100,7 @@
 								<label for="first_name" class="col-md-3 col-lg-2 control-label ">Tỷ lệ</label>			
 								<div class="col-md-9 col-lg-10">
 									<input type="number" name="percent" value="<?php echo $percent; ?>" class="form-control" />
+									<span for="percent" class="text-danger errors"></span>
 								</div>
 							</div>
 						</div>
@@ -109,6 +111,7 @@
 								<label for="first_name" class="col-md-3 col-lg-2 control-label ">Mô tả</label>			
 								<div class="col-md-9 col-lg-10">
 									<textarea name="detail" class="form-control"></textarea>
+									<span for="detail" class="text-danger errors"></span>
 								</div>
 							</div>
 						</div>
@@ -123,15 +126,16 @@
 											<label class="col-md-3 col-lg-4 control-label">Bắt đầu</label>
 											<div class="col-md-9 col-lg-8">
 												<input type="text" name="date_start" class="form-control datepicker" />
+												<span for="date_start" class="text-danger errors"></span>
 											</div>
 										</div>
-		
 									</div>
 									<div class="col-lg-6">
 										<div class="form-group">
 											<label class="col-md-3 col-lg-4 control-label">Kết thúc</label>
 											<div class="col-md-9 col-lg-8">
 												<input type="text" name="date_end" class="form-control datepicker" />
+												<span for="date_end" class="text-danger errors"></span>
 											</div>
 										</div>
 									</div>
@@ -151,6 +155,7 @@
 												</select> 
 												<input type="number" name="progress" value="0" class="form-control"/>
 											</div>
+											<span for="number" class="text-danger errors"></span>
 										</div>
 		
 									</div>
@@ -195,6 +200,20 @@
 											</div>
 										</div>						
 									</div>
+	<?php if($is_create_task == true):?>
+									<div class="col-lg-12">
+										<div class="form-group">
+											<label class="col-md-3 col-lg-2 control-label">Phê duyệt tiến độ</label>
+											<div class="col-md-9 col-lg-10">
+												<div class="x-select-users" x-name="progress_list" id="progress_list" x-title="" style="display: inline-block; width: 100%;" onclick="foucs(this);">	
+													<input type="text" autocomplete="off" id="progress_result" class="quick_search" />
+													<div class="result">			
+													</div>
+												</div>
+											</div>
+										</div>						
+									</div>	
+	<?php endif;?>						
 								</div>
 							</div>
 	<?php if($is_create_task == true):?>
@@ -225,18 +244,7 @@
 											</div>
 										</div>						
 									</div>	
-									<div class="col-lg-12">
-										<div class="form-group">
-											<label class="col-md-3 col-lg-2 control-label">Phê duyệt tiến độ</label>
-											<div class="col-md-9 col-lg-10">
-												<div class="x-select-users" x-name="progress_list" id="progress_list" x-title="" style="display: inline-block; width: 100%;" onclick="foucs(this);">	
-													<input type="text" autocomplete="off" id="progress_result" class="quick_search" />
-													<div class="result">			
-													</div>
-												</div>
-											</div>
-										</div>						
-									</div>	
+
 								</div>
 							</div>
 	<?php endif;?>

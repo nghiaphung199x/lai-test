@@ -96,6 +96,7 @@
 								<label for="first_name" class="col-md-3 col-lg-2 control-label"><?php echo $congviec_title; ?></label>			
 								<div class="col-md-9 col-lg-10">
 									<input type="text" name="name" value="<?php echo $name; ?>" class="form-control" />
+									<span for="name" class="text-danger errors"></span>
 								</div>
 							</div>
 						</div>
@@ -104,6 +105,7 @@
 								<label for="first_name" class="col-md-3 col-lg-2 control-label">Màu sắc</label>			
 								<div class="col-md-9 col-lg-10">
 									<input type="text" name="color" id="color" value="<?php echo $color; ?>" class="form-control" />
+									<span for="color" class="text-danger errors"></span>
 								</div>
 							</div>
 						</div>	
@@ -113,6 +115,7 @@
 								<label for="first_name" class="col-md-3 col-lg-2 control-label">Tỷ lệ</label>			
 								<div class="col-md-9 col-lg-10">
 									<input type="number" name="percent" value="<?php echo $percent; ?>" class="form-control" />
+									<span for="percent" class="text-danger errors"></span>
 								</div>
 							</div>
 						</div>
@@ -122,6 +125,7 @@
 								<label for="first_name" class="col-md-3 col-lg-2 control-label ">Mô tả</label>			
 								<div class="col-md-9 col-lg-10">
 									<textarea name="detail" class="form-control"><?php echo $detail; ?></textarea>
+									<span for="detail" class="text-danger errors"></span>
 								</div>
 							</div>
 						</div>
@@ -133,18 +137,19 @@
 								<div class="row">
 									<div class="col-lg-6">
 										<div class="form-group">
-											<label class="col-md-3 col-lg-4 control-label">Bắt đầu</label>
+											<label class="col-d-3 col-lg-4 control-label">Bắt đầu</label>
 											<div class="col-md-9 col-lg-8">
 												<input type="text" name="date_start" value="<?php echo $date_start; ?>" class="form-control datepicker" />
+												<span for="date_start" class="text-danger errors"></span>
 											</div>
 										</div>
-		
 									</div>
 									<div class="col-lg-6">
 										<div class="form-group">
 											<label class="col-md-3 col-lg-4 control-label">Kết thúc</label>
 											<div class="col-md-9 col-lg-8">
 												<input type="text" name="date_end" value="<?php echo $date_end; ?>" class="form-control datepicker" />
+												<span for="date_end" class="text-danger errors"></span>
 											</div>
 										</div>
 									</div>
@@ -203,6 +208,37 @@
 											</div>
 										</div>						
 									</div>
+	<?php if($is_create_task == true):?>
+									<div class="col-lg-12">
+										<div class="form-group">
+											<label class="col-md-3 col-lg-2 control-label">Phê duyệt tiến độ</label>
+											<div class="col-md-9 col-lg-10">
+												<div class="x-select-users" x-name="progress_list" id="progress_list" x-title="" style="display: inline-block; width: 100%;" onclick="foucs(this);">	
+<?php 
+	if(!empty($item['is_progress'])) {
+		foreach($item['is_progress'] as $key => $val) {
+			$keyArr = explode('-', $key);
+			if($keyArr[0] == $id) {
+				$user_id   = $val['id'];
+				$user_name = $val['username'];		
+?>
+										<span class="item"><input type="hidden" name="progress_task[]" class="progress_task" id="progress_task_<?php echo $user_id; ?>" value="<?php echo $user_id; ?>"><a><?php echo $user_name; ?></a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>								
+
+<?php 
+			}
+
+		}
+	}
+?>
+													<input type="text" autocomplete="off" id="progress_result" class="quick_search" />
+													<div class="result">			
+													</div>
+												</div>
+											</div>
+										</div>						
+									</div>	
+	<?php endif;?>								
+									
 								</div>
 							</div>
 	<?php if($is_create_task == true):?>
@@ -265,34 +301,8 @@
 										</div>	
 															
 									</div>	
-									<div class="col-lg-12">
-										<div class="form-group">
-											<label class="col-md-3 col-lg-2 control-label">Phê duyệt tiến độ</label>
-											<div class="col-md-9 col-lg-10">
-												<div class="x-select-users" x-name="progress_list" id="progress_list" x-title="" style="display: inline-block; width: 100%;" onclick="foucs(this);">	
-<?php 
-	if(!empty($item['is_progress'])) {
-		foreach($item['is_progress'] as $key => $val) {
-			$keyArr = explode('-', $key);
-			if($keyArr[0] == $id) {
-				$user_id   = $val['id'];
-				$user_name = $val['username'];		
-?>
-										<span class="item"><input type="hidden" name="progress_task[]" class="progress_task" id="progress_task_<?php echo $user_id; ?>" value="<?php echo $user_id; ?>"><a><?php echo $user_name; ?></a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>								
+								
 
-<?php 
-			}
-
-		}
-	}
-?>
-													<input type="text" autocomplete="off" id="progress_result" class="quick_search" />
-													<div class="result">			
-													</div>
-												</div>
-											</div>
-										</div>						
-									</div>	
 								</div>
 							</div>
 	<?php endif;?>
@@ -377,16 +387,30 @@
 						</table>
 					</div>
 				</div>
-
 				<div class="manage-table tabs" id="file_manager">
-					<div class="control">
-						<ul class="button-list clearfix">
-							<li><a href="javascript:;" onclick="add_file();"><i class="fa fa-plus"></i>Thêm</a></li>
-							<li><a href="javascript:;" onclick="edit_file();"><i class="fa fa-pencil-square-o"></i> Sửa</a></li>
-							<li><a href="javascript:;" onclick="delete_file();"><i class="fa fa-times"></i> Xóa</a></li>
-						</ul>
+					<div class="manage-row-options">
+						<div class="control">	
+							<a href="javascript:;" class="btn btn-red btn-lg delete_inactive" title="Sửa" onclick="edit_file();"><span class="">Sửa</span></a>		
+							<a href="javascript:;" class="btn btn-lg btn-clear-selection btn-warning" onclick="delete_file();">Xóa lựa chọn</a>
+						</div>
 					</div>
-					<div class="panel-body nopadding table_holder table-responsive">
+					<div class="control clearfix">		
+						<div class="pull-right">
+							<div class="buttons-list">
+								<div class="pull-right-btn">
+								   <a href="javascript:;" id="new-person-btn" onclick="add_file();" class="btn btn-primary btn-lg" title="Thêm mới tiến độ"><span class="">Thêm mới File</span></a>	
+								</div>
+							</div>				
+						</div>
+					</div>
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<span class="tieude active">Danh sách tài liệu</span>
+							<span id="count_tailieu" title="total suppliers" class="badge bg-primary tip-left">0</span>
+						</h3>
+					</div>
+	
+					<div class="panel-body nopadding table_holder table-responsive table_list">
 						<table class="tablesorter table table-hover" id="sortable_table">
 							<thead>
 								<tr>
@@ -401,7 +425,6 @@
 								</tr>
 							</thead>
 							<tbody>
-							
 							</tbody>
 						</table>
 					</div>

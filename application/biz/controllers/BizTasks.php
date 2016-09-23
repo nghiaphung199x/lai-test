@@ -130,7 +130,7 @@ class BizTasks extends Secure_area
 				$arrParam['duration'] = floor($datediff/(60*60*24));
 				if($arrParam['duration'] <= 0) {
 					$flagError = true;
-					$errors['date'] = 'Ngày kết thúc phải sau ngày bắt đầu.';
+					$errors['date_start'] = 'Ngày kết thúc phải sau ngày bắt đầu.';
 				}
 				
 				if($flagError == false && $arrParam['parent'] > 0) {
@@ -184,7 +184,7 @@ class BizTasks extends Secure_area
 				}
 
 			}else {
-				$respon = array('flag'=>'false', 'message'=>current($errors));
+				$respon = array('flag'=>'false', 'errors'=>$errors);
 			}
 
 			echo json_encode($respon);
@@ -266,7 +266,7 @@ class BizTasks extends Secure_area
 
 				$respon = array('flag'=>'true');
 			}else {
-				$respon = array('flag'=>'false', 'message'=>current($errors));
+				$respon = array('flag'=>'false', 'errors'=>$errors);
 			}
 
 			echo json_encode($respon);
@@ -641,7 +641,7 @@ class BizTasks extends Secure_area
 					}else{
 						$flagError = true;
 						$err = $this->upload->display_errors();
-						$errors[] = $fileError[$err];
+						$errors['file_upload'] = $fileError[$err];
 					}
 				}else {
 					$flagError = true;
@@ -650,7 +650,7 @@ class BizTasks extends Secure_area
 			}
 	
 			if($flagError == true) {
-				$respon = array('flag'=>'false', 'message'=>current($errors));
+				$respon = array('flag'=>'false', 'errors'=>$errors);
 			}else {
 				$this->load->model('MTaskFiles');
 				$this->MTaskFiles->saveItem($arrParam, array('task'=>'add'));
@@ -694,13 +694,13 @@ class BizTasks extends Secure_area
 				if($flagError == false){
 					$flagError = $this->MTaskFiles->validate($arrParam['name'], 'name', $arrParam['id']);
 					if($flagError == true)
-						$errors[] = 'Tên tài liệu đã tồn tại.';
+						$errors['name'] = 'Tên tài liệu đã tồn tại.';
 				}
 				
 				if($flagError == false){
 					$flagError = $this->MTaskFiles->validate($arrParam['file_name'], 'file_name', $arrParam['id']);
 					if($flagError == true)
-						$errors[] = 'Tên tài file đã tồn tại.';
+						$errors['file_name'] = 'Tên tài file đã tồn tại.';
 				}
 
 				if($flagError == false) {
@@ -726,7 +726,7 @@ class BizTasks extends Secure_area
 					}else{
 						$flagError = true;
 						$err = $this->upload->display_errors();
-						$errors[] = $fileError[$err];
+						$errors['file_upload'] = $fileError[$err];
 					}
 				}
 					
@@ -741,7 +741,7 @@ class BizTasks extends Secure_area
 				if($flagError == false){
 					$flagError = $this->MTaskFiles->validate($arrParam['name'], 'name', $arrParam['id']);
 					if($flagError == true)
-						$errors[] = 'Tên tài liệu đã tồn tại.';
+						$errors['file_name'] = 'Tên tài liệu đã tồn tại.';
 				}
 				
 				if($flagError == false) {
@@ -751,7 +751,7 @@ class BizTasks extends Secure_area
 			}
 
 			if($flagError == true) {
-				$respon = array('flag'=>'false', 'message'=>current($errors));
+				$respon = array('flag'=>'false', 'errors'=>$errors);
 			}else {
 				$this->load->model('MTaskFiles');
 				$this->MTaskFiles->saveItem($arrParam, array('task'=>'edit'));

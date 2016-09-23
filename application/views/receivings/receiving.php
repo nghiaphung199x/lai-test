@@ -10,9 +10,6 @@
 		<div class="register-box register-items-form">
 			
 			<div class="item-form">
-				
-
-
 				<!-- Item adding form -->
 				<?php echo form_open("receivings/add",array('id'=>'add_item_form','class'=>'form-inline', 'autocomplete'=> 'off')); ?>
 					<div class="input-group input-group-mobile contacts">
