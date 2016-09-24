@@ -35,14 +35,15 @@ class MTaskProgress extends CI_Model{
 		return $result;
 	}
 	
-	public function countItem($arrParam = null, $options = null){
-		$ssFilter  = $arrParam['ssFilter'];
-			
+	public function countItem($arrParam = null, $options = null){	
 		$taskTable = $this->model_load_model('MTasks');
 			
 		$item 	   = $taskTable->getItem(array('id'=>$arrParam['task_id']), array('task'=>'public-info', 'brand'=>'detail'));
 
-		$task_ids  = $taskTable->getIds(array('lft'=>$item['lft'], 'rgt'=>$item['rgt'], 'project_id'=>$item['project_id']));
+		if($arrParam['taskID'] > 0) 
+			$task_ids = array($arrParam['taskID']);
+		else
+			$task_ids  = $taskTable->getIds(array('lft'=>$item['lft'], 'rgt'=>$item['rgt'], 'project_id'=>$item['project_id']));
 
 		$this->_task_ids = $task_ids;
 
@@ -86,8 +87,7 @@ class MTaskProgress extends CI_Model{
 				$this->db -> select('COUNT(p.id) AS totalItem')
 						  -> from($this->_table . ' AS p')
 						  -> where('p.task_id IN ('.implode(', ', $this->_task_ids).')')
-						  -> where('p.pheduyet = 2')
-						  -> or_where('p.pheduyet IN (0, 1) AND p.user_pheduyet = ' . $this->_id_admin);
+						  -> where('p.pheduyet IN (0, 1) AND p.user_pheduyet = ' . $this->_id_admin . ' OR p.pheduyet = 2');
 					
 				$query = $this->db->get();
 				$result = $query->row()->totalItem;
@@ -238,8 +238,7 @@ class MTaskProgress extends CI_Model{
 						  -> join('tasks as t', 't.id = p.task_id', 'left')
 						  -> join('employees as e', 'e.id = p.created_by', 'left')
 						  -> where('p.task_id IN ('.implode(', ', $this->_task_ids).')')
-						  -> where('p.pheduyet = 2')
-						  -> or_where('p.pheduyet IN (0, 1) AND p.user_pheduyet = ' . $this->_id_admin);
+						  -> where('p.pheduyet IN (0, 1) AND p.user_pheduyet = ' . $this->_id_admin . ' OR p.pheduyet = 2');
 					
 				$query = $this->db->get();
 				$result = $query->result_array();

@@ -96,6 +96,7 @@
     padding-top: 5px;
 	padding-bottom: 5px;
     color: #555555;
+	position: relative;
 }
 #my-form {
 	width: 1358px;
@@ -989,6 +990,13 @@ div.overlay1 {
 
 div.overlay2 {
 	 z-index: 100000;
+}
+
+#loading_1 {
+	position: absolute;
+    bottom: -34px;
+    left: 0px;
+	display: none;
 }
 
 .colorpicker {

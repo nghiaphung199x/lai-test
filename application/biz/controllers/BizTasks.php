@@ -33,6 +33,8 @@ class BizTasks extends Secure_area
 		$this->form_validation->set_message('valid_ip', '%s không phải là địa chỉ IP.');
 		$this->form_validation->set_message('min_length', '%s phải có ít nhất là %s kí tự.');
 		$this->form_validation->set_message('max_length', '%s phải có tối đa là %s kí tự.');
+		$this->form_validation->set_message('greater_than', '%s không được nhỏ hơn hoặc bằng %s');
+		$this->form_validation->set_message('less_than', '%s không được lớn hơn hoặc bằng %s');
 		$this->form_validation->set_message('exact_length', '%s phải có chính xác là %s kí tự.');
 		$this->form_validation->set_message('alpha', '%s chỉ được chứa kí tự chữ cái.');
 		$this->form_validation->set_message('alpha_numeric', '%s chỉ chứa các kí tự chữ cái và số nguyên.');
@@ -48,10 +50,10 @@ class BizTasks extends Secure_area
 		$this->load->view('tasks/index_view', $this->_data);
 		
 		$this->load->library('MY_System_Info');
-// 		$info 					  = new MY_System_Info();
-// 		$user_info = $info->getInfo();
-// 		if(!in_array('tasks_view', $user_info['task_permission']))
-// 			redirect('/no_access/tasks');
+		$info 					  = new MY_System_Info();
+		$user_info = $info->getInfo();
+		if(!in_array('tasks_view', $user_info['task_permission']))
+			redirect('/no_access/tasks');
 		
 	}
 	
@@ -191,6 +193,7 @@ class BizTasks extends Secure_area
 	
 		}else {
 			$max_percent = $this->MTasks->getMaxPercent($arrParam['parent'], $parent_item['project_id']);
+
 			
 			$this->_data['percent'] 			= $max_percent;
 			$this->_data['parent'] 				= $arrParam['parent'];
@@ -338,7 +341,7 @@ class BizTasks extends Secure_area
 					
 				$items 		= $this->MTasks->getInfo(array('lft'=>$item['lft'], 'rgt'=>$item['rgt'], 'project_id'=>$item['project_id']), array('task'=>'create-task'));
 				$task_ids 	= $items['task_ids'];
-		
+
 				$project_relation 	  = $this->MTasksRelation->getItems(array('task_ids'=>$task_ids), array('task'=>'by-multi-task'));
 					
 				$this->_data['project_relation'] = $project_relation;
@@ -357,9 +360,7 @@ class BizTasks extends Secure_area
 					$this->_data['no_comment'] = $this->_data['no_update'] = true;
 					$view = 'tasks/detail_view';
 				}
-				
-				if(!empty($view))
-					$this->load->view($view,$this->_data);
+
 
 			}else { // công việc thuộc dự án
 				if(in_array('update_all_task', $task_permission))
@@ -375,10 +376,13 @@ class BizTasks extends Secure_area
 					$this->_data['is_xem'] 	   = true;
 					$view = 'tasks/detail_view';
 				}
-
-				if(!empty($view))
-					$this->load->view($view,$this->_data);
 			}
+
+			//nhánh dự án/ công việc
+			$this->_data['slbTasks'] = $this->MTasks->itemSelectBox(array('project_id'=>$item['project_id'], 'lft'=>$item['lft'], 'rgt'=>$item['rgt']));
+			
+			if(!empty($view))
+				$this->load->view($view,$this->_data);
 		}
 	}
 	//labeaute1212@gmail.com : labeaute

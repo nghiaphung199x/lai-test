@@ -65,14 +65,14 @@
 				</div>
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						<span class="tieude active" data-id="progress_danhsach">Lịch sử tiến độ</span>
-						<span id="count_tiendo" title="22 total suppliers" class="badge bg-primary tip-left">0</span>
+						<span class="tieude active" data-id="progress_danhsach">Lịch sử</span>
+						<span id="count_tiendo" title="total suppliers" class="badge bg-primary tip-left">0</span>
 						
-						<span class="tieude" style="margin-left: 10px;" data-id="request_list">Yêu cầu phê</span>
-						<span id="count_request" title="22 total suppliers" class="badge bg-primary tip-left">0</span>
+						<span class="tieude" style="margin-left: 10px;" data-id="request_list">Yêu cầu phê duyệt</span>
+						<span id="count_request" title="total suppliers" class="badge bg-primary tip-left">0</span>
 						
 						<span class="tieude" style="margin-left: 10px;" data-id="pheduyet_list">Phê duyệt</span>
-						<span id="count_pheduyet" title="22 total suppliers" class="badge bg-primary tip-left">0</span>
+						<span id="count_pheduyet" title="total suppliers" class="badge bg-primary tip-left">0</span>
 					</h3>
 				</div>
 				<div class="panel-body nopadding table_holder table-responsive table_list" id="progress_danhsach">

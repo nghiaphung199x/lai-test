@@ -17,7 +17,6 @@ if($item['lft'] != $item['rgt'] - 1)
 			<ul class="list clearfix">
 				<li class="btn-save"><a href="javascript:;" onclick="save_tiendo();"><i class="fa fa-floppy-o"></i>Lưu</a></li>
 				<li class="btn-cancel"><a href="javascript:;" onclick="cancel('quick');"><i class="fa fa-times-circle"></i>Đóng</a></li>
-				
 			</ul>
 		</div>
 		<div class="gantt_cal_larea">

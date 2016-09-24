@@ -720,6 +720,26 @@ class MTasks extends MNested2{
 
 		return $lastId;
 	}
+	
+	public function itemSelectBox($arrParams = null, $options = null) {
+		if($options == null) {
+			$this->db->select("t.id, t.name, t.level")
+					->from('tasks as t')
+					->where('t.lft >= ' . $arrParams['lft'] . ' AND rgt <= ' . $arrParams['rgt'])
+					->where('t.project_id', $arrParams['project_id']);
+			
+			$query = $this->db->get();
+			$result = $query->result_array();
+			$this->db->flush_cache();
+			if(!empty($result)) {
+				foreach($result as &$val) {
+					$val['name'] = str_repeat('-', $val['level']) . ' ' . $val['name'];
+				}
+			}
+		}
+		
+		return $result;
+	}
 
 	public function listItem($options = null, $arrParams = null) {
 		if($options == null) {

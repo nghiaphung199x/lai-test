@@ -78,6 +78,22 @@
 			else if(content_id == 'pheduyet_list'){
 				load_list('pheduyet', 1);
 			}
+			
+			// task search = 0
+			$('#s_task_id').val(0);
+		    countTiendo();
+		});
+		
+		// search
+		$('body').on('change','#s_task_id',function(){
+			var content_id = $('#progress_manager span.tieude.active').attr('data-id');
+			if(content_id == 'progress_danhsach') {
+				load_list('progress', 1);
+			}else if(content_id == 'request_list')
+				load_list('request', 1);
+			else if(content_id == 'pheduyet_list'){
+				load_list('pheduyet', 1);
+			}
 		});
 		
 		// gantt
@@ -645,7 +661,6 @@
 	function tiendoData(data) {
 		if(data.flag == 'false') {
 			toastr.error(data.message, 'Lỗi!');
-			
 		}else {
 			toastr.success(data.message, 'Thông báo');
 			$('#quick-form').html('');
@@ -1053,10 +1068,14 @@
 		var task_id = $('#task_id').val();
 		var data = new Object();
 		data.task_id = task_id;
+		
 		if(keyword == 'progress') {
 			var url	        = BASE_URL + 'tasks/progresslist/'+page;
 			var manager_div = 'progress_danhsach';
 			var count_span  = 'count_tiendo';
+			
+			var taskID = $('#s_task_id').val();
+			data.taskID = taskID;
 		}else if(keyword == 'file') {
 			var url 		  = BASE_URL + 'tasks/filelist/'+page;
 			var manager_div   = 'file_manager';
@@ -1065,19 +1084,28 @@
 			var url 		  = BASE_URL + 'tasks/requestlist/'+page;
 			var manager_div   = 'request_list';
 			var count_span 	  = 'count_request';
+			
+			var taskID = $('#s_task_id').val();
+			data.taskID = taskID;
 		}else if(keyword == 'pheduyet') {
 			var url 		  = BASE_URL + 'tasks/pheduyetlist/'+page;
 			var manager_div   = 'pheduyet_list';
 			var count_span 	  = 'count_pheduyet';
+			
+			var taskID = $('#s_task_id').val();
+			data.taskID = taskID;
 		}
 
 		$.ajax({
 			type: "POST",
 			url: url,
-			data: {
-				task_id : task_id,
-			},
+			data: data,
+			beforeSend: function() {
+	              $("#loading_1").show();
+	        },
 			success: function(string){
+				 $("#loading_1").hide();
+				
 				 var result = $.parseJSON(string);
 				 var items = result.items; 
 				 var pagination = result.pagination;
