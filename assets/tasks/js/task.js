@@ -96,7 +96,51 @@
 			}
 		});
 		
+		//sort
+		$('body').on('click','#my-form .manage-table table th',function(){
+			var thElement = $('#my-form .manage-table table th');
+			var attr = $(this).attr('data-field');
+			if (typeof attr !== typeof undefined && attr !== false) {
+			   if($(this).hasClass('header')) {
+				   if($(this).hasClass('headerSortUp')){
+					   $(this).removeClass('headerSortUp');
+					   $(this).addClass('headerSortDown');
+				   }else {
+					   $(this).removeClass('headerSortDown');
+					   $(this).addClass('headerSortUp');
+				   }   
+			   }else {
+				   thElement.removeClass('header');
+				   thElement.removeClass('headerSortUp');
+				   thElement.removeClass('headerSortDown');
+				   $(this).addClass('header headerSortUp');
+			   }
+			   
+			   var li_element = $('.arrord_nav ul li.active');
+			   var className  = li_element.attr('data-id');
+			   if(className == 'progress_manager') {
+					var content_id = $('#progress_manager span.tieude.active').attr('data-id');
+					if(content_id == 'progress_danhsach') {
+						load_list('progress', 1);
+					}else if(content_id == 'request_list')
+						load_list('request', 1);
+					else if(content_id == 'pheduyet_list'){
+						load_list('pheduyet', 1);
+					}   
+			   }else
+				   load_list('file', 1);
+
+			}
+		});
+		
 		// gantt
+		//tooltip
+		
+
+		gantt.templates.tooltip_text = function(start,end,task){
+			return task.tooltip;
+		};
+		
 		gantt.showLightbox = function(id) {
 		    taskId = id;
 
@@ -1064,6 +1108,20 @@
 		});
 	}
 	
+	function loading(keyword) {
+		if(keyword != 'file')
+			 $("#loading_1").show();
+		else
+			 $("#loading_2").show();
+	}
+	
+	function close_loading(keyword) {
+		if(keyword != 'file')
+			 $("#loading_1").hide();
+		else
+			 $("#loading_2").hide();
+	}
+	
 	function load_list(keyword, page) {
 		var task_id = $('#task_id').val();
 		var data = new Object();
@@ -1076,10 +1134,14 @@
 			
 			var taskID = $('#s_task_id').val();
 			data.taskID = taskID;
+
+			var elementSort = $('#progress_danhsach th.header');
 		}else if(keyword == 'file') {
 			var url 		  = BASE_URL + 'tasks/filelist/'+page;
 			var manager_div   = 'file_manager';
 			var count_span 	  = 'count_tailieu';
+			
+			var elementSort = $('#file_manager th.header');
 		}else if(keyword == 'request') {
 			var url 		  = BASE_URL + 'tasks/requestlist/'+page;
 			var manager_div   = 'request_list';
@@ -1087,6 +1149,8 @@
 			
 			var taskID = $('#s_task_id').val();
 			data.taskID = taskID;
+			
+			var elementSort = $('#request_list th.header');
 		}else if(keyword == 'pheduyet') {
 			var url 		  = BASE_URL + 'tasks/pheduyetlist/'+page;
 			var manager_div   = 'pheduyet_list';
@@ -1094,6 +1158,19 @@
 			
 			var taskID = $('#s_task_id').val();
 			data.taskID = taskID;
+			
+			var elementSort = $('#pheduyet_list th.header');
+		}
+		
+		// get field sort
+		if(elementSort.length){
+			if(elementSort.hasClass('headerSortUp')){
+				data.col   = elementSort.attr('data-field');
+				data.order = 'ASC';
+			}else {
+				data.col   = elementSort.attr('data-field');
+				data.order = 'DESC';
+			}
 		}
 
 		$.ajax({
@@ -1101,11 +1178,11 @@
 			url: url,
 			data: data,
 			beforeSend: function() {
-	              $("#loading_1").show();
+	             loading(keyword);
 	        },
 			success: function(string){
-				 $("#loading_1").hide();
-				
+				 close_loading(keyword);
+
 				 var result = $.parseJSON(string);
 				 var items = result.items; 
 				 var pagination = result.pagination;

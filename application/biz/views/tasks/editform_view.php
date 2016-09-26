@@ -354,12 +354,12 @@ if(!empty($slbTasks)) {
 						<table class="tablesorter table table-hover sortable_table">
 							<thead>
 								<tr>
-									<th style="width: 20%;">Công việc</th>
-									<th style="width: 10%;">Tiến độ</th>
-									<th style="width: 15%;">Tình trạng</th>
-									<th style="width: 10%;">Ưu tiên</th>						
-									<th>Tài khoản</th>
-									<th style="width: 15%;">Ngày</th>
+									<th style="width: 20%;" data-field="task_name">Công việc</th>
+									<th style="width: 10%;" data-field="progress">Tiến độ</th>
+									<th style="width: 15%;" data-field="trangthai">Tình trạng</th>
+									<th style="width: 10%;" data-field="prioty">Ưu tiên</th>						
+									<th data-field="username">Tài khoản</th>
+									<th data-field="date_phe" style="width: 15%;">Ngày</th>
 								</tr>
 							</thead>
 							<tbody>	
@@ -370,14 +370,14 @@ if(!empty($slbTasks)) {
 						<table class="tablesorter table table-hover sortable_table">
 							<thead>
 								<tr>
-									<th>Công việc</th>
-									<th style="width: 5%;">Tiến độ</th>
-									<th style="width: 10%;">Tình trạng</th>
-									<th style="width: 10%;">Ưu tiên</th>						
-									<th style="width: 15%;">Ngày gửi</th>
-									<th style="width: 10%;">Phê duyệt</th>
-									<th style="width: 10%;">Người phê duyệt</th>
-									<th style="width: 10%;">Ngày phê duyệt</th>
+									<th data-field="task_name">Công việc</th>
+									<th style="width: 5%;" data-field="progress">Tiến độ</th>
+									<th style="width: 10%;" data-field="trangthai">Tình trạng</th>
+									<th style="width: 10%;" data-field="prioty">Ưu tiên</th>						
+									<th style="width: 15%;" data-field="created">Ngày gửi</th>
+									<th style="width: 10%;" data-field="pheduyet">Phê duyệt</th>
+									<th style="width: 10%;" data-field="user_pheduyet">Người phê duyệt</th>
+									<th style="width: 10%;" data-field="date_pheduyet">Ngày phê duyệt</th>
 									<th style="width: 10%;"></th>
 								</tr>
 							</thead>
@@ -389,14 +389,14 @@ if(!empty($slbTasks)) {
 						<table class="tablesorter table table-hover sortable_table">
 							<thead>
 								<tr>
-									<th>Công việc</th>
-									<th style="width: 5%;">Tiến độ</th>
-									<th style="width: 10%;">Tình trạng</th>
-									<th style="width: 10%;">Ưu tiên</th>						
-									<th style="width: 10%;">Người gửi</th>
-									<th style="width: 10%;">Ngày gửi</th>
-									<th style="width: 10%;">Phê duyệt</th>
-									<th style="width: 10%;">Ngày phê duyệt</th>
+									<th data-field="task_name">Công việc</th>
+									<th style="width: 5%;" data-field="progress">Tiến độ</th>
+									<th style="width: 10%;" data-field="trangthai">Tình trạng</th>
+									<th style="width: 10%;" data-field="prioty">Ưu tiên</th>						
+									<th style="width: 10%;" data-field="username">Người gửi</th>
+									<th style="width: 10%;" data-field="created">Ngày gửi</th>
+									<th style="width: 10%;" data-field="pheduyet">Phê duyệt</th>
+									<th style="width: 10%;" data-field="date_pheduyet">Ngày phê duyệt</th>
 									<th style="width: 20%;"></th>
 								</tr>
 							</thead>
@@ -425,6 +425,7 @@ if(!empty($slbTasks)) {
 						<h3 class="panel-title">
 							<span class="tieude active">Danh sách tài liệu</span>
 							<span id="count_tailieu" title="total suppliers" class="badge bg-primary tip-left">0</span>
+							<i class="fa fa-spinner fa-spin" id="loading_2"></i>
 						</h3>
 					</div>
 	
@@ -433,12 +434,12 @@ if(!empty($slbTasks)) {
 							<thead>
 								<tr>
 									<th style="width: 50px;"><input type="checkbox"><label><span class="check_tatca"></span></label></th>
-									<th>Tên tài liệu</th>
-									<th style="width: 20%;">Tên file</th>
-									<th style="width: 14%;">Kích thước</th>
-									<th style="width: 14%;">Ngày tạo</th>
-									<th style="width: 10%;">Người tạo</th>
-									<th style="width: 14%;">Cập nhật cuối</th>
+									<th data-field="name">Tên tài liệu</th>
+									<th style="width: 20%;" data-field="file_name">Tên file</th>
+									<th style="width: 14%;" data-field="size">Kích thước</th>
+									<th style="width: 14%;" data-field="created">Ngày tạo</th>
+									<th style="width: 10%;" data-field="username">Người tạo</th>
+									<th style="width: 14%;" data-field="modified">Cập nhật cuối</th>
 									<th style="width: 10%;">Cập nhật bởi</th>
 								</tr>
 							</thead>

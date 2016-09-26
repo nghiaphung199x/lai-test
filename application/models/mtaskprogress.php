@@ -7,6 +7,7 @@ class MTaskProgress extends CI_Model{
 	protected $_is_progress = null;
 	protected $_id_admin    = null;
 	protected $_admin_name  = null;
+	protected $_fields		= array();
 	
 	public function __construct(){
 		parent::__construct();
@@ -18,6 +19,18 @@ class MTaskProgress extends CI_Model{
 		$this->_id_admin 	    = $user_info['id'];
 		$this->_admin_name 		= $user_info['username'];
 		$this->_task_permission = $user_info['task_permission'];
+		$this->_fields 			= array(
+									'task_name' 	 => 't.name',
+									'progress' 	 	 => 'p.progress',
+									'trangthai' 	 => 'p.trangthai',
+									'prioty'		 => 'p.prioty',
+									'username'  	 => 'e.username',
+									'date_phe'  	 => 'p.date_pheduyet',
+									'created'   	 => 'p.created',
+									'pheduyet' 		 => 'p.pheduyet',
+									'user_pheduyet'  => 'p.user_pheduyet',
+									'username' 		 => 'e.username',
+								);
 	}
 	
 	public function getItem($arrParam = null, $options = null) {
@@ -38,7 +51,7 @@ class MTaskProgress extends CI_Model{
 	public function countItem($arrParam = null, $options = null){	
 		$taskTable = $this->model_load_model('MTasks');
 			
-		$item 	   = $taskTable->getItem(array('id'=>$arrParam['task_id']), array('task'=>'public-info', 'brand'=>'detail'));
+		$item 	   = $taskTable->getItem(array('id'=>$arrParam['task_id']), array('task'=>'public-info', 'brand'=>'full'));
 
 		if($arrParam['taskID'] > 0) 
 			$task_ids = array($arrParam['taskID']);
@@ -87,7 +100,7 @@ class MTaskProgress extends CI_Model{
 				$this->db -> select('COUNT(p.id) AS totalItem')
 						  -> from($this->_table . ' AS p')
 						  -> where('p.task_id IN ('.implode(', ', $this->_task_ids).')')
-						  -> where('p.pheduyet IN (0, 1) AND p.user_pheduyet = ' . $this->_id_admin . ' OR p.pheduyet = 2');
+						  -> where('(p.pheduyet IN (0, 1) AND p.user_pheduyet = ' . $this->_id_admin . ') OR p.pheduyet = 2');
 					
 				$query = $this->db->get();
 				$result = $query->row()->totalItem;
@@ -157,15 +170,18 @@ class MTaskProgress extends CI_Model{
 					  -> join('tasks as t', 't.id = p.task_id', 'left')
 					  -> join('employees AS e', 'e.id = p.created_by', 'left')
 					  -> where('p.task_id IN ('.implode(', ', $this->_task_ids).')')
-					  -> where('p.pheduyet IN (1, 3)')
-					  -> order_by('p.date_pheduyet', 'DESC')
-					  -> order_by('p.id', 'DESC');
+					  -> where('p.pheduyet IN (1, 3)');
 	
 			$page = (empty($arrParam['start'])) ? 1 : $arrParam['start'];
 			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
 				
-			if(!empty($ssFilter['col']) && !empty($ssFilter['order'])){
-				$this->db->order_by($ssFilter['col'],$ssFilter['order']);
+			if(!empty($arrParam['col']) && !empty($arrParam['order'])){
+				$col   = $this->_fields[$arrParam['col']];
+				$order = $arrParam['order'];
+				
+				$this->db->order_by($col, $order);
+			}else {
+				$this->db->order_by('p.date_pheduyet', 'DESC');
 			}
 
 			$query = $this->db->get();
@@ -194,15 +210,17 @@ class MTaskProgress extends CI_Model{
 					  -> join('tasks as t', 't.id = p.task_id', 'left')
 					  -> where('p.task_id IN ('.implode(', ', $this->_task_ids).')')
 					  -> where('p.pheduyet IN (0, 1, 2)')
-					  -> where('p.created_by', $this->_id_admin)
-					  -> order_by('p.created', 'DESC');
+					  -> where('p.created_by', $this->_id_admin);
 			
 			$page = (empty($arrParam['start'])) ? 1 : $arrParam['start'];
 			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
 			
-			if(!empty($ssFilter['col']) && !empty($ssFilter['order'])){
-				$this->db->order_by($ssFilter['col'],$ssFilter['order']);
-			}
+			if(!empty($arrParam['col']) && !empty($arrParam['order'])){
+				$col   = $this->_fields[$arrParam['col']];
+				$order = $arrParam['order'];
+				$this->db->order_by($col, $order);
+			}else
+				$this->db->order_by('p.created', 'DESC');
 			
 			$query = $this->db->get();
 			
@@ -238,8 +256,18 @@ class MTaskProgress extends CI_Model{
 						  -> join('tasks as t', 't.id = p.task_id', 'left')
 						  -> join('employees as e', 'e.id = p.created_by', 'left')
 						  -> where('p.task_id IN ('.implode(', ', $this->_task_ids).')')
-						  -> where('p.pheduyet IN (0, 1) AND p.user_pheduyet = ' . $this->_id_admin . ' OR p.pheduyet = 2');
+						  -> where('(p.pheduyet IN (0, 1) AND p.user_pheduyet = ' . $this->_id_admin . ') OR p.pheduyet = 2');
+
+				$page = (empty($arrParam['start'])) ? 1 : $arrParam['start'];
+				$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
 					
+				if(!empty($arrParam['col']) && !empty($arrParam['order'])){
+					$col   = $this->_fields[$arrParam['col']];
+					$order = $arrParam['order'];
+					$this->db->order_by($col, $order);
+				}else
+					$this->db->order_by('p.id', 'DESC');
+				
 				$query = $this->db->get();
 				$result = $query->result_array();
 				
@@ -304,6 +332,13 @@ class MTaskProgress extends CI_Model{
 							if($parent_id == $task[id]) { 
 								$task['progress'] = $new_parent_progress / 100;
 								$parent_item = $task;
+								
+								if($parent_item['trangthai'] == 2 || $parent_item['progress'] == 100) {
+									$parent_item['trangthai'] = 2;
+									$parent_item['progress']  = 100;
+								}elseif($parent_item['progress'] > 0 && $parent_item['trangthai'] == 0) {
+									$parent_item['trangthai'] = 1;
+								}
 							}
 						}
 					}

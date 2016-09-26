@@ -1,9 +1,19 @@
 <?php 
 class MTaskFiles extends CI_Model{
    
-	protected $_table = 'task_files';
+	protected $_table  = 'task_files';
+	protected $_fields = array();
 	public function __construct(){
 		parent::__construct();
+		$this->_fields = array(
+						  'name' 	 	 =>  'f.name',
+				     	  'file_name' 	 =>  'f.file_name',
+						  'size' 	 	 =>  'f.size',
+						  'created' 	 =>  'f.created',
+						  'username' 	 =>  'e.username',
+						  'modified' 	 =>  'f.modified',
+					   );
+		
 	}
 	
 	public function countItem($arrParam = null, $options = null){
@@ -79,9 +89,13 @@ class MTaskFiles extends CI_Model{
 			$page = (empty($arrParam['start'])) ? 1 : $arrParam['start'];
 			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
 				
-			if(!empty($ssFilter['col']) && !empty($ssFilter['order'])){
-				$this->db->order_by($ssFilter['col'],$ssFilter['order']);
-			}
+			if(!empty($arrParam['col']) && !empty($arrParam['order'])){
+				$col   = $this->_fields[$arrParam['col']];
+				$order = $arrParam['order'];
+				
+				$this->db->order_by($col, $order);
+			}else
+				$this->db->order_by('f.id', 'DESC');
 
 			$query = $this->db->get();
 

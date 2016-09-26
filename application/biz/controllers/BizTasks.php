@@ -133,6 +133,7 @@ class BizTasks extends Secure_area
 				if($arrParam['duration'] <= 0) {
 					$flagError = true;
 					$errors['date_start'] = 'Ngày kết thúc phải sau ngày bắt đầu.';
+					$errors['date_end']   = '.';
 				}
 				
 				if($flagError == false && $arrParam['parent'] > 0) {
@@ -166,9 +167,12 @@ class BizTasks extends Secure_area
 				elseif(count($is_pheduyet) == 0)
 					$arrParam['pheduyet'] = 1;
 				
+				// ấy lại trạng thái và tiến độ
 				if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
 					$arrParam['trangthai'] = 2;
 					$arrParam['progress'] = 100;
+				}elseif($arrParam['progress'] > 0 && $arrParam['trangthai'] == 0) {
+					$arrParam['trangthai'] = 1;
 				}
 
 				$this->MTasks->saveItem($arrParam, array('task'=>'add'));
@@ -179,22 +183,19 @@ class BizTasks extends Secure_area
 					//nếu không phải dự án thì update lại progress item : progress => -1
 					$this->MTaskProgress->saveItem(array('task_ids'=>$task_ids), array('task'=>'progress-1'));
 					//update lại tiến đô + lịch sử
-					if($arrParam['percent'] > 0 && $arrParam['progress'] > 0) {
-						$arrParam['key'] = 'plus';
-						$this->MTaskProgress->solve($arrParam); 
-					}
+					$arrParam['key'] = 'plus';
+					$this->MTaskProgress->solve($arrParam); 
 				}
 
 			}else {
 				$respon = array('flag'=>'false', 'errors'=>$errors);
 			}
-
+	
 			echo json_encode($respon);
 	
 		}else {
 			$max_percent = $this->MTasks->getMaxPercent($arrParam['parent'], $parent_item['project_id']);
 
-			
 			$this->_data['percent'] 			= $max_percent;
 			$this->_data['parent'] 				= $arrParam['parent'];
 			$this->_data['parent_item'] 		= $parent_item;
@@ -243,7 +244,8 @@ class BizTasks extends Secure_area
 				$arrParam['duration'] = floor($datediff/(60*60*24)) + 1;
 				if($arrParam['duration'] < 0) {
 					$flagError = true;
-					$errors['date'] = 'Ngày kết thúc phải sau ngày bắt đầu.';
+					$errors['date_start'] = 'Ngày kết thúc phải sau ngày bắt đầu.';
+					$errors['date_end']   = '.';
 				}
 				
 				if($flagError == false) {
@@ -257,6 +259,14 @@ class BizTasks extends Secure_area
 			}
 
 			if($flagError == false) {
+				// ấy lại trạng thái và tiến độ
+				if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
+					$arrParam['trangthai'] = 2;
+					$arrParam['progress'] = 100;
+				}elseif($arrParam['progress'] > 0 && $arrParam['trangthai'] == 0) {
+					$arrParam['trangthai'] = 1;
+				}
+
 				$this->MTasks->saveItem($arrParam, array('task'=>'edit'));
 
 				// cập nhật lại tiến độ
@@ -360,7 +370,6 @@ class BizTasks extends Secure_area
 					$this->_data['no_comment'] = $this->_data['no_update'] = true;
 					$view = 'tasks/detail_view';
 				}
-
 
 			}else { // công việc thuộc dự án
 				if(in_array('update_all_task', $task_permission))
@@ -561,6 +570,8 @@ class BizTasks extends Secure_area
 					if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
 						$arrParam['trangthai'] = 2;
 						$arrParam['progress']  = 100;
+					}elseif($arrParam['progress'] > 0 && $arrParam['trangthai'] == 0) {
+						$arrParam['trangthai'] = 1;
 					}	
 
 

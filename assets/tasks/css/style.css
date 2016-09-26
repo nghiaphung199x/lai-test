@@ -135,6 +135,7 @@
 #my-form .manage-table table th {
 	text-align: center;
 	font-weight: bold;
+	cursor: pointer;
 }
 
 #my-form .manage-table table td.center {
@@ -992,11 +993,19 @@ div.overlay2 {
 	 z-index: 100000;
 }
 
-#loading_1 {
+#loading_1, #loading_2 {
 	position: absolute;
-    bottom: -34px;
-    left: 0px;
 	display: none;
+}
+
+#loading_1 {
+	bottom: -34px;
+    left: 0px;
+}
+
+#loading_2 {
+	bottom: -34px;
+    left: 40px;
 }
 
 .colorpicker {

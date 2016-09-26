@@ -21,6 +21,11 @@ class MTasks extends MNested2{
 			if(isset($arrParam['customer'])) {
 				$customer_ids = implode(',', $arrParam['customer']);
 			}
+			
+			if($arrParam['progress'] == 100)
+				$date_finish = @date("Y-m-d H:i:s");
+			else
+				$date_finish = '0000/00/00 00:00:00';
 				
 			if($arrParam['parent'] == 0) {
 				$data['name']  					= 		stripslashes($arrParam['name']);
@@ -34,6 +39,7 @@ class MTasks extends MNested2{
 				$data['project_id']				= 		$arrParam['project_id'];
 				$data['date_start']				= 		$arrParam['date_start'];
 				$data['date_end']				= 		$arrParam['date_end'];
+				$data['date_finish']			= 		$date_finish;
 				$data['duration']				= 		$arrParam['duration'];
 				$data['created']				= 		@date("Y-m-d H:i:s");
 				$data['created_by']				= 		$arrParam['user_info']['id'];
@@ -365,18 +371,19 @@ class MTasks extends MNested2{
 			if(isset($arrParam['customer'])) {
 				$customer_ids = implode(',', $arrParam['customer']);
 			}
-			
-			if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
-				$arrParam['trangthai'] = 2;
-				$arrParam['progress'] = 100;
-			}
-			
+
 			$this->db->where("id",$arrParam['id']);
+
+			if($arrParam['progress'] == 100)
+				$date_finish = @date("Y-m-d H:i:s");
+			else
+				$date_finish = '0000/00/00 00:00:00';
 
 			$data['name']  					= 		stripslashes($arrParam['name']);
 			$data['detail'] 				= 		stripslashes($arrParam['detail']);
 			$data['date_start']				= 		$arrParam['date_start'];
 			$data['date_end']				= 		$arrParam['date_end'];
+			$data['date_finish']			= 		$date_finish;
 			$data['duration']				= 		$arrParam['duration'];
 			$data['modified']				= 		@date("Y-m-d H:i:s");
 			$data['modified_by']			= 		$arrParam['user_info']['id'];
@@ -700,6 +707,11 @@ class MTasks extends MNested2{
 			if($arrParam['progress'] != -1) 
 				$data['progress']			= 		$arrParam['progress'] / 100;
 
+			if($arrParam['progress'] == 100)
+				$data['date_finish'] = @date("Y-m-d H:i:s");
+			else
+				$data['date_finish'] = '0000/00/00 00:00:00';
+
 			$this->db->update($this->_table,$data);
 				
 			$this->db->flush_cache();
@@ -710,6 +722,11 @@ class MTasks extends MNested2{
 			$this->db->where("id",$arrParam['id']);
 
 			$data['progress']			= 		$arrParam['progress'] / 100;
+
+			if($arrParam['progress'] == 100)
+				$data['date_finish'] = @date("Y-m-d H:i:s");
+			else
+				$data['date_finish'] = '0000/00/00 00:00:00';
 
 			$this->db->update($this->_table,$data);
 				
@@ -744,67 +761,128 @@ class MTasks extends MNested2{
 	public function listItem($options = null, $arrParams = null) {
 		if($options == null) {
 			$flagAll = true;
+			$user_ids = array();
 			if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission))) 
 				$flagAll = false;
 			// không có toàn quyền
 			if($flagAll == false) {
-				// project, task user có liên quan
-				$this->db->select("t.project_id, t.parent, r.task_id, r.is_implement, r.is_create_task, r.is_pheduyet, r.is_progress, t.type, r.is_xem")
-						->from('task_user_relations as r')
-						->join('tasks as t', 't.id = r.task_id', 'left')
-						->where('r.user_id', $this->_id_admin);
+				//project liên quan			
+				$sql = 'SELECT t.id, t.project_id
+						FROM ' . $this->db->dbprefix($this->_table).' AS t
+						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')'
+					 .' ORDER BY t.prioty ASC, t.id DESC';
+				
+				$query = $this->db->query($sql);
+				$resultTmp = $query->result_array();
+				$project_ids = array();
+				if(!empty($resultTmp)) {
+					foreach($resultTmp as $val)
+						$project_ids[] = $val['project_id'];
+				}
+				
+			}else {
+				$this->db->select("id")
+						->from($this->_table)
+						->where('parent = 0')
+						->order_by("prioty",'ASC')
+						->order_by('id DESC');
 				
 				$query = $this->db->get();
 				
 				$resultTmp = $query->result_array();
 				$this->db->flush_cache();
 				
-				$project_ids = $implement_ids = $create_task_ids = $is_xem_ids = array();
+				$project_ids = array();
 				if(!empty($resultTmp)) {
-					foreach($resultTmp as $val) {
-						$project_ids[] = $val['project_id'];
-						if($val['is_implement'] == 1)
-							$implement_ids[] = $val['task_id'];
-						
-						if($val['is_create_task'] == 1)
-							$create_task_ids[] = $val['task_id'];
-						
-						if($val['is_xem'] == 1)
-							$is_xem_ids[] = $val['task_id'];
-					}
+					foreach($resultTmp as $val)
+						$project_ids[] = $val['id'];
 				}
-
-				$project_ids = array_unique($project_ids);
-
 			}
+			
+			if(!empty($project_ids)) {
+				//danh sách tasks
 
-			if(in_array('update_project', $this->_task_permission) || in_array('update_all_task', $this->_task_permission)) {
-	    		$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
-	    		$this->db->select("id, name as text, duration, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color")
-			    		 ->from($this->_table)
-			    		 ->order_by("lft",'ASC');
-	    		
-	    		$query = $this->db->get();
-	    		$task_list_tmp = $query->result_array();
-
-			}else {
 				if(!empty($project_ids)) {
 					$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
-					$this->db->select("id, name as text, duration, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color")
-							->from($this->_table)
-							->where('project_id IN ('.implode(', ', $project_ids).')')
-							->order_by("lft",'ASC');
-					
-					$query = $this->db->get();
-					$task_list_tmp = $query->result_array();
+					$this->db->select("DATE_FORMAT(date_end, '%d-%m-%Y') as end_date", FALSE);
+					$this->db->select("DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date", FALSE);
+					$this->db->select("id, name as text, name, duration, percent, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
+							 ->from($this->_table)
+							 ->where('project_id IN ('.implode(', ', $project_ids).')')
+							 ->order_by("lft",'ASC');
+						
+					$query 		   = $this->db->get();
+					$resultTmp     = $query->result_array();
+	
+					$this->db->flush_cache();
+
+					$task_list_tmp = array();
+					if(!empty($resultTmp)) {
+						foreach($resultTmp as $val){
+							$task_list_tmp[$val['id']] = $val;
+							$task_ids[] 			   = $val['id'];
+						}
+					}
 				}else
 					$task_list_tmp = array();
-
 			}
 
 			$task_list = array();
 			if(!empty($task_list_tmp)) {
-				foreach($task_list_tmp as $val) {
+				// task replation
+				$this->db->select("r.task_id, r.is_implement, r.is_create_task, r.is_pheduyet, r.is_progress, r.is_xem, r.user_id")
+						 ->from('task_user_relations as r')
+						 ->where('r.task_id IN ('.implode(', ', $task_ids).')');
+				
+				$query = $this->db->get();
+				
+				$resultTmp = $query->result_array();
+				
+				$this->db->flush_cache();
+		
+				$implement_ids = $create_task_ids = $is_xem_ids = $task_implements = array();
+				if(!empty($resultTmp)) {
+					foreach($resultTmp as $val) {
+						if($val['is_implement'] == 1) {
+							$implement_ids[] = $val['task_id'];
+							$task_implements[$val['task_id']][] = $val['user_id'];
+						}
+							
+				
+						if($val['is_create_task'] == 1)
+							$create_task_ids[] = $val['task_id'];
+				
+						if($val['is_xem'] == 1)
+							$is_xem_ids[] = $val['task_id'];
+				
+						$user_ids[] = $val['user_id'];
+						
+					}
+				}
+
+				//danh sách users
+				if(!empty($user_ids)) {
+					$userTable = $this->model_load_model('MTaskUser');
+					$usersInfo = $userTable->getItems(array('user_ids'=>$user_ids));
+				}
+				
+				//
+				$implement = array();
+
+				foreach($project_ids as $project_id) {
+					$task_list[$project_id] = $task_list_tmp[$project_id];
+					unset($task_list_tmp[$project_id]);
+					
+					foreach($task_list_tmp as $val) {
+						if($val['project_id'] == $project_id) {
+							$task_list[$val['id']] = $val;
+							unset($task_list_tmp[$val['id']]);
+						}	
+					}
+				}
+	
+				foreach($task_list as &$val) {
+					$implement_origin = array();
 					if($val['level'] == 0 || $val['level'] == 1) {
 						$val['open'] = true;
 					}
@@ -812,12 +890,89 @@ class MTasks extends MNested2{
 					$val['text'] = $val['text'] . ' ('.($val['progress'] * 100).'%)';
 					if($val['pheduyet'] == 0)
 						$val['text'] = $val['text'] . ' - Chưa phê duyệt';
-					$task_list[$val['id']] = $val;
-				}
 					
-			}
+					if(isset($task_implements[$val['id']]))
+						$implement_origin = $task_implements[$val['id']];
+					
+					$implement 		  = $implement_origin;
+	
+					if($val['parent'] > 0)
+						$implement = array_merge($implement, $task_list[$val['parent']]['implement_ids']);
+				
+					$implement = array_unique($implement);
 
-			$this->db->flush_cache();
+					$val['implement_ids'] = $implement;
+					if(!empty($val['implement_ids'])){
+						foreach($val['implement_ids'] as $user_id) {
+							if(in_array($user_id, $implement_origin))
+								$val['implement'][] = '<strong>'.$usersInfo[$user_id]['username'].'</strong>';
+							else
+								$val['implement'][] = $usersInfo[$user_id]['username'];
+						}
+						
+						$val['implement'] = implode(', ', $val['implement']);
+					}
+					
+					//tooltip information
+					$tyle = '';
+					if($val['parent'] > 0)
+						$tyle = ($val['percent'] * 100) . '% <strong> '.$task_list[$val['parent']]['name'].'</strong>';
+					
+					$date_time   = $val['start_date'] . ' đến ' . $val['end_date'];
+					$date_finish = '';
+					if($val['trangthai'] == 0 || $val['trangthai'] == 1){	// chưa thực hiên + đang thực hiện
+						$now        = date('Y-m-d', strtotime(date("d-m-Y")));
+						$date_end   = date('Y-m-d', strtotime($val['end_date']));
+
+						$datediff 	= strtotime($now) - strtotime($date_end);
+						$duration 	= floor($datediff/(60*60*24));
+						if($duration <= 0)
+							$date_time = $date_time . ' (Còn '.abs($duration).' ngày)';
+						else{
+							$date_time 	  = $date_time . ' (Quá '.abs($duration).' ngày)';
+							$val['color'] = '#c90d2f';
+						}
+								
+					}elseif($val['trangthai'] == 2) {// hoàn thành
+						$val['finish'] = $val['finish_date'];
+						
+						$now           = date('Y-m-d', strtotime(date("d-m-Y")));
+						$finish_date   = date('Y-m-d', strtotime($val['finish_date']));
+						
+						$datediff 	= strtotime($now) - strtotime($finish_date);
+						$duration 	= floor($datediff/(60*60*24));
+						if($duration < 0){
+							$date_finish  = $val['finish'] . ' (Sớm '.abs($duration).' ngày)';
+							$val['color'] = '#12e841';
+						}elseif($duration > 0){
+							$val['color'] = '#516e47';
+							$date_finish  = $val['finish'] . ' (Trễ '.abs($duration).' ngày)';
+						}else{
+							$val['color'] = '#12e841';
+							$date_finish  = $val['finish'];
+						}
+
+					}elseif($val['trangthai'] == 3) {
+						$val['color'] = '#e0d91c';
+						$date_time    = $date_time . ' (Đóng/ Dừng)';
+					}elseif($val['trangthai'] == 4) {
+						$val['color'] = '#303020';
+						$date_time    = $date_time . ' (Không thực hiện)';
+					}
+
+					$tooltip   = array();
+					if(!empty($tyle))
+						$tooltip[] = '<strong>Tỷ lệ: </strong>'.$tyle;
+					$tooltip[] = '<strong>Thời gian: </strong>'.$date_time;
+					
+					if(!empty($date_finish))
+						$tooltip[] = '<strong>Hoàn thành: </strong>'.$date_finish;
+					
+					$tooltip[] = '<strong>Phụ trách</strong>: '.$val['implement'];
+					$val['tooltip'] = implode('<br />', $tooltip);
+	
+				}
+			}
 
 			if(!empty($task_list)) {
 				//allow task
@@ -1026,6 +1181,7 @@ class MTasks extends MNested2{
 					elseif($options['brand'] == 'detail')
 						$task_ids = $this->getIds(array('lft'=>$result['lft'], 'rgt'=>$result['rgt'], 'project_id'=>$result['project_id']));
 				
+
 					// file list
 					$this->db->select('f.*')
 							->from('task_files as f')
@@ -1098,6 +1254,8 @@ class MTasks extends MNested2{
 					}
 				}
 			}
+		}elseif($options['task'] == 'advance-info') {
+			
 		}
 	
 		return $result;
@@ -1132,9 +1290,16 @@ class MTasks extends MNested2{
 		$this->removeNode($id);
 	}
 	
+	function model_load_model($model_name)
+	{
+		$CI =& get_instance();
+		$CI->load->model($model_name);
+		return $CI->$model_name;
+	}
+	
 	public function test() {
-// 		$sql = 'DELETE FROM phppos_tasks WHERE id != 1';
-// 		$this->db->query($sql);
+		$sql = 'DELETE FROM phppos_tasks WHERE id != 1';
+		$this->db->query($sql);
 		
 		echo '<br />'.$sql = 'DELETE FROM phppos_task_user_relations WHERE task_id != 1';
 		$this->db->query($sql);
