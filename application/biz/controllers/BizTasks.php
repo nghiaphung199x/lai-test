@@ -1000,7 +1000,7 @@ class BizTasks extends Secure_area
 		}
 	}
 	
-	public function template() {
+	public function template() { // căn chỉnh lại script.js
 		$this->load->view('tasks/template_view',$this->_data);
 	}
 	
