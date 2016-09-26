@@ -135,11 +135,10 @@
 		
 		// gantt
 		//tooltip
-		
 
-		gantt.templates.tooltip_text = function(start,end,task){
-			return task.tooltip;
-		};
+//		gantt.templates.tooltip_text = function(start,end,task){
+//			return task.tooltip;
+//		};
 		
 		gantt.showLightbox = function(id) {
 		    taskId = id;
@@ -447,7 +446,7 @@
 	
 	function doneTyping(frame_id) {
 		if(frame_id == 'customer_list')
-			var url = BASE_URL + 'tasks/customers/danhsach';
+			var url = BASE_URL + 'tasks/customerList';
 		else {
 			var url = BASE_URL + 'tasks/userList';
 		}
@@ -469,7 +468,10 @@
 					if(array.length) {
 						var html = new Array();
 						$.each(array, function( index, value ) {
-							html[html.length] = '<li><a href="javascript:;" data-id="'+value.id+'" data-name="'+value.name+'" onclick="add_item(this, \''+frame_id+'\');">'+value.name+' - '+value.fullname+'</a></li>';
+							if(frame_id == 'customer_list')
+								html[html.length] = '<li><a href="javascript:;" data-id="'+value.id+'" data-name="'+value.name+'" onclick="add_item(this, \''+frame_id+'\');">'+value.name+'</a></li>';
+							else
+								html[html.length] = '<li><a href="javascript:;" data-id="'+value.id+'" data-name="'+value.name+'" onclick="add_item(this, \''+frame_id+'\');">'+value.name+' - '+value.fullname+'</a></li>';
 						});
 
 						html = html.join('');

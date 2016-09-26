@@ -72,6 +72,16 @@ class BizTasks extends Secure_area
 		echo json_encode($result);
 	}
 	
+	public function customerList() {
+		$post = $this->input->post();
+		if(!empty($post)) {
+			$this->load->model('MTaskCustomers');
+			$result = $this->MTaskCustomers->listItem($this->_data['arrParam']);
+			
+			echo json_encode($result);
+		}
+	}
+	
 	public function userList() {
 		$post = $this->input->post();
 		if(!empty($post)) {
@@ -222,7 +232,7 @@ class BizTasks extends Secure_area
 			
 		$arrParam = $this->_data['arrParam'];
 		$item = $this->MTasks->getItem(array('id'=>$arrParam['id']), array('task'=>'public-info', 'brand'=>'full'));
-		
+
 		if(!empty($post)) {
 			$this->load->library("form_validation");
 			$this->form_validation->set_rules('name', 'Tiêu đề', 'required|max_length[255]');
@@ -988,6 +998,10 @@ class BizTasks extends Secure_area
 				}
 			}
 		}
+	}
+	
+	public function template() {
+		$this->load->view('tasks/template_view',$this->_data);
 	}
 	
 	public function test() {

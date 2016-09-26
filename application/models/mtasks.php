@@ -934,22 +934,21 @@ class MTasks extends MNested2{
 						}
 								
 					}elseif($val['trangthai'] == 2) {// hoàn thành
-						$val['finish'] = $val['finish_date'];
-						
-						$now           = date('Y-m-d', strtotime(date("d-m-Y")));
+						$end_date      = date('Y-m-d', strtotime($val['end_date']));
 						$finish_date   = date('Y-m-d', strtotime($val['finish_date']));
-						
-						$datediff 	= strtotime($now) - strtotime($finish_date);
+
+						$datediff 	= strtotime($end_date) - strtotime($finish_date);
 						$duration 	= floor($datediff/(60*60*24));
+						
 						if($duration < 0){
-							$date_finish  = $val['finish'] . ' (Sớm '.abs($duration).' ngày)';
-							$val['color'] = '#12e841';
-						}elseif($duration > 0){
+							$date_finish  = $val['finish_date'] . ' (Trễ '.abs($duration).' ngày)';
 							$val['color'] = '#516e47';
-							$date_finish  = $val['finish'] . ' (Trễ '.abs($duration).' ngày)';
+						}elseif($duration > 0){
+							$val['color'] = '#12e841';
+							$date_finish  = $val['finish_date'] . ' (Sớm '.abs($duration).' ngày)';
 						}else{
 							$val['color'] = '#12e841';
-							$date_finish  = $val['finish'];
+							$date_finish  = $val['finish_date'];
 						}
 
 					}elseif($val['trangthai'] == 3) {
@@ -970,7 +969,6 @@ class MTasks extends MNested2{
 					
 					$tooltip[] = '<strong>Phụ trách</strong>: '.$val['implement'];
 					$val['tooltip'] = implode('<br />', $tooltip);
-	
 				}
 			}
 

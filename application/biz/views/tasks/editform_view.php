@@ -155,6 +155,27 @@
 									</div>
 									<div class="col-lg-12">
 										<div class="form-group">
+											<label class="col-md-3 col-lg-2 control-label">Khách hàng</label>
+											<div class="col-md-9 col-lg-10">
+												<div class="x-select-users" x-name="customer" id="customer_list" x-title="Khách hàng" style="display: inline-block; width: 100%;" onclick="foucs(this);">	
+<?php 
+	if(!empty($item['customers'])) {
+		foreach($item['customers'] as $val) {
+?>
+													<span class="item"><input type="hidden" name="customer[]" class="customer" id="customer_<?php echo $val['id']; ?>" value="<?php echo $val['id']; ?>"><a><?php echo $val['name']; ?></a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>
+<?php 
+		}
+	}
+?>
+													<input type="text" autocomplete="off" id="customer_result" class="quick_search" />
+													<div class="result">			
+													</div>
+												</div>
+											</div>
+										</div>						
+									</div>
+									<div class="col-lg-12">
+										<div class="form-group">
 											<label class="col-md-3 col-lg-2 control-label">Được xem</label>
 											<div class="col-md-9 col-lg-10">
 												<div class="x-select-users" x-name="xem" id="xem_list" x-title="Người được xem" style="display: inline-block; width: 100%;" onclick="foucs(this);">	
@@ -421,6 +442,7 @@ if(!empty($slbTasks)) {
 							</div>				
 						</div>
 					</div>
+					
 					<div class="panel-heading">
 						<h3 class="panel-title">
 							<span class="tieude active">Danh sách tài liệu</span>

@@ -178,6 +178,18 @@
 									</div>
 									<div class="col-lg-12">
 										<div class="form-group">
+											<label class="col-md-3 col-lg-2 control-label">Khách hàng</label>
+											<div class="col-md-9 col-lg-10">
+												<div class="x-select-users" x-name="customer" id="customer_list" x-title="Khách hàng" style="display: inline-block; width: 100%;" onclick="foucs(this);">	
+													<input type="text" autocomplete="off" id="customer_result" class="quick_search" />
+													<div class="result">			
+													</div>
+												</div>
+											</div>
+										</div>						
+									</div>
+									<div class="col-lg-12">
+										<div class="form-group">
 											<label class="col-md-3 col-lg-2 control-label">Được xem</label>
 											<div class="col-md-9 col-lg-10">
 												<div class="x-select-users" x-name="xem" id="xem_list" x-title="Người được xem" style="display: inline-block; width: 100%;" onclick="foucs(this);">	

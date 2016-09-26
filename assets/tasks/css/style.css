@@ -368,6 +368,24 @@ display: block;
 	margin-right: 6px;
 }
 
+#task_control .btn-more {
+	background: white;
+    color: black;
+    padding-left: 20px;
+    padding-right: 20px;
+    border: 1px solid #d7dce5;
+}
+
+#task_control #btn {
+	border: none;
+}
+
+#task_control .piluku-dropdown .dropdown-menu {
+    left: -200px;
+    top: 74px;
+    width: 235px;
+}
+
 #quick-form .form-group textarea {
 	overflow: auto;
     -moz-box-sizing: border-box;
