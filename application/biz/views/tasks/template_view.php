@@ -39,7 +39,7 @@
 	<div class="pull-right">
 		<div class="buttons-list" style="padding-top: 0;">
 			<div class="pull-right-btn">
-				<a href="http://localhost/4biz2016/customers/view/-1" id="new-person-btn" class="btn btn-primary btn-lg" title="Thêm mới Template"><span class="">Thêm mới Template</span></a>					
+				<a href="<?php echo base_url() . 'tasks/templateAdd' ?>" id="new-person-btn" class="btn btn-primary btn-lg" title="Thêm mới Template"><span class="">Thêm mới Template</span></a>					
 			</div>
 		</div>				
 	</div>
@@ -60,7 +60,7 @@
 					<i class="fa fa-spinner fa-spin" id="loading_1"></i>
 				</div>
 				<div class="panel-body nopadding table_holder table-responsive">
-					<table class="tablesorter table  table-hover my-table">
+					<table class="tablesorter table  table-hover my-table" id="template_table">
 						<thead>
 							<tr>
 								<th class="leftmost" style="width: 20px;">
@@ -73,7 +73,6 @@
 							</tr>
 						</thead>
 						<tbody>
-							
 						</tbody>
 					</table>			
 				</div>	
@@ -81,4 +80,9 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+$( document ).ready(function() {
+	load_list('template', 1);
+});
+</script>
 <?php $this->load->view("partial/footer"); ?>

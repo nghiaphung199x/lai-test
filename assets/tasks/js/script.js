@@ -11,19 +11,78 @@ $( document ).ready(function() {
 			  checkbox.prop('checked', true);
 			  $(this).parents('.table').find('td input[type="checkbox"]').prop('checked', true);
 		  }
-  });
+   });
 	
-	
-  $('body').on('click','.my-table tbody tr td.cb',function(){
-	   var checkbox = $(this).closest('tr').find('input[type="checkbox"]');
+   $('body').on('click','.my-table tbody tr td.cb',function(){
+	    var checkbox = $(this).closest('tr').find('input[type="checkbox"]');
 		 
-	   if (checkbox.prop('checked')==true){ 
+	    if (checkbox.prop('checked')==true){ 
 		  checkbox.prop('checked', false);
-	   }else{
+	    }else{
 		  checkbox.prop('checked', true);
-	   }
-  });
-
+	    }
+   });
+   
+	// phân trang
+    var array_list = ['template'];
+	$.each( array_list, function( key, keyword ) {
+		if(keyword == 'template') {
+			var manage_div = 'template_list';
+		}
+		
+		$('body').on('click','#'+manage_div+' .pagination a',function(){
+			var page = $(this).attr('data-page');
+			load_list(keyword, page);
+		});
+	});
+   
+	//sort
+	$('body').on('click','.my-table th',function(){
+		var thElement = $('.my-table th');
+		var attr = $(this).attr('data-field');
+		if (typeof attr !== typeof undefined && attr !== false) {
+		   if($(this).hasClass('header')) {
+			   if($(this).hasClass('headerSortUp')){
+				   $(this).removeClass('headerSortUp');
+				   $(this).addClass('headerSortDown');
+			   }else {
+				   $(this).removeClass('headerSortDown');
+				   $(this).addClass('headerSortUp');
+			   }   
+		   }else {
+			   thElement.removeClass('header');
+			   thElement.removeClass('headerSortUp');
+			   thElement.removeClass('headerSortDown');
+			   $(this).addClass('header headerSortUp');
+		   }
+		   
+		   var elementTable = $(this).closest('.my-table');
+		   var table_id     = elementTable.attr('id');
+		   
+		   switch (table_id){
+		      case 'template_table' : {
+		    	 load_list('template', 1);
+		         break;
+		      }
+		   }
+		}
+	});
+   
+   // search
+   var typingTimer;       
+   $('body').on('keyup','#template_keywords',function(){
+	   clearTimeout(typingTimer);
+	   typingTimer = setTimeout(startSearch, 300);
+   });
+   
+   $('body').on('keydown','#template_keywords',function(){
+	   clearTimeout(typingTimer);
+   });
+   
+   function startSearch () {
+	  load_list('template', 1);
+   }
+  
 });
 
 function load_template_template(items) {
@@ -109,6 +168,7 @@ function load_list(keyword, page) {
 			var count_span  = 'count_template';
 			
 			var elementSort = $('#template_list th.header');
+			data.keywords   = $.trim($('#template_keywords').val());
 	        break;
 	    }
 	}
@@ -123,7 +183,7 @@ function load_list(keyword, page) {
 			data.order = 'DESC';
 		}
 	}
-	
+
 	$.ajax({
 		type: "POST",
 		url: url,
@@ -132,9 +192,9 @@ function load_list(keyword, page) {
              loading(keyword);
         },
 		success: function(string){
-			 close_loading(keyword);
-			 var result = $.parseJSON(string);
-			 var items = result.items; 
+			 close_loading();
+			 var result     = $.parseJSON(string);
+			 var items      = result.items; 
 			 var pagination = result.pagination;
 			 
 			 switch (keyword){
@@ -155,3 +215,96 @@ function load_list(keyword, page) {
 	    }
 	});
 }
+
+function create_layer(type) {
+	if(type == 'quick')
+		var classLayer = 'overlay2';
+	else
+		var classLayer = 'overlay1';
+	
+	if($('.'+classLayer).length)
+		$('.'+classLayer).css('display', 'inline-block');
+	else {
+		$( "body" ).append( '<div class="'+classLayer+'" style="display: inline-block;"></div>' );
+	}
+}	
+
+function cancel(typeP, type) {
+	if(typeP == 'quick') {
+		$('#quick-form').html('');
+		$('#quick-form').hide();	
+		
+		close_layer('quick');
+	}else {
+		$('#my-form').html('');
+		$('#my-form').hide();
+		close_layer();
+
+		if(type == 'new'){
+	    	gantt.deleteTask(taskId);
+	    }
+	}
+}
+
+function close_layer(type) {
+	if(type == 'quick')
+		var classLayer = 'overlay2';
+	else
+		var classLayer = 'overlay1';
+
+	$('.'+classLayer).remove();
+}
+
+function add_congviec() {
+	var url = BASE_URL + 'tasks/addcvtemplate'
+	$.ajax({
+		type: "GET",
+		url: url,
+		data: {
+		},
+		success: function(html){
+			  $('#quick-form').html(html);
+			  $('#quick-form').show();
+			  create_layer('quick');
+	    }
+	});
+}
+
+function add_template() {
+	var template_name = $.trim($('#template_name').val());
+	var tree_array    = $('#sTree2').sortableListsToArray();
+	var tasks = new Array();
+	if(tree_array.length > 0) {
+		$.each( tree_array, function( key, value ) {
+			tmp = new Object();
+			tmp.id   = value.id;
+			tmp.name = $('#'+value.id).attr('data-name');
+			if (typeof value.parentId === "undefined") {
+			    tmp.parent = 'root';
+			}else
+				tmp.parent = value.parentId;
+			
+			tasks[tasks.length] = tmp;
+		});
+	}
+	
+	$.ajax({
+		type: "POST",
+		url: BASE_URL + 'tasks/templateAdd',
+		data: {
+			template_name : template_name,
+			tasks : tasks
+		},
+		success: function(string){
+			console.log(string);
+//			var res = $.parseJSON(string);
+//			
+//			if(res.flag == 'false'){
+//				toastr.error(res.msg, 'Lỗi!');
+//			}else {
+//				toastr.success(res.msg, 'Thông báo');
+//			}
+	    }
+	});
+}
+

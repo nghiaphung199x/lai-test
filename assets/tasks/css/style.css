@@ -101,10 +101,15 @@
 
 .my-table th {
 	text-align: center;
+	cursor: pointer;
 }
 
 .my-table td.center {
 	text-align: center;
+}
+
+.button_new:hover {
+	opacity: 0.9;
 }
 
 #template_list .panel-heading {
