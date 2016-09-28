@@ -133,6 +133,19 @@
 			}
 		});
 		
+		// template task select box
+		$('body').on('change','#task_template',function(){
+			 var task_template_id = $(this).val();
+			 if(task_template_id > 0) {
+				 $('#my-form .form-group input[name="progress"]').hide();
+				 $('#my-form .form-group select[name="trangthai"]').addClass('full');
+			 }else {
+				 $('#my-form .form-group input[name="progress"]').show();
+				 $('#my-form .form-group select[name="trangthai"]').removeClass('full');		 
+			 }
+			
+	    });
+		
 		// gantt
 		//tooltip
 
@@ -597,7 +610,7 @@
 	    return false; 
 	}
 	
-	function congviecData(data) {
+	function congviecData(data) {;
 		if(data.flag == 'false') {
 			$.each(data.errors, function( index, value ) {	
 				element = $( '#my-form span[for="'+index+'"]' );

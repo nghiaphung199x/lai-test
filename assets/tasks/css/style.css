@@ -210,6 +210,11 @@
 	width: 70%;
     margin-right: 20px;
     float: left;
+	margin-bottom: 10px;
+}
+
+#my-form .form-group select[name="trangthai"].full {
+	width: 100%;
 }
 
 #my-form .form-group input[name="progress"] {
@@ -414,6 +419,10 @@ display: block;
 #quick-form .manage-table table td {
     border-top: 1px solid #d7dce5;
     border-bottom: 1px solid #d7dce5;
+}
+
+#quick-form .manage-table table td input {
+	width: 90%;
 }
 
 #quick-form .manage-table table td.center {

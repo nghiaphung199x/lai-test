@@ -101,6 +101,7 @@ class BizTasks extends Secure_area
 		$this->load->model('MTasks');
 		$this->load->model('MTasksRelation');
 		$this->load->model('MTaskProgress');
+		$this->load->model('MTaskTemplate');
 		
 		$arrParam = $this->_data['arrParam'];
 
@@ -123,6 +124,9 @@ class BizTasks extends Secure_area
 			$this->form_validation->set_rules('date_end', 'Kết thúc', 'required');
 			if($arrParam['parent'] > 0)
 				$this->form_validation->set_rules('percent', 'Tỷ lệ', 'required|greater_than[-1]|less_than[101]');
+			
+			if($arrParam['template_task'] > 0)
+				$this->form_validation->set_rules('task_template', 'Template', 'is_unique[task_template.id]');
 
 			$flagError = false;
 			$task_permission = array();
@@ -184,18 +188,55 @@ class BizTasks extends Secure_area
 				}elseif($arrParam['progress'] > 0 && $arrParam['trangthai'] == 0) {
 					$arrParam['trangthai'] = 1;
 				}
-
-				$this->MTasks->saveItem($arrParam, array('task'=>'add'));
-				$respon = array('flag'=>'true');
 				
-				// nếu là công việc con
-				if($arrParam['parent'] > 0){
-					//nếu không phải dự án thì update lại progress item : progress => -1
-					$this->MTaskProgress->saveItem(array('task_ids'=>$task_ids), array('task'=>'progress-1'));
-					//update lại tiến đô + lịch sử
-					$arrParam['key'] = 'plus';
-					$this->MTaskProgress->solve($arrParam); 
+				if($arrParam['template_task'] > 0) {
+					$arrParam['trangthai'] = 0;
+					$arrParam['progress']  = 0;
 				}
+
+				$last_id = $this->MTasks->saveItem($arrParam, array('task'=>'add'));
+				$respon = array('flag'=>'true');
+				//add template task
+				if($arrParam['task_template'] > 0) {
+					$template_task_items = $this->MTaskTemplate->listItem(array('template_id'=>$arrParam['task_template']), array('task'=>'by-template'));
+					$parentArray = array();
+					foreach($template_task_items as $key => $val) {
+						$params = array();
+						$params['name'] = $val['name'];
+						if($val['level'] == 1) {
+							$params['parent'] = $last_id;
+						}else
+							$params['parent'] = $parentArray[$val['parent']];
+						
+						$params['color']      = $arrParam['color'];
+						$params['detail']     = '';
+						$params['percent']    = 0;
+						$params['progress']   = 0;
+						$params['project_id'] = $arrParam['project_id'];
+						$params['date_start'] = $arrParam['date_start'];
+						$params['date_end']   = $arrParam['date_end'];
+						$params['duration']   = $arrParam['duration'];
+						if($arrParam['parent'] == 0)
+							$params['pheduyet']   = 1;
+						else
+							$params['pheduyet']   = $arrParam['pheduyet'];
+						
+						$params['trangthai']   	  = 0;
+						$params['prioty']         = $arrParam['prioty'];
+						$params['type']           = $arrParam['type'];
+			
+						$parentArray[$val['id']] = $this->MTasks->saveItem($params, array('task'=>'add'));
+					}
+				}
+
+				// nếu là công việc con
+// 				if($arrParam['parent'] > 0){
+// 					//nếu không phải dự án thì update lại progress item : progress => -1
+// 					$this->MTaskProgress->saveItem(array('task_ids'=>$task_ids), array('task'=>'progress-1'));
+// 					//update lại tiến đô + lịch sử
+// 					$arrParam['key'] = 'plus';
+// 					$this->MTaskProgress->solve($arrParam); 
+// 				}
 
 			}else {
 				$respon = array('flag'=>'false', 'errors'=>$errors);
@@ -204,13 +245,16 @@ class BizTasks extends Secure_area
 			echo json_encode($respon);
 	
 		}else {
-			$max_percent = $this->MTasks->getMaxPercent($arrParam['parent'], $parent_item['project_id']);
+			$this->load->model('MTaskTemplate');
+			$task_template = $this->MTaskTemplate->itemSelectbox();
+			$max_percent   = $this->MTasks->getMaxPercent($arrParam['parent'], $parent_item['project_id']);
 
 			$this->_data['percent'] 			= $max_percent;
 			$this->_data['parent'] 				= $arrParam['parent'];
 			$this->_data['parent_item'] 		= $parent_item;
 			$this->_data['project_relation'] 	= $project_relation;
-			
+			$this->_data['task_template'] 	    = $task_template;
+
 			//view
 			$this->load->view('tasks/addform_view',$this->_data);
 		}
@@ -1033,6 +1077,33 @@ class BizTasks extends Secure_area
 	}
 	
 	public function listTemplateTask() {
+		$arrParam = $this->_data['arrParam'];
+		if(isset($arrParam['tasks'])) {
+			$tasks = $tasksTmp = array();
+			foreach($arrParam['tasks'] as $val) {
+				if($val['parent'] == 'root') {
+					$val['parent'] = 0;
+					$val['level']  = 1;
+				}
+				$tasksTmp[$val['id']] = $val;
+			}
+
+			foreach($tasksTmp as &$val) {
+				if($val['parent'] != '0'){
+					$val['level'] = $tasksTmp[$val['parent']]['level'] + 1;
+				}
+				
+				$tasks[] = $val;
+			}
+
+			$orderings = array();
+			foreach($tasks as $val){
+				$orderings[$val['parent']][] = $val['id'];
+			}
+
+			$this->_data['items']     = $tasks;
+			$this->_data['orderings'] = $orderings;
+		}
 		$this->load->view('tasks/listTemplateTask_view',$this->_data);
 	}
 	
@@ -1086,7 +1157,10 @@ class BizTasks extends Secure_area
 	}
 	
 	public function test() {
-		$this->load->model('MTasks');
-		$this->MTasks->test();
+// 		$this->load->model('MTasks');
+// 		$this->MTasks->test();
+		$date = date('Y-m-d h:i:s', time());
+		
+	
 	}
 }

@@ -105,7 +105,27 @@
 							</div>
 						</div>
 <?php endif;?>
-						
+						<div class="col-lg-12">
+							<div class="form-group">
+								<label for="first_name" class="col-md-3 col-lg-2 control-label ">Template</label>			
+								<div class="col-md-9 col-lg-10">
+									<select name="task_template" id="task_template" class="form-control" id="timezone">
+										<option value="0">Chọn Template</option>
+<?php 
+	if(!empty($task_template)) {
+		foreach($task_template as $val) {
+?>
+										<option value="<?php echo $val['id']; ?>"><?php echo $val['name']; ?></option>
+<?php 
+		}
+	}
+?>
+
+									</select>
+									<span for="task_template" class="text-danger errors"></span>
+								</div>
+							</div>
+						</div>
 						<div class="col-lg-12">
 							<div class="form-group">
 								<label for="first_name" class="col-md-3 col-lg-2 control-label ">Mô tả</label>			

@@ -42,9 +42,9 @@ class MTasks extends MNested2{
 				$data['date_finish']			= 		$date_finish;
 				$data['duration']				= 		$arrParam['duration'];
 				$data['created']				= 		@date("Y-m-d H:i:s");
-				$data['created_by']				= 		$arrParam['user_info']['id'];
+				$data['created_by']				= 		$this->_id_admin;
 				$data['modified']				= 		@date("Y-m-d H:i:s");
-				$data['modified_by']			= 		$arrParam['user_info']['id'];
+				$data['modified_by']			= 		$this->_id_admin;
 				$data['trangthai']				= 		$arrParam['trangthai'];
 				$data['prioty']					= 		$arrParam['prioty'];
 				$data['pheduyet']				= 		1;
@@ -71,10 +71,11 @@ class MTasks extends MNested2{
 				$data['date_start']				= 		$arrParam['date_start'];
 				$data['date_end']				= 		$arrParam['date_end'];
 				$data['duration']				= 		$arrParam['duration'];
+				$data['date_finish']			= 		$date_finish;
 				$data['created']				= 		@date("Y-m-d H:i:s");
-				$data['created_by']				= 		$arrParam['user_info']['id'];
+				$data['created_by']				= 		$this->_id_admin;
 				$data['modified']				= 		@date("Y-m-d H:i:s");
-				$data['modified_by']			= 		$arrParam['user_info']['id'];
+				$data['modified_by']			= 		$this->_id_admin;
 				$data['trangthai']				= 		$arrParam['trangthai'];
 				$data['prioty']					= 		$arrParam['prioty'];
 				$data['pheduyet']				= 		$arrParam['pheduyet'];
@@ -82,7 +83,7 @@ class MTasks extends MNested2{
 				$data['project_id']				= 		$arrParam['project_id'];
 				$data['customer_ids']			= 		$customer_ids;
 				$data['color']					= 		$arrParam['color'];
-	
+
 				$lastId = $this->insertNode($data,$arrParam['parent'], $arrParam['project_id']);
 			}
 			
@@ -674,7 +675,6 @@ class MTasks extends MNested2{
 			if(!empty($array)) {
 				$this->db->insert_batch('task_user_relations', $array);
 			}
-
 
 			$this->db->flush_cache();
 			

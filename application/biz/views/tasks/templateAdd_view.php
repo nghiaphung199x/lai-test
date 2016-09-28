@@ -27,7 +27,7 @@
 		                    Thêm mới Template Công việc <small>(Các trường màu đỏ là cần nhập)</small> 
 		                    <div class="button_control">
 		                    	<i class="ion-plus-round" onclick="add_congviec();"></i>
-		                    	<i class="ion-navicon-round" onclick="list_templat_task();"></i>
+		                    	<i class="ion-navicon-round" id="btnListTasks"></i>
 		                    </div>                
 		                </h3>
 		        	</div>
@@ -44,12 +44,6 @@
 									<label for="first_name" class="col-sm-3 col-md-3 col-lg-2 control-label ">Công việc :</label>			
 									<div class="col-sm-9 col-md-9 col-lg-10" id="sort_section">
 										<ul class="sTree2 listsClass" id="sTree2">
-											<li data-module="1" id="t_1" data-name="aaa">
-												<div>Phân tích thiết kế</div>
-											</li>
-											<li data-module="1" id="t_1" data-name="aaa">
-												<div>Phân tích thiết kế</div>
-											</li>
 										</ul>
 										<a href="javascript:;" class="del_task" style="position: absolute; top: 97px; right: 30px; display: none;">[Xóa]</a>			
 									</div>

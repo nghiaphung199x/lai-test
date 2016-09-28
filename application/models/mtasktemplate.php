@@ -81,6 +81,21 @@ class MTaskTemplate extends MNestedTemplate{
 		
 	}
 	
+	public function itemSelectbox($arrParam = null, $options = null){
+		if($options == null) {
+			$this->db -> select('t.id, t.name')
+					 -> from($this->_table . ' AS t')
+					 -> where('t.parent = 0')
+					 -> order_by('t.id', 'DESC');
+			
+			$query = $this->db->get();
+			
+			$result = $query->result_array();
+			$this->db->flush_cache();
+		}
+		return $result;
+	}
+	
 	public function listItem($arrParam = null, $options = null){
 		if($options['task'] == 'template-list'){
 			$paginator = $arrParam['paginator'];
@@ -108,6 +123,17 @@ class MTaskTemplate extends MNestedTemplate{
 			
 			$query = $this->db->get();
 
+			$result = $query->result_array();
+			$this->db->flush_cache();
+		}elseif($options['task'] == 'by-template') {
+			$this->db -> select('t.*')
+					  -> from($this->_table . ' AS t')
+					  -> where('t.parent != 0')
+					  -> where('t.template_id', $arrParam['template_id'])
+					  -> order_by('t.lft', 'ASC');
+			
+			$query = $this->db->get();
+			
 			$result = $query->result_array();
 			$this->db->flush_cache();
 		}

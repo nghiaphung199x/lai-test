@@ -23,10 +23,64 @@ $( document ).ready(function() {
 	    }
    });
    
+   // template task list table
+   $('body').on('click','#btnListTasks',function(){
+		var tree_array    = $('#sTree2').sortableListsToArray();
+		var tasks = new Array();
+		if(tree_array.length > 0) {
+			$.each( tree_array, function( key, value ) {
+				tmp = new Object();
+				tmp.id   = value.id;
+				tmp.name = $('#'+value.id).attr('data-name');
+				if (typeof value.parentId === "undefined") {
+				    tmp.parent = 'root';
+				}else
+					tmp.parent = value.parentId;
+				
+				tasks[tasks.length] = tmp;
+			});
+		}
+
+		var url = BASE_URL + 'tasks/listTemplateTask';
+		$.ajax({
+			type: "GET",
+			url: url,
+			data: {
+				tasks : tasks
+			},
+			success: function(html){
+				 //console.log('---' + html);
+				  $('#quick-form').html(html);
+				  $('#quick-form').show();
+				  create_layer('quick');
+		    }
+		});   
+    });
    
-   $('body').on('click','.del_task',function(e){
-	   alert('thật sự đã vào đây');
-   });
+    //Turn text element into input field - update template task
+    $('body').on('dblclick', '[data-editable]', function(){
+	   var $el = $(this);
+	   trElement    = $el.closest('tr');
+	   var id = trElement.find('a').attr('data-id');
+	  
+	   var $input = $('<input/>').val( $el.text() );
+	   $el.replaceWith( $input );
+	   
+	   var save = function(){
+	     var $span = $('<span data-editable />').text( $input.val() );
+	     $input.replaceWith( $span );
+	     
+	     data = new Object();
+	     
+	     data.text    = $input.val();
+	     data.id      = id;
+
+	     do_something(data);
+	   };
+	   
+	   $input.one('blur', save).focus();
+	 });
+
    
 	// phân trang
     var array_list = ['template'];
@@ -275,38 +329,38 @@ function add_congviec() {
 	});
 }
 
-function del_template_task(id) {
-	console.log($('#t_'+id));
-	
-	
-//	parent_item = $('#t_'+id).closest('ul'); 
-//	
-//	console.log(parent_item);
-//	if(parent_item.hasClass('listsClass')){
-//		alert('1');
-//		//$('#t_'+id).remove();
-//		console.log($('#t_'+id));
-//	}else{
-//		alert('2');
-//		console.log(parent_item);
-//		//parent_item.remove();
-//	}
+function del_template_task(obj) {
+	var id = $(obj).attr('data-id');
+	parent_item = $('#'+id).closest('ul'); 
+
+	if(parent_item.hasClass('listsClass')){
+		$('#'+id).remove();
+	}else{
+		parent_item.remove();
+	}
 		
+	// remove trên table
+	$(obj).closest('tr').remove();
+	var child_ids = $(obj).attr('data-child');
+	if (child_ids) {
+		var child_ids = child_ids.split(",");
+		$.each(child_ids, function( index, value ) {
+			$('#template_task_list tbody tr a[data-id="'+value+'"]').closest('tr').remove();
+		});
+	}
+	
+	var count = $('#template_task_list tbody tr').length;
+	$('#count_template_task').text(count);
+	
+	if(count == 0) {
+		$('#template_task_list tbody').html('<tr><td colspan="2"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>');
+	}
 }
 
-function list_templat_task() {
-	var url = BASE_URL + 'tasks/listTemplateTask'
-	$.ajax({
-		type: "GET",
-		url: url,
-		data: {
-		},
-		success: function(html){
-			  $('#quick-form').html(html);
-			  $('#quick-form').show();
-			  create_layer('quick');
-	    }
-	});
+function do_something(data) {
+	var id   = data.id;
+	var text = data.text;
+	$('#'+id+ ' > div').html(text);
 }
 
 function add_template() {
