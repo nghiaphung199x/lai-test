@@ -67,7 +67,7 @@ class MTaskTemplate extends MNestedTemplate{
 			}else {
 				$data['name']  					= 		stripslashes($arrParam['name']);
 				$data['parent']					= 		$arrParam['parent'];
-				$data['template_id']			= 		0;
+				$data['template_id']			= 		$arrParam['template_id'];
 				$data['created']				= 		@date("Y-m-d H:i:s");
 				$data['created_by']				= 		$this->_id_admin;
 				$data['modified']				= 		@date("Y-m-d H:i:s");

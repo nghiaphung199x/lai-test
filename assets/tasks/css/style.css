@@ -324,6 +324,12 @@ display: block;
     font-size: 14px;
 }
 
+#quick-form .manage-table {
+	margin-top: 0;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
 #quick-form .input-group {
 	margin-bottom: 10px;
 }
@@ -392,6 +398,26 @@ display: block;
 #quick-form .toolbars .list li a i {
 	font-size: 14px;
 	margin-right: 6px;
+}
+
+#quick-form .table {
+    margin-bottom: 0;
+    border: 1px solid #d7dce5 !important;
+}
+
+#quick-form .manage-table table th {
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#quick-form .manage-table table td {
+    border-top: 1px solid #d7dce5;
+    border-bottom: 1px solid #d7dce5;
+}
+
+#quick-form .manage-table table td.center {
+    text-align: center;
 }
 
 #task_control .btn-more {

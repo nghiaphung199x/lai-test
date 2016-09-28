@@ -23,6 +23,11 @@ $( document ).ready(function() {
 	    }
    });
    
+   
+   $('body').on('click','.del_task',function(e){
+	   alert('thật sự đã vào đây');
+   });
+   
 	// phân trang
     var array_list = ['template'];
 	$.each( array_list, function( key, keyword ) {
@@ -270,6 +275,40 @@ function add_congviec() {
 	});
 }
 
+function del_template_task(id) {
+	console.log($('#t_'+id));
+	
+	
+//	parent_item = $('#t_'+id).closest('ul'); 
+//	
+//	console.log(parent_item);
+//	if(parent_item.hasClass('listsClass')){
+//		alert('1');
+//		//$('#t_'+id).remove();
+//		console.log($('#t_'+id));
+//	}else{
+//		alert('2');
+//		console.log(parent_item);
+//		//parent_item.remove();
+//	}
+		
+}
+
+function list_templat_task() {
+	var url = BASE_URL + 'tasks/listTemplateTask'
+	$.ajax({
+		type: "GET",
+		url: url,
+		data: {
+		},
+		success: function(html){
+			  $('#quick-form').html(html);
+			  $('#quick-form').show();
+			  create_layer('quick');
+	    }
+	});
+}
+
 function add_template() {
 	var template_name = $.trim($('#template_name').val());
 	var tree_array    = $('#sTree2').sortableListsToArray();
@@ -296,14 +335,14 @@ function add_template() {
 			tasks : tasks
 		},
 		success: function(string){
-			console.log(string);
-//			var res = $.parseJSON(string);
-//			
-//			if(res.flag == 'false'){
-//				toastr.error(res.msg, 'Lỗi!');
-//			}else {
-//				toastr.success(res.msg, 'Thông báo');
-//			}
+			var res = $.parseJSON(string);
+			
+			if(res.flag == 'false'){
+				toastr.error(res.msg, 'Lỗi!');
+			}else {
+				
+				toastr.success(res.msg, 'Thông báo');
+			}
 	    }
 	});
 }

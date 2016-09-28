@@ -801,7 +801,7 @@ class MTasks extends MNested2{
 			
 			if(!empty($project_ids)) {
 				//danh sách tasks
-
+				$project_ids = array_unique($project_ids);
 				if(!empty($project_ids)) {
 					$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
 					$this->db->select("DATE_FORMAT(date_end, '%d-%m-%Y') as end_date", FALSE);
@@ -847,8 +847,7 @@ class MTasks extends MNested2{
 							$implement_ids[] = $val['task_id'];
 							$task_implements[$val['task_id']][] = $val['user_id'];
 						}
-							
-				
+
 						if($val['is_create_task'] == 1)
 							$create_task_ids[] = $val['task_id'];
 				

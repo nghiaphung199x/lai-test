@@ -1032,6 +1032,10 @@ class BizTasks extends Secure_area
 		}
 	}
 	
+	public function listTemplateTask() {
+		$this->load->view('tasks/listTemplateTask_view',$this->_data);
+	}
+	
 	public function templateAdd() {
 		$this->load->model('MTaskTemplate');
 		$post  = $this->input->post();
@@ -1047,7 +1051,7 @@ class BizTasks extends Secure_area
 					$errors[] = 'Phải thêm công việc cho template.';
 				}
 			}
-			
+
 			if($flagError == false) {
 				// + template
 				$params['name']   = $this->_data['arrParam']['template_name'];
@@ -1055,29 +1059,26 @@ class BizTasks extends Secure_area
 				$last_id = $this->MTaskTemplate->saveItem($params, array('task'=>'add'));
 	
 				// + task for template
+				$arrayParent = array();
 				foreach($this->_data['arrParam']['tasks'] as $key => $params) {
-					if($key == 0) {
-						if($params['parent'] != 'root')
-							$params['parent'] = 0;
-						else
-							$params['parent'] = $arrayParent[$params['parent']];
-							
-						$params['template_id'] = $last_id;
-						echo '<pre>';
-						print_r($params);
-						echo '</pre>';
-					}
-					//$arrayParent[$params['parent']] = $this->MTaskTemplate->saveItem($params, array('task'=>'add'));
-				}
+					if($params['parent'] == 'root')
+						$params['parent'] = $last_id;
+					else
+						$params['parent'] = $arrayParent[$params['parent']];
+						
+					$params['template_id'] = $last_id;
 
+					$arrayParent[$params['id']] = $this->MTaskTemplate->saveItem($params, array('task'=>'add'));
+				}
+	
 				$respon = array('flag'=>'true', 'msg'=>'Cập nhật thành công.');
 			}else {
 				$respon = array('flag'=>'false', 'msg'=>current($errors));
 			}
 			
-			//echo json_encode($respon);
+			echo json_encode($respon);
 		}else
-		 $this->load->view('tasks/templateAdd_view',$this->_data);
+		  $this->load->view('tasks/templateAdd_view',$this->_data);
 	}
 	
 	public function addcvtemplate() {
