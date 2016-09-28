@@ -2,12 +2,12 @@ $( document ).ready(function() {
 	// xử lý checkbox
 	$('body').on('click','.my-table .check_tatca',function(){
 		  var checkbox = $(this).closest('th').find('input[type="checkbox"]'); 
-		  if (checkbox.prop('checked') == true){ 
-			  //$('.manage-row-options').hide();
+		  if (checkbox.prop('checked') == true){  
+			 $('.manage-row-options').hide();
 			 checkbox.prop('checked', false);
 			 $(this).parents('.table').find('td input[type="checkbox"]').prop('checked', false);
 		  }else{
-			 // $('.manage-row-options').show();
+			  $('.manage-row-options').show();
 			  checkbox.prop('checked', true);
 			  $(this).parents('.table').find('td input[type="checkbox"]').prop('checked', true);
 		  }
@@ -17,8 +17,10 @@ $( document ).ready(function() {
 	    var checkbox = $(this).closest('tr').find('input[type="checkbox"]');
 		 
 	    if (checkbox.prop('checked')==true){ 
+	      $('.manage-row-options').hide();
 		  checkbox.prop('checked', false);
 	    }else{
+	      $('.manage-row-options').show();
 		  checkbox.prop('checked', true);
 	    }
    });
@@ -327,6 +329,37 @@ function add_congviec() {
 			  create_layer('quick');
 	    }
 	});
+}
+
+function delete_template() {
+	var checkbox = $(".file_checkbox:checked");
+	var template_ids = new Array();
+	$(checkbox).each(function( index ) {
+		template_ids[template_ids.length] = $(this).val();
+	});
+	
+    gantt.confirm({
+        text: 'Xóa template',
+        ok:"Đồng ý", 
+        cancel:"Hủy bỏ",
+        callback: function(result){
+        	if(result == true) {
+				$.ajax({
+					type: "POST",
+					url: BASE_URL + 'tasks/deleteTemplate',
+					data: {
+						template_ids   : template_ids,
+					},
+					success: function(string){
+						console.log('--'+string);
+//						toastr.success('Cập nhật thành công!', 'Thông báo');
+//						load_list('template', 1);
+				    }
+				});
+        	}
+        }
+    });
+	
 }
 
 function del_template_task(obj) {

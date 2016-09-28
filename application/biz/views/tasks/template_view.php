@@ -6,21 +6,9 @@
 <script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/script.js" ></script>
 <div class="main-content">
 <div class="manage_buttons">
-<div class="manage-row-options hidden">
-	<div class="email_buttons text-center">
-		 <a class="btn btn-primary btn-lg" title="Gửi SMS" id="sendSMS" href="http://localhost/4biz2016/customers#" data-toggle="modal" data-target="#myModal">
-			 <span class="">Gửi SMS</span>
-		 </a>
-	     <a href="http://localhost/4biz2016/customers/save_list_send_mail" id="sendToMailTemp" class="btn btn-primary btn-lg" title="Thêm vào DS mail tạm"><span class="">Thêm vào DS mail tạm</span></a>			<a class="btn btn-primary btn-lg check_list_send_sms" id="check_list_send_sms" href="customers/save_list_send_sms">
-			<span class="">Danh sách sms tạm</span>
-		 </a>
-				
-		 <a class="btn btn-primary btn-lg" title="E-Mail" id="sendMail" href="http://localhost/4biz2016/customers#" data-toggle="modal" data-target="#myModal">
-			<span class="">E-Mail</span>
-		 </a>
-				
-		<a href="http://localhost/4biz2016/customers/delete" id="delete" class="btn btn-red btn-lg delete_inactive disabled" title="Xóa"><span class="">Xóa</span></a>		
-		<a href="#" class="btn btn-lg btn-clear-selection btn-warning">Xóa lựa chọn</a>
+<div class="manage-row-options">
+	<div class="email_buttons text-center">		
+		<a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_template();"><span class="">Xóa</span></a>		
 	</div>
 </div>
 <div class="cl">

@@ -1157,6 +1157,15 @@ class BizTasks extends Secure_area
 		$this->load->view('tasks/editTemplate_view',$this->_data);
 	}
 	
+	public function deleteTemplate() {
+		$post  = $this->input->post();
+		if(!empty($post)) {
+			echo '<pre>';
+			print_r($post);
+			echo '</pre>';
+		}
+	}
+	
 	public function addcvtemplate() {
 		$this->load->view('tasks/addcvtemplate_view',$this->_data);
 	}
@@ -1165,7 +1174,5 @@ class BizTasks extends Secure_area
 // 		$this->load->model('MTasks');
 // 		$this->MTasks->test();
 		$date = date('Y-m-d h:i:s', time());
-		
-	
 	}
 }
