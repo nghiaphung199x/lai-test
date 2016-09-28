@@ -1152,6 +1152,11 @@ class BizTasks extends Secure_area
 		  $this->load->view('tasks/templateAdd_view',$this->_data);
 	}
 	
+	public function editTemplate() {
+		$id = $this->uri->segment(3);
+		$this->load->view('tasks/editTemplate_view',$this->_data);
+	}
+	
 	public function addcvtemplate() {
 		$this->load->view('tasks/addcvtemplate_view',$this->_data);
 	}
