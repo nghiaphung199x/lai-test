@@ -281,6 +281,7 @@ class Item extends Bizmodel
 		return $this->db->count_all_results();
 	}
 	
+	
 	/*
 	Gets information about a particular item
 	*/
@@ -298,6 +299,7 @@ class Item extends Bizmodel
 		if (is_array($item_id))
 		{
 			$items = $this->get_multiple_info($item_id)->result();
+	
 			foreach($items as $item)
 			{
 				$cache[$item->item_id] = $item;
@@ -313,7 +315,6 @@ class Item extends Bizmodel
 			}
 		}
 		
-		
 		//If we are NOT an int return empty item
 		if (!is_numeric($item_id))
 		{
@@ -327,6 +328,7 @@ class Item extends Bizmodel
 			{
 				$item_obj->$field='';
 			}
+			
 
 			return $item_obj;	
 		}
@@ -335,7 +337,7 @@ class Item extends Bizmodel
 		$this->db->where('item_id',$item_id);
 		
 		$query = $this->db->get();
-
+		
 		if($query->num_rows()==1)
 		{
 			$cache[$item_id] = $query->row();

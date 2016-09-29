@@ -4,20 +4,6 @@ require_once (APPPATH . "models/Item.php");
 
 class BizItem extends Item
 {
-	function getInformation($arrParam = null, $options = null) {
-		if($options == null) {
-			$this->db->select('items.*');
-			$this->db->from('items')
-					 ->where('product_id', $arrParam['product_id']);
-			
-			$query = $this->db->get();
-				
-			$result =  $query->row_array();
-		}
-		
-		return $result;
-	}
-	
 	function getNotAuditedInLocation($auditedIds = array(), $extra = array())
 	{
 		$this->db->select('items.*, categories.name as category, location_items.quantity as location_quantity');
@@ -263,25 +249,25 @@ class BizItem extends Item
 				{
 					$data['label'] = $row->name . ' ('.$row->category.', '.$row->size.')';
 	
-					$temp_suggestions[$row->product_id] = $data;
+					$temp_suggestions[$row->item_id] = $data;
 				}
 				elseif ($row->category)
 				{
 					$data['label'] = $row->name . ' ('.$row->category.')';
 	
-					$temp_suggestions[$row->product_id] =  $data;
+					$temp_suggestions[$row->item_id] =  $data;
 				}
 				elseif ($row->size)
 				{
 					$data['label'] = $row->name . ' ('.$row->size.')';
 	
-					$temp_suggestions[$row->product_id] =  $data;
+					$temp_suggestions[$row->item_id] =  $data;
 				}
 				else
 				{
 					$data['label'] = $row->name;
 	
-					$temp_suggestions[$row->product_id] = $data;
+					$temp_suggestions[$row->item_id] = $data;
 				}
 					
 			}
@@ -320,7 +306,7 @@ class BizItem extends Item
 						'item_number' => $row->item_number,
 				);
 	
-				$temp_suggestions[$row->product_id] = $data;
+				$temp_suggestions[$row->item_id] = $data;
 			}
 				
 			uasort($temp_suggestions, 'sort_assoc_array_by_label');
@@ -357,7 +343,7 @@ class BizItem extends Item
 						'item_number' => $row->item_number,
 				);
 	
-				$temp_suggestions[$row->product_id] = $data;
+				$temp_suggestions[$row->item_id] = $data;
 			}
 				
 			uasort($temp_suggestions, 'sort_assoc_array_by_label');
@@ -393,7 +379,7 @@ class BizItem extends Item
 						'item_number' => $row->item_number,
 				);
 	
-				$temp_suggestions[$row->product_id] = $data;
+				$temp_suggestions[$row->item_id] = $data;
 			}
 				
 			uasort($temp_suggestions, 'sort_assoc_array_by_label');

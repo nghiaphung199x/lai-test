@@ -10,11 +10,8 @@
 		<div class="register-box register-items-form">
 			
 			<div class="item-form">
-				
-
-
 				<!-- Item adding form -->
-				<?php echo form_open("receivings/add",array('id'=>'add_item_form','class'=>'form-inline', 'autocomplete'=> 'off')); ?>
+				<?php echo form_open("receivings/add2",array('id'=>'add_item_form','class'=>'form-inline', 'autocomplete'=> 'off')); ?>
 					<div class="input-group input-group-mobile contacts">
 						<span class="input-group-addon">
 							<?php echo anchor("items/view/-1/1/receiving","<i class='icon ti-pencil-alt'></i> <span class='register-btn-text'>".lang('common_new_item')."</span>", array('class'=>'none add-new-item','title'=>lang('common_new_item'), 'id' => 'new-item-mobile')); ?>

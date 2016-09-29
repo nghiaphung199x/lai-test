@@ -139,12 +139,56 @@ class Receivings extends Secure_area
 	{
  	  $this->receiving_lib->set_comment($this->input->post('comment'));
 	}
-
+	
 	function add()
 	{
 		$data=array();
 		$mode = $this->receiving_lib->get_mode();
-		$item_id_or_number_or_item_kit_or_receipt = $this->input->post("item");
+	
+		$item_id_or_number_or_item_kit_or_receipt =$this->input->post("item");
+	
+	
+		$quantity = $mode=="receive" || $mode=="purchase_order" ? 1:-1;
+	
+		if($this->receiving_lib->is_valid_receipt($item_id_or_number_or_item_kit_or_receipt) && $mode=='return')
+		{
+			$this->receiving_lib->return_entire_receiving($item_id_or_number_or_item_kit_or_receipt);
+		}
+		elseif($this->receiving_lib->is_valid_item_kit($item_id_or_number_or_item_kit_or_receipt))
+		{
+			if($this->Item_kit->get_info($item_id_or_number_or_item_kit_or_receipt)->deleted || $this->Item_kit->get_info($this->Item_kit->get_item_kit_id($item_id_or_number_or_item_kit_or_receipt))->deleted)
+			{
+				$data['error']=lang('receivings_unable_to_add_item');
+			}
+			else
+			{
+				$this->receiving_lib->add_item_kit($item_id_or_number_or_item_kit_or_receipt);
+			}
+		}
+	
+		elseif($this->Item->get_info($item_id_or_number_or_item_kit_or_receipt)->deleted || $this->Item->get_info($this->Item->get_item_id($item_id_or_number_or_item_kit_or_receipt))->deleted || !$this->receiving_lib->add_item($item_id_or_number_or_item_kit_or_receipt,$quantity))
+		{
+			$data['error']=lang('receivings_unable_to_add_item');
+		}
+	
+	
+		$this->_reload($data);
+	}
+	
+	
+
+	function add2()
+	{
+		$data=array();
+		$mode = $this->receiving_lib->get_mode();
+		
+		$product_id = $this->input->post("item");
+		
+		$info = $this->Item->getInformation(array('product_id'=>$product_id));
+
+		$item_id_or_number_or_item_kit_or_receipt = $info['item_id'];
+		
+		
 		$quantity = $mode=="receive" || $mode=="purchase_order" ? 1:-1;
 
 		if($this->receiving_lib->is_valid_receipt($item_id_or_number_or_item_kit_or_receipt) && $mode=='return')
@@ -162,10 +206,12 @@ class Receivings extends Secure_area
 				$this->receiving_lib->add_item_kit($item_id_or_number_or_item_kit_or_receipt);
 			}
 		}
+
 		elseif($this->Item->get_info($item_id_or_number_or_item_kit_or_receipt)->deleted || $this->Item->get_info($this->Item->get_item_id($item_id_or_number_or_item_kit_or_receipt))->deleted || !$this->receiving_lib->add_item($item_id_or_number_or_item_kit_or_receipt,$quantity))
 		{
 			$data['error']=lang('receivings_unable_to_add_item');
 		}
+		
 		
 		$this->_reload($data);
 	}
@@ -831,7 +877,7 @@ class Receivings extends Secure_area
 	}
 
 	function _reload($data=array(), $is_ajax = true)
-	{		
+	{	
 		$person_info = $this->Employee->get_logged_in_employee_info();
 		
 		$data['cart']=$this->receiving_lib->get_cart();

@@ -93,7 +93,9 @@ class BizReceiving_lib extends Receiving_lib
 				$itemalreadyinsale=TRUE;
 				$updatekey=$item['line'];
 			}
+
 		}
+		
 
 		$insertkey=$maxkey+1;
 
@@ -125,8 +127,10 @@ class BizReceiving_lib extends Receiving_lib
 				$measure = $measureOnRecv;
 			}
 		}
+
 		
 		//array records are identified by $insertkey and item_id is just another field.
+
 		$item = array(($line === FALSE ? $insertkey : $line)=>
 		array(
 			'item_id'=>$item_id,
@@ -162,6 +166,7 @@ class BizReceiving_lib extends Receiving_lib
 			//add to existing array
 			$items+=$item;
 		}
+	
 
 		$this->set_cart($items);
 		return true;

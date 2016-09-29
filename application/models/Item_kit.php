@@ -69,6 +69,7 @@ class Item_kit extends Bizmodel
     */
     function get_info($item_kit_id, $can_cache = TRUE)
     {
+
         if ($can_cache) {
             static $cache = array();
         } else {
@@ -81,7 +82,7 @@ class Item_kit extends Bizmodel
             foreach ($item_kits as $item_kit) {
                 $cache[$item_kit->item_kit_id] = $item_kit;
             }
-
+            
             return $item_kits;
         } else {
             if (isset($cache[$item_kit_id])) {
@@ -129,7 +130,7 @@ class Item_kit extends Bizmodel
             foreach ($fields as $field) {
                 $item_obj->$field = '';
             }
-
+         
             return $item_obj;
         }
     }
