@@ -1160,9 +1160,8 @@ class BizTasks extends Secure_area
 	public function deleteTemplate() {
 		$post  = $this->input->post();
 		if(!empty($post)) {
-			echo '<pre>';
-			print_r($post);
-			echo '</pre>';
+			$this->load->model('MTaskTemplate');
+			$this->MTaskTemplate->deleteItem($this->_data['arrParam'], array('task'=>'delete'));
 		}
 	}
 	

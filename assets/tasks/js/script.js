@@ -338,28 +338,22 @@ function delete_template() {
 		template_ids[template_ids.length] = $(this).val();
 	});
 	
-    gantt.confirm({
-        text: 'Xóa template',
-        ok:"Đồng ý", 
-        cancel:"Hủy bỏ",
-        callback: function(result){
-        	if(result == true) {
-				$.ajax({
-					type: "POST",
-					url: BASE_URL + 'tasks/deleteTemplate',
-					data: {
-						template_ids   : template_ids,
-					},
-					success: function(string){
-						console.log('--'+string);
-//						toastr.success('Cập nhật thành công!', 'Thông báo');
-//						load_list('template', 1);
-				    }
-				});
-        	}
-        }
-    });
-	
+	bootbox.confirm('Bạn có chắc muốn xóa không?', function(result){
+		if (result){
+			$.ajax({
+				type: "POST",
+				url: BASE_URL + 'tasks/deleteTemplate',
+				data: {
+					template_ids   : template_ids,
+				},
+				success: function(string){
+					console.log('--'+string);
+//					toastr.success('Cập nhật thành công!', 'Thông báo');
+//					load_list('template', 1);
+			    }
+			});
+		}
+	});
 }
 
 function del_template_task(obj) {
