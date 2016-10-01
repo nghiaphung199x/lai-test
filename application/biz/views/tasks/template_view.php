@@ -8,7 +8,7 @@
 <div class="manage_buttons">
 <div class="manage-row-options">
 	<div class="email_buttons text-center">		
-		<a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_template();"><span class="">Xóa</span></a>		
+		<a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_template();"><span class="">Xóa lựa chọn</span></a>		
 	</div>
 </div>
 <div class="cl">

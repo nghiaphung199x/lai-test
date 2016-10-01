@@ -83,7 +83,6 @@ $( document ).ready(function() {
 	   $input.one('blur', save).focus();
 	 });
 
-   
 	// phân trang
     var array_list = ['template'];
 	$.each( array_list, function( key, keyword ) {
@@ -347,9 +346,8 @@ function delete_template() {
 					template_ids   : template_ids,
 				},
 				success: function(string){
-					console.log('--'+string);
-//					toastr.success('Cập nhật thành công!', 'Thông báo');
-//					load_list('template', 1);
+					toastr.success('Cập nhật thành công!', 'Thông báo');
+					load_list('template', 1);
 			    }
 			});
 		}
@@ -421,8 +419,9 @@ function add_template() {
 			if(res.flag == 'false'){
 				toastr.error(res.msg, 'Lỗi!');
 			}else {
-				
 				toastr.success(res.msg, 'Thông báo');
+				$('#template_name').val('');
+				$('#sTree2').html('');
 			}
 	    }
 	});

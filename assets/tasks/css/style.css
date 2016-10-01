@@ -55,6 +55,14 @@
     color: #555555;
 }
 
+.gantt_title .panel-title .panel-options.custom {
+	float: right;
+}
+
+.gantt_title .panel-title .panel-options.custom a {
+	color: #d7dce8;
+}
+
 .manage-table .panel-heading {
     border: 1px solid #d7dce5;
     border-bottom: 0;

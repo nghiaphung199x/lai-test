@@ -144,7 +144,7 @@ class MTaskTemplate extends MNestedTemplate{
 	
 	public function deleteItem($arrParam = null, $options = null) {
 		if($options['task'] == 'delete'){
-			$this->db->where('template_id IN ' . $arrParam['template_ids']);
+			$this->db->where('template_id IN (' . implode(', ', $arrParam['template_ids']) . ')');
 			$this->db->delete($this->_table);
 			$this->db->flush_cache();
 		}

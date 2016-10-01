@@ -50,6 +50,13 @@
 	<div class="gantt_title">
 		<h3 class="panel-title">
 			Thông tin Dự án/ Công việc
+			<span class="panel-options custom">
+				<div class="pagination pagination-top hidden-print  text-center" id="pagination_top">
+					<strong>1</strong>
+					<a href="javascript:;" data-page="2">2</a>
+					<a href="javascript:;" data-page="2" rel="next">&gt;</a>
+				</div>
+			</span>
 		</h3>
 	</div>
 	<div id="gantt_here" style='width:100%; min-height: 500px;'></div>
