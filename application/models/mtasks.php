@@ -16,6 +16,43 @@ class MTasks extends MNested2{
 		$this->_task_permission  = $user_info['task_permission'];
 	}
 	
+	public function countItem($arrParam = null, $options = null) {
+		if($options == null) {
+			$flagAll = true;
+			$user_ids = array();
+			
+			if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission)))
+				$flagAll = false;
+			
+			if($flagAll == false) {
+				//project liên quan
+				$sql = 'SELECT t.id, t.project_id
+						FROM ' . $this->db->dbprefix($this->_table).' AS t
+						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')';
+			
+				$query = $this->db->query($sql);
+				$resultTmp = $query->result_array();
+				$project_ids = array();
+				if(!empty($resultTmp)) {
+					foreach($resultTmp as $val)
+						$project_ids[] = $val['project_id'];
+				}
+				
+				$project_ids = array_unique($project_ids);
+				$result = count($project_ids);
+			}else {
+				$this->db -> select('COUNT(t.id) AS totalItem')
+						  -> from($this->_table . ' AS t');
+					
+				$query = $this->db->get();
+				
+				$result = $query->row()->totalItem;
+			}
+		}
+		return $result;
+
+	}//nghiavl@115.146.126.125:/opt/repos/4biz2016.git
+	
 	public function saveItem($arrParam = null, $options = null){
 		if($options['task'] == 'add'){
 			if(isset($arrParam['customer'])) {
@@ -771,6 +808,7 @@ class MTasks extends MNested2{
 						FROM ' . $this->db->dbprefix($this->_table).' AS t
 						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')'
 					 .' ORDER BY t.prioty ASC, t.id DESC';
+				
 				
 				$query = $this->db->query($sql);
 				$resultTmp = $query->result_array();
