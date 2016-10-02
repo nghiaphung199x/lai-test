@@ -5,7 +5,7 @@ class MTasks extends MNested2{
 	protected $_table 			= 'tasks';
 	protected $_id_admin 		= null;
 	protected $_task_permission = null;
-	
+
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('MY_System_Info');
@@ -26,20 +26,12 @@ class MTasks extends MNested2{
 			
 			if($flagAll == false) {
 				//project liên quan
-				$sql = 'SELECT t.id, t.project_id
+				$sql = 'SELECT COUNT(DISTINCT t.project_id) AS total_item
 						FROM ' . $this->db->dbprefix($this->_table).' AS t
 						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')';
-			
+
 				$query = $this->db->query($sql);
-				$resultTmp = $query->result_array();
-				$project_ids = array();
-				if(!empty($resultTmp)) {
-					foreach($resultTmp as $val)
-						$project_ids[] = $val['project_id'];
-				}
-				
-				$project_ids = array_unique($project_ids);
-				$result = count($project_ids);
+				$result = $query->row()->totalItem;
 			}else {
 				$this->db -> select('COUNT(t.id) AS totalItem')
 						  -> from($this->_table . ' AS t');
@@ -796,6 +788,7 @@ class MTasks extends MNested2{
 	}
 
 	public function listItem($options = null, $arrParams = null) {
+		$paginator = $arrParams['paginator'];
 		if($options == null) {
 			$flagAll = true;
 			$user_ids = array();
@@ -818,23 +811,29 @@ class MTasks extends MNested2{
 						$project_ids[] = $val['project_id'];
 				}
 				
-			}else {
-				$this->db->select("id")
-						->from($this->_table)
-						->where('parent = 0')
-						->order_by("prioty",'ASC')
-						->order_by('id DESC');
-				
-				$query = $this->db->get();
-				
-				$resultTmp = $query->result_array();
 				$this->db->flush_cache();
-				
-				$project_ids = array();
-				if(!empty($resultTmp)) {
-					foreach($resultTmp as $val)
-						$project_ids[] = $val['id'];
-				}
+			}
+			
+			$this->db->select("id")
+				     ->from($this->_table)
+					 ->where('parent = 0')
+					 ->order_by("prioty",'ASC')
+				     ->order_by('id DESC');
+			
+			if(!empty($project_ids))
+				$this->where('project_id IN ('.implode(', ', $project_ids).')');
+			
+			$page = (empty($arrParams['start'])) ? 1 : $arrParams['start'];
+			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
+			
+			$project_ids = array();
+			
+			$resulttmp = $query->result_array();
+			$this->db->flush_cache();
+			
+			if(!empty($resulttmp)) {
+				foreach($resultTmp as $val)
+					$project_ids[] = $val;
 			}
 			
 			if(!empty($project_ids)) {
