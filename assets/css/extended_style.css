@@ -1,0 +1,44 @@
+body, html { font-family: Arial; font-size: 14px; line-height: 20px; letter-spacing: normal }
+.btn { font-size: 14px; font-family: Arial }
+.left-bar .admin-logo .logo-holder, .side-bar .admin-logo .logo-holder { padding-top: 0px !important; position: relative; top: 5px; }
+.wrapper.mini-bar .left-bar .admin-logo .logo-holder .logo { position: relative; top: 8px; }
+.table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > th, .table > caption + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > td, .table > thead:first-child > tr:first-child > td { font-weight: bold }
+.list-inline select { margin-top: 5px; }
+.nicescroll-cursors { background-color: rgba(255, 255, 255, .5) !important; border: none !important; width: 3px !important; }
+.nicescroll-cursors:hover { width: 5px !important; cursor: pointer }
+.control-label { font-size: 14px; letter-spacing: normal }
+.h1 .small, .h1 small, .h2 .small, .h2 small, .h3 .small, .h3 small, h1 .small, h1 small, h2 .small, h2 small, h3 .small, h3 small { font-size: 80%; }
+.panel, .panel-heading { border-radius: 0px !important; }
+.panel { border: none; box-shadow: 0 0px 4px rgba(0,0,0, .1); }
+.panel-heading h3 { font-weight: bold !important; }
+.top-bar .top-elements .dropdown .dropdown-menu a { font-size: 14px; font-family: Arial; }
+.sub { color: #ccc;}
+.panel-heading { background-color: #f3f3f3; }
+.btn-default { border: none !important; background-color: #eee; }
+textarea.form-control { height: auto !important; }
+.panel-body.bootstrap { padding: 15px !important; }
+label.error { font-weight: normal; color: red; }
+.navbar-breadcrumb > a.current { font-size: 14px; font-weight: bold; }
+.btn-default-border { background-color: #fff; border: 1px solid #ccc; color: #666; box-shadow: 0 0px 3px rgba(0,0,0,.1)}
+.font-14 {font-size: 14px}
+.employees, .employees li { list-style-type: none; list-style: none; padding: 0px; margin: 0px;}
+.ml-10 {margin-left: 10px;}
+.mt-10 {margin-top: 10px;}
+.mr-10 {margin-right: 10px;}
+.no-border {border:none !important;}
+.well {border-radius: 0px}
+.manage_buttons .form-control {margin-bottom: 0px !important; border: 1px solid #ccc; }
+.manage_buttons input.form-control {border: none !important;}
+.left-bar .menu-parent > li a i, .side-bar .menu-parent > li a i {top: 3px; position: relative;}
+.sortable {padding: 10px; border: 1px dashed #ddd; background-color: #f8f8f8 }
+.sortable, .sortable li {list-style-type: none}
+.ajax-result table thead th { background-color: #f3f3f3 }
+.ajax-result table td, .ajax-result table th { padding: 6px; }
+.ajax-result {padding: 20px;}
+.ajax-result .form-control {margin-bottom: 0px}
+.sub {font-weight: normal; font-style: italic}
+table.error thead th {background-color: #e02a00 !important; color: #fff !important;}
+table.error thead th * {color: #fff;}
+table.error tr:nth-child(odd) td {background-color: #ffe9df}
+.empty-data {color: #ccc; font-style: italic}
+.red-color {color: #e02a00}
