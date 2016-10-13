@@ -1157,6 +1157,28 @@ class MTasks extends MNested2{
 					$val['prioty'] = $prioty_arr[$val['prioty']];
 			}
 			$this->db->flush_cache();
+		}elseif($options['task'] == 'grid-list') {
+			if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission)))
+				$flagAll = false;
+			
+			// không có toàn quyền
+			if($flagAll == false) {
+				//project liên quan
+				$sql = 'SELECT t.id, t.project_id
+						FROM ' . $this->db->dbprefix($this->_table).' AS t
+						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')'
+					  .' ORDER BY t.prioty ASC, t.id DESC';
+
+				$query = $this->db->query($sql);
+				$resultTmp = $query->result_array();
+				$project_ids = array();
+				if(!empty($resultTmp)) {
+					foreach($resultTmp as $val)
+						$project_ids[] = $val['project_id'];
+				}
+			
+				$this->db->flush_cache();
+			}
 		}
 		
 		return $result;
