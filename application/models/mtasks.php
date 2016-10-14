@@ -16,34 +16,40 @@ class MTasks extends MNested2{
 		$this->_id_admin = $user_info['id'];
 		$this->_task_permission  = $user_info['task_permission'];
 		
-		$this->_fields 			= array(
+		$this->_fields 	 =  array(
 							'name' 	 		=> 't.name',
 							'prioty' 	 	=> 't.prioty',
 							'modified' 	 	 => 't.modified',
 							'username' 		 => 'e.username',
-					);
+					  );
 	}
 	
 	
-	public function countItem($arrParam = null, $options = null) {
-		if($options == null) {
-			$flagAll = true;
+	public function countItem($arrParams = null, $options = null) {
+		if($options == null || $options['task'] == 'grid-list') {
 			$user_ids = array();
-			
-			if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission)))
-				$flagAll = false;
+			$flagAll = $this->checkAllPermission();
 			
 			if($flagAll == false) {
 				//project liên quan
-				$sql = 'SELECT COUNT(DISTINCT t.project_id) AS total_item
+				$sql = 'SELECT COUNT(t.id) AS total_item
 						FROM ' . $this->db->dbprefix($this->_table).' AS t
-						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')';
+						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')
+						AND t.parent = 0';
+				
+				if(!empty($arrParams['keywords'])) {
+					$sql = $sql . ' AND t.name LIKE \'%'.$arrParams['keywords'].'%\'';
+				}
 
 				$query = $this->db->query($sql);
 				$result = $query->row()->totalItem;
 			}else {
 				$this->db -> select('COUNT(t.id) AS totalItem')
 						  -> from($this->_table . ' AS t');
+				
+				if(!empty($arrParams['keywords'])) {
+					$this->db->where('t.name LIKE \'%'.$arrParams['keywords'].'%\'');
+				}
 					
 				$query = $this->db->get();
 				
@@ -54,8 +60,8 @@ class MTasks extends MNested2{
 					  -> from($this->_table . ' AS t')
 			  		  -> where('t.parent = 0');
 			
-			if(!empty($arrParam['keywords'])) {
-				$this->db->where('t.name LIKE \'%'.$arrParam['keywords'].'%\'');
+			if(!empty($arrParams['keywords'])) {
+				$this->db->where('t.name LIKE \'%'.$arrParams['keywords'].'%\'');
 			}
 			
 			$query = $this->db->get();
@@ -159,260 +165,11 @@ class MTasks extends MNested2{
 				$progress_taskArr = array();
 				if(isset($arrParam['progress_task']))
 					$progress_taskArr = $arrParam['progress_task'];
-				
-	
-				if(isset($xemArr)) {
-					foreach($xemArr as $user_id) {
-						$tmp = array();
-						$tmp['task_id'] = $lastId;
-						$tmp['user_id'] = $user_id;
-						
-						$tmp['is_xem'] = 1;
-						if(($key = array_search($user_id, $xemArr)) !== false) {
-							unset($xemArr[$key]);
-						}
-			
-						if(in_array($user_id, $implementArr)){
-							$tmp['is_implement'] = 1;
-							if(($key = array_search($user_id, $implementArr)) !== false) {
-								unset($implementArr[$key]);
-							}
-						}else
-							$tmp['is_implement'] = 0;
 
-						if(in_array($user_id, $create_taskArr)){
-							$tmp['is_create_task'] = 1;
-							if(($key = array_search($user_id, $create_taskArr)) !== false) {
-								unset($create_taskArr[$key]);
-							}
-						}else
-							$tmp['is_create_task'] = 0;
+				$created_byArr = array($this->_id_admin);
 
-						if(in_array($user_id, $pheduyet_taskArr)){
-							$tmp['is_pheduyet'] = 1;
-							if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
-								unset($pheduyet_taskArr[$key]);
-							}
-						}else
-							$tmp['is_pheduyet'] = 0;
+				$this->do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr, $created_byArr);
 
-						if(in_array($user_id, $progress_taskArr)){
-							$tmp['is_progress'] = 1;
-							if(($key = array_search($user_id, $progress_taskArr)) !== false) {
-								unset($progress_taskArr[$key]);
-							}
-						}else
-							$tmp['is_progress'] = 0;
-						
-						$tmp['created']		= 	 @date("Y-m-d H:i:s");
-
-						$array[] = $tmp;
-					}
-				}
-				
-				if(!empty($implementArr)) {
-					foreach($implementArr as $user_id) {
-						$tmp = array();
-						$tmp['task_id'] = $lastId;
-						$tmp['user_id'] = $user_id;
-
-						if(in_array($user_id, $xemArr)){
-							$tmp['is_xem'] = 1;
-							if(($key = array_search($user_id, $xemArr)) !== false) {
-								unset($xemArr[$key]);
-							}
-						}else
-							$tmp['is_xem'] = 0;
-						
-						$tmp['is_implement'] = 1;
-						if(($key = array_search($user_id, $implementArr)) !== false) {
-							unset($implementArr[$key]);
-						}
-						
-						if(in_array($user_id, $create_taskArr)){
-							$tmp['is_create_task'] = 1;
-							if(($key = array_search($user_id, $create_taskArr)) !== false) {
-								unset($create_taskArr[$key]);
-							}
-						}else
-							$tmp['is_create_task'] = 0;
-						
-							
-						if(in_array($user_id, $pheduyet_taskArr)){
-							$tmp['is_pheduyet'] = 1;
-							if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
-								unset($pheduyet_taskArr[$key]);
-							}
-						}else
-							$tmp['is_pheduyet'] = 0;
-						
-						if(in_array($user_id, $progress_taskArr)){
-							$tmp['is_progress'] = 1;
-							if(($key = array_search($user_id, $progress_taskArr)) !== false) {
-								unset($progress_taskArr[$key]);
-							}
-						}else
-							$tmp['is_progress'] = 0;
-						
-						$tmp['created']		= 	 @date("Y-m-d H:i:s");
-
-						$array[] = $tmp;
-					}
-				}
-				
-				if(!empty($create_taskArr)) {
-					foreach($create_taskArr as $user_id) {
-						$tmp = array();
-						$tmp['task_id'] = $lastId;
-						$tmp['user_id'] = $user_id;
-						
-						if(in_array($user_id, $xemArr)){
-							$tmp['is_xem'] = 1;
-							if(($key = array_search($user_id, $xemArr)) !== false) {
-								unset($xemArr[$key]);
-							}
-						}else
-							$tmp['is_xem'] = 0;
-						
-						
-						if(in_array($user_id, $implementArr)){
-							$tmp['is_implement'] = 1;
-							if(($key = array_search($user_id, $implementArr)) !== false) {
-								unset($implementArr[$key]);
-							}
-						}else
-							$tmp['is_implement'] = 0;
-						
-						$tmp['is_create_task'] = 1;
-						if(($key = array_search($user_id, $create_taskArr)) !== false) {
-							unset($create_taskArr[$key]);
-						}
-						
-						if(in_array($user_id, $pheduyet_taskArr)){
-							$tmp['is_pheduyet'] = 1;
-							if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
-								unset($pheduyet_taskArr[$key]);
-							}
-						}else
-							$tmp['is_pheduyet'] = 0;
-						
-						if(in_array($user_id, $progress_taskArr)){
-							$tmp['is_progress'] = 1;
-							if(($key = array_search($user_id, $progress_taskArr)) !== false) {
-								unset($progress_taskArr[$key]);
-							}
-						}else
-							$tmp['is_progress'] = 0;
-						
-						$tmp['created']		= 	 @date("Y-m-d H:i:s");
-						
-						$array[] = $tmp;
-						
-					}
-				}
-				
-				if(!empty($pheduyet_taskArr)) {
-					foreach($pheduyet_taskArr as $user_id) {
-						$tmp = array();
-						$tmp['task_id'] = $lastId;
-						$tmp['user_id'] = $user_id;
-						
-						if(in_array($user_id, $xemArr)){
-							$tmp['is_xem'] = 1;
-							if(($key = array_search($user_id, $xemArr)) !== false) {
-								unset($xemArr[$key]);
-							}
-						}else
-							$tmp['is_xem'] = 0;
-						
-						
-						if(in_array($user_id, $implementArr)){
-							$tmp['is_implement'] = 1;
-							if(($key = array_search($user_id, $implementArr)) !== false) {
-								unset($implementArr[$key]);
-							}
-						}else
-							$tmp['is_implement'] = 0;
-						
-						if(in_array($user_id, $create_taskArr)){
-							$tmp['is_create_task'] = 1;
-							if(($key = array_search($user_id, $create_taskArr)) !== false) {
-								unset($create_taskArr[$key]);
-							}
-						}else
-							$tmp['is_create_task'] = 0;
-						
-						$tmp['is_pheduyet'] = 1;
-						
-						if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
-							unset($pheduyet_taskArr[$key]);
-						}
-						
-						if(in_array($user_id, $progress_taskArr)){
-							$tmp['is_progress'] = 1;
-							if(($key = array_search($user_id, $progress_taskArr)) !== false) {
-								unset($progress_taskArr[$key]);
-							}
-						}else
-							$tmp['is_progress'] = 0;
-						
-						$tmp['created']		= 	 @date("Y-m-d H:i:s");
-						
-						$array[] = $tmp;
-					}
-				}
-				
-				if(!empty($progress_taskArr)) {
-					foreach($progress_taskArr as $user_id) {
-						$tmp = array();
-						$tmp['task_id'] = $lastId;
-						$tmp['user_id'] = $user_id;
-				
-						if(in_array($user_id, $xemArr)){
-							$tmp['is_xem'] = 1;
-							if(($key = array_search($user_id, $xemArr)) !== false) {
-								unset($xemArr[$key]);
-							}
-						}else
-							$tmp['is_xem'] = 0;
-				
-				
-						if(in_array($user_id, $implementArr)){
-							$tmp['is_implement'] = 1;
-							if(($key = array_search($user_id, $implementArr)) !== false) {
-								unset($implementArr[$key]);
-							}
-						}else
-							$tmp['is_implement'] = 0;
-				
-						if(in_array($user_id, $create_taskArr)){
-							$tmp['is_create_task'] = 1;
-							if(($key = array_search($user_id, $create_taskArr)) !== false) {
-								unset($create_taskArr[$key]);
-							}
-						}else
-							$tmp['is_create_task'] = 0;
-				
-						if(in_array($user_id, $pheduyet_taskArr)){
-							$tmp['is_pheduyet'] = 1;
-							if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
-								unset($pheduyet_taskArr[$key]);
-							}
-						}else
-							$tmp['is_pheduyet'] = 0;
-				
-						$tmp['is_progress'] = 1;
-				
-						if(($key = array_search($user_id, $progress_taskArr)) !== false) {
-							unset($progress_taskArr[$key]);
-						}
-						
-						$tmp['created']		= 	 @date("Y-m-d H:i:s");
-				
-						$array[] = $tmp;
-					}
-				}
-				
 				if(!empty($array)) {
 					$this->db->insert_batch('task_user_relations', $array);
 				}
@@ -472,264 +229,16 @@ class MTasks extends MNested2{
 			$progress_taskArr = array();
 			if(isset($arrParam['progress_task']))
 				$progress_taskArr = $arrParam['progress_task'];
-			
-			if(isset($xemArr)) {
-				foreach($xemArr as $user_id) {
-					$tmp = array();
-					$tmp['task_id'] = $lastId;
-					$tmp['user_id'] = $user_id;
-		
-					$tmp['is_xem'] = 1;
-					if(($key = array_search($user_id, $xemArr)) !== false) {
-						unset($xemArr[$key]);
-					}
-						
-					if(in_array($user_id, $implementArr)){
-						$tmp['is_implement'] = 1;
-						if(($key = array_search($user_id, $implementArr)) !== false) {
-							unset($implementArr[$key]);
-						}
-					}else
-						$tmp['is_implement'] = 0;
-		
-					if(in_array($user_id, $create_taskArr)){
-						$tmp['is_create_task'] = 1;
-						if(($key = array_search($user_id, $create_taskArr)) !== false) {
-							unset($create_taskArr[$key]);
-						}
-					}else
-						$tmp['is_create_task'] = 0;
-		
-						
-					if(in_array($user_id, $pheduyet_taskArr)){
-						$tmp['is_pheduyet'] = 1;
-						if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
-							unset($pheduyet_taskArr[$key]);
-						}
-					}else
-						$tmp['is_pheduyet'] = 0;
-					
-					if(in_array($user_id, $progress_taskArr)){
-						$tmp['is_progress'] = 1;
-						if(($key = array_search($user_id, $progress_taskArr)) !== false) {
-							unset($progress_taskArr[$key]);
-						}
-					}else
-						$tmp['is_progress'] = 0;
 
-					$tmp['created']				= 		@date("Y-m-d H:i:s");
+			$created_byArr = array($arrParam['created_by']);
 
-					$array[] = $tmp;
-				}
-			}
-		
-			if(!empty($implementArr)) {
-				foreach($implementArr as $user_id) {
-					$tmp = array();
-					$tmp['task_id'] = $lastId;
-					$tmp['user_id'] = $user_id;
-		
-					if(in_array($user_id, $xemArr)){
-						$tmp['is_xem'] = 1;
-						if(($key = array_search($user_id, $xemArr)) !== false) {
-							unset($xemArr[$key]);
-						}
-					}else
-						$tmp['is_xem'] = 0;
-		
-					$tmp['is_implement'] = 1;
-					if(($key = array_search($user_id, $implementArr)) !== false) {
-						unset($implementArr[$key]);
-					}
-		
-					if(in_array($user_id, $create_taskArr)){
-						$tmp['is_create_task'] = 1;
-						if(($key = array_search($user_id, $create_taskArr)) !== false) {
-							unset($create_taskArr[$key]);
-						}
-					}else
-						$tmp['is_create_task'] = 0;
-		
-						
-					if(in_array($user_id, $pheduyet_taskArr)){
-						$tmp['is_pheduyet'] = 1;
-						if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
-							unset($pheduyet_taskArr[$key]);
-						}
-					}else
-						$tmp['is_pheduyet'] = 0;
-					
-					if(in_array($user_id, $progress_taskArr)){
-						$tmp['is_progress'] = 1;
-						if(($key = array_search($user_id, $progress_taskArr)) !== false) {
-							unset($progress_taskArr[$key]);
-						}
-					}else
-						$tmp['is_progress'] = 0;
-
-					$tmp['created']				= 		@date("Y-m-d H:i:s");
-		
-					$array[] = $tmp;
-				}
-			}
-		
-			if(!empty($create_taskArr)) {
-				foreach($create_taskArr as $user_id) {
-					$tmp = array();
-					$tmp['task_id'] = $lastId;
-					$tmp['user_id'] = $user_id;
-		
-					if(in_array($user_id, $xemArr)){
-						$tmp['is_xem'] = 1;
-						if(($key = array_search($user_id, $xemArr)) !== false) {
-							unset($xemArr[$key]);
-						}
-					}else
-						$tmp['is_xem'] = 0;
-		
-		
-					if(in_array($user_id, $implementArr)){
-						$tmp['is_implement'] = 1;
-						if(($key = array_search($user_id, $implementArr)) !== false) {
-							unset($implementArr[$key]);
-						}
-					}else
-						$tmp['is_implement'] = 0;
-		
-					$tmp['is_create_task'] = 1;
-					if(($key = array_search($user_id, $create_taskArr)) !== false) {
-						unset($create_taskArr[$key]);
-					}
-		
-					if(in_array($user_id, $pheduyet_taskArr)){
-						$tmp['is_pheduyet'] = 1;
-						if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
-							unset($pheduyet_taskArr[$key]);
-						}
-					}else
-						$tmp['is_pheduyet'] = 0;
-					
-					if(in_array($user_id, $progress_taskArr)){
-						$tmp['is_progress'] = 1;
-						if(($key = array_search($user_id, $progress_taskArr)) !== false) {
-							unset($progress_taskArr[$key]);
-						}
-					}else
-						$tmp['is_progress'] = 0;
-
-					$tmp['created']				= 		@date("Y-m-d H:i:s");
-		
-					$array[] = $tmp;
-				}
-			}
-		
-			if(!empty($pheduyet_taskArr)) {
-				foreach($pheduyet_taskArr as $user_id) {
-					$tmp = array();
-					$tmp['task_id'] = $lastId;
-					$tmp['user_id'] = $user_id;
-		
-					if(in_array($user_id, $xemArr)){
-						$tmp['is_xem'] = 1;
-						if(($key = array_search($user_id, $xemArr)) !== false) {
-							unset($xemArr[$key]);
-						}
-					}else
-						$tmp['is_xem'] = 0;
-		
-		
-					if(in_array($user_id, $implementArr)){
-						$tmp['is_implement'] = 1;
-						if(($key = array_search($user_id, $implementArr)) !== false) {
-							unset($implementArr[$key]);
-						}
-					}else
-						$tmp['is_implement'] = 0;
-		
-					if(in_array($user_id, $create_taskArr)){
-						$tmp['is_create_task'] = 1;
-						if(($key = array_search($user_id, $create_taskArr)) !== false) {
-							unset($create_taskArr[$key]);
-						}
-					}else
-						$tmp['is_create_task'] = 0;
-		
-					$tmp['is_pheduyet'] = 1;
-					if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
-						unset($pheduyet_taskArr[$key]);
-					}
-					
-					if(in_array($user_id, $progress_taskArr)){
-						$tmp['is_progress'] = 1;
-						if(($key = array_search($user_id, $progress_taskArr)) !== false) {
-							unset($progress_taskArr[$key]);
-						}
-					}else
-						$tmp['is_progress'] = 0;
-
-					$tmp['created']				= 		@date("Y-m-d H:i:s");
-					
-					$array[] = $tmp;
-				}
-			}
-			
-			if(!empty($progress_taskArr)) {
-				foreach($progress_taskArr as $user_id) {
-					$tmp = array();
-					$tmp['task_id'] = $lastId;
-					$tmp['user_id'] = $user_id;
-			
-					if(in_array($user_id, $xemArr)){
-						$tmp['is_xem'] = 1;
-						if(($key = array_search($user_id, $xemArr)) !== false) {
-							unset($xemArr[$key]);
-						}
-					}else
-						$tmp['is_xem'] = 0;
-			
-			
-					if(in_array($user_id, $implementArr)){
-						$tmp['is_implement'] = 1;
-						if(($key = array_search($user_id, $implementArr)) !== false) {
-							unset($implementArr[$key]);
-						}
-					}else
-						$tmp['is_implement'] = 0;
-			
-					if(in_array($user_id, $create_taskArr)){
-						$tmp['is_create_task'] = 1;
-						if(($key = array_search($user_id, $create_taskArr)) !== false) {
-							unset($create_taskArr[$key]);
-						}
-					}else
-						$tmp['is_create_task'] = 0;
-			
-					if(in_array($user_id, $pheduyet_taskArr)){
-						$tmp['is_pheduyet'] = 1;
-						if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
-							unset($pheduyet_taskArr[$key]);
-						}
-					}else
-						$tmp['is_pheduyet'] = 0;
-			
-					$tmp['is_progress'] = 1;
-			
-					if(($key = array_search($user_id, $progress_taskArr)) !== false) {
-						unset($progress_taskArr[$key]);
-					}
-
-					$tmp['created']				= 		@date("Y-m-d H:i:s");
-			
-					$array[] = $tmp;
-				}
-			}
+			$array = $this->do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr, $created_byArr);
 
 			if(!empty($array)) {
 				$this->db->insert_batch('task_user_relations', $array);
 			}
 
 			$this->db->flush_cache();
-			
 			
 		}elseif($options['task'] == 'quick-update') {
 			$this->db->where("id",$arrParam['id']);
@@ -813,28 +322,11 @@ class MTasks extends MNested2{
 	public function listItem($arrParams = null, $options = null) {
 		$paginator = $arrParams['paginator'];
 		if($options == null) {
-			$flagAll = true;
-			$user_ids = array();
-			if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission))) 
-				$flagAll = false;
+			$flagAll = $this->checkAllPermission();
+			
 			// không có toàn quyền
 			if($flagAll == false) {
-				//project liên quan			
-				$sql = 'SELECT t.id, t.project_id
-						FROM ' . $this->db->dbprefix($this->_table).' AS t
-						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')'
-					 .' ORDER BY t.prioty ASC, t.id DESC';
-				
-				
-				$query = $this->db->query($sql);
-				$resultTmp = $query->result_array();
-				$project_ids = array();
-				if(!empty($resultTmp)) {
-					foreach($resultTmp as $val)
-						$project_ids[] = $val['project_id'];
-				}
-				
-				$this->db->flush_cache();
+				$project_ids = $this->getProjectRelation();	
 			}
 			
 			$this->db->select("id")
@@ -1158,26 +650,124 @@ class MTasks extends MNested2{
 			}
 			$this->db->flush_cache();
 		}elseif($options['task'] == 'grid-list') {
-			if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission)))
-				$flagAll = false;
-			
-			// không có toàn quyền
+			$user_ids = array();
+			$flagAll = $this->checkAllPermission();
 			if($flagAll == false) {
 				//project liên quan
-				$sql = 'SELECT t.id, t.project_id
-						FROM ' . $this->db->dbprefix($this->_table).' AS t
-						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')'
-					  .' ORDER BY t.prioty ASC, t.id DESC';
-
-				$query = $this->db->query($sql);
-				$resultTmp = $query->result_array();
-				$project_ids = array();
-				if(!empty($resultTmp)) {
-					foreach($resultTmp as $val)
-						$project_ids[] = $val['project_id'];
-				}
+				$project_ids = $this->getProjectRelation();	
+			}
 			
-				$this->db->flush_cache();
+			$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
+			$this->db->select("DATE_FORMAT(date_end, '%d-%m-%Y') as end_date", FALSE);
+			$this->db->select("DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date", FALSE);
+			$this->db->select("id, name as text, name, duration, percent, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
+					 ->from($this->_table)
+					 ->where('parent = 0')
+					 ->order_by("prioty",'ASC')
+					 ->order_by('sort', 'ASC');
+			
+			if(!empty($project_ids))
+				$this->where('project_id IN ('.implode(', ', $project_ids).')');
+			
+			if(!empty($arrParams['project_keywords'])) {
+				$this->db->where('name LIKE \'%'.$arrParams['project_keywords'].'%\'');
+			}
+			
+			$page = (empty($arrParams['start'])) ? 1 : $arrParams['start'];
+			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
+			
+			$query = $this->db->get();
+				
+			$project_ids = array();
+				
+			$resultTmp = $query->result_array();
+			
+			$this->db->flush_cache();
+			
+			$project_items = array();
+			if(!empty($resultTmp)) {
+				foreach($resultTmp as $val){
+					$project_ids[]  		   = $val['id'];
+					$project_items[$val['id']] = $val;
+					$task_ids[] 			   = $val['id'];
+				}	
+			}
+
+			$result = array();
+			if(!empty($project_ids)) {
+				foreach($project_ids as $project_id) {
+					$result[$project_id] = $project_items[$project_id];
+					$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);
+					$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date", FALSE);
+					$this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as finish_date", FALSE);
+					$this->db->select("t.id, t.name, t.name, t.duration, t.percent, t.progress, t.level, t.parent, t.type, t.project_id, t.lft, t.rgt, t.created, t.pheduyet, t.color, t.prioty, t.trangthai")
+							 ->from($this->_table . ' AS t');	
+					
+					if($flagAll == false) {
+						$this->db->join('task_user_relations as r', 't.id = r.task_id AND r.user_id = ' . $this->_id_admin);
+					}
+					
+					$this->db->where('t.project_id', $project_id)
+							 ->order_by("t.lft",'ASC');
+
+					if(!empty($arrParams['col']) && !empty($arrParams['order'])){
+						$col   = $this->_fields[$arrParams['col']];
+						$order = $arrParams['order'];
+							
+						$this->db->order_by($col, $order);
+					}else {
+						$this->db->order_by('t.lft', 'ASC');
+					}
+					
+					$query 		   = $this->db->get();
+					$resultTmp     = $query->result_array();	
+					$this->db->flush_cache();
+
+					if(!empty($resultTmp)) {
+						foreach($resultTmp as $val)
+							$result[$val['id']] = $val;
+					}
+				}
+			}
+			
+			if(!empty($result)) {
+				foreach($result as &$val) {
+					if($val['trangthai'] == 0 || $val['trangthai'] == 1){	// chưa thực hiên + đang thực hiện
+						$now        = date('Y-m-d', strtotime(date("d-m-Y")));
+						$date_end   = date('Y-m-d', strtotime($val['end_date']));
+
+						$datediff 	= strtotime($now) - strtotime($date_end);
+						$duration 	= floor($datediff/(60*60*24));
+						if($duration <= 0)
+							$val['note'] = 'Còn '.abs($duration).' ngày';
+						else{
+							$val['note']  =  'Quá '.abs($duration).' ngày';
+							$val['color'] = '#c90d2f';
+						}
+								
+					}elseif($val['trangthai'] == 2) {// hoàn thành
+						$end_date      = date('Y-m-d', strtotime($val['end_date']));
+						$finish_date   = date('Y-m-d', strtotime($val['finish_date']));
+
+						$datediff 	= strtotime($end_date) - strtotime($finish_date);
+						$duration 	= floor($datediff/(60*60*24));
+						
+						if($duration < 0){
+							$val['note']  = 'Trễ '.abs($duration).' ngày';
+							$val['color'] = '#516e47';
+						}elseif($duration > 0){
+							$val['color'] = '#12e841';
+							$val['note']  = 'Sớm '.abs($duration).' ngày';
+						}else{
+							$val['color'] = '#12e841';
+						}
+
+					}elseif($val['trangthai'] == 3) {
+						$val['color'] = '#e0d91c';
+					}elseif($val['trangthai'] == 4) {
+						$val['color'] = '#303020';
+					}
+				}
 			}
 		}
 		
@@ -1432,6 +1022,396 @@ class MTasks extends MNested2{
 
 	public function deleteItem($id) {
 		$this->removeNode($id);
+	}
+	
+	// support function
+	protected function getProjectRelation() {
+		//project liên quan
+		$sql = 'SELECT t.id, t.project_id
+				FROM ' . $this->db->dbprefix($this->_table).' AS t
+				WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')'
+			 .' ORDER BY t.prioty ASC, t.id DESC';
+		
+		$query = $this->db->query($sql);
+		$resultTmp = $query->result_array();
+		$project_ids = array();
+		if(!empty($resultTmp)) {
+			foreach($resultTmp as $val)
+				$project_ids[] = $val['project_id'];
+		}
+			
+		$this->db->flush_cache();
+		
+		return $project_ids;
+	}
+	protected function checkAllPermission() {
+		$flagAll = true;
+		if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission)))
+			$flagAll = false;
+		
+		return $flagAll;
+	}
+	
+	protected function do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr, $created_byArr) {
+		$array = array();
+		if(isset($xemArr)) {
+			foreach($xemArr as $user_id) {
+				$tmp = array();
+				$tmp['task_id'] = $lastId;
+				$tmp['user_id'] = $user_id;
+		
+				$tmp['is_xem'] = 1;
+				if(($key = array_search($user_id, $xemArr)) !== false) {
+					unset($xemArr[$key]);
+				}
+		
+				if(in_array($user_id, $implementArr)){
+					$tmp['is_implement'] = 1;
+					if(($key = array_search($user_id, $implementArr)) !== false) {
+						unset($implementArr[$key]);
+					}
+				}else
+					$tmp['is_implement'] = 0;
+		
+				if(in_array($user_id, $create_taskArr)){
+					$tmp['is_create_task'] = 1;
+					if(($key = array_search($user_id, $create_taskArr)) !== false) {
+						unset($create_taskArr[$key]);
+					}
+				}else
+					$tmp['is_create_task'] = 0;
+		
+		
+				if(in_array($user_id, $pheduyet_taskArr)){
+					$tmp['is_pheduyet'] = 1;
+					if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
+						unset($pheduyet_taskArr[$key]);
+					}
+				}else
+					$tmp['is_pheduyet'] = 0;
+					
+				if(in_array($user_id, $progress_taskArr)){
+					$tmp['is_progress'] = 1;
+					if(($key = array_search($user_id, $progress_taskArr)) !== false) {
+						unset($progress_taskArr[$key]);
+					}
+				}else
+					$tmp['is_progress'] = 0;
+		
+		
+				if(in_array($user_id, $created_byArr)){
+					$tmp['is_created'] = 1;
+					if(($key = array_search($user_id, $created_byArr)) !== false) {
+						unset($created_byArr[$key]);
+					}
+				}else
+					$tmp['is_created'] = 0;
+		
+				$tmp['created']				= 		@date("Y-m-d H:i:s");
+		
+				$array[] = $tmp;
+			}
+		}
+		
+		if(!empty($implementArr)) {
+			foreach($implementArr as $user_id) {
+				$tmp = array();
+				$tmp['task_id'] = $lastId;
+				$tmp['user_id'] = $user_id;
+		
+				if(in_array($user_id, $xemArr)){
+					$tmp['is_xem'] = 1;
+					if(($key = array_search($user_id, $xemArr)) !== false) {
+						unset($xemArr[$key]);
+					}
+				}else
+					$tmp['is_xem'] = 0;
+		
+				$tmp['is_implement'] = 1;
+				if(($key = array_search($user_id, $implementArr)) !== false) {
+					unset($implementArr[$key]);
+				}
+		
+				if(in_array($user_id, $create_taskArr)){
+					$tmp['is_create_task'] = 1;
+					if(($key = array_search($user_id, $create_taskArr)) !== false) {
+						unset($create_taskArr[$key]);
+					}
+				}else
+					$tmp['is_create_task'] = 0;
+		
+		
+				if(in_array($user_id, $pheduyet_taskArr)){
+					$tmp['is_pheduyet'] = 1;
+					if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
+						unset($pheduyet_taskArr[$key]);
+					}
+				}else
+					$tmp['is_pheduyet'] = 0;
+					
+				if(in_array($user_id, $progress_taskArr)){
+					$tmp['is_progress'] = 1;
+					if(($key = array_search($user_id, $progress_taskArr)) !== false) {
+						unset($progress_taskArr[$key]);
+					}
+				}else
+					$tmp['is_progress'] = 0;
+		
+		
+				if(in_array($user_id, $created_byArr)){
+					$tmp['is_created'] = 1;
+					if(($key = array_search($user_id, $created_byArr)) !== false) {
+						unset($created_byArr[$key]);
+					}
+				}else
+					$tmp['is_created'] = 0;
+		
+				$tmp['created']				= 		@date("Y-m-d H:i:s");
+		
+				$array[] = $tmp;
+			}
+		}
+		
+		if(!empty($create_taskArr)) {
+			foreach($create_taskArr as $user_id) {
+				$tmp = array();
+				$tmp['task_id'] = $lastId;
+				$tmp['user_id'] = $user_id;
+		
+				if(in_array($user_id, $xemArr)){
+					$tmp['is_xem'] = 1;
+					if(($key = array_search($user_id, $xemArr)) !== false) {
+						unset($xemArr[$key]);
+					}
+				}else
+					$tmp['is_xem'] = 0;
+		
+		
+				if(in_array($user_id, $implementArr)){
+					$tmp['is_implement'] = 1;
+					if(($key = array_search($user_id, $implementArr)) !== false) {
+						unset($implementArr[$key]);
+					}
+				}else
+					$tmp['is_implement'] = 0;
+		
+				$tmp['is_create_task'] = 1;
+				if(($key = array_search($user_id, $create_taskArr)) !== false) {
+					unset($create_taskArr[$key]);
+				}
+		
+				if(in_array($user_id, $pheduyet_taskArr)){
+					$tmp['is_pheduyet'] = 1;
+					if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
+						unset($pheduyet_taskArr[$key]);
+					}
+				}else
+					$tmp['is_pheduyet'] = 0;
+					
+				if(in_array($user_id, $progress_taskArr)){
+					$tmp['is_progress'] = 1;
+					if(($key = array_search($user_id, $progress_taskArr)) !== false) {
+						unset($progress_taskArr[$key]);
+					}
+				}else
+					$tmp['is_progress'] = 0;
+		
+		
+				if(in_array($user_id, $created_byArr)){
+					$tmp['is_created'] = 1;
+					if(($key = array_search($user_id, $created_byArr)) !== false) {
+						unset($created_byArr[$key]);
+					}
+				}else
+					$tmp['is_created'] = 0;
+		
+				$tmp['created']				= 		@date("Y-m-d H:i:s");
+		
+				$array[] = $tmp;
+			}
+		}
+		
+		if(!empty($pheduyet_taskArr)) {
+			foreach($pheduyet_taskArr as $user_id) {
+				$tmp = array();
+				$tmp['task_id'] = $lastId;
+				$tmp['user_id'] = $user_id;
+		
+				if(in_array($user_id, $xemArr)){
+					$tmp['is_xem'] = 1;
+					if(($key = array_search($user_id, $xemArr)) !== false) {
+						unset($xemArr[$key]);
+					}
+				}else
+					$tmp['is_xem'] = 0;
+		
+		
+				if(in_array($user_id, $implementArr)){
+					$tmp['is_implement'] = 1;
+					if(($key = array_search($user_id, $implementArr)) !== false) {
+						unset($implementArr[$key]);
+					}
+				}else
+					$tmp['is_implement'] = 0;
+		
+				if(in_array($user_id, $create_taskArr)){
+					$tmp['is_create_task'] = 1;
+					if(($key = array_search($user_id, $create_taskArr)) !== false) {
+						unset($create_taskArr[$key]);
+					}
+				}else
+					$tmp['is_create_task'] = 0;
+		
+				$tmp['is_pheduyet'] = 1;
+				if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
+					unset($pheduyet_taskArr[$key]);
+				}
+					
+				if(in_array($user_id, $progress_taskArr)){
+					$tmp['is_progress'] = 1;
+					if(($key = array_search($user_id, $progress_taskArr)) !== false) {
+						unset($progress_taskArr[$key]);
+					}
+				}else
+					$tmp['is_progress'] = 0;
+		
+		
+				if(in_array($user_id, $created_byArr)){
+					$tmp['is_created'] = 1;
+					if(($key = array_search($user_id, $created_byArr)) !== false) {
+						unset($created_byArr[$key]);
+					}
+				}else
+					$tmp['is_created'] = 0;
+		
+				$tmp['created']				= 		@date("Y-m-d H:i:s");
+					
+				$array[] = $tmp;
+			}
+		}
+			
+		if(!empty($progress_taskArr)) {
+			foreach($progress_taskArr as $user_id) {
+				$tmp = array();
+				$tmp['task_id'] = $lastId;
+				$tmp['user_id'] = $user_id;
+					
+				if(in_array($user_id, $xemArr)){
+					$tmp['is_xem'] = 1;
+					if(($key = array_search($user_id, $xemArr)) !== false) {
+						unset($xemArr[$key]);
+					}
+				}else
+					$tmp['is_xem'] = 0;
+					
+					
+				if(in_array($user_id, $implementArr)){
+					$tmp['is_implement'] = 1;
+					if(($key = array_search($user_id, $implementArr)) !== false) {
+						unset($implementArr[$key]);
+					}
+				}else
+					$tmp['is_implement'] = 0;
+					
+				if(in_array($user_id, $create_taskArr)){
+					$tmp['is_create_task'] = 1;
+					if(($key = array_search($user_id, $create_taskArr)) !== false) {
+						unset($create_taskArr[$key]);
+					}
+				}else
+					$tmp['is_create_task'] = 0;
+					
+				if(in_array($user_id, $pheduyet_taskArr)){
+					$tmp['is_pheduyet'] = 1;
+					if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
+						unset($pheduyet_taskArr[$key]);
+					}
+				}else
+					$tmp['is_pheduyet'] = 0;
+					
+				$tmp['is_progress'] = 1;
+					
+				if(($key = array_search($user_id, $progress_taskArr)) !== false) {
+					unset($progress_taskArr[$key]);
+				}
+		
+		
+				if(in_array($user_id, $created_byArr)){
+					$tmp['is_created'] = 1;
+					if(($key = array_search($user_id, $created_byArr)) !== false) {
+						unset($created_byArr[$key]);
+					}
+				}else
+					$tmp['is_created'] = 0;
+		
+				$tmp['created']				= 		@date("Y-m-d H:i:s");
+					
+				$array[] = $tmp;
+			}
+		}
+		
+		if(!empty($created_byArr)) {
+			foreach($created_byArr as $user_id) {
+				$tmp = array();
+				$tmp['task_id'] = $lastId;
+				$tmp['user_id'] = $user_id;
+					
+				if(in_array($user_id, $xemArr)){
+					$tmp['is_xem'] = 1;
+					if(($key = array_search($user_id, $xemArr)) !== false) {
+						unset($xemArr[$key]);
+					}
+				}else
+					$tmp['is_xem'] = 0;
+					
+					
+				if(in_array($user_id, $implementArr)){
+					$tmp['is_implement'] = 1;
+					if(($key = array_search($user_id, $implementArr)) !== false) {
+						unset($implementArr[$key]);
+					}
+				}else
+					$tmp['is_implement'] = 0;
+					
+				if(in_array($user_id, $create_taskArr)){
+					$tmp['is_create_task'] = 1;
+					if(($key = array_search($user_id, $create_taskArr)) !== false) {
+						unset($create_taskArr[$key]);
+					}
+				}else
+					$tmp['is_create_task'] = 0;
+					
+				if(in_array($user_id, $pheduyet_taskArr)){
+					$tmp['is_pheduyet'] = 1;
+					if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
+						unset($pheduyet_taskArr[$key]);
+					}
+				}else
+					$tmp['is_pheduyet'] = 0;
+		
+				if(in_array($user_id, $progress_taskArr)){
+					$tmp['is_progress'] = 1;
+					if(($key = array_search($user_id, $progress_taskArr)) !== false) {
+						unset($progress_taskArr[$key]);
+					}
+				}else
+					$tmp['is_progress'] = 0;
+		
+					
+				$tmp['is_created'] = 1;
+					
+				if(($key = array_search($user_id, $created_byArr)) !== false) {
+					unset($created_byArr[$key]);
+				}
+		
+		
+				$tmp['created']				= 		@date("Y-m-d H:i:s");
+					
+				$array[] = $tmp;
+			}
+		}
+		
+		return $array;
 	}
 	
 	function model_load_model($model_name)

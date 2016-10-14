@@ -873,8 +873,7 @@ function fileData(data) {
 			
 			element.text(value);
 		});	
-		
-		
+
 	}else {
 		toastr.success('Cập nhật thành công!', 'Thông báo');
 		$('#quick-form').html('');

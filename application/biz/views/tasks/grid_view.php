@@ -109,7 +109,6 @@
 						</tbody>
 					</table>
 				</div>
-		
 			</div>	
 		</div>	
 	</div>
@@ -137,87 +136,5 @@ $( document ).ready(function() {
     });
 });
 </script>
-<style>
-.manage-table .panel-body {
-	padding: 15px;
-	
-}
-
-.manage-table tr td:first-child, .manage-table tr th:first-child {
-	padding-left: 4px;
-}
-
-.progress-bar {
-    position: relative;
-    width: 150px;
-    height: 20px;
-    line-height: 20px;
-    overflow: hidden;
-    font-weight: bold;
-    font-size: 12px;
-    box-shadow: 0 4px 10px -5px rgba(0, 0, 0, 0.25);
-    float: left;
-}
-
-.progress-text {
-	float: left; height: 18px; line-height: 18px; margin-left: 10px;
-}
-
-.progress-bar .bar.positive {
-    
-    background: #4388c2;
-    left: 0;
-    width: 80%;
-    -webkit-animation: animate-positive 1s;
-    animation: animate-positive 1s;
-}
-
-.progress-bar .bar.negative {
-    background: #489ee7;
-    right: 0;
-    width: 20%;
-    -webkit-animation: animate-negative 1s;
-    animation: animate-negative 1s;
-}
-
-.progress-bar .bar {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    overflow: hidden;
-}
-
-.progress-bar .bar.positive span {
-    left: 0;
-    color: white;
-}
-.progress-bar .bar span {
-    position: absolute;
-    display: block;
-    width: 150px;
-    height: 100%;
-    text-align: center;
-}
-
-.progress-bar .bar.negative span {
-    right: 0;
-    color: #fff;
-}
-
-@-webkit-keyframes animate-positive {
-  0% { width:0%; }
-}
-@keyframes animate-positive {
-  0% { width:0%; }
-}
-
-@-webkit-keyframes animate-negative {
-  0% { width:100%; }  
-}
-@keyframes animate-negative {
-  0% { width:100%; }  
-}
-
-</style>
 
 <?php $this->load->view("partial/footer"); ?>

@@ -339,6 +339,8 @@ class BizTasks extends Secure_area
 				}elseif($arrParam['progress'] > 0 && $arrParam['trangthai'] == 0) {
 					$arrParam['trangthai'] = 1;
 				}
+				
+				$arrParam['created_by'] = $item['created_by'];
 
 				$this->MTasks->saveItem($arrParam, array('task'=>'edit'));
 
@@ -1240,13 +1242,45 @@ class BizTasks extends Secure_area
 		}
 	}
 	
+	public function gridList() {
+		$this->load->model('MTasks');
+		$post  = $this->input->post();
+		
+		$items = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'grid-list'));
+echo '<pre>';
+print_r($items);
+echo '</pre>';
+		die;
+		if(!empty($post)) {
+			$config['base_url'] = base_url() . 'tasks/gridList';
+			$config['total_rows'] = $this->MTasks->countItem($this->_data['arrParam'], array('task'=>'grid-list'));
+		
+			$config['per_page'] = $this->_paginator['per_page'];
+			$config['uri_segment'] = $this->_paginator['uri_segment'];
+			$config['use_page_numbers'] = TRUE;
+		
+			$this->load->library("pagination");
+			$this->pagination->initialize($config);
+			$this->pagination->createConfig('front-end');
+		
+			$pagination = $this->pagination->create_ajax();
+		
+			$this->_data['arrParam']['start'] = $this->uri->segment(3);
+			$items = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'grid-list'));
+				
+			$result = array('count'=> $config['total_rows'], 'items'=>$items, 'pagination'=>$pagination);
+			echo json_encode($result);
+		}
+	}
+	
 	public function grid() {
 		$this->load->view('tasks/grid_view', $this->_data);
 	}
 	
 	public function test() {
+
 // 		$this->load->model('MTasks');
 // 		$this->MTasks->test();
-		$date = date('Y-m-d h:i:s', time());
+		//$date = date('Y-m-d h:i:s', time());
 	}
 }
