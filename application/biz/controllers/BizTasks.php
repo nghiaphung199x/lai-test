@@ -1242,18 +1242,15 @@ class BizTasks extends Secure_area
 		}
 	}
 	
-	public function gridList() {
+	public function projectGridList() {
 		$this->load->model('MTasks');
 		$post  = $this->input->post();
-		
-		$items = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'grid-list'));
-echo '<pre>';
-print_r($items);
-echo '</pre>';
-		die;
+	
+		$items = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'grid-project'));
+
 		if(!empty($post)) {
 			$config['base_url'] = base_url() . 'tasks/gridList';
-			$config['total_rows'] = $this->MTasks->countItem($this->_data['arrParam'], array('task'=>'grid-list'));
+			$config['total_rows'] = $this->MTasks->countItem($this->_data['arrParam'], array('task'=>'grid-project'));
 		
 			$config['per_page'] = $this->_paginator['per_page'];
 			$config['uri_segment'] = $this->_paginator['uri_segment'];
@@ -1266,10 +1263,11 @@ echo '</pre>';
 			$pagination = $this->pagination->create_ajax();
 		
 			$this->_data['arrParam']['start'] = $this->uri->segment(3);
-			$items = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'grid-list'));
+			$items = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'grid-project'));
 				
 			$result = array('count'=> $config['total_rows'], 'items'=>$items, 'pagination'=>$pagination);
 			echo json_encode($result);
+
 		}
 	}
 	

@@ -255,8 +255,10 @@ function loading(keyword) {
 			$("#loading_3").show();
 		else
 			$("#loading_1").show();
-	}else
-		 $("#loading_2").show();
+	}else{
+		$("#loading_2").show();
+	}
+		 
 }
 
 function close_loading(keyword) {
@@ -589,6 +591,7 @@ function countTiendo() {
 	});
 }
 
+
 function load_list(keyword, page) {
 	var task_id = $('#task_id').val();
 	var data = new Object();
@@ -721,7 +724,7 @@ function load_list(keyword, page) {
 			    
 			    case 'project' : {
 			    	 var html_string = load_template_project(items);
-					 var pagination = load_pagination(pagination);	 
+					 var pagination = load_pagination(pagination, 'gantt');	 
 					 break;
 			    }
 			}

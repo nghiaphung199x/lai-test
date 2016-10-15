@@ -25,6 +25,7 @@
 		
 		// task pagination
 		$('body').on('click', '#pagination_top a', function(){
+			gantt.clearAll();
 			var page = $(this).attr('data-page');
 			load_task(page);
 		});
@@ -302,7 +303,11 @@
 			data: {
 				keywords : keywords
 			},
+			beforeSend: function() {
+	             loading();
+	        },
 			success: function(string){ 
+			   close_loading();
 			   var result 	  = $.parseJSON(string);
 			   var data 	  = new Array();
 			   var deny_items = new Array();

@@ -26,7 +26,7 @@ class MTasks extends MNested2{
 	
 	
 	public function countItem($arrParams = null, $options = null) {
-		if($options == null || $options['task'] == 'grid-list') {
+		if($options == null || $options['task'] == 'grid-list' || $options['task'] == 'grid-project') {
 			$user_ids = array();
 			$flagAll = $this->checkAllPermission();
 			
@@ -372,15 +372,41 @@ class MTasks extends MNested2{
 					
 					$query 		   = $this->db->get();
 					
-					$resultTmp     = $query->result_array();
+					$res_tmp     = $query->result_array();
 					
 					$this->db->flush_cache();
 
 					$task_list_tmp = array();
-					if(!empty($resultTmp)) {
-						foreach($resultTmp as $val){
-							$task_list_tmp[$val['id']] = $val;
-							$task_ids[] 			   = $val['id'];
+	
+					if(!empty($res_tmp)) {
+						foreach($res_tmp as $val){
+							$resultTmp[$val['id']] = $val;
+						}
+
+						$stt = 1;
+						foreach($project_ids as $project_id) {
+							$taskTmp 	     = $resultTmp[$project_id];
+							$taskTmp['order'] = $stt;
+							
+							$task_list_tmp[$project_id] = $taskTmp;
+							$task_ids[] 			    = $val['id'];
+							$stt = $stt + 1;
+
+							unset($resultTmp[$project_id]);
+							if(!empty($resultTmp)) {
+								foreach($resultTmp as $val) {
+									if($val['project_id'] == $project_id){
+										$taskTmp	     = $resultTmp[$val['id']];
+										$taskTmp['order'] = $stt;
+										
+										$task_list_tmp[$val['id']] = $taskTmp;
+										$task_ids[] 			   = $val['id'];
+										
+										unset($resultTmp[$val['id']]);
+										$stt = $stt + 1;
+									}
+								}	
+							}
 						}
 					}
 				}else
@@ -390,15 +416,7 @@ class MTasks extends MNested2{
 			$task_list = array();
 			if(!empty($task_list_tmp)) {
 				// task replation
-				$this->db->select("r.task_id, r.is_implement, r.is_create_task, r.is_pheduyet, r.is_progress, r.is_xem, r.user_id")
-						 ->from('task_user_relations as r')
-						 ->where('r.task_id IN ('.implode(', ', $task_ids).')');
-				
-				$query = $this->db->get();
-				
-				$resultTmp = $query->result_array();
-				
-				$this->db->flush_cache();
+				$resultTmp = $this->getUsersRelation($task_ids);
 		
 				$implement_ids = $create_task_ids = $is_xem_ids = $task_implements = array();
 				if(!empty($resultTmp)) {
@@ -415,7 +433,6 @@ class MTasks extends MNested2{
 							$is_xem_ids[] = $val['task_id'];
 				
 						$user_ids[] = $val['user_id'];
-						
 					}
 				}
 
@@ -530,7 +547,6 @@ class MTasks extends MNested2{
 					$val['tooltip'] = implode('<br />', $tooltip);
 				}
 			}
-
 			if(!empty($task_list)) {
 				//allow task
 				$allow_tasks = $deny_task = $drag_task = $click_task = array();
@@ -604,7 +620,8 @@ class MTasks extends MNested2{
 					if(!in_array($val['id'], $click_task))
 						$val['color'] = '#cccccc';
 				}	
-
+				$task_list = array_merge($task_list, array());
+				
 				$result = array('ketqua'=>$task_list, 'deny'=>$deny_task, 'drag_task'=>$drag_task);
 			}else {
 				$deny_task = array();
@@ -649,6 +666,85 @@ class MTasks extends MNested2{
 					$val['prioty'] = $prioty_arr[$val['prioty']];
 			}
 			$this->db->flush_cache();
+		}elseif($options['task'] == 'grid-project') {
+			$user_ids = array();
+			$flagAll = $this->checkAllPermission();
+			if($flagAll == false) {
+				//project liên quan
+				$project_ids = $this->getProjectRelation();	
+			}
+
+			$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
+			$this->db->select("DATE_FORMAT(date_end, '%d-%m-%Y') as end_date", FALSE);
+			$this->db->select("DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date", FALSE);
+			$this->db->select("id, name as text, name, duration, percent, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
+					 ->from($this->_table)
+					 ->where('parent = 0');
+
+			if(!empty($arrParams['col']) && !empty($arrParams['order'])){
+					$col   = $this->_fields[$arrParams['col']];
+					$order = $arrParams['order'];
+						
+					$this->db->order_by($col, $order);
+			}else {
+					$this->db ->order_by("prioty",'ASC')
+					 		  ->order_by('sort', 'ASC');
+			}
+
+			if(!empty($project_ids))
+				$this->where('project_id IN ('.implode(', ', $project_ids).')');
+			
+			if(!empty($arrParams['keywords'])) {
+				$this->db->where('name LIKE \'%'.$arrParams['keywords'].'%\'');
+			}
+
+			$page = (empty($arrParams['start'])) ? 1 : $arrParams['start'];
+			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
+			
+			$query = $this->db->get();
+
+			$result = $query->result_array();
+			if(!empty($result)) {	
+				foreach($result as $val)
+					$task_ids[] = $val['id'];
+
+				// lấy ra user liên quan
+				$resultTmp = $this->getUsersRelation($task_ids); 
+
+				$task_implements = $user_ids = array();
+				if(!empty($resultTmp)) {
+					foreach($resultTmp as $val) {
+						if($val['is_implement'] == 1) {
+							$implement_ids[] = $val['task_id'];
+							$task_implements[$val['task_id']][] = $val['user_id'];
+						}
+
+						$user_ids[] = $val['user_id'];
+					}
+				}
+
+				//danh sách users
+				if(!empty($user_ids)) {
+					$userTable = $this->model_load_model('MTaskUser');
+					$usersInfo = $userTable->getItems(array('user_ids'=>$user_ids));
+				}
+
+
+
+				foreach($result as &$val) {
+					$val['implement_ids'] = $task_implements[$val['id']];
+					if(!empty($val['implement_ids'])){
+						foreach($val['implement_ids'] as $user_id){
+
+							$val['implement'][] = '<strong>'.$usersInfo[$user_id]['username'].'</strong>';
+						}
+
+						$val['implement'] = implode(', ', $val['implement']);
+					}
+
+				}
+			}
+
 		}elseif($options['task'] == 'grid-list') {
 			$user_ids = array();
 			$flagAll = $this->checkAllPermission();
@@ -662,9 +758,17 @@ class MTasks extends MNested2{
 			$this->db->select("DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date", FALSE);
 			$this->db->select("id, name as text, name, duration, percent, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
 					 ->from($this->_table)
-					 ->where('parent = 0')
-					 ->order_by("prioty",'ASC')
-					 ->order_by('sort', 'ASC');
+					 ->where('parent = 0');
+
+			if(!empty($arrParams['col']) && !empty($arrParams['order'])){
+					$col   = $this->_fields[$arrParams['col']];
+					$order = $arrParams['order'];
+						
+					$this->db->order_by($col, $order);
+			}else {
+					$this->db ->order_by("prioty",'ASC')
+					 		  ->order_by('sort', 'ASC');
+			}
 			
 			if(!empty($project_ids))
 				$this->where('project_id IN ('.implode(', ', $project_ids).')');
@@ -708,30 +812,69 @@ class MTasks extends MNested2{
 					}
 					
 					$this->db->where('t.project_id', $project_id)
+							 ->where('t.parent != 0')
 							 ->order_by("t.lft",'ASC');
 
-					if(!empty($arrParams['col']) && !empty($arrParams['order'])){
-						$col   = $this->_fields[$arrParams['col']];
-						$order = $arrParams['order'];
-							
-						$this->db->order_by($col, $order);
-					}else {
-						$this->db->order_by('t.lft', 'ASC');
-					}
-					
 					$query 		   = $this->db->get();
 					$resultTmp     = $query->result_array();	
 					$this->db->flush_cache();
 
 					if(!empty($resultTmp)) {
-						foreach($resultTmp as $val)
-							$result[$val['id']] = $val;
+						foreach($resultTmp as $val){
+							$result[$val['id']] 	   = $val;
+							$task_ids[] 			   = $val['id'];
+						}
+							
 					}
 				}
 			}
-			
+
 			if(!empty($result)) {
+				// lấy ra user liên quan
+				$resultTmp = $this->getUsersRelation($task_ids);
+
+				$task_implements = array();
+				if(!empty($resultTmp)) {
+					foreach($resultTmp as $val) {
+						if($val['is_implement'] == 1) {
+							$implement_ids[] = $val['task_id'];
+							$task_implements[$val['task_id']][] = $val['user_id'];
+						}
+
+						$user_ids[] = $val['user_id'];
+					}
+				}
+
+				//danh sách users
+				if(!empty($user_ids)) {
+					$userTable = $this->model_load_model('MTaskUser');
+					$usersInfo = $userTable->getItems(array('user_ids'=>$user_ids));
+				}
+
 				foreach($result as &$val) {
+					$implement_origin = array();
+
+					if(isset($task_implements[$val['id']]))
+						$implement_origin = $task_implements[$val['id']];
+					
+					$implement 		  = $implement_origin;
+
+					if($val['parent'] > 0)
+						$implement = array_merge($implement, $result[$val['parent']]['implement_ids']);
+				
+					$implement = array_unique($implement);
+					$val['implement_ids'] = $implement;
+					if(!empty($val['implement_ids'])){
+						foreach($val['implement_ids'] as $user_id) {
+							if(in_array($user_id, $implement_origin))
+								$val['implement'][] = '<strong>'.$usersInfo[$user_id]['username'].'</strong>';
+							else
+								$val['implement'][] = $usersInfo[$user_id]['username'];
+						}
+						
+						$val['implement'] = implode(', ', $val['implement']);
+					}
+
 					if($val['trangthai'] == 0 || $val['trangthai'] == 1){	// chưa thực hiên + đang thực hiện
 						$now        = date('Y-m-d', strtotime(date("d-m-Y")));
 						$date_end   = date('Y-m-d', strtotime($val['end_date']));
@@ -1022,6 +1165,21 @@ class MTasks extends MNested2{
 
 	public function deleteItem($id) {
 		$this->removeNode($id);
+	}
+	
+	protected function getUsersRelation($task_ids) {
+		// task replation
+		$this->db->select("r.task_id, r.is_implement, r.is_create_task, r.is_pheduyet, r.is_progress, r.is_xem, r.user_id")
+				 ->from('task_user_relations as r')
+				 ->where('r.task_id IN ('.implode(', ', $task_ids).')');
+		
+		$query = $this->db->get();
+		
+		$resultTmp = $query->result_array();
+		
+		$this->db->flush_cache();
+		
+		return $resultTmp;
 	}
 	
 	// support function

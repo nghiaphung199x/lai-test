@@ -33,26 +33,25 @@
     <div class="cl"></div>
 </div>
 </div>
-<div class="container-fluid">
-	<div class="row manage-table" id="template_list">
+<div class="container-fluid" id="grid_list">
+	<div class="row manage-table">
 		<div class="panel panel-piluku">
-			<div class="panel-heading">
-				<h3 class="panel-title">
-					<span class="tieude"><a href="<?php echo base_url() . 'tasks' ?>">Lược đồ</a></span>
-					<span class="tieude active">Danh sách</span>
-						
-					<span class="panel-options custom">
-					</span>
-				</h3>
-				<i class="fa fa-spinner fa-spin" id="loading_1"></i>
+			<div class="panel-heading" style="border: 0; padding-left: 0;">
+				<div class="gantt_title">
+					<h3 class="panel-title">
+						<span class="tieude"><a href="<?php echo base_url() . 'tasks'; ?>">Lược đồ</a></span>
+						<span class="tieude active">Danh sách</span>
+						<i class="fa fa-spinner fa-spin" id="loading_1"></i>	
+					</h3>
+				</div>
 			</div>
 			<div class="panel-body">
 				<div class="table-responsive">
 					<table class="table detailed-reports table-reports table-bordered table-tree">
 						<thead>
 							<tr align="center" style="font-weight:bold">
-								<td class="hidden-print" style="width: 25px;"><a href="#" class="expand_all">&nbsp</a></td>
-								<td align="center">Tên Dự án/ Công việc</td>
+								<td class="hidden-print" style="width: 50px;" colspan="2"><a href="#" class="expand_all">&nbsp</a></td>
+								<td align="center">Tên Dự án</td>
 								<td align="center" style="width: 8%;">Ưu tiên</td>
 								<td align="center" style="width: 100px;">Bắt đầu</td>
 								<td align="center" style="width: 100px;">Kết thúc</td>
@@ -63,7 +62,8 @@
 						</thead>
 						<tbody>
 							<tr data-tree="1">
-								<td class="hidden-print" style="width: 25px;"><a href="javascript:;" class="expand_all">+</a></td>
+								<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;" class="expand_all">-</a></td>
+								<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;"><i class="fa fa-search"></i></a></td>
 								<td>Dự án Xây dựng Cầu đường Long Giang</td>
 								<td align="center">Trung bình</td>
 								<td align="center">01-09-2016 00:00:00</td>
@@ -71,41 +71,84 @@
 								<td align="center">
 									<div class="clearfix">
 										<div class="progress-bar" style="float: left;">
-										  <div class="bar positive">
+										  <div class="bar positive" style="width: 80%;">
 										    <span>80%</span>
 										  </div>
-										  <div class="bar negative">
+										  <div class="bar negative" style="width: 20%;">
 										    <span></span>
 										  </div>
 										</div>	
 										<div class="progress-text">Còn 2 ngày</div>
 									</div>
-
-									
 								</td>
 								<td align="center">Đang thực hiện</td>
 								<td align="center"><strong>nghiaphung</strong></td>
 							</tr>
-							<tr data-parent="1">
-								<td class="hidden-print" style="width: 25px;"><a href="javascript:;" class="expand_all">&nbsp</a></td>
-								<td>Phân tích thiết kế hệ thống</td>
-								<td align="center">Trung bình</td>
-								<td align="center">01-09-2016 00:00:00</td>
-								<td align="center">10-09-2016 00:00:00</td>
-								<td align="center"></td>
-								<td align="center">Đang thực hiện</td>
-								<td align="center"><strong>tamdao</strong>, nghiaphung</td>
+							<tr data-parent="1" data-content="1" style="display: none;">
+								<td colspan="9" class="innertable" style="display: table-cell;">
+									<div>
+										
+									</div>
+									<table class="table table-bordered">
+										<thead>
+											<tr align="center" style="font-weight:bold">
+												<td align="center">Tên công việc</td>
+												<td align="center" style="width: 8%;">Ưu tiên</td>
+												<td align="center" style="width: 100px;">Bắt đầu</td>
+												<td align="center" style="width: 100px;">Kết thúc</td>
+												<td align="center" style="width: 256px;">Tiến độ</td>
+												<td align="center" style="width: 10%;">Tình trạng</td>
+												<td align="center" style="width: 20%;">Phụ trách</td>			
+											</tr>
+										</thead>
+										<tbody>
+											<tr>	
+												<td>Công việc 1</td>
+												<td align="center">Trung bình</td>
+												<td align="center">01-09-2016 00:00:00</td>
+												<td align="center">10-09-2016 00:00:00</td>
+												<td align="center">
+													<div class="clearfix">
+														<div class="progress-bar" style="float: left;">
+														  <div class="bar positive" style="width: 80%;">
+														    <span>80%</span>
+														  </div>
+														  <div class="bar negative" style="width: 20%;">
+														    <span></span>
+														  </div>
+														</div>	
+														<div class="progress-text">Còn 2 ngày</div>
+													</div>
+												</td>
+												<td align="center">Đang thực hiện</td>
+												<td align="center"><strong>nghiaphung</strong></td>
+											</tr>
+											<tr>	
+												<td>-- Công việc 1.1</td>
+												<td align="center">Trung bình</td>
+												<td align="center">01-09-2016 00:00:00</td>
+												<td align="center">10-09-2016 00:00:00</td>
+												<td align="center">
+													<div class="clearfix">
+														<div class="progress-bar" style="float: left;">
+														  <div class="bar positive" style="width: 80%;">
+														    <span>80%</span>
+														  </div>
+														  <div class="bar negative" style="width: 20%;">
+														    <span></span>
+														  </div>
+														</div>	
+														<div class="progress-text">Còn 2 ngày</div>
+													</div>
+												</td>
+												<td align="center">Đang thực hiện</td>
+												<td align="center"><strong>nghiaphung</strong></td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
 							</tr>
-							<tr data-parent="1">
-								<td class="hidden-print" style="width: 25px;"><a href="javascript:;" class="expand_all">&nbsp</a></td>
-								<td>Xây dựng database</td>
-								<td align="center">Trung bình</td>
-								<td align="center">01-09-2016 00:00:00</td>
-								<td align="center">10-09-2016 00:00:00</td>
-								<td align="center"></td>
-								<td align="center">Đang thực hiện</td>
-								<td align="center">nghiaphung, tamdao</td>
-							</tr>
+						
 						</tbody>
 					</table>
 				</div>
@@ -113,11 +156,18 @@
 		</div>	
 	</div>
 	<div class="pagination hidden-print alternate text-center">
+	    <a href="javascript:;" data-page="1" rel="prev">&lt;</a>
 		<strong>1</strong>
 		<a href="javascript:;" data-page="2">2</a>
 		<a href="javascript:;" data-page="2" rel="next">&gt;</a>	
 	</div>
 </div>
+<style>
+.detailed-reports i.fa-search {
+	font-size: 16px;
+    margin-right: 0;
+}
+</style>
 <script type="text/javascript">
 $( document ).ready(function() {
     $('.table-tree .expand_all').click(function() {

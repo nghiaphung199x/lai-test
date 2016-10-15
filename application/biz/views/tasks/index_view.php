@@ -52,6 +52,7 @@
 		<h3 class="panel-title">
 			<span class="tieude active">Lược đồ</span>
 			<span class="tieude"><a href="<?php echo base_url() . 'tasks/grid'; ?>">Danh sách</a></span>
+			<i class="fa fa-spinner fa-spin" id="loading_1"></i>
 			<span class="panel-options custom" id="gantt_pagination">
 			</span>
 		</h3>
