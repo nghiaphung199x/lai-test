@@ -169,9 +169,7 @@ class MTasks extends MNested2{
 				if(isset($arrParam['progress_task']))
 					$progress_taskArr = $arrParam['progress_task'];
 
-				$created_byArr = array($this->_id_admin);
-
-				$this->do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr, $created_byArr);
+				$this->do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr);
 
 				if(!empty($array)) {
 					$this->db->insert_batch('task_user_relations', $array);
@@ -233,9 +231,7 @@ class MTasks extends MNested2{
 			if(isset($arrParam['progress_task']))
 				$progress_taskArr = $arrParam['progress_task'];
 
-			$created_byArr = array($arrParam['created_by']);
-
-			$array = $this->do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr, $created_byArr);
+			$array = $this->do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr);
 
 			if(!empty($array)) {
 				$this->db->insert_batch('task_user_relations', $array);
@@ -505,9 +501,10 @@ class MTasks extends MNested2{
 
 						$datediff 	= strtotime($now) - strtotime($date_end);
 						$duration 	= floor($datediff/(60*60*24));
-						if($duration <= 0)
+						if($duration <= 0){
+							$val['color'] 		= '#4388c2';
 							$date_time = $date_time . ' (Còn '.abs($duration).' ngày)';
-						else{
+						}else{
 							$date_time 	  = $date_time . ' (Quá '.abs($duration).' ngày)';
 							$val['color'] = '#c90d2f';
 						}
@@ -523,8 +520,8 @@ class MTasks extends MNested2{
 							$date_finish  = $val['finish_date'] . ' (Trễ '.abs($duration).' ngày)';
 							$val['color'] = '#516e47';
 						}elseif($duration > 0){
-							$val['color'] = '#12e841';
-							$date_finish  = $val['finish_date'] . ' (Sớm '.abs($duration).' ngày)';
+							$val['color']  = '#a9fa01';
+							$date_finish   = $val['finish_date'] . ' (Sớm '.abs($duration).' ngày)';
 						}else{
 							$val['color'] = '#12e841';
 							$date_finish  = $val['finish_date'];
@@ -744,11 +741,59 @@ class MTasks extends MNested2{
 						$val['implement'] = implode(', ', $val['implement']);
 					}
 
-					$val['prioty']    = $this->_prioty[$val['id']];
-					$val['trangthai'] = $this->_trangthai[$val['id']];
+					if($val['trangthai'] == 0 || $val['trangthai'] == 1){	// chưa thực hiên + đang thực hiện
+						$now        = date('Y-m-d', strtotime(date("d-m-Y")));
+						$date_end   = date('Y-m-d', strtotime($val['end_date']));
+
+						$datediff 	= strtotime($now) - strtotime($date_end);
+						$duration 	= floor($datediff/(60*60*24));
+						if($duration <= 0){
+							$val['note'] 		= 'Còn '.abs($duration).' ngày';
+							$val['p_color'] 	= '#489ee7';
+							$val['color'] 		= '#4388c2';
+							
+						}else{
+							$val['note']    =  'Quá '.abs($duration).' ngày';
+							$val['p_color'] = '#c90d2f';
+							$val['color']   = '#aa142f';
+						}
+								
+					}elseif($val['trangthai'] == 2) {// hoàn thành
+						$end_date      = date('Y-m-d', strtotime($val['end_date']));
+						$finish_date   = date('Y-m-d', strtotime($val['finish_date']));
+
+						$datediff 	= strtotime($end_date) - strtotime($finish_date);
+						$duration 	= floor($datediff/(60*60*24));
+						
+						if($duration < 0){
+							$val['note']    = 'Trễ '.abs($duration).' ngày';
+							$val['p_color'] = '#516e47';
+							$val['color']   = '#4a6242';
+						
+						}elseif($duration > 0){
+							$val['p_color']   = '#91d20a';
+							$val['color']     = '#a9fa01';
+							$val['note']      = 'Sớm '.abs($duration).' ngày';
+						}else{
+							$val['p_color'] = '#12e841';
+							$val['color']   = '#18c33e';
+						}
+
+					}elseif($val['trangthai'] == 3) {
+						$val['p_color'] = '#bdb720';
+						$val['color']   = '#e0d91c';
+					}elseif($val['trangthai'] == 4) {
+						$val['p_color'] = '#303023';
+						$val['color']   = '#303020';
+					}
+
+					$val['prioty']    = $this->_prioty[$val['prioty']];
+					$val['trangthai'] = $this->_trangthai[$val['trangthai']];
+				
 				}
 			}
 
+		
 		}elseif($options['task'] == 'grid-list') {
 			$user_ids = array();
 			$flagAll = $this->checkAllPermission();
@@ -828,7 +873,6 @@ class MTasks extends MNested2{
 							$result[$val['id']] 	   = $val;
 							$task_ids[] 			   = $val['id'];
 						}
-							
 					}
 				}
 			}
@@ -1261,14 +1305,6 @@ class MTasks extends MNested2{
 					$tmp['is_progress'] = 0;
 		
 		
-				if(in_array($user_id, $created_byArr)){
-					$tmp['is_created'] = 1;
-					if(($key = array_search($user_id, $created_byArr)) !== false) {
-						unset($created_byArr[$key]);
-					}
-				}else
-					$tmp['is_created'] = 0;
-		
 				$tmp['created']				= 		@date("Y-m-d H:i:s");
 		
 				$array[] = $tmp;
@@ -1319,14 +1355,6 @@ class MTasks extends MNested2{
 				}else
 					$tmp['is_progress'] = 0;
 		
-		
-				if(in_array($user_id, $created_byArr)){
-					$tmp['is_created'] = 1;
-					if(($key = array_search($user_id, $created_byArr)) !== false) {
-						unset($created_byArr[$key]);
-					}
-				}else
-					$tmp['is_created'] = 0;
 		
 				$tmp['created']				= 		@date("Y-m-d H:i:s");
 		
@@ -1379,14 +1407,6 @@ class MTasks extends MNested2{
 					$tmp['is_progress'] = 0;
 		
 		
-				if(in_array($user_id, $created_byArr)){
-					$tmp['is_created'] = 1;
-					if(($key = array_search($user_id, $created_byArr)) !== false) {
-						unset($created_byArr[$key]);
-					}
-				}else
-					$tmp['is_created'] = 0;
-		
 				$tmp['created']				= 		@date("Y-m-d H:i:s");
 		
 				$array[] = $tmp;
@@ -1436,15 +1456,6 @@ class MTasks extends MNested2{
 					}
 				}else
 					$tmp['is_progress'] = 0;
-		
-		
-				if(in_array($user_id, $created_byArr)){
-					$tmp['is_created'] = 1;
-					if(($key = array_search($user_id, $created_byArr)) !== false) {
-						unset($created_byArr[$key]);
-					}
-				}else
-					$tmp['is_created'] = 0;
 		
 				$tmp['created']				= 		@date("Y-m-d H:i:s");
 					
@@ -1496,15 +1507,7 @@ class MTasks extends MNested2{
 				if(($key = array_search($user_id, $progress_taskArr)) !== false) {
 					unset($progress_taskArr[$key]);
 				}
-		
-		
-				if(in_array($user_id, $created_byArr)){
-					$tmp['is_created'] = 1;
-					if(($key = array_search($user_id, $created_byArr)) !== false) {
-						unset($created_byArr[$key]);
-					}
-				}else
-					$tmp['is_created'] = 0;
+
 		
 				$tmp['created']				= 		@date("Y-m-d H:i:s");
 					
@@ -1512,66 +1515,6 @@ class MTasks extends MNested2{
 			}
 		}
 		
-		if(!empty($created_byArr)) {
-			foreach($created_byArr as $user_id) {
-				$tmp = array();
-				$tmp['task_id'] = $lastId;
-				$tmp['user_id'] = $user_id;
-					
-				if(in_array($user_id, $xemArr)){
-					$tmp['is_xem'] = 1;
-					if(($key = array_search($user_id, $xemArr)) !== false) {
-						unset($xemArr[$key]);
-					}
-				}else
-					$tmp['is_xem'] = 0;
-					
-					
-				if(in_array($user_id, $implementArr)){
-					$tmp['is_implement'] = 1;
-					if(($key = array_search($user_id, $implementArr)) !== false) {
-						unset($implementArr[$key]);
-					}
-				}else
-					$tmp['is_implement'] = 0;
-					
-				if(in_array($user_id, $create_taskArr)){
-					$tmp['is_create_task'] = 1;
-					if(($key = array_search($user_id, $create_taskArr)) !== false) {
-						unset($create_taskArr[$key]);
-					}
-				}else
-					$tmp['is_create_task'] = 0;
-					
-				if(in_array($user_id, $pheduyet_taskArr)){
-					$tmp['is_pheduyet'] = 1;
-					if(($key = array_search($user_id, $pheduyet_taskArr)) !== false) {
-						unset($pheduyet_taskArr[$key]);
-					}
-				}else
-					$tmp['is_pheduyet'] = 0;
-		
-				if(in_array($user_id, $progress_taskArr)){
-					$tmp['is_progress'] = 1;
-					if(($key = array_search($user_id, $progress_taskArr)) !== false) {
-						unset($progress_taskArr[$key]);
-					}
-				}else
-					$tmp['is_progress'] = 0;
-		
-					
-				$tmp['is_created'] = 1;
-					
-				if(($key = array_search($user_id, $created_byArr)) !== false) {
-					unset($created_byArr[$key]);
-				}
-		
-		
-				$tmp['created']				= 		@date("Y-m-d H:i:s");
-					
-				$array[] = $tmp;
-			}
-		}
 		
 		return $array;
 	}

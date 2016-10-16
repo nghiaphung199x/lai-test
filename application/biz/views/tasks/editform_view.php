@@ -40,21 +40,16 @@
 		//check phê duyệt
 		if(!in_array($user_info['id'], $item['is_pheduyet_parent']))
 			$btnPheduyet = false;
-
-
 	}else{
 		$title = 'Dự án "'.$item['name'].'"';
 		$congviec_title = 'Tên dự án';
-
 		if(in_array('permisson_project', $task_permission)) 
 			$is_create_task = true;
 		
 		$btnPheduyet = false;
 	}
-
 	$trangthai_arr = array('Chưa thực hiện', 'Đang thực hiện', 'Hoàn thành', 'Đóng/dừng', 'Không thực hiện');
 	$prioty_arr    = array('Rất cao', 'Cao', 'Trung bình', 'Thấp', 'Rất thấp');
-
 	if($pheduyet == 1)
 		$btnPheduyet = false;
 	
@@ -100,7 +95,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-12">
+						<div class="col-lg-12" style="display: none;">
 							<div class="form-group">
 								<label for="first_name" class="col-md-3 col-lg-2 control-label">Màu sắc</label>			
 								<div class="col-md-9 col-lg-10">
@@ -191,7 +186,6 @@
 
 <?php 
 			}
-
 		}
 	}
 ?>	
@@ -247,7 +241,6 @@
 
 <?php 
 			}
-
 		}
 	}
 ?>
@@ -310,7 +303,6 @@
 
 <?php 
 			}
-
 		}
 	}
 ?>	
@@ -477,7 +469,6 @@ $( document ).ready(function() {
 	load_list('progress', 1);
 	load_list('file', 1);
 	countTiendo();
-
 	$('#color').colorpicker({color: '<?php echo $color; ?>',});
 	$('#add_navigation .title').click(function(e){
 		if(!$( this ).hasClass( "active" )) {
@@ -489,7 +480,6 @@ $( document ).ready(function() {
 		    $('#add_navigation #'+ content_show).slideDown();
 		}
 	});
-
 	$( "#my-form .arrord_nav ul.list > li" ).click(function() {
 		$( "#my-form .arrord_nav ul.list > li" ).removeClass('active');
 		var data_id = $(this).attr('data-id');

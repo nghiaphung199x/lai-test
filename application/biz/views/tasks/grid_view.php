@@ -61,105 +61,14 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr data-tree="1">
-								<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;" class="expand_all">-</a></td>
-								<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;"><i class="fa fa-search"></i></a></td>
-								<td>Dự án Xây dựng Cầu đường Long Giang</td>
-								<td align="center">Trung bình</td>
-								<td align="center">01-09-2016 00:00:00</td>
-								<td align="center">10-09-2016 00:00:00</td>
-								<td align="center">
-									<div class="clearfix">
-										<div class="progress-bar" style="float: left;">
-										  <div class="bar positive" style="width: 80%;">
-										    <span>80%</span>
-										  </div>
-										  <div class="bar negative" style="width: 20%;">
-										    <span></span>
-										  </div>
-										</div>	
-										<div class="progress-text">Còn 2 ngày</div>
-									</div>
-								</td>
-								<td align="center">Đang thực hiện</td>
-								<td align="center"><strong>nghiaphung</strong></td>
-							</tr>
-							<tr data-parent="1" data-content="1" style="display: none;">
-								<td colspan="9" class="innertable" style="display: table-cell;">
-									<div>
-										
-									</div>
-									<table class="table table-bordered">
-										<thead>
-											<tr align="center" style="font-weight:bold">
-												<td align="center">Tên công việc</td>
-												<td align="center" style="width: 8%;">Ưu tiên</td>
-												<td align="center" style="width: 100px;">Bắt đầu</td>
-												<td align="center" style="width: 100px;">Kết thúc</td>
-												<td align="center" style="width: 256px;">Tiến độ</td>
-												<td align="center" style="width: 10%;">Tình trạng</td>
-												<td align="center" style="width: 20%;">Phụ trách</td>			
-											</tr>
-										</thead>
-										<tbody>
-											<tr>	
-												<td>Công việc 1</td>
-												<td align="center">Trung bình</td>
-												<td align="center">01-09-2016 00:00:00</td>
-												<td align="center">10-09-2016 00:00:00</td>
-												<td align="center">
-													<div class="clearfix">
-														<div class="progress-bar" style="float: left;">
-														  <div class="bar positive" style="width: 80%;">
-														    <span>80%</span>
-														  </div>
-														  <div class="bar negative" style="width: 20%;">
-														    <span></span>
-														  </div>
-														</div>	
-														<div class="progress-text">Còn 2 ngày</div>
-													</div>
-												</td>
-												<td align="center">Đang thực hiện</td>
-												<td align="center"><strong>nghiaphung</strong></td>
-											</tr>
-											<tr>	
-												<td>-- Công việc 1.1</td>
-												<td align="center">Trung bình</td>
-												<td align="center">01-09-2016 00:00:00</td>
-												<td align="center">10-09-2016 00:00:00</td>
-												<td align="center">
-													<div class="clearfix">
-														<div class="progress-bar" style="float: left;">
-														  <div class="bar positive" style="width: 80%;">
-														    <span>80%</span>
-														  </div>
-														  <div class="bar negative" style="width: 20%;">
-														    <span></span>
-														  </div>
-														</div>	
-														<div class="progress-text">Còn 2 ngày</div>
-													</div>
-												</td>
-												<td align="center">Đang thực hiện</td>
-												<td align="center"><strong>nghiaphung</strong></td>
-											</tr>
-										</tbody>
-									</table>
-								</td>
-							</tr>
-						
+
 						</tbody>
 					</table>
 				</div>
 			</div>	
 		</div>	
 	</div>
-	<div class="pagination hidden-print alternate text-center">
-	    <a href="javascript:;" data-page="1" rel="prev">&lt;</a>
-		<strong>1</strong>
-		<a href="javascript:;" data-page="2">2</a>
-		<a href="javascript:;" data-page="2" rel="next">&gt;</a>	
+	<div class="pagination hidden-print alternate text-center">    
 	</div>
 </div>
 <style>
@@ -170,20 +79,22 @@
 </style>
 <script type="text/javascript">
 $( document ).ready(function() {
-    $('.table-tree .expand_all').click(function() {
+	load_list('project-grid', 1);
+	$('body').on('click','.table-tree .expand_all',function(){
         var symbol = $(this).text();
     	var tr_element = $(this).closest('tr');
     	var table_element = $(this).closest('table');
     	var id = tr_element.attr('data-tree');
 
+    	var tr_child = table_element.find('tr[data-parent="'+id+'"]');
   		if(symbol == '+'){
-  			table_element.find('tr[data-parent="'+id+'"]').hide();
+  			tr_child.hide();
   			$(this).text('-');
   		}else{
-  			table_element.find('tr[data-parent="'+id+'"]').show();
+  			tr_child.show();
   			$(this).text('+');
   		}
-    });
+	});
 });
 </script>
 

@@ -194,21 +194,21 @@ function load_template_project_grid(items) {
 			  var start_date   = value.start_date;
 			  var end_date     = value.end_date;
 			  var finish_date  = value.finish_date;
-			  
 			  var name         = value.name;
 			  var duration     = value.duration;
 			  var percent      = value.percent;
-			  
 			  var progress     = value.progress;
 			  var parent       = value.parent;
-			  var color        = value.color;
+			  var p_color      = value.p_color;
+			  var n_color      = value.color;
 			  var implement    = value.implement;
 			  var prioty       = value.prioty;
 			  var trangthai    = value.trangthai;
+			  var note    	   = value.note;
 			  
 			  var positive = parseInt(progress) * 100;
 			  var negative = 100 - positive;
-	  
+			  
 			  string[string.length] = '<tr data-tree="'+id+'">'
 										+'<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;" class="expand_all">-</a></td>'
 										+'<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;"><i class="fa fa-search"></i></a></td>'
@@ -219,18 +219,37 @@ function load_template_project_grid(items) {
 										+'<td align="center">'
 											+'<div class="clearfix">'
 												+'<div class="progress-bar" style="float: left;">'
-												  +'<div class="bar positive" style="width: '+positive+'%;">'
-												    +'<span>80%</span>'
+												  +'<div class="bar positive" style="width: '+positive+'%; background: '+p_color+'">'
+												    +'<span>'+positive+'%</span>'
 												  +'</div>'
-												  +'<div class="bar negative" style="width: '+negative+'%;">'
+												  +'<div class="bar negative" style="width: '+negative+'%; background: '+n_color+'">'
 												    +'<span></span>'
 												  +'</div>'
 												+'</div>'
-												+'<div class="progress-text">Còn 2 ngày</div>'
+												+'<div class="progress-text">'+note+'</div>'
 											+'</div>'
 										+'</td>'
-										+'<td align="center">Đang thực hiện</td>'
-										+'<td align="center"><strong>nghiaphung</strong></td>'
+										+'<td align="center">'+trangthai+'</td>'
+										+'<td align="center">'+implement+'</td>'
+									+'</tr>'
+									+'<tr data-parent="'+id+'" data-content="0" style="display: none;">'
+									+'<td colspan="9" class="innertable" style="display: table-cell;">'
+										+'<table class="table table-bordered" id="task_childs_'+id+'">'
+											+'<thead>'
+												+'<tr align="center" style="font-weight:bold">'
+													+'<td align="center">Tên công việc</td>'
+													+'<td align="center" style="width: 8%;">Ưu tiên</td>'
+													+'<td align="center" style="width: 100px;">Bắt đầu</td>'
+													+'<td align="center" style="width: 100px;">Kết thúc</td>'
+													+'<td align="center" style="width: 256px;">Tiến độ</td>'
+													+'<td align="center" style="width: 10%;">Tình trạng</td>'
+													+'<td align="center" style="width: 20%;">Phụ trách</td>'	
+												+'</tr>'
+											+'</thead>'
+											+'<tbody>'
+												
+											+'</tbody>'
+										+'</table>'
 									+'</tr>';
 
 		 });
@@ -809,6 +828,11 @@ function load_list(keyword, page) {
 			 
 	    }
 	});
+}
+
+function load_task_childs(project_id, page) {
+		var url	        = BASE_URL + 'tasks/taskByProjectList/'+page;
+		var manager_div = 'progress_danhsach';
 }
 
 function add_tiendo() {

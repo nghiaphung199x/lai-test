@@ -85,7 +85,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-12">
+						<div class="col-lg-12" style="display: none;">
 							<div class="form-group">
 								<label for="first_name" class="col-md-3 col-lg-2 control-label">Màu sắc</label>			
 								<div class="col-md-9 col-lg-10">

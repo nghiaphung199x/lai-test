@@ -164,7 +164,7 @@
 	display: none;
 	top: 15px; left: 50%;  
 	transform: translate(-50%, 0);
-	z-index: 29997;
+	z-index: 2999700;
 	height: auto;
 	font-size: 14px;
 }
@@ -374,7 +374,7 @@ display: block;
     top: 36px;
     left: 50%;
     transform: translate(-50%, 0);
-    z-index: 299990;
+    z-index: 29999000;
     height: auto;
     font-size: 14px;
 }
@@ -1222,11 +1222,11 @@ div.overlay1, div.overlay2 {
 }
 
 div.overlay1 {
-	 z-index: 10000;
+	 z-index: 1000000;
 }
 
 div.overlay2 {
-	 z-index: 100000;
+	 z-index: 10000000;
 }
 
 .manage-row-options .email_buttons {
@@ -1296,15 +1296,12 @@ body::-webkit-scrollbar-thumb {
 }
 
 .progress-bar .bar.positive {
-    
-    background: #4388c2;
     left: 0;
     -webkit-animation: animate-positive 1s;
     animation: animate-positive 1s;
 }
 
 .progress-bar .bar.negative {
-    background: #489ee7;
     right: 0;
     width: 20%;
     -webkit-animation: animate-negative 1s;
