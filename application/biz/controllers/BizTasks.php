@@ -1245,9 +1245,12 @@ class BizTasks extends Secure_area
 	public function projectGridList() {
 		$this->load->model('MTasks');
 		$post  = $this->input->post();
-	
-		$items = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'grid-project'));
 
+		$items = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'grid-project'));
+		echo '<pre>';
+		print_r($items);
+		echo '</pre>';
+		die;
 		if(!empty($post)) {
 			$config['base_url'] = base_url() . 'tasks/gridList';
 			$config['total_rows'] = $this->MTasks->countItem($this->_data['arrParam'], array('task'=>'grid-project'));
@@ -1276,7 +1279,7 @@ class BizTasks extends Secure_area
 	}
 	
 	public function test() {
-
+	
 // 		$this->load->model('MTasks');
 // 		$this->MTasks->test();
 		//$date = date('Y-m-d h:i:s', time());

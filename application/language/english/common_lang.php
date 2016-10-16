@@ -431,4 +431,6 @@ $lang['common_item_kits'] = 'Item kits';
 $lang['common_sex'] = 'Gender';
 $lang['common_sale_person'] = 'Sale person';
 
+$lang['task_prioty']   = array('Very hight', 'High', 'Medium', 'Low', 'Very low');
+$lang['task_trangthai']   = array('Unaccomplished', 'Processing', 'Complete', 'Close', 'Unbegun');
 ?>

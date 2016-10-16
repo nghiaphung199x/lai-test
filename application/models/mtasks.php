@@ -22,6 +22,9 @@ class MTasks extends MNested2{
 							'modified' 	 	 => 't.modified',
 							'username' 		 => 'e.username',
 					  );
+		
+		$this->_prioty    = lang('task_prioty');
+		$this->_trangthai = lang('task_trangthai');
 	}
 	
 	
@@ -663,7 +666,7 @@ class MTasks extends MNested2{
 			$result = $query->result_array();
 			if(!empty($result)) {
 				foreach($result as &$val)
-					$val['prioty'] = $prioty_arr[$val['prioty']];
+					$val['prioty'] = $this->_prioty[$val['prioty']];
 			}
 			$this->db->flush_cache();
 		}elseif($options['task'] == 'grid-project') {
@@ -677,7 +680,7 @@ class MTasks extends MNested2{
 			$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
 			$this->db->select("DATE_FORMAT(date_end, '%d-%m-%Y') as end_date", FALSE);
 			$this->db->select("DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date", FALSE);
-			$this->db->select("id, name as text, name, duration, percent, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
+			$this->db->select("id, name, duration, percent, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
 					 ->from($this->_table)
 					 ->where('parent = 0');
 
@@ -729,10 +732,9 @@ class MTasks extends MNested2{
 					$usersInfo = $userTable->getItems(array('user_ids'=>$user_ids));
 				}
 
-
-
 				foreach($result as &$val) {
 					$val['implement_ids'] = $task_implements[$val['id']];
+					$val['implement'] 	   = '';
 					if(!empty($val['implement_ids'])){
 						foreach($val['implement_ids'] as $user_id){
 
@@ -742,6 +744,8 @@ class MTasks extends MNested2{
 						$val['implement'] = implode(', ', $val['implement']);
 					}
 
+					$val['prioty']    = $this->_prioty[$val['id']];
+					$val['trangthai'] = $this->_trangthai[$val['id']];
 				}
 			}
 

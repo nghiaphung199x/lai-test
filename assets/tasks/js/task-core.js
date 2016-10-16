@@ -186,6 +186,62 @@ function load_template_template(items) {
 	 return string;
 }
 
+function load_template_project_grid(items) {
+	if(items.length) {
+		 var string = new Array();
+		 $.each(items, function( index, value ) {
+			  var id      	   = value.id;
+			  var start_date   = value.start_date;
+			  var end_date     = value.end_date;
+			  var finish_date  = value.finish_date;
+			  
+			  var name         = value.name;
+			  var duration     = value.duration;
+			  var percent      = value.percent;
+			  
+			  var progress     = value.progress;
+			  var parent       = value.parent;
+			  var color        = value.color;
+			  var implement    = value.implement;
+			  var prioty       = value.prioty;
+			  var trangthai    = value.trangthai;
+			  
+			  var positive = parseInt(progress) * 100;
+			  var negative = 100 - positive;
+	  
+			  string[string.length] = '<tr data-tree="'+id+'">'
+										+'<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;" class="expand_all">-</a></td>'
+										+'<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;"><i class="fa fa-search"></i></a></td>'
+										+'<td>'+name+'</td>'
+										+'<td align="center">'+prioty+'</td>'
+										+'<td align="center">'+start_date+'</td>'
+										+'<td align="center">'+end_date+'</td>'
+										+'<td align="center">'
+											+'<div class="clearfix">'
+												+'<div class="progress-bar" style="float: left;">'
+												  +'<div class="bar positive" style="width: '+positive+'%;">'
+												    +'<span>80%</span>'
+												  +'</div>'
+												  +'<div class="bar negative" style="width: '+negative+'%;">'
+												    +'<span></span>'
+												  +'</div>'
+												+'</div>'
+												+'<div class="progress-text">Còn 2 ngày</div>'
+											+'</div>'
+										+'</td>'
+										+'<td align="center">Đang thực hiện</td>'
+										+'<td align="center"><strong>nghiaphung</strong></td>'
+									+'</tr>';
+
+		 });
+		 
+		 string = string.join("");	
+	}else
+		var string = '<tr style="cursor: pointer;"><td colspan="9"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
+
+	 return string;
+}
+
 function load_pagination(pagination, template) {
 	var linkTask = BASE_URL + 'tasks/'
 	if(jQuery.type(pagination) == 'object') {
@@ -665,6 +721,14 @@ function load_list(keyword, page) {
 			var elementSort = $('#project_list th.header');
 			data.keywords   = $.trim($('#s_keywords').val());
 	    }
+	    
+	    case 'project-grid' : {
+	    	var manager_div = 'project_grid_list';
+			var url	        = BASE_URL + 'tasks/projectGridList/'+page;
+	
+			var elementSort = $('#project_grid_table th.header');
+			data.keywords   = $.trim($('#s_keywords').val());
+	    }
 	}
 
 	// get field sort
@@ -725,6 +789,12 @@ function load_list(keyword, page) {
 			    case 'project' : {
 			    	 var html_string = load_template_project(items);
 					 var pagination = load_pagination(pagination, 'gantt');	 
+					 break;
+			    }
+			    
+			    case 'project-grid' : {
+			    	 var html_string = load_template_project_grid(items);
+					 var pagination = load_pagination(pagination);	 
 					 break;
 			    }
 			}

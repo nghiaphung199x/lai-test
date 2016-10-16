@@ -24,6 +24,7 @@ function lang($line, $for = '', $attributes = array())
 			$langfile = substr($orig_line,0,strrpos($orig_line,'_')).'_lang.php';
 		
 			$langpath = APPPATH.'language/'.$CI->config->item('language').'/'.$langfile;
+			
 			if (!file_exists($langpath))
 			{
 				$log_message = "Couldn't load language file $langfile CURRENT_URL: ".current_url().' REQUEST '.var_export($_REQUEST, TRUE);

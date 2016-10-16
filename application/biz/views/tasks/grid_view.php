@@ -33,7 +33,7 @@
     <div class="cl"></div>
 </div>
 </div>
-<div class="container-fluid" id="grid_list">
+<div class="container-fluid" id="project_grid_list">
 	<div class="row manage-table">
 		<div class="panel panel-piluku">
 			<div class="panel-heading" style="border: 0; padding-left: 0;">
@@ -47,7 +47,7 @@
 			</div>
 			<div class="panel-body">
 				<div class="table-responsive">
-					<table class="table detailed-reports table-reports table-bordered table-tree">
+					<table class="table detailed-reports table-reports table-bordered table-tree" id="project_grid_table">
 						<thead>
 							<tr align="center" style="font-weight:bold">
 								<td class="hidden-print" style="width: 50px;" colspan="2"><a href="#" class="expand_all">&nbsp</a></td>

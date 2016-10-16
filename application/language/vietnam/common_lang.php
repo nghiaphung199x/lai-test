@@ -487,4 +487,6 @@ $lang['common_history_stock_out'] = 'Lịch sử xuất kho';
 $lang['common_total_price'] = 'Tổng giá tiền';
 $lang['common_approved'] = 'Đã phê duyệt';
 
+$lang['task_prioty']   = array('Rất cao', 'Cao', 'Trung bình', 'Thấp', 'Rất thấp');
+$lang['task_trangthai']   = array('Chưa thực hiện', 'Đang thực hiện', 'Hoàn thành', 'Đóng/dừng', 'Không thực hiện');
 ?>
