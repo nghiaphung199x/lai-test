@@ -1269,7 +1269,34 @@ class BizTasks extends Secure_area
 	}
 	
 	public function taskByProjectList() {
+		$this->load->model('MTasks');
+		$post  = $this->input->post();
 		
+		if(!empty($post)) {
+			$project_id = $this->_data['arrParam']['project_id'];
+			$this->_data['arrParam']['project'] = $project = $this->MTasks->getItem(array('id'=>$project_id), array('task'=>'information'));
+
+			$config['base_url'] = base_url() . 'tasks/taskByProjectList';
+			$config['total_rows'] = $this->MTasks->countItem($this->_data['arrParam'], array('task'=>'task-by-project'));
+		 
+			$config['per_page'] = $this->_paginator['per_page'];
+			$config['uri_segment'] = $this->_paginator['uri_segment'];
+			$config['use_page_numbers'] = TRUE;
+		
+			$this->load->library("pagination");
+			$this->pagination->initialize($config);
+			$this->pagination->createConfig('front-end');
+		
+			$pagination = $this->pagination->create_ajax();
+		
+			$this->_data['arrParam']['start'] = $this->uri->segment(3);
+			$result  = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'task-by-project'));
+			$project = $result['project'];
+			$items   = $result['ketqua'];
+		
+			$result = array('count'=> $config['total_rows'], 'items'=>$items, 'project'=>$project,'pagination'=>$pagination);
+			echo json_encode($result);
+		}
 	}
 	
 	public function grid() {

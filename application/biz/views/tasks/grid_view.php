@@ -68,8 +68,6 @@
 			</div>	
 		</div>	
 	</div>
-	<div class="pagination hidden-print alternate text-center">    
-	</div>
 </div>
 <style>
 .detailed-reports i.fa-search {

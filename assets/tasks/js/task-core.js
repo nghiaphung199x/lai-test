@@ -186,6 +186,60 @@ function load_template_template(items) {
 	 return string;
 }
 
+function load_template_task_child($items) {
+	if(items.length) {
+		 var string = new Array();
+		 $.each(items, function( index, value ) {
+			  var id      	   = value.id;
+			  var start_date   = value.start_date;
+			  var end_date     = value.end_date;
+			  var finish_date  = value.finish_date;
+			  var name         = value.name;
+			  var duration     = value.duration;
+			  var percent      = value.percent;
+			  var progress     = value.progress;
+			  var parent       = value.parent;
+			  var p_color      = value.p_color;
+			  var n_color      = value.color;
+			  var implement    = value.implement;
+			  var prioty       = value.prioty;
+			  var trangthai    = value.trangthai;
+			  var note    	   = value.note;
+			  
+			  var positive = parseFloat(progress) * 100;
+			  var negative = 100 - positive;
+	 
+			  string[string.length] = '<tr>'
+										+'<td>'+name+'</td>'
+										+'<td align="center">'+prioty+'</td>'
+										+'<td align="center">'+start_date+'</td>'
+										+'<td align="center">'+end_date+'</td>'
+										+'<td align="center">'
+											+'<div class="clearfix">'
+												+'<div class="progress-bar" style="float: left;">'
+												  +'<div class="bar positive" style="width: '+positive+'%; background: '+p_color+'">'
+												    +'<span>'+positive+'%</span>'
+												  +'</div>'
+												  +'<div class="bar negative" style="width: '+negative+'%; background: '+n_color+'">'
+												    +'<span></span>'
+												  +'</div>'
+												+'</div>'
+												+'<div class="progress-text">'+note+'</div>'
+											+'</div>'
+										+'</td>'
+										+'<td align="center">'+trangthai+'</td>'
+										+'<td align="center">'+implement+'</td>'
+									+'</tr>';
+
+		 });
+		 
+		 string = string.join("");	
+	}else
+		var string = '<tr style="cursor: pointer;"><td colspan="7"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
+
+	 return string;
+}
+
 function load_template_project_grid(items) {
 	if(items.length) {
 		 var string = new Array();
@@ -206,9 +260,9 @@ function load_template_project_grid(items) {
 			  var trangthai    = value.trangthai;
 			  var note    	   = value.note;
 			  
-			  var positive = parseInt(progress) * 100;
+			  var positive = parseFloat(progress) * 100;
 			  var negative = 100 - positive;
-			  
+	 
 			  string[string.length] = '<tr data-tree="'+id+'">'
 										+'<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;" class="expand_all">-</a></td>'
 										+'<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;"><i class="fa fa-search"></i></a></td>'
@@ -831,8 +885,47 @@ function load_list(keyword, page) {
 }
 
 function load_task_childs(project_id, page) {
-		var url	        = BASE_URL + 'tasks/taskByProjectList/'+page;
-		var manager_div = 'progress_danhsach';
+	var url	        = BASE_URL + 'tasks/taskByProjectList/'+page;
+	var table 	    = $('#task_childs_'+project_id);
+	var elementSort = $('#task_childs_'+project_id+' th.header');
+
+	// get field sort
+	if(elementSort.length){
+		if(elementSort.hasClass('headerSortUp')){
+			data.col   = elementSort.attr('data-field');
+			data.order = 'ASC';
+		}else {
+			data.col   = elementSort.attr('data-field');
+			data.order = 'DESC';
+		}
+	}
+
+	$.ajax({
+		type: "POST",
+		url: url,
+		data: data,
+		beforeSend: function() {
+        },
+		success: function(string){
+			var result = $.parseJSON(string);
+			var items = result.items; 
+			var project = result.project;
+			var pagination = result.pagination;
+
+			var html_string = load_template_task_child(items);
+			var pagination = load_pagination(pagination);	 
+
+			 $('#'+manager_div+' .table tbody').html(html_string);
+			 if($('#'+manager_div+' .text-center').length)
+				 $('#'+manager_div+' .text-center').replaceWith( pagination );
+			 else
+				 $('#'+manager_div).append(pagination);
+			 
+			 
+	    }
+	});
+
+
 }
 
 function add_tiendo() {

@@ -29,8 +29,7 @@ class MTasks extends MNested2{
 	
 	
 	public function countItem($arrParams = null, $options = null) {
-		if($options == null || $options['task'] == 'grid-list' || $options['task'] == 'grid-project') {
-			$user_ids = array();
+		if($options == null || $options['task'] == 'grid-project') {
 			$flagAll = $this->checkAllPermission();
 			
 			if($flagAll == false) {
@@ -48,7 +47,8 @@ class MTasks extends MNested2{
 				$result = $query->row()->totalItem;
 			}else {
 				$this->db -> select('COUNT(t.id) AS totalItem')
-						  -> from($this->_table . ' AS t');
+						  -> from($this->_table . ' AS t')
+						  -> where('t.parent = 0');
 				
 				if(!empty($arrParams['keywords'])) {
 					$this->db->where('t.name LIKE \'%'.$arrParams['keywords'].'%\'');
@@ -72,6 +72,30 @@ class MTasks extends MNested2{
 			$result = $query->row()->totalItem;
 				
 			$this->db->flush_cache();
+		}elseif ($options['task'] == 'task-by-project') {
+			$flagAll = $this->checkAllPermission();
+			if($flagAll == false) {
+				//project liên quan
+				$sql = 'SELECT COUNT(t.id) AS total_item
+						FROM ' . $this->db->dbprefix($this->_table).' AS t
+						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')
+						AND t.project_id = ' . (int)$arrParams['project_id'] 
+					. ' AND t.id != ' . (int)$arrParams['project_id'];
+
+				$query = $this->db->query($sql);
+				$result = $query->row()->totalItem;
+			}else {
+				$this->db -> select('COUNT(t.id) AS totalItem')
+						  -> from($this->_table . ' AS t')
+				  		  -> where('t.project_id', $arrParams['project_id'])
+				  		  -> where('t.id != ' . $arrParams['project_id']);
+			}
+			
+			$query = $this->db->get();
+				
+			$result = $query->row()->totalItem;
+				
+			$this->db->flush_cache();		  
 		}
 		return $result;
 
@@ -749,13 +773,13 @@ class MTasks extends MNested2{
 						$duration 	= floor($datediff/(60*60*24));
 						if($duration <= 0){
 							$val['note'] 		= 'Còn '.abs($duration).' ngày';
-							$val['p_color'] 	= '#489ee7';
-							$val['color'] 		= '#4388c2';
+							$val['p_color'] 	= '#4388c2';
+							$val['color'] 		= '#489ee7';
 							
 						}else{
 							$val['note']    =  'Quá '.abs($duration).' ngày';
-							$val['p_color'] = '#c90d2f';
-							$val['color']   = '#aa142f';
+							$val['p_color'] = '#aa142f';
+							$val['color']   = '#c90d2f';
 						}
 								
 					}elseif($val['trangthai'] == 2) {// hoàn thành
@@ -767,24 +791,24 @@ class MTasks extends MNested2{
 						
 						if($duration < 0){
 							$val['note']    = 'Trễ '.abs($duration).' ngày';
-							$val['p_color'] = '#516e47';
-							$val['color']   = '#4a6242';
+							$val['p_color'] = '#4a6242';
+							$val['color']   = '#516e47';
 						
 						}elseif($duration > 0){
-							$val['p_color']   = '#91d20a';
-							$val['color']     = '#a9fa01';
+							$val['p_color']   = '#a9fa01';
+							$val['color']     = '#91d20a';
 							$val['note']      = 'Sớm '.abs($duration).' ngày';
 						}else{
-							$val['p_color'] = '#12e841';
-							$val['color']   = '#18c33e';
+							$val['p_color'] = '#18c33e';
+							$val['color']   = '#12e841';
 						}
 
 					}elseif($val['trangthai'] == 3) {
-						$val['p_color'] = '#bdb720';
-						$val['color']   = '#e0d91c';
+						$val['p_color'] = '#e0d91c';
+						$val['color']   = '#bdb720';
 					}elseif($val['trangthai'] == 4) {
-						$val['p_color'] = '#303023';
-						$val['color']   = '#303020';
+						$val['p_color'] = '#303020';
+						$val['color']   = '#303023';
 					}
 
 					$val['prioty']    = $this->_prioty[$val['prioty']];
@@ -794,94 +818,50 @@ class MTasks extends MNested2{
 			}
 
 		
-		}elseif($options['task'] == 'grid-list') {
-			$user_ids = array();
-			$flagAll = $this->checkAllPermission();
-			if($flagAll == false) {
-				//project liên quan
-				$project_ids = $this->getProjectRelation();	
-			}
-			
+		}
+		elseif($options['task'] == 'task-by-project') {
+			$task_ids = $this->getTasksIdsByProject($arrParams['project']);
 			$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
 			$this->db->select("DATE_FORMAT(date_end, '%d-%m-%Y') as end_date", FALSE);
 			$this->db->select("DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date", FALSE);
-			$this->db->select("id, name as text, name, duration, percent, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
-					 ->from($this->_table)
-					 ->where('parent = 0');
+			$this->db->select("id, name, duration, percent, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
+					 ->from($this->_table);
 
-			if(!empty($arrParams['col']) && !empty($arrParams['order'])){
-					$col   = $this->_fields[$arrParams['col']];
-					$order = $arrParams['order'];
-						
-					$this->db->order_by($col, $order);
+			if($task_ids == 'all') {
+				$this->db->where('project_id', $arrParams['project_id']);	
 			}else {
-					$this->db ->order_by("prioty",'ASC')
-					 		  ->order_by('sort', 'ASC');
+				$this->db->where('id IN ' . implode(', ', $task_ids));	
 			}
-			
-			if(!empty($project_ids))
-				$this->where('project_id IN ('.implode(', ', $project_ids).')');
-			
-			if(!empty($arrParams['project_keywords'])) {
-				$this->db->where('name LIKE \'%'.$arrParams['project_keywords'].'%\'');
+
+		    if(!empty($arrParams['col']) && !empty($arrParams['order'])){
+				$col   = $this->_fields[$arrParams['col']];
+				$order = $arrParams['order'];
+					
+				$this->db->order_by($col, $order);
+			}else {
+				$this->db->order_by("lft",'ASC');
 			}
+
+			$query 	   = $this->db->get();
 			
-			$page = (empty($arrParams['start'])) ? 1 : $arrParams['start'];
-			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
-			
-			$query = $this->db->get();
-				
-			$project_ids = array();
-				
 			$resultTmp = $query->result_array();
-			
-			$this->db->flush_cache();
-			
-			$project_items = array();
+
+			$result    = array();
+
 			if(!empty($resultTmp)) {
-				foreach($resultTmp as $val){
-					$project_ids[]  		   = $val['id'];
-					$project_items[$val['id']] = $val;
-					$task_ids[] 			   = $val['id'];
-				}	
-			}
-
-			$result = array();
-			if(!empty($project_ids)) {
-				foreach($project_ids as $project_id) {
-					$result[$project_id] = $project_items[$project_id];
-					$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);
-					$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date", FALSE);
-					$this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as finish_date", FALSE);
-					$this->db->select("t.id, t.name, t.name, t.duration, t.percent, t.progress, t.level, t.parent, t.type, t.project_id, t.lft, t.rgt, t.created, t.pheduyet, t.color, t.prioty, t.trangthai")
-							 ->from($this->_table . ' AS t');	
-					
-					if($flagAll == false) {
-						$this->db->join('task_user_relations as r', 't.id = r.task_id AND r.user_id = ' . $this->_id_admin);
-					}
-					
-					$this->db->where('t.project_id', $project_id)
-							 ->where('t.parent != 0')
-							 ->order_by("t.lft",'ASC');
-
-					$query 		   = $this->db->get();
-					$resultTmp     = $query->result_array();	
-					$this->db->flush_cache();
-
-					if(!empty($resultTmp)) {
-						foreach($resultTmp as $val){
-							$result[$val['id']] 	   = $val;
-							$task_ids[] 			   = $val['id'];
-						}
-					}
+				$task_ids = array();
+				foreach($resultTmp as $val) {
+					$result[$val['id']] = $val;
+					$task_ids[] = $val['id'];
 				}
 			}
 
 			if(!empty($result)) {
 				// lấy ra user liên quan
-				$resultTmp = $this->getUsersRelation($task_ids);
-
-				$task_implements = array();
+				$resultTmp = $this->getUsersRelation($task_ids); 
+	
+				$user_ids = array();
+				$task_implements = $user_ids = array();
 				if(!empty($resultTmp)) {
 					foreach($resultTmp as $val) {
 						if($val['is_implement'] == 1) {
@@ -899,17 +879,18 @@ class MTasks extends MNested2{
 					$usersInfo = $userTable->getItems(array('user_ids'=>$user_ids));
 				}
 
+
 				foreach($result as &$val) {
 					$implement_origin = array();
 
 					if(isset($task_implements[$val['id']]))
 						$implement_origin = $task_implements[$val['id']];
-					
+
 					$implement 		  = $implement_origin;
 
 					if($val['parent'] > 0)
 						$implement = array_merge($implement, $result[$val['parent']]['implement_ids']);
-				
+
 					$implement = array_unique($implement);
 					$val['implement_ids'] = $implement;
 					if(!empty($val['implement_ids'])){
@@ -958,10 +939,16 @@ class MTasks extends MNested2{
 					}elseif($val['trangthai'] == 4) {
 						$val['color'] = '#303020';
 					}
-				}
+
+				}	
+
+				$project = $result[$arrParams['project_id']];
+				unset($result[$arrParams['project_id']]);
+				$ketqua = $result;
+				$result = array('project'=>$project, 'ketqua'=>$ketqua);
 			}
+
 		}
-		
 		return $result;
 	}
 	
@@ -997,8 +984,12 @@ class MTasks extends MNested2{
 		if($options == null) {
 			$this->db->select("t.id")
 					->from($this->_table . ' as t')
-					->where('t.lft >= ' . $arrParam['lft'] . ' AND t.rgt <= '.$arrParam['rgt'] )
 					->where('t.project_id', $arrParam['project_id']);
+			
+			if($options['type'] == 'un-root') 
+				$this->db->where('t.lft > ' . $arrParam['lft'] . ' AND t.rgt < '.$arrParam['rgt'] );
+			else
+				$this->db->where('t.lft >= ' . $arrParam['lft'] . ' AND t.rgt <= '.$arrParam['rgt'] );
 			
 			$query = $this->db->get();	
 			$resultTmp =  $query->result_array();
@@ -1063,7 +1054,7 @@ class MTasks extends MNested2{
 		return $result;
 	}
 
-	public function getItem($arrParam = null, $options = null){
+	public function getItem($arrParams = null, $options = null){
 		if($options['task'] == 'public-info') {
 			$this->db->select("t.*")
 					 ->from($this->_table . ' as t')
@@ -1157,6 +1148,14 @@ class MTasks extends MNested2{
 					}
 				}
 			}
+		}elseif($options['task'] == 'information') {
+			$this->db->select("t.*")
+					 ->from($this->_table . ' as t')
+					 ->where('t.id',$arrParams['id']);
+
+			$query = $this->db->get();
+			$result =  $query->result_array();
+			$this->db->flush_cache();
 		}
 	
 		return $result;
@@ -1250,6 +1249,7 @@ class MTasks extends MNested2{
 		
 		return $project_ids;
 	}
+	
 	protected function checkAllPermission() {
 		$flagAll = true;
 		if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission)))
@@ -1258,6 +1258,33 @@ class MTasks extends MNested2{
 		return $flagAll;
 	}
 	
+	protected function getTasksIdsByProject($project) {
+		if(in_array('update_all_task', $this->_task_permission))
+			$task_ids = 'all';
+		elseif(in_array('update_brand_task', $this->_task_permission)) {
+			$task_ids = $this->getIds(array('lft'=>$project['lft'], 'rgt'=>$project['rgt'], 'project_id'=>$project['id']));
+		}else {
+			$this->db->select("t.id")
+					 ->from($this->_table . ' AS t')
+					 ->join('task_user_relations AS r', 't.id = r.task_id AND t.project_id = ' . $project['id'] . ' AND r.user_id = ' . $this->_id_admin, 'left')
+					 ->where('r.is_create_task = 1');
+
+		    $query 	   = $this->db->get();
+			$resultTmp = $query->result_array();
+			$task_ids = array();
+			if(!empty($resultTmp)) {
+				foreach ($resultTmp as $value) {
+					$ids[] = $value['id'];
+				}
+
+				$task_ids = $this->getIds(array('lft'=>$project['lft'], 'rgt'=>$project['rgt'], 'project_id'=>$project['id']));
+			}
+
+		}
+		
+		return $task_ids;
+	}
+
 	protected function do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr, $created_byArr) {
 		$array = array();
 		if(isset($xemArr)) {
