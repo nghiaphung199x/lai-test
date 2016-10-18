@@ -1291,6 +1291,12 @@ body::-webkit-scrollbar-thumb {
     float: left;
 }
 
+.progress-bar span {
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, 0);
+}
+
 .progress-text {
 	float: left; height: 18px; line-height: 18px; margin-left: 10px;
 }
@@ -1330,6 +1336,14 @@ body::-webkit-scrollbar-thumb {
 .progress-bar .bar.negative span {
     right: 0;
     color: #fff;
+}
+
+#template_task_list .panel-heading {
+	padding-left: 0;
+}
+
+#template_task_list .panel-body {
+	padding: 0;
 }
 
 @-webkit-keyframes animate-positive {

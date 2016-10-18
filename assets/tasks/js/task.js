@@ -65,12 +65,6 @@
 	    });
 		
 		// gantt
-		//tooltip
-
-//		gantt.templates.tooltip_text = function(start,end,task){
-//			return task.tooltip;
-//		};
-		
 		gantt.showLightbox = function(id) {
 		    taskId = id;
 
@@ -412,6 +406,7 @@
 	}
 	
 	function congviecData(data) {
+		console.log(data);
 		if(data.flag == 'false') {
 			$.each(data.errors, function( index, value ) {	
 				element = $( '#my-form span[for="'+index+'"]' );

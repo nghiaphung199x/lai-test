@@ -148,7 +148,7 @@ function load_template_project(items) {
 										+'<td class="center" style="padding: 4px;">'
 											+'<a href="javascript:;" onclick="edit_congviec('+id+');">Sửa</a>'
 										+'</td>'
-									+' </tr>	';
+									+' </tr>	'; 
 		 });
 		 
 		 string = string.join("");	
@@ -186,7 +186,7 @@ function load_template_template(items) {
 	 return string;
 }
 
-function load_template_task_child($items) {
+function load_template_task_child(items) {
 	if(items.length) {
 		 var string = new Array();
 		 $.each(items, function( index, value ) {
@@ -195,6 +195,7 @@ function load_template_task_child($items) {
 			  var end_date     = value.end_date;
 			  var finish_date  = value.finish_date;
 			  var name         = value.name;
+			  var space		   = value.space;
 			  var duration     = value.duration;
 			  var percent      = value.percent;
 			  var progress     = value.progress;
@@ -210,7 +211,7 @@ function load_template_task_child($items) {
 			  var negative = 100 - positive;
 	 
 			  string[string.length] = '<tr>'
-										+'<td>'+name+'</td>'
+										+'<td>'+space+name+'</td>'
 										+'<td align="center">'+prioty+'</td>'
 										+'<td align="center">'+start_date+'</td>'
 										+'<td align="center">'+end_date+'</td>'
@@ -218,11 +219,10 @@ function load_template_task_child($items) {
 											+'<div class="clearfix">'
 												+'<div class="progress-bar" style="float: left;">'
 												  +'<div class="bar positive" style="width: '+positive+'%; background: '+p_color+'">'
-												    +'<span>'+positive+'%</span>'
 												  +'</div>'
 												  +'<div class="bar negative" style="width: '+negative+'%; background: '+n_color+'">'
-												    +'<span></span>'
 												  +'</div>'
+												  +'<span>'+positive+'%</span>'
 												+'</div>'
 												+'<div class="progress-text">'+note+'</div>'
 											+'</div>'
@@ -274,11 +274,10 @@ function load_template_project_grid(items) {
 											+'<div class="clearfix">'
 												+'<div class="progress-bar" style="float: left;">'
 												  +'<div class="bar positive" style="width: '+positive+'%; background: '+p_color+'">'
-												    +'<span>'+positive+'%</span>'
 												  +'</div>'
 												  +'<div class="bar negative" style="width: '+negative+'%; background: '+n_color+'">'
-												    +'<span></span>'
 												  +'</div>'
+												  +'<span>'+positive+'%</span>'
 												+'</div>'
 												+'<div class="progress-text">'+note+'</div>'
 											+'</div>'
@@ -826,6 +825,7 @@ function load_list(keyword, page) {
 			close_loading(keyword);
 			var result = $.parseJSON(string);
 			var items = result.items; 
+			//console.log(items);
 			var pagination = result.pagination;
 
 			switch (keyword){
@@ -885,6 +885,8 @@ function load_list(keyword, page) {
 }
 
 function load_task_childs(project_id, page) {
+	var data = new Object();
+    data.project_id = project_id;
 	var url	        = BASE_URL + 'tasks/taskByProjectList/'+page;
 	var table 	    = $('#task_childs_'+project_id);
 	var elementSort = $('#task_childs_'+project_id+' th.header');
@@ -909,22 +911,13 @@ function load_task_childs(project_id, page) {
 		success: function(string){
 			var result = $.parseJSON(string);
 			var items = result.items; 
+			console.log(items);
 			var project = result.project;
-			var pagination = result.pagination;
-
+	
 			var html_string = load_template_task_child(items);
-			var pagination = load_pagination(pagination);	 
-
-			 $('#'+manager_div+' .table tbody').html(html_string);
-			 if($('#'+manager_div+' .text-center').length)
-				 $('#'+manager_div+' .text-center').replaceWith( pagination );
-			 else
-				 $('#'+manager_div).append(pagination);
-			 
-			 
+			table.find('tbody').html(html_string);
 	    }
 	});
-
 
 }
 

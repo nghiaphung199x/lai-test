@@ -281,7 +281,8 @@ class BizTasks extends Secure_area
 	}
 
 	public function editcongviec() {
-		$post = $this->input->post();
+		$arrParam   = $this->_data['arrParam'];
+		$post 	    = $this->input->post();
 		$this->load->library('MY_System_Info');
 		$info 		= new MY_System_Info();
 		$this->_data['user_info'] = $user_info = $info->getInfo();
@@ -295,7 +296,8 @@ class BizTasks extends Secure_area
 			
 		$arrParam = $this->_data['arrParam'];
 		$item = $this->MTasks->getItem(array('id'=>$arrParam['id']), array('task'=>'public-info', 'brand'=>'full'));
-
+	
+	
 		if(!empty($post)) {
 			$this->load->library("form_validation");
 			$this->form_validation->set_rules('name', 'Tiêu đề', 'required|max_length[255]');
@@ -1271,10 +1273,10 @@ class BizTasks extends Secure_area
 	public function taskByProjectList() {
 		$this->load->model('MTasks');
 		$post  = $this->input->post();
-		
+
 		if(!empty($post)) {
 			$project_id = $this->_data['arrParam']['project_id'];
-			$this->_data['arrParam']['project'] = $project = $this->MTasks->getItem(array('id'=>$project_id), array('task'=>'information'));
+			/*$this->_data['arrParam']['project'] = $project = $this->MTasks->getItem(array('id'=>$project_id), array('task'=>'information'));
 
 			$config['base_url'] = base_url() . 'tasks/taskByProjectList';
 			$config['total_rows'] = $this->MTasks->countItem($this->_data['arrParam'], array('task'=>'task-by-project'));
@@ -1289,12 +1291,14 @@ class BizTasks extends Secure_area
 		
 			$pagination = $this->pagination->create_ajax();
 		
-			$this->_data['arrParam']['start'] = $this->uri->segment(3);
+			$this->_data['arrParam']['start'] = $this->uri->segment(3);*/
 			$result  = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'task-by-project'));
 			$project = $result['project'];
 			$items   = $result['ketqua'];
+			$items   = array_merge($items, array());
 		
-			$result = array('count'=> $config['total_rows'], 'items'=>$items, 'project'=>$project,'pagination'=>$pagination);
+			$result = array('items'=>$items, 'project'=>$project);
+
 			echo json_encode($result);
 		}
 	}
@@ -1304,9 +1308,22 @@ class BizTasks extends Secure_area
 	}
 	
 	public function test() {
-	
-// 		$this->load->model('MTasks');
-// 		$this->MTasks->test();
-		//$date = date('Y-m-d h:i:s', time());
+		$this->load->model('MTasks');
+		$this->MTasks->test();
+
 	}
+	
+	public function valid_date($str){
+		$regular_string = '/^(0[1-9]|[1-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-[0-9]{4})$/';
+		if (preg_match($regular_string, $str))
+		{
+			return true;
+		}else{
+			
+			$this->form_validation->set_message('valid_date', '%s phải mang định dạng m-y-D');
+			return false;
+		}
+
+	}
+	
 }

@@ -88,7 +88,10 @@ $( document ).ready(function() {
   		if(symbol == '+'){
   			tr_child.hide();
   			$(this).text('-');
+
   		}else{
+  			load_task_childs(id, 1);
+  			
   			tr_child.show();
   			$(this).text('+');
   		}

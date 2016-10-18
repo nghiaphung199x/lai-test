@@ -1,5 +1,5 @@
 $( document ).ready(function() {
-	// xử lý checkbox
+	// handle checkbox
 	$('body').on('click','.my-table .check_tatca',function(){
 		  var checkbox = $(this).closest('th').find('input[type="checkbox"]'); 
 		  if (checkbox.prop('checked') == true){  
@@ -157,7 +157,7 @@ function del_template_task(obj) {
 		parent_item.remove();
 	}
 		
-	// remove trên table
+	// remove on table
 	$(obj).closest('tr').remove();
 	var child_ids = $(obj).attr('data-child');
 	if (child_ids) {

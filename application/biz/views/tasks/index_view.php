@@ -7,11 +7,20 @@
 	<link rel="stylesheet" href="<?php echo base_url();?>assets/tasks/css/responsive.css" type="text/css" media="screen" />
 
 	<script src="<?php echo base_url();?>assets/scripts/tasks/codebase/dhtmlxgantt.js" type="text/javascript" charset="utf-8"></script>
-	<!-- 
-		<script src="<?php echo base_url();?>assets/scripts/tasks/codebase/ext/dhtmlxgantt_tooltip.js" type="text/javascript" charset="utf-8"></script>
-	 -->
+
+
 	<script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/task-core.js" ></script>
 	<script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/task.js" ></script>
+<?php if($tooltip == true): ?>
+    <script src="<?php echo base_url();?>assets/scripts/tasks/codebase/ext/dhtmlxgantt_tooltip.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+	$( document ).ready(function() {
+		gantt.templates.tooltip_text = function(start,end,task){
+			return task.tooltip;
+		};
+	});
+	</script>
+<?php endif;?>
 	<div class="clearfix" id="task_control">
 		<div class="pull-left">
 			<form action="" id="search_form" autocomplete="off" class="form-inline" method="post" accept-charset="utf-8">

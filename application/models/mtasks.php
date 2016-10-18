@@ -328,7 +328,7 @@ class MTasks extends MNested2{
 					->from('tasks as t')
 					->where('t.lft >= ' . $arrParams['lft'] . ' AND rgt <= ' . $arrParams['rgt'])
 					->where('t.project_id', $arrParams['project_id']);
-			
+
 			$query = $this->db->get();
 			$result = $query->result_array();
 			$this->db->flush_cache();
@@ -816,8 +816,6 @@ class MTasks extends MNested2{
 				
 				}
 			}
-
-		
 		}
 		elseif($options['task'] == 'task-by-project') {
 			$task_ids = $this->getTasksIdsByProject($arrParams['project']);
@@ -833,12 +831,14 @@ class MTasks extends MNested2{
 				$this->db->where('id IN ' . implode(', ', $task_ids));	
 			}
 
+			$flagLevel = false;
 		    if(!empty($arrParams['col']) && !empty($arrParams['order'])){
 				$col   = $this->_fields[$arrParams['col']];
 				$order = $arrParams['order'];
 					
 				$this->db->order_by($col, $order);
 			}else {
+				$flagLevel = true;
 				$this->db->order_by("lft",'ASC');
 			}
 
@@ -940,11 +940,24 @@ class MTasks extends MNested2{
 						$val['color'] = '#303020';
 					}
 
+					$val['prioty']    = $this->_prioty[$val['prioty']];
+					$val['trangthai'] = $this->_trangthai[$val['trangthai']];
+
 				}	
 
 				$project = $result[$arrParams['project_id']];
 				unset($result[$arrParams['project_id']]);
 				$ketqua = $result;
+	
+				if($flagLevel == true) {
+					foreach($ketqua as &$val) {
+						if(!isset($ketqua[$val['parent']]))
+							$val['space'] = '';
+						else
+							$val['space'] = $val['space'] . '&nbsp&nbsp&nbsp';
+					}
+				}
+
 				$result = array('project'=>$project, 'ketqua'=>$ketqua);
 			}
 
@@ -1058,7 +1071,7 @@ class MTasks extends MNested2{
 		if($options['task'] == 'public-info') {
 			$this->db->select("t.*")
 					 ->from($this->_table . ' as t')
-					 ->where('t.id',$arrParam['id']);
+					 ->where('t.id',$arrParams['id']);
 			
 			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as date_start", FALSE);
 			$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as date_end", FALSE);
