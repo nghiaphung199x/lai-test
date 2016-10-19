@@ -133,7 +133,6 @@ class MTasks extends MNested2{
 				$data['trangthai']				= 		$arrParam['trangthai'];
 				$data['prioty']					= 		$arrParam['prioty'];
 				$data['pheduyet']				= 		1;
-				$data['type']					= 		$arrParam['type'];
 				$data['project_id']				= 		0;
 				$data['customer_ids']			= 		$customer_ids;
 				$data['color']					= 		$arrParam['color'];
@@ -144,7 +143,6 @@ class MTasks extends MNested2{
 				if($lastId > 0) {
 					$this->db->where("id",$lastId);
 					$data['project_id']	 		= 			$lastId;
-					
 					$this->db->update($this->_table,$data);
 				}
 				
@@ -164,7 +162,6 @@ class MTasks extends MNested2{
 				$data['trangthai']				= 		$arrParam['trangthai'];
 				$data['prioty']					= 		$arrParam['prioty'];
 				$data['pheduyet']				= 		$arrParam['pheduyet'];
-				$data['type']					= 		$arrParam['type'];
 				$data['project_id']				= 		$arrParam['project_id'];
 				$data['customer_ids']			= 		$customer_ids;
 				$data['color']					= 		$arrParam['color'];
@@ -193,7 +190,7 @@ class MTasks extends MNested2{
 				if(isset($arrParam['progress_task']))
 					$progress_taskArr = $arrParam['progress_task'];
 
-				$this->do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr);
+				$array = $this->do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr);
 
 				if(!empty($array)) {
 					$this->db->insert_batch('task_user_relations', $array);
@@ -388,7 +385,7 @@ class MTasks extends MNested2{
 					$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
 					$this->db->select("DATE_FORMAT(date_end, '%d-%m-%Y') as end_date", FALSE);
 					$this->db->select("DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date", FALSE);
-					$this->db->select("id, name as text, name, duration, percent, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
+					$this->db->select("id, name as text, name, duration, percent, progress, level, parent, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
 							 ->from($this->_table)
 							 ->where('project_id IN ('.implode(', ', $project_ids).')')
 							 ->order_by("lft",'ASC');
@@ -589,7 +586,7 @@ class MTasks extends MNested2{
 					if(in_array('update_all_task', $this->_task_permission)) {
 						$tmp = array();
 						foreach($resultTmp as $val)	{
-							if($val['parent'] != 0 && $val['type'] == 1)
+							if($val['parent'] != 0)
 								$tmp[] = $val['id'];
 						}
 					
@@ -703,7 +700,7 @@ class MTasks extends MNested2{
 			$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
 			$this->db->select("DATE_FORMAT(date_end, '%d-%m-%Y') as end_date", FALSE);
 			$this->db->select("DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date", FALSE);
-			$this->db->select("id, name, duration, percent, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
+			$this->db->select("id, name, duration, percent, progress, level, parent, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
 					 ->from($this->_table)
 					 ->where('parent = 0');
 
@@ -824,7 +821,7 @@ class MTasks extends MNested2{
 			$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
 			$this->db->select("DATE_FORMAT(date_end, '%d-%m-%Y') as end_date", FALSE);
 			$this->db->select("DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date", FALSE);
-			$this->db->select("id, name, duration, percent, progress, level, parent, type, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
+			$this->db->select("id, name, duration, percent, progress, level, parent, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
 					 ->from($this->_table);
 
 			if($task_ids == 'all') {

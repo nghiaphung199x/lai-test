@@ -180,7 +180,7 @@ class BizTasks extends Secure_area
 			}
 
 			if($flagError == false) {
-				// kiểm tra quyền
+				// check permission
 				$is_pheduyet = $is_implement = array();
 				if(!empty($project_relation)) {
 					foreach($project_relation as $val){
@@ -200,52 +200,25 @@ class BizTasks extends Secure_area
 				elseif(count($is_pheduyet) == 0)
 					$arrParam['pheduyet'] = 1;
 				
-				// ấy lại trạng thái và tiến độ
-				if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
-					$arrParam['trangthai'] = 2;
-					$arrParam['progress'] = 100;
-				}elseif($arrParam['progress'] > 0 && $arrParam['trangthai'] == 0) {
-					$arrParam['trangthai'] = 1;
-				}
-				
-				if($arrParam['template_task'] > 0) {
-					$arrParam['trangthai'] = 0;
-					$arrParam['progress']  = 0;
-				}
-
+				// covert status and progress
+				$arrParam = $this->convert_progress_task($arrParam);
 				$last_id = $this->MTasks->saveItem($arrParam, array('task'=>'add'));
-				$respon = array('flag'=>'true');
+
+                //update first progress
+                $params = array(
+                    'task_id'  => $last_id               , 'trangthai' => $arrParam['trangthai'],
+                    'prioty'   => $arrParam['prioty']    , 'progress'  => $arrParam['progress'],
+                    'pheduyet' => $arrParam['pheduyet']  , 'note'      => '', 'key' => 'plus',
+                    'date_pheduyet' =>  @date("Y-m-d H:i:s"),
+                );
+
+                if($arrParam['pheduyet'] == 1)
+                    $this->MTaskProgress->saveItem($params, array('task'=>'add'));
+
 				//add template task
 				if($arrParam['task_template'] > 0) {
-					$template_task_items = $this->MTaskTemplate->listItem(array('template_id'=>$arrParam['task_template']), array('task'=>'by-template'));
-					$parentArray = array();
-					foreach($template_task_items as $key => $val) {
-						$params = array();
-						$params['name'] = $val['name'];
-						if($val['level'] == 1) {
-							$params['parent'] = $last_id;
-						}else
-							$params['parent'] = $parentArray[$val['parent']];
-						
-						$params['color']      = $arrParam['color'];
-						$params['detail']     = '';
-						$params['percent']    = 0;
-						$params['progress']   = 0;
-						$params['project_id'] = $arrParam['project_id'];
-						$params['date_start'] = $arrParam['date_start'];
-						$params['date_end']   = $arrParam['date_end'];
-						$params['duration']   = $arrParam['duration'];
-						if($arrParam['parent'] == 0)
-							$params['pheduyet']   = 1;
-						else
-							$params['pheduyet']   = $arrParam['pheduyet'];
-						
-						$params['trangthai']   	  = 0;
-						$params['prioty']         = $arrParam['prioty'];
-						$params['type']           = $arrParam['type'];
-			
-						$parentArray[$val['id']] = $this->MTasks->saveItem($params, array('task'=>'add'));
-					}
+                    $arrParam['last_id'] = $last_id;
+					$this->add_template_for_task($arrParam);
 				}
 
 				// nếu là công việc con
@@ -257,6 +230,7 @@ class BizTasks extends Secure_area
 // 					$this->MTaskProgress->solve($arrParam); 
 // 				}
 
+                $respon = array('flag'=>'true');
 			}else {
 				$respon = array('flag'=>'false', 'errors'=>$errors);
 			}
@@ -277,7 +251,54 @@ class BizTasks extends Secure_area
 			//view
 			$this->load->view('tasks/addform_view',$this->_data);
 		}
+	}
 
+	protected function convert_progress_task($arrParam) {
+		if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
+			$arrParam['trangthai'] = 2;
+			$arrParam['progress'] = 100;
+		}elseif($arrParam['progress'] > 0 && $arrParam['trangthai'] == 0) {
+			$arrParam['trangthai'] = 1;
+		}
+
+		if($arrParam['task_template'] > 0) {
+			$arrParam['trangthai'] = 0;
+			$arrParam['progress']  = 0;
+		}
+		return $arrParam;
+	}
+
+	protected function add_template_for_task($arrParam) {
+        $this->load->model('MTaskTemplate');
+        if($arrParam['parent'] == 0)
+            $arrParam['project_id'] = $arrParam['last_id'];
+
+		$template_task_items = $this->MTaskTemplate->listItem(array('template_id'=>$arrParam['task_template']), array('task'=>'by-template'));
+		$parentArray = array();
+
+		foreach($template_task_items as $key => $val) {
+			$params = array();
+			$params['name'] = $val['name'];
+			if($val['level'] == 1) {
+				$params['parent'] = $arrParam['last_id'];
+			}else
+                $params['parent'] = $parentArray[$val['parent']];
+
+            $params['color']      = $arrParam['color'];
+			$params['detail']     = '';
+			$params['percent']    = 0;
+			$params['progress']   = 0;
+			$params['project_id'] = $arrParam['project_id'];
+			$params['date_start'] = $arrParam['date_start'];
+			$params['date_end']   = $arrParam['date_end'];
+			$params['duration']   = $arrParam['duration'];
+            $params['pheduyet']   = $arrParam['pheduyet'];
+			$params['trangthai']  = 0;
+			$params['prioty']     = $arrParam['prioty'];
+			$params['type']       = $arrParam['type'];
+
+			$parentArray[$val['id']] = $this->MTasks->saveItem($params, array('task'=>'add'));
+		}
 	}
 
 	public function editcongviec() {
@@ -471,7 +492,7 @@ class BizTasks extends Secure_area
 				$this->load->view($view,$this->_data);
 		}
 	}
-	//labeaute1212@gmail.com : labeaute
+
 	public function progresslist() {
 		$this->load->model('MTaskProgress');
 		$post  = $this->input->post();
@@ -1310,7 +1331,7 @@ class BizTasks extends Secure_area
 	public function test() {
 		$this->load->model('MTasks');
 		$this->MTasks->test();
-
+        echo 'hay nhỉ save liên tục à';
 	}
 	
 	public function valid_date($str){

@@ -406,7 +406,6 @@
 	}
 	
 	function congviecData(data) {
-		console.log(data);
 		if(data.flag == 'false') {
 			$.each(data.errors, function( index, value ) {	
 				element = $( '#my-form span[for="'+index+'"]' );

@@ -83,7 +83,7 @@
 				<input type="hidden" name="id" id="task_id" value="<?php echo $id; ?>" />
 				<input type="hidden" name="parent" value="<?php echo $parent; ?>" />
 				<input type="hidden" name="project_id" value="<?php echo $project_id; ?>" />
-				<input type="hidden" name="type" value="1" />
+
 				<div class="tabs" id="basic_manager" style="display: block;">
 					<div class="clearfix hang" style="margin-bottom: 10px;">
 						<div class="col-lg-12">

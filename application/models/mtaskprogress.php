@@ -123,16 +123,14 @@ class MTaskProgress extends CI_Model{
 			$data['note']				= stripslashes($arrParam['note']);
 			$data['reply']				= '';		
 			$data['created']			= @date("Y-m-d H:i:s");
-			$data['created_by']     	= $arrParam['adminInfo']['id'];
+			$data['created_by']     	= $this->_id_admin;
 			$data['user_pheduyet']		= 0;
 			$data['date_pheduyet']		= $arrParam['date_pheduyet'];
 			$data['user_pheduyet_name'] = '';
-		
 			$data['key']				= $arrParam['key'];
-			
+
 			$this->db->insert($this->_table,$data);
 			$lastId = $this->db->insert_id();
-				
 			$this->db->flush_cache();
 			
 			return $lastId;
