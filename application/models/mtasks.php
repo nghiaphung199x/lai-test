@@ -487,8 +487,10 @@ class MTasks extends MNested2{
 					}
 					
 					$val['text'] = $val['text'] . ' ('.($val['progress'] * 100).'%)';
-					if($val['pheduyet'] == 0)
-						$val['text'] = $val['text'] . ' - Chưa phê duyệt';
+					if($val['pheduyet'] == 2)
+						$val['text'] = $val['text'] . ' - Pending';
+					elseif($val['pheduyet'] == 0)
+						$val['text'] = $val['text'] . ' - Không phê duyệt';
 					
 					if(isset($task_implements[$val['id']]))
 						$implement_origin = $task_implements[$val['id']];

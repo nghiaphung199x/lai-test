@@ -174,8 +174,9 @@
 			
 												</select> 
 												<input type="number" name="progress" value="0" class="form-control"/>
+												<span for="progress" class="text-danger errors"></span>
 											</div>
-											<span for="number" class="text-danger errors"></span>
+											
 										</div>
 		
 									</div>

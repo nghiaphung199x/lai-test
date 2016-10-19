@@ -192,7 +192,7 @@ class BizTasks extends Secure_area
 					}
 				}
 
-				$arrParam['pheduyet'] = 0;
+				$arrParam['pheduyet'] = 2;
 				if(in_array('update_project', $task_permission))
 					$arrParam['pheduyet'] = 1;
 				elseif(in_array($user_info['id'], $is_implement) && in_array('update_brand_task', $task_permission))
