@@ -195,7 +195,6 @@ function load_template_task_child(items) {
 			  var end_date     = value.end_date;
 			  var finish_date  = value.finish_date;
 			  var name         = value.name;
-			  var space		   = value.space;
 			  var duration     = value.duration;
 			  var percent      = value.percent;
 			  var progress     = value.progress;
@@ -207,6 +206,11 @@ function load_template_task_child(items) {
                  var implement    = value.implement;
              }else
                  var implement     = '';
+
+             if(value.hasOwnProperty("space")){
+                 var space    = value.space;
+             }else
+                 var space     = '';
 
 			  var prioty       = value.prioty;
 			  var trangthai    = value.trangthai;
@@ -295,12 +299,12 @@ function load_template_project_grid(items) {
 										+'<table class="table table-bordered" id="task_childs_'+id+'" data-content="0">'
 											+'<thead>'
 												+'<tr align="center" style="font-weight:bold">'
-													+'<td align="center">Tên công việc</td>'
-													+'<td align="center" style="width: 8%;">Ưu tiên</td>'
-													+'<td align="center" style="width: 100px;">Bắt đầu</td>'
-													+'<td align="center" style="width: 100px;">Kết thúc</td>'
-													+'<td align="center" style="width: 256px;">Tiến độ</td>'
-													+'<td align="center" style="width: 10%;">Tình trạng</td>'
+													+'<td align="center" data-field="name">Tên công việc</td>'
+													+'<td align="center" style="width: 8%;" data-field="prioty">Ưu tiên</td>'
+													+'<td align="center" style="width: 100px;" data-field="date_start">Bắt đầu</td>'
+													+'<td align="center" style="width: 100px;" data-field="date_end">Kết thúc</td>'
+													+'<td align="center" style="width: 256px;" data-field="progress">Tiến độ</td>'
+													+'<td align="center" style="width: 10%;" data-field="trangthai">Tình trạng</td>'
 													+'<td align="center" style="width: 20%;">Phụ trách</td>'	
 												+'</tr>'
 											+'</thead>'
@@ -895,7 +899,7 @@ function load_task_childs(project_id, page) {
 	var url	        = BASE_URL + 'tasks/taskByProjectList/'+page;
 	var table 	    = $('#task_childs_'+project_id);
 
-    var elementSort = $('#task_childs_'+project_id+' th.header');
+    var elementSort = $('#task_childs_'+project_id+' td.header');
     // get field sort
     if(elementSort.length){
         if(elementSort.hasClass('headerSortUp')){

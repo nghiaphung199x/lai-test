@@ -2,19 +2,27 @@
 1.1 add
 - kèm template
 -- tiến độ được update khi pheduyet = 2
+-- khi người thêm công việc bị phê duyệt (..)
 - ko kèm template
-- khi người thêm công việc bị phê duyệt (..)
+
 
 1.2 edit
-
 
 Bug: có nút xuống để chọn khách hang, ng phê duyêt…
-
-1.2 edit
-
 2. Công việc
+2.1 add
+- kèm template
+-- tiến độ được update khi phê duyệt = 2
 
 3. Dự án/ công việc Gantt
+
+4. Danh sách công việc
+4.1 Danh sách dự án
+- hiển thị các dự án theo quyền của user
+
+
+.Test quyền nhân viên
+- merge quyền có chuẩn không
 
 
 ----

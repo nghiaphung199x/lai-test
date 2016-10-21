@@ -344,25 +344,27 @@ class MTasks extends MNested2{
 		$paginator = $arrParams['paginator'];
 		if($options == null) {
 			$flagAll = $this->checkAllPermission();
-			
-			// không có toàn quyền
+
+			// no full permission
 			if($flagAll == false) {
 				$project_ids = $this->getProjectRelation();	
-			}
-			
+			}else
+                $project_ids = array(-1);
+
 			$this->db->select("id")
 				     ->from($this->_table)
 					 ->where('parent = 0')
 					 ->order_by("prioty",'ASC')
 				     ->order_by('sort', 'ASC');
-			
-			if(!empty($project_ids))
-				$this->where('project_id IN ('.implode(', ', $project_ids).')');
-			
+
+			if(!empty($project_ids)){
+                $this->db->where('project_id IN ('.implode(', ', $project_ids).')');
+            }
+
 			if(!empty($arrParams['keywords'])) {
 				$this->db->where('name LIKE \'%'.$arrParams['keywords'].'%\'');
 			}
-			
+
 			$page = (empty($arrParams['start'])) ? 1 : $arrParams['start'];
 			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
 
@@ -378,7 +380,7 @@ class MTasks extends MNested2{
 				foreach($resultTmp as $val)
 					$project_ids[] = $val['id'];
 			}
-		
+
 			if(!empty($project_ids)) {
 				//danh sách tasks
 				$project_ids = array_unique($project_ids);
@@ -391,7 +393,7 @@ class MTasks extends MNested2{
 							 ->where('project_id IN ('.implode(', ', $project_ids).')')
 							 ->order_by("lft",'ASC');
 					
-					$query 		   = $this->db->get();
+					$query 		  = $this->db->get();
 					
 					$res_tmp     = $query->result_array();
 					
@@ -436,7 +438,7 @@ class MTasks extends MNested2{
 
 			$task_list = array();
 			if(!empty($task_list_tmp)) {
-				// task replation
+				// task relation
 				$resultTmp = $this->getUsersRelation($task_ids);
 		
 				$implement_ids = $create_task_ids = $is_xem_ids = $task_implements = array();
@@ -457,7 +459,7 @@ class MTasks extends MNested2{
 					}
 				}
 
-				//danh sách users
+				//user list based on ids
 				if(!empty($user_ids)) {
 					$userTable = $this->model_load_model('MTaskUser');
 					$usersInfo = $userTable->getItems(array('user_ids'=>$user_ids));
@@ -694,9 +696,9 @@ class MTasks extends MNested2{
 			$user_ids = array();
 			$flagAll = $this->checkAllPermission();
 			if($flagAll == false) {
-				//related project
 				$project_ids = $this->getProjectRelation();	
-			}
+			}else
+                $project_ids = array(-1);
 
 			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);
 			$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date", FALSE);
@@ -716,8 +718,8 @@ class MTasks extends MNested2{
 			}
 
 			if(!empty($project_ids))
-				$this->where('t.project_id IN ('.implode(', ', $project_ids).')');
-			
+				$this->db->where('t.project_id IN ('.implode(', ', $project_ids).')');
+
 			if(!empty($arrParams['keywords'])) {
 				$this->db->where('t.name LIKE \'%'.$arrParams['keywords'].'%\'');
 			}
@@ -818,16 +820,17 @@ class MTasks extends MNested2{
 		}
 		elseif($options['task'] == 'task-by-project') {
 			$task_ids = $this->getTasksIdsByProject($arrParams['project']);
-			$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
-			$this->db->select("DATE_FORMAT(date_end, '%d-%m-%Y') as end_date", FALSE);
-			$this->db->select("DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date", FALSE);
-			$this->db->select("id, name, duration, percent, progress, level, parent, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
-					 ->from($this->_table);
+			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);
+			$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date", FALSE);
+			$this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as finish_date", FALSE);
+			$this->db->select("t.id, t.name, t.duration, t.percent, t.progress, t.level, t.parent, t.project_id, t.lft, t.rgt, t.created, t.pheduyet, t.color, t.prioty, t.trangthai")
+					 ->from($this->_table . ' AS t');
+
 
 			if($task_ids == 'all') {
-				$this->db->where('project_id', $arrParams['project_id']);	
+				$this->db->where('t.project_id', $arrParams['project_id']);
 			}else {
-				$this->db->where('id IN ' . implode(', ', $task_ids));	
+				$this->db->where('t.id IN ' . implode(', ', $task_ids));
 			}
 
 			$flagLevel = false;
@@ -838,13 +841,12 @@ class MTasks extends MNested2{
 				$this->db->order_by($col, $order);
 			}else {
 				$flagLevel = true;
-				$this->db->order_by("lft",'ASC');
+				$this->db->order_by("t.lft",'ASC');
 			}
 
 			$query 	   = $this->db->get();
 			
 			$resultTmp = $query->result_array();
-
 			$result    = array();
 
 			if(!empty($resultTmp)) {
@@ -1262,9 +1264,10 @@ class MTasks extends MNested2{
 	
 	protected function checkAllPermission() {
 		$flagAll = true;
-		if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission)))
-			$flagAll = false;
-		
+		if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission))){
+            $flagAll = false;
+        }
+
 		return $flagAll;
 	}
 	

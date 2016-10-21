@@ -1382,7 +1382,6 @@ class BizTasks extends Secure_area
         }
 
         $this->load->view('tasks/test_view', $this->_data);
-
 	}
 	
 	public function valid_date($str){

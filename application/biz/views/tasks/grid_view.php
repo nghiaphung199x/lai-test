@@ -132,7 +132,9 @@ $( document ).ready(function() {
         if(table_id == 'project_grid_table') {
             load_list('project-grid', 1);
         }else {
-
+            var tr_parent = table.closest('[data-parent]');
+            var project_id = tr_parent.attr('data-parent');
+            load_task_childs(project_id, 1);
         }
     });
 });
