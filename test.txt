@@ -1,8 +1,12 @@
 ﻿1.Dự án
 1.1 add
 - kèm template
--- tiến độ được update khi pheduyet = 1
+-- tiến độ được update khi pheduyet = 2
 - ko kèm template
+- khi người thêm công việc bị phê duyệt (..)
+
+1.2 edit
+
 
 Bug: có nút xuống để chọn khách hang, ng phê duyêt…
 
@@ -11,3 +15,14 @@ Bug: có nút xuống để chọn khách hang, ng phê duyêt…
 2. Công việc
 
 3. Dự án/ công việc Gantt
+
+
+----
+phê duyêt:
+- -1 : đang pending
+- 0 : ko được
+- 1 : được
+- 2 : không cần phê duyệt
+
+
+===
