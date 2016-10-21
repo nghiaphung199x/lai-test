@@ -133,6 +133,10 @@
 	position: relative;
 }
 
+.table .table td {
+    padding: 4px !important;
+}
+
 .my-table th {
 	text-align: center;
 	cursor: pointer;
@@ -583,7 +587,6 @@ display: block;
 }
 
 .arrord_nav {
-	margin-top: 5px;
     height: 30px;
     line-height: 30px;
     background: #489ee7;
@@ -591,7 +594,7 @@ display: block;
 
 .arrord_nav ul li {
 	float: left;
-    min-width: 90px;
+    min-width: 80px;
     color: white;
     text-align: center;
     cursor: pointer;
@@ -1275,8 +1278,9 @@ body::-webkit-scrollbar-thumb {
 	
 }
 
-.manage-table tr td:first-child, .manage-table tr th:first-child {
-	padding-left: 4px;
+.manage-table tr td, .manage-table tr th {
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .progress-bar {
@@ -1344,6 +1348,10 @@ body::-webkit-scrollbar-thumb {
 
 #template_task_list .panel-body {
 	padding: 0;
+}
+
+.manage-table tr td:first-child, .manage-table tr th:first-child {
+    padding-left: 4px;
 }
 
 @-webkit-keyframes animate-positive {

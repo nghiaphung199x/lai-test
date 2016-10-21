@@ -3,3 +3,12 @@
 		width: 96%;
  	}  
 }
+
+@media print, screen and (max-width: 700px) {
+    #add_navigation #thietlap_content {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+    }
+}

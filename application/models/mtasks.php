@@ -19,21 +19,22 @@ class MTasks extends MNested2{
 		$this->_fields 	 =  array(
 							'name' 	 		=> 't.name',
 							'prioty' 	 	=> 't.prioty',
-							'modified' 	 	 => 't.modified',
-							'username' 		 => 'e.username',
+                            'date_start' 	=> 't.date_start',
+                            'date_end' 	 	=> 't.date_end',
+							'modified' 	    => 't.modified',
+							'username' 		=> 'e.username',
 					  );
 		
 		$this->_prioty    = lang('task_prioty');
 		$this->_trangthai = lang('task_trangthai');
 	}
-	
-	
+
 	public function countItem($arrParams = null, $options = null) {
 		if($options == null || $options['task'] == 'grid-project') {
 			$flagAll = $this->checkAllPermission();
 			
 			if($flagAll == false) {
-				//project liên quan
+				//related project
 				$sql = 'SELECT COUNT(t.id) AS total_item
 						FROM ' . $this->db->dbprefix($this->_table).' AS t
 						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')
@@ -484,7 +485,7 @@ class MTasks extends MNested2{
 					}
 					
 					$val['text'] = $val['text'] . ' ('.($val['progress'] * 100).'%)';
-					if($val['pheduyet'] == 2)
+					if($val['pheduyet'] == -1)
 						$val['text'] = $val['text'] . ' - Pending';
 					elseif($val['pheduyet'] == 0)
 						$val['text'] = $val['text'] . ' - Không phê duyệt';
@@ -693,16 +694,16 @@ class MTasks extends MNested2{
 			$user_ids = array();
 			$flagAll = $this->checkAllPermission();
 			if($flagAll == false) {
-				//project liên quan
+				//related project
 				$project_ids = $this->getProjectRelation();	
 			}
 
-			$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
-			$this->db->select("DATE_FORMAT(date_end, '%d-%m-%Y') as end_date", FALSE);
-			$this->db->select("DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date", FALSE);
-			$this->db->select("id, name, duration, percent, progress, level, parent, project_id, lft, rgt, created, pheduyet, color, prioty, trangthai")
-					 ->from($this->_table)
-					 ->where('parent = 0');
+			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);
+			$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date", FALSE);
+			$this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as finish_date", FALSE);
+			$this->db->select("t.id, t.name, t.duration, t.percent, t.progress, t.level, t.parent, t.project_id, t.lft, t.rgt, t.created, t.pheduyet, t.color, t.prioty, t.trangthai")
+					 ->from($this->_table . ' AS t')
+					 ->where('t.parent = 0');
 
 			if(!empty($arrParams['col']) && !empty($arrParams['order'])){
 					$col   = $this->_fields[$arrParams['col']];
@@ -710,15 +711,15 @@ class MTasks extends MNested2{
 						
 					$this->db->order_by($col, $order);
 			}else {
-					$this->db ->order_by("prioty",'ASC')
-					 		  ->order_by('sort', 'ASC');
+					$this->db ->order_by("t.prioty",'ASC')
+					 		  ->order_by('t.sort', 'ASC');
 			}
 
 			if(!empty($project_ids))
-				$this->where('project_id IN ('.implode(', ', $project_ids).')');
+				$this->where('t.project_id IN ('.implode(', ', $project_ids).')');
 			
 			if(!empty($arrParams['keywords'])) {
-				$this->db->where('name LIKE \'%'.$arrParams['keywords'].'%\'');
+				$this->db->where('t.name LIKE \'%'.$arrParams['keywords'].'%\'');
 			}
 
 			$page = (empty($arrParams['start'])) ? 1 : $arrParams['start'];
@@ -731,7 +732,7 @@ class MTasks extends MNested2{
 				foreach($result as $val)
 					$task_ids[] = $val['id'];
 
-				// lấy ra user liên quan
+				// get all related users
 				$resultTmp = $this->getUsersRelation($task_ids); 
 
 				$task_implements = $user_ids = array();
@@ -746,7 +747,7 @@ class MTasks extends MNested2{
 					}
 				}
 
-				//danh sách users
+				// get users list by ids
 				if(!empty($user_ids)) {
 					$userTable = $this->model_load_model('MTaskUser');
 					$usersInfo = $userTable->getItems(array('user_ids'=>$user_ids));
@@ -856,7 +857,7 @@ class MTasks extends MNested2{
 			}
 
 			if(!empty($result)) {
-				// lấy ra user liên quan
+				//  get relation users
 				$resultTmp = $this->getUsersRelation($task_ids); 
 	
 				$user_ids = array();
@@ -872,12 +873,11 @@ class MTasks extends MNested2{
 					}
 				}
 
-				//danh sách users
+				//users list
 				if(!empty($user_ids)) {
 					$userTable = $this->model_load_model('MTaskUser');
 					$usersInfo = $userTable->getItems(array('user_ids'=>$user_ids));
 				}
-
 
 				foreach($result as &$val) {
 					$implement_origin = array();
@@ -941,13 +941,12 @@ class MTasks extends MNested2{
 
 					$val['prioty']    = $this->_prioty[$val['prioty']];
 					$val['trangthai'] = $this->_trangthai[$val['trangthai']];
-
 				}	
 
 				$project = $result[$arrParams['project_id']];
 				unset($result[$arrParams['project_id']]);
 				$ketqua = $result;
-	
+
 				if($flagLevel == true) {
 					foreach($ketqua as &$val) {
 						if(!isset($ketqua[$val['parent']]))
@@ -1223,7 +1222,7 @@ class MTasks extends MNested2{
 	}
 
 	public function deleteItem($id) {
-		$this->removeNode($id);
+		    $this->removeNode($id);
 	}
 	
 	protected function getUsersRelation($task_ids) {

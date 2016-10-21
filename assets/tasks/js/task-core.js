@@ -115,11 +115,11 @@ $( document ).ready(function() {
 		    	 load_list('template', 1);
 		         break;
 		      }
+
 		      case 'project_table' : {
 			    	 load_list('project', 1);
 			         break;
-			  } 
-		      
+			  }
 		   }
 		}
 	});
@@ -202,7 +202,12 @@ function load_template_task_child(items) {
 			  var parent       = value.parent;
 			  var p_color      = value.p_color;
 			  var n_color      = value.color;
-			  var implement    = value.implement;
+
+             if(value.hasOwnProperty("implement")){
+                 var implement    = value.implement;
+             }else
+                 var implement     = '';
+
 			  var prioty       = value.prioty;
 			  var trangthai    = value.trangthai;
 			  var note    	   = value.note;
@@ -287,7 +292,7 @@ function load_template_project_grid(items) {
 									+'</tr>'
 									+'<tr data-parent="'+id+'" data-content="0" style="display: none;">'
 									+'<td colspan="9" class="innertable" style="display: table-cell;">'
-										+'<table class="table table-bordered" id="task_childs_'+id+'">'
+										+'<table class="table table-bordered" id="task_childs_'+id+'" data-content="0">'
 											+'<thead>'
 												+'<tr align="center" style="font-weight:bold">'
 													+'<td align="center">Tên công việc</td>'
@@ -798,7 +803,7 @@ function load_list(keyword, page) {
 	    	var manager_div = 'project_grid_list';
 			var url	        = BASE_URL + 'tasks/projectGridList/'+page;
 	
-			var elementSort = $('#project_grid_table th.header');
+			var elementSort = $('#project_grid_table td.header');
 			data.keywords   = $.trim($('#s_keywords').val());
 	    }
 	}
@@ -889,36 +894,42 @@ function load_task_childs(project_id, page) {
     data.project_id = project_id;
 	var url	        = BASE_URL + 'tasks/taskByProjectList/'+page;
 	var table 	    = $('#task_childs_'+project_id);
-	var elementSort = $('#task_childs_'+project_id+' th.header');
 
-	// get field sort
-	if(elementSort.length){
-		if(elementSort.hasClass('headerSortUp')){
-			data.col   = elementSort.attr('data-field');
-			data.order = 'ASC';
-		}else {
-			data.col   = elementSort.attr('data-field');
-			data.order = 'DESC';
-		}
-	}
+    var elementSort = $('#task_childs_'+project_id+' th.header');
+    // get field sort
+    if(elementSort.length){
+        if(elementSort.hasClass('headerSortUp')){
+            data.col   = elementSort.attr('data-field');
+            data.order = 'ASC';
+        }else {
+            data.col   = elementSort.attr('data-field');
+            data.order = 'DESC';
+        }
+    }
 
-	$.ajax({
-		type: "POST",
-		url: url,
-		data: data,
-		beforeSend: function() {
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: data,
+        beforeSend: function() {
         },
-		success: function(string){
-			var result = $.parseJSON(string);
-			var items = result.items; 
-			console.log(items);
-			var project = result.project;
-	
-			var html_string = load_template_task_child(items);
-			table.find('tbody').html(html_string);
-	    }
-	});
+        success: function(string){
+            var result = $.parseJSON(string);
+            var items = result.items;
+            var project = result.project;
 
+
+            var html_string = load_template_task_child(items);
+            table.find('tbody').html(html_string);
+            table.attr('data-content', 1);
+        }
+    });
+}
+
+function load_template_tr(item) {
+    var html = '<tr data-tree="42"><td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;" class="expand_all">+</a></td><td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;"><i class="fa fa-search"></i></a></td><td>Dự án mẫu</td><td align="center">Trung bình</td><td align="center">01-10-2016</td><td align="center">27-10-2016</td><td align="center"><div class="clearfix"><div class="progress-bar" style="float: left;"><div class="bar positive" style="width: 0%; background: #4388c2"></div><div class="bar negative" style="width: 100%; background: #489ee7"></div><span>0%</span></div><div class="progress-text">Còn 6 ngày</div></div></td><td align="center">Chưa thực hiện</td><td align="center"></td></tr>';
+
+    return html;
 }
 
 function add_tiendo() {

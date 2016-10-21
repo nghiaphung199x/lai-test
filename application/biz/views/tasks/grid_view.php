@@ -47,12 +47,12 @@
 			</div>
 			<div class="panel-body">
 				<div class="table-responsive">
-					<table class="table detailed-reports table-reports table-bordered table-tree" id="project_grid_table">
+					<table class="table tablesorter table-reports table-bordered table-tree" id="project_grid_table">
 						<thead>
 							<tr align="center" style="font-weight:bold">
 								<td class="hidden-print" style="width: 50px;" colspan="2"><a href="#" class="expand_all">&nbsp</a></td>
-								<td align="center">Tên Dự án</td>
-								<td align="center" style="width: 8%;">Ưu tiên</td>
+								<td align="center" data-field="name">Tên Dự án</td>
+								<td align="center" style="width: 8%;" data-field="prioty">Ưu tiên</td>
 								<td align="center" style="width: 100px;">Bắt đầu</td>
 								<td align="center" style="width: 100px;">Kết thúc</td>
 								<td align="center" style="width: 256px;">Tiến độ</td>
@@ -74,6 +74,14 @@
 	font-size: 16px;
     margin-right: 0;
 }
+
+#project_grid_table td {
+    padding: 4px;
+}
+
+#project_grid_table td[data-field] {
+    cursor: pointer;
+}
 </style>
 <script type="text/javascript">
 $( document ).ready(function() {
@@ -90,12 +98,41 @@ $( document ).ready(function() {
   			$(this).text('-');
 
   		}else{
-  			load_task_childs(id, 1);
-  			
+            var table_child     = $('#task_childs_'+id);
+            var data_content    = table_child.attr('data-content');
+            if(data_content == 0) {
+                load_task_childs(id, 1);
+            }
+
   			tr_child.show();
   			$(this).text('+');
   		}
 	});
+
+    //sort
+    $('body').on('click','table [data-field]',function(){
+        var attr     = $(this).attr('data-field');
+        var table    = $(this).closest('table');
+        var table_id = table.attr('id');
+        if($(this).hasClass('header')) {
+            if($(this).hasClass('headerSortUp')){
+                $(this).removeClass('headerSortUp');
+                $(this).addClass('headerSortDown');
+            }else {
+                $(this).removeClass('headerSortDown');
+                $(this).addClass('headerSortUp');
+            }
+        }else {
+            $(this).removeClass('header');
+            $(this).removeClass('headerSortUp');
+            $(this).removeClass('headerSortDown');
+            $(this).addClass('header headerSortUp');
+        }
+
+        if(table_id == 'project_grid_table') {
+            load_list('project-grid', 1);
+        }
+    });
 });
 </script>
 

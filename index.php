@@ -336,7 +336,7 @@ ini_set("soap.wsdl_cache_enabled", 0);
 	define('SERVICE_DISABLED', file_exists($disabledFile));
 	
 	define('PUBLIC_PATH', realpath(dirname(__FILE__)));
-	define('FILE_PATH', PUBLIC_PATH . '/assets/tasks/files/');
+	define('FILE_TASK_PATH', PUBLIC_PATH . '/assets/tasks/files/');
 /*
  * --------------------------------------------------------------------
  * LOAD THE BOOTSTRAP FILE

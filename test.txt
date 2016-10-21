@@ -1,0 +1,13 @@
+﻿1.Dự án
+1.1 add
+- kèm template
+-- tiến độ được update khi pheduyet = 1
+- ko kèm template
+
+Bug: có nút xuống để chọn khách hang, ng phê duyêt…
+
+1.2 edit
+
+2. Công việc
+
+3. Dự án/ công việc Gantt

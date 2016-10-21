@@ -54,12 +54,19 @@
 		// template task select box
 		$('body').on('change','#task_template',function(){
 			 var task_template_id = $(this).val();
+             var progress_input = $('#my-form .form-group input[name="progress"]');
+             var trangthai_input = $('#my-form .form-group select[name="trangthai"]');
+             var trangthai_name = $('#trangthai_name');
+
 			 if(task_template_id > 0) {
-				 $('#my-form .form-group input[name="progress"]').hide();
-				 $('#my-form .form-group select[name="trangthai"]').addClass('full');
+                 progress_input.hide();
+                 trangthai_input.find('option[value=0]').prop('selected','selected');
+                 trangthai_input.hide();
+                 trangthai_name.show();
 			 }else {
-				 $('#my-form .form-group input[name="progress"]').show();
-				 $('#my-form .form-group select[name="trangthai"]').removeClass('full');		 
+                 progress_input.show();
+                 trangthai_input.show();
+                 trangthai_name.hide();
 			 }
 			
 	    });

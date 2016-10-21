@@ -171,7 +171,8 @@
 							}
 			?>
 			
-												</select> 
+												</select>
+                                                <input type="text" class="form-control" name="trangthai_name" id="trangthai_name" value="Chưa thực hiện" readonly="true" style="display: none;" />
 												<input type="number" name="progress" value="0" class="form-control"/>
 												<span for="progress" class="text-danger errors"></span>
 											</div>

@@ -39,6 +39,7 @@ class MTaskFiles extends CI_Model{
 			$data['name']					= 				stripslashes($arrParam['name']);
 			$data['file_name']				= 				stripslashes($arrParam['file_name']);
 			$data['size'] 					= 				$arrParam['size'];
+            $data['extension'] 				= 				$arrParam['ext'];
 			$data['excerpt']				= 				stripslashes($arrParam['excerpt']);
 
 			$data['created']				= 				@date("Y-m-d H:i:s");
@@ -58,6 +59,7 @@ class MTaskFiles extends CI_Model{
 			$data['name']					= 				stripslashes($arrParam['name']);
 			$data['file_name']				= 				stripslashes($arrParam['file_name']);
 			$data['size'] 					= 				$arrParam['size'];
+            $data['extension'] 				= 				$arrParam['ext'];
 			$data['excerpt']				= 				stripslashes($arrParam['excerpt']);
 			
 			$data['modified']				= 				@date("Y-m-d H:i:s");
@@ -124,7 +126,7 @@ class MTaskFiles extends CI_Model{
 		}
 		return $result;
 	}
-	
+
 	public function getItem($arrParam = null, $options = null){
 		if($options['task'] == 'public-info'){
 			$this->db->select('f.*')
@@ -148,7 +150,15 @@ class MTaskFiles extends CI_Model{
 			$query = $this->db->get();
 			$result = $query->result_array();
 			$this->db->flush_cache();
-		}
+		}elseif($options['task'] == 'by-tasks') {
+            $this->db->select('f.*')
+                 ->from($this->_table . ' as f')
+                 ->where('f.task_id IN ('.implode(', ', $arrParam['task_ids']).')');
+
+            $query = $this->db->get();
+            $result = $query->result_array();
+            $this->db->flush_cache();
+        }
 		
 		return $result;
 	}
@@ -168,11 +178,24 @@ class MTaskFiles extends CI_Model{
 				$this->db->flush_cache();
 				
 				// xóa file
-				$upload_dir = FILE_PATH;
+				$upload_dir = FILE_TASK_PATH;
 				foreach($file_names as $file_name)
 					@unlink($upload_dir . $file_name);
 			}
-		}
+		}elseif($options['task'] == 'delete-by-tasks') {
+            $items = $this->getItems($arrParam, array('task'=>'by-tasks'));
+            if(!empty($items)) {
+                $upload_dir = FILE_TASK_PATH;
+                foreach($items as $val) {
+                    $file_name = $val['file_name'];
+                    @unlink($upload_dir . $file_name);
+                }
+            }
+
+            $this->db->where('task_id IN (' . implode(', ', $arrParam['task_ids']) . ')');
+            $this->db->delete($this->_table);
+            $this->db->flush_cache();
+        }
 	}
 	
 	public function validate($value, $field_name, $id) {

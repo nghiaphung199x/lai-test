@@ -97,25 +97,45 @@ class MTaskComment extends CI_Model{
 		return $result;
 	}
 
+    public function getItems($arrParam = null, $options = null){
+        if($options == null) {
+            $this->db -> select('c.*')
+                      -> from($this->_table . ' AS c')
+                      -> where('c.task_id IN ('.implode(',', $arrParam['task_ids']).')');
+
+            $query = $this->db->get();
+
+            $result = $query->result_array();
+            $this->db->flush_cache();
+
+            return $result;
+        }
+    }
+
 	public function deleteItem($arrParam = null, $options = null){
-		if($options['task'] == 'delete-multi'){
-// 			$items = $this->getItems($arrParam, array('task'=>'public-info'));
-// 			if(!empty($items)) {
-// 				foreach($items as $val) {
-// 					$ids[] 		  = $val['id'];
-// 					$file_names[] = $val['file_name'];
-// 				}		
+		if($options['task'] == 'delete-multi-by-task'){
+            $upload_dir = FILE_TASK_PATH . '/document/';
+ 			$items = $this->getItems($arrParam);
+ 			if(!empty($items)) {
+                $files = array();
+ 				foreach($items as $val) {
+ 					$ids[] 		  = $val['id'];
+                    if(!empty($val['files'])) {
+                        $file_tmp     = explode(',', $val['files']);
+                        $files       = $val['files'];
+                    }
+                }
+
+                if(!empty($files)) {
+                    foreach($files as $file)
+                        @unlink($upload_dir . $file);
+                }
+
+                $this->db->where('task_id IN (' . implode(', ', $arrParam['task_ids']) . ')');
+ 				$this->db->delete($this->_table);
 				
-// 				$this->db->where('id IN (' . implode(', ', $ids) . ')');
-// 				$this->db->delete($this->_table);
-				
-// 				$this->db->flush_cache();
-				
-// 				// xóa file
-// 				$upload_dir = FILE_PATH . '/document/';
-// 				foreach($file_names as $file_name)
-// 					@unlink($upload_dir . $file_name);
-// 			}
+ 				$this->db->flush_cache();
+ 			}
 		}
 	}
 	
