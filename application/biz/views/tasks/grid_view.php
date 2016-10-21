@@ -53,10 +53,10 @@
 								<td class="hidden-print" style="width: 50px;" colspan="2"><a href="#" class="expand_all">&nbsp</a></td>
 								<td align="center" data-field="name">Tên Dự án</td>
 								<td align="center" style="width: 8%;" data-field="prioty">Ưu tiên</td>
-								<td align="center" style="width: 100px;">Bắt đầu</td>
-								<td align="center" style="width: 100px;">Kết thúc</td>
-								<td align="center" style="width: 256px;">Tiến độ</td>
-								<td align="center" style="width: 10%;">Tình trạng</td>
+								<td align="center" style="width: 100px;" data-field="date_start">Bắt đầu</td>
+								<td align="center" style="width: 100px;" data-field="date_end">Kết thúc</td>
+								<td align="center" style="width: 256px;" data-field="progress">Tiến độ</td>
+								<td align="center" style="width: 10%;" data-field="trangthai">Tình trạng</td>
 								<td align="center" style="width: 20%;">Phụ trách</td>			
 							</tr>
 						</thead>
@@ -123,14 +123,16 @@ $( document ).ready(function() {
                 $(this).addClass('headerSortUp');
             }
         }else {
-            $(this).removeClass('header');
-            $(this).removeClass('headerSortUp');
-            $(this).removeClass('headerSortDown');
+            table.find('td').removeClass('header');
+            table.find('td').removeClass('headerSortUp');
+            table.find('td').removeClass('headerSortDown');
             $(this).addClass('header headerSortUp');
         }
 
         if(table_id == 'project_grid_table') {
             load_list('project-grid', 1);
+        }else {
+
         }
     });
 });

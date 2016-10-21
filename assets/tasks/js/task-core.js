@@ -918,7 +918,6 @@ function load_task_childs(project_id, page) {
             var items = result.items;
             var project = result.project;
 
-
             var html_string = load_template_task_child(items);
             table.find('tbody').html(html_string);
             table.attr('data-content', 1);

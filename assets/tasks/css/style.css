@@ -587,6 +587,7 @@ display: block;
 }
 
 .arrord_nav {
+    margin-top: 5px;
     height: 30px;
     line-height: 30px;
     background: #489ee7;

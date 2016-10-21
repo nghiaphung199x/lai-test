@@ -813,7 +813,6 @@ class MTasks extends MNested2{
 
 					$val['prioty']    = $this->_prioty[$val['prioty']];
 					$val['trangthai'] = $this->_trangthai[$val['trangthai']];
-				
 				}
 			}
 		}
@@ -1226,7 +1225,7 @@ class MTasks extends MNested2{
 	}
 	
 	protected function getUsersRelation($task_ids) {
-		// task replation
+		// task relation
 		$this->db->select("r.task_id, r.is_implement, r.is_create_task, r.is_pheduyet, r.is_progress, r.is_xem, r.user_id")
 				 ->from('task_user_relations as r')
 				 ->where('r.task_id IN ('.implode(', ', $task_ids).')');
@@ -1242,7 +1241,7 @@ class MTasks extends MNested2{
 	
 	// support function
 	protected function getProjectRelation() {
-		//project liên quan
+		//related project
 		$sql = 'SELECT t.id, t.project_id
 				FROM ' . $this->db->dbprefix($this->_table).' AS t
 				WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')'
