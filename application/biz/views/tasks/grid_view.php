@@ -178,7 +178,6 @@
                         <label for="simple_radio" class="col-sm-3 col-md-3 col-lg-2 control-label">Trạng thái :</label>
                         <div class="col-sm-9 col-md-9 col-lg-10">
                             <div class="x-select-users" x-name="customer" id="customer_list" x-title="Khách hàng" style="display: inline-block; width: 100%;" onclick="foucs(this);">
-                                <span class="item"><input type="hidden" name="customer[]" class="customer" id="customer_6" value="6"><a>Hoàn thành </a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>
                                 <div class="result" style="top: 27px; display: none;">
 
                                 </div>
@@ -189,8 +188,9 @@
                         <label for="simple_radio" class="col-sm-3 col-md-3 col-lg-2 control-label">Khách hàng :</label>
                         <div class="col-sm-9 col-md-9 col-lg-10">
                             <div class="x-select-users" x-name="customer" id="customer_list" x-title="Khách hàng" style="display: inline-block; width: 100%;" onclick="foucs(this);">
-                                <span class="item"><input type="hidden" name="customer[]" class="customer" id="customer_6" value="6"><a>dad </a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span><span class="item"><input type="hidden" name="customer[]" class="customer" id="customer_5" value="5"><a>Amrit Group </a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span><span class="item"><input type="hidden" name="customer[]" class="customer" id="customer_1" value="1"><a>Toàn Khánh Nguyễn</a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span><input type="text" autocomplete="off" id="customer_result" class="quick_search">
-                                <div class="result" style="top: 27px; display: none;"><ul class="list"><li><a href="javascript:;" data-id="1" data-name="Toàn Khánh Nguyễn" onclick="add_item(this, 'customer_list');">Toàn Khánh Nguyễn</a></li></ul></div>
+                                <input type="text" autocomplete="off" id="customer_result" class="quick_search">
+                                <div class="result" style="top: 27px; display: none;">
+                                </div>
                             </div>
                         </div>
                     </div>
