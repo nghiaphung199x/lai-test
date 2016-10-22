@@ -934,8 +934,8 @@ function load_task_childs(project_id, page) {
             var result = $.parseJSON(string);
             var items = result.items;
             var project = result.project;
-
-            var html_string = load_template_task_child(items);
+            console.log(project);
+            //var html_string = load_template_task_child(items);
             table.find('tbody').html(html_string);
             table.attr('data-content', 1);
         }
