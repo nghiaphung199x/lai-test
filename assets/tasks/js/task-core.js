@@ -274,7 +274,6 @@ function load_template_project_grid(items) {
 	 
 			  string[string.length] = '<tr data-tree="'+id+'">'
 										+'<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;" class="expand_all">-</a></td>'
-										+'<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;"><i class="fa fa-search"></i></a></td>'
 										+'<td>'+name+'</td>'
 										+'<td align="center">'+prioty+'</td>'
 										+'<td align="center">'+start_date+'</td>'
@@ -295,7 +294,22 @@ function load_template_project_grid(items) {
 										+'<td align="center">'+implement+'</td>'
 									+'</tr>'
 									+'<tr data-parent="'+id+'" data-content="0" style="display: none;">'
-									+'<td colspan="9" class="innertable" style="display: table-cell;">'
+									+'<td colspan="8" class="innertable" style="display: table-cell;">'
+                                        +'<div class="clearfix">'
+                                          +'<div class="col-xs-12 col-md-6 pull-right" style="padding-left: 0; padding-right: 0">'
+                                             +' <select class="form-control s_list">'
+                                                 +'<option value="" selected="selected">Tất cả</option>'
+                                                 +'<option value="">Trong ngày</option>'
+                                                 +'<option value="">Trong tháng</option>'
+                                                 +'<option value="">Trong năm</option>'
+
+                                             +' </select>'
+                                             +' </div>'
+                                             +'<div class="col-xs-12 col-md-6 pull-left" style="padding-left: 0; padding-right: 0;">'
+                                                 +'<input type="text" class="form-control ui-autocomplete-input s_keywords" value="" placeholder="Tìm kiếm công việc" >'
+                                                 +'<button name="submitf" class="btn btn-primary btn-lg">Nâng cao</button>'
+                                             +'</div>'
+                                         +'</div>'
 										+'<table class="table table-bordered" id="task_childs_'+id+'" data-content="0">'
 											+'<thead>'
 												+'<tr align="center" style="font-weight:bold">'
@@ -305,11 +319,10 @@ function load_template_project_grid(items) {
 													+'<td align="center" style="width: 100px;" data-field="date_end">Kết thúc</td>'
 													+'<td align="center" style="width: 256px;" data-field="progress">Tiến độ</td>'
 													+'<td align="center" style="width: 10%;" data-field="trangthai">Tình trạng</td>'
-													+'<td align="center" style="width: 20%;">Phụ trách</td>'	
+													+'<td align="center" style="width: 20%;">Phụ trách</td>'
 												+'</tr>'
 											+'</thead>'
 											+'<tbody>'
-												
 											+'</tbody>'
 										+'</table>'
 									+'</tr>';
@@ -318,7 +331,7 @@ function load_template_project_grid(items) {
 		 
 		 string = string.join("");	
 	}else
-		var string = '<tr style="cursor: pointer;"><td colspan="9"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
+		var string = '<tr style="cursor: pointer;"><td colspan="8"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
 
 	 return string;
 }

@@ -347,9 +347,10 @@ class MTasks extends MNested2{
 
 			// no full permission
 			if($flagAll == false) {
-				$project_ids = $this->getProjectRelation();	
-			}else
-                $project_ids = array(-1);
+				$project_ids = $this->getProjectRelation();
+                if(!empty($project_ids))
+                    $project_ids = array(-1);
+			}
 
 			$this->db->select("id")
 				     ->from($this->_table)
@@ -696,9 +697,10 @@ class MTasks extends MNested2{
 			$user_ids = array();
 			$flagAll = $this->checkAllPermission();
 			if($flagAll == false) {
-				$project_ids = $this->getProjectRelation();	
-			}else
-                $project_ids = array(-1);
+				$project_ids = $this->getProjectRelation();
+                if(!empty($project_ids))
+                    $project_ids = array(-1);
+			}
 
 			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);
 			$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date", FALSE);
