@@ -215,10 +215,10 @@ function load_template_task_child(items) {
 			  var prioty       = value.prioty;
 			  var trangthai    = value.trangthai;
 			  var note    	   = value.note;
-			  
+
 			  var positive = parseFloat(progress) * 100;
 			  var negative = 100 - positive;
-	 
+
 			  string[string.length] = '<tr>'
 										+'<td>'+space+name+'</td>'
 										+'<td align="center">'+prioty+'</td>'
@@ -241,8 +241,8 @@ function load_template_task_child(items) {
 									+'</tr>';
 
 		 });
-		 
-		 string = string.join("");	
+
+		 string = string.join("");
 	}else
 		var string = '<tr style="cursor: pointer;"><td colspan="7"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
 
@@ -297,9 +297,10 @@ function load_template_project_grid(items) {
 									+'<td colspan="8" class="innertable" style="display: table-cell;">'
                                         +'<div class="clearfix">'
                                           +'<div class="col-xs-12 col-md-6 pull-right" style="padding-left: 0; padding-right: 0">'
-                                             +' <select class="form-control s_list">'
-                                                 +'<option value="0" selected="selected">Tất cả</option>'
+                                             +' <select class="form-control search_date_type">'
+                                                 +'<option value="0" selected="selected">-- Thời gian --</option>'
                                                  +'<option value="today">Trong ngày</option>'
+                                                 +'<option value="weekend">Trong tuần</option>'
                                                  +'<option value="month">Trong tháng</option>'
                                                  +'<option value="year">Trong năm</option>'
 
@@ -307,7 +308,17 @@ function load_template_project_grid(items) {
                                              +' </div>'
                                              +'<div class="col-xs-12 col-md-6 pull-left" style="padding-left: 0; padding-right: 0;">'
                                                  +'<input type="text" class="form-control ui-autocomplete-input s_keywords" value="" placeholder="Tìm kiếm công việc" >'
-                                                 +'<button name="submitf" class="btn btn-primary btn-lg submitf" data-id="'+id+'">Nâng cao</button>'
+                                                 +'<button name="submitf" class="btn btn-primary btn-lg submitf" data-id="'+id+'" data-name="'+name+'">Nâng cao</button>'
+                                                 +'<input type="text" class="s_date_start" value="all" />'
+                                                 +'<input type="text" class="s_date_start_radio" value="simple" />'
+                                                 +'<input type="text" class="s_date_start_from" value="" />'
+                                                 +'<input type="text" class="s_date_start_to" value="" />'
+                                                 +'<input type="text" class="s_date_end" value="all" />'
+                                                 +'<input type="text" class="s_date_end_radio" value="simple" />'
+                                                 +'<input type="text" class="s_date_end_from" value="" />'
+                                                 +'<input type="text" class="s_date_end_to" value="" />'
+                                                 +'<input type="text" class="s_trangthai" value="" />'
+                                                 +'<div class="s_trangthai_html" style="display: none;"></div>'
                                              +'</div>'
                                          +'</div>'
 										+'<table class="table table-bordered" id="task_childs_'+id+'" data-content="0">'
@@ -934,8 +945,8 @@ function load_task_childs(project_id, page) {
             var result = $.parseJSON(string);
             var items = result.items;
             var project = result.project;
-            console.log(project);
-            //var html_string = load_template_task_child(items);
+
+            var html_string = load_template_task_child(items);
             table.find('tbody').html(html_string);
             table.attr('data-content', 1);
         }
@@ -1177,4 +1188,102 @@ function delete_congviec(id) {
   	   }
    });   
 	  
+}
+// date support
+function convert_date(string) {
+    var str_arr = string.split(" ");
+    var time     = str_arr[1];
+    var date     = str_arr[0];
+    var date_arr = date.split("-");
+    var new_date = date_arr[2] + '-' + date_arr[1] + '-' + date_arr[0];
+    new_date = new_date + ' ' + time;
+
+    return new_date;
+}
+function get_current_date() {
+    var d = new Date();
+
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+
+    var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
+function get_first_date_of_current_weekend() {
+    var curr = new Date;
+    var first = curr.getDate() - curr.getDay();
+    var last = first + 6;
+
+    var d = new Date(curr.setDate(first));
+
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+
+    var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
+function get_last_date_of_current_weekend() {
+    var curr = new Date;
+    var first = curr.getDate() - curr.getDay();
+    var last = first + 6;
+
+    var d = new Date(curr.setDate(last));
+
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+
+    var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
+function get_first_date_of_current_month() {
+    var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    var d = new Date(y, m, 1);
+
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+
+    var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
+function get_last_date_of_current_month() {
+    var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    var d = new Date(y, m + 1, 0);
+
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+
+    var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
+function get_first_date_of_current_year() {
+    var date = new Date();
+    var y = date.getFullYear();
+    var output = y+'-01-01';
+
+    return output;
+
+}
+
+function get_last_date_of_current_year() {
+    var date = new Date();
+    var y = date.getFullYear();
+
+    var output = y+'-12-31';
+    return output;
+}
+
+// end date support
+function get_item_autocomplete(data) {
+    var span = '<span class="item">'
+                    +'<input type="hidden" class="'+data.class+'" value="'+data.value+'">'
+                    +'<a>'+data.title+'</a>&nbsp;&nbsp;'
+                    +'<span class="x" onclick="delete_item(this);"></span>'
+                +'</span>';
+
+    return span;
 }

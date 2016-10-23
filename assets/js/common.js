@@ -341,8 +341,8 @@ function date_time_picker_field_report($field, format)
 		defaultDate.set('hour', 23);
 		defaultDate.set('minute', 59);
 	}
-	
-   $field.datetimepicker({format: format, locale: LOCALE, defaultDate: defaultDate, ignoreReadonly: IS_MOBILE ? true : false});	
+
+    $field.datetimepicker({format: format, locale: LOCALE, defaultDate: defaultDate, ignoreReadonly: IS_MOBILE ? true : false});
    
     //If we are in reports make sure simple radio is default
 	if ($("#simple_radio").length)
