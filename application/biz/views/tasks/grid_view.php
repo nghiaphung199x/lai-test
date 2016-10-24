@@ -69,7 +69,6 @@
 		</div>	
 	</div>
 </div>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">Large modal</button>
 <div id="advance_task_search" class="modal fade bs-example-modal-lg search-advance-form" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -181,7 +180,7 @@
                     <div class="form-group">
                         <label for="simple_radio" class="col-sm-3 col-md-3 col-lg-2 control-label">Trạng thái :</label>
                         <div class="col-sm-9 col-md-9 col-lg-10">
-                            <div class="x-select-users" x-name="customer" id="customer_list" x-title="Khách hàng" style="display: inline-block; width: 100%;" onclick="foucs(this);">
+                            <div class="x-select-users" x-name="trangthai" id="trangthai_list" x-title="Trang thái" style="display: inline-block; width: 100%;" onclick="foucs(this);">
                                 <input type="text" autocomplete="off" id="trangthai_result" class="quick_search">
                                 <div class="result" style="top: 27px; display: none;">
 
@@ -220,8 +219,46 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="" class="col-sm-3 col-md-3 col-lg-2 col-sm-3 col-md-3 col-lg-2 control-label">Công việc :</label>
+                        <div class="col-sm-9 col-md-9 col-lg-10">
+                            <ul class="list-inline">
+                                <li>
+                                    <input type="checkbox" name="status[]" value="-1" id="status_-1" class="reports_selected_location_ids_checkboxes">
+                                    <label for="status_-1"><span></span>Chờ xử lý</label>
+                                </li>
+                                <li>
+                                    <input type="checkbox" name="status[]" value="0" id="status_0" class="reports_selected_location_ids_checkboxes">
+                                    <label for="status_0"><span></span>Không phê duyệt</label>
+                                </li>
+                                <li>
+                                    <input type="checkbox" name="status[]" value="1-2" id="status_1_2" class="reports_selected_location_ids_checkboxes">
+                                    <label for="status_1_2"><span></span>Đã phê duyệt</label>
+                                </li>
+                           </ul>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-3 col-md-3 col-lg-2 col-sm-3 col-md-3 col-lg-2 control-label">Tiến độ :</label>
+                        <div class="col-sm-9 col-md-9 col-lg-10">
+                            <ul class="list-inline">
+                                <li>
+                                    <input type="checkbox" name="progress[]" value="-1" id="progress_-1" class="reports_selected_location_ids_checkboxes">
+                                    <label for="progress_-1"><span></span>Chờ xử lý</label>
+                                </li>
+                                <li>
+                                    <input type="checkbox" name="progress[]" value="0" id="progress_0" class="reports_selected_location_ids_checkboxes">
+                                    <label for="progress_0"><span></span>Không phê duyệt</label>
+                                </li>
+                                <li>
+                                    <input type="checkbox" name="progress[]" value="1-2" id="progress_1_2" class="reports_selected_location_ids_checkboxes">
+                                    <label for="progress_1_2"><span></span>Đã phê duyệt</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <div class="form-actions pull-right">
-                            <input type="submit" name="submitf" value="Thực hiện" id="submitf" style="margin-right: 16px;" class=" submit_button btn btn-primary">
+                            <input type="button" name="submitf" value="Thực hiện" id="btn_search_advance" style="margin-right: 16px;" class=" submit_button btn btn-primary">
                         </div>
                     </div>
                 </form>
@@ -231,7 +268,7 @@
 </div>
 
 <style>
-#project_grid_table .s_keywords {
+#project_grid_table .search_keywords {
     width: 400px;
     margin-bottom: 5px;
     float: left;
@@ -268,6 +305,293 @@
 }
 </style>
 <script type="text/javascript">
+function set_hidden_input() {
+    var element_parent         = $('#project_grid_table').find('tr[data-parent='+current_project_id+']');
+
+    var search_keywords        = element_parent.find('.search_keywords');
+    var search_date_type       = element_parent.find('.search_date_type');
+
+    var s_keywords             = element_parent.find('.s_keywords');
+
+    var s_date_start           = element_parent.find('.s_date_start');
+    var s_date_start_radio     = element_parent.find('.s_date_start_radio');
+    var s_date_start_from      = element_parent.find('.s_date_start_from');
+    var s_date_start_to        = element_parent.find('.s_date_start_to');
+
+    var s_date_end             = element_parent.find('.s_date_end');
+    var s_date_end_radio       = element_parent.find('.s_date_end_radio');
+    var s_date_end_from        = element_parent.find('.s_date_end_from');
+    var s_date_end_to          = element_parent.find('.s_date_end_to');
+
+    var s_trangthai            = element_parent.find('.s_trangthai');
+    var s_customer             = element_parent.find('.s_customer');
+    var s_implement            = element_parent.find('.s_implement');
+    var s_xem                  = element_parent.find('.s_xem');
+    var s_status               = element_parent.find('.s_status');
+    var s_progress             = element_parent.find('.s_progress');
+
+    var s_trangthai_html       = element_parent.find('.s_trangthai_html');
+    var s_customer_html        = element_parent.find('.s_customer_html');
+    var s_implement_html       = element_parent.find('.s_implement_html');
+    var s_xem_html             = element_parent.find('.s_xem_html');
+
+    //set values for each elements
+    var adv_date_start_radio_value = $('[name="adv_date_start_radio"]:checked').val();
+
+    s_keywords.val($('#adv_name').val());
+
+    // date_start
+    s_date_start_radio.val(adv_date_start_radio_value);
+    if(adv_date_start_radio_value == 'simple') {
+        var adv_date_start_value = $('#adv_date_start').val();
+        var date = get_two_dates(adv_date_start_value);
+
+        s_date_start_from.val(date.date_1);
+        s_date_start_to.val(date.date_2);
+        s_date_start_radio.val(adv_date_start_radio_value);
+    }else {
+        s_date_start.val('all');
+        s_date_start_from.val($('#adv_date_start_from').val());
+        s_date_start_to.val($('#adv_date_start_to').val());
+    }
+    s_date_start.val($('#adv_date_start').val());
+
+    // date_end
+    var adv_date_end_radio_value = $('[name="adv_date_end_radio"]:checked').val();
+    s_date_end_radio.val(adv_date_end_radio_value);
+    if(adv_date_end_radio_value == 'simple') {
+        var adv_date_end_value = $('#adv_date_end').val();
+        var date = get_two_dates(adv_date_end_value);
+
+        s_date_end_from.val(date.date_1);
+        s_date_end_to.val(date.date_2);
+        s_date_end_radio.val(adv_date_end_radio_value);
+    }else {
+        s_date_end.val('all');
+        s_date_end_from.val($('#adv_date_end_from').val());
+        s_date_end_to.val($('#adv_date_end_to').val());
+    }
+    s_date_end.val($('#adv_date_end').val());
+
+    // trangthai
+    var item             = new Array();
+    var item_string      = '';
+    var item_html        = new Array();
+    var item_html_string = '';
+    var span_trangthai_item = $('#trangthai_list .item');
+    if(span_trangthai_item.length) {
+        $( span_trangthai_item ).each(function() {
+            var span_element  = $(this);
+            item[item.length] = span_element.find('.trangthai').val();
+            item_html[item_html.length] = span_element[0].outerHTML;
+        });
+    }
+
+    item_string      = item.join();
+    item_html_string = item_html.join('');
+    s_trangthai.val(item_string);
+    s_trangthai_html.html(item_html_string);
+
+    // customer
+    var item             = new Array();
+    var item_string      = '';
+    var item_html        = new Array();
+    var item_html_string = '';
+
+    var span_customer_item = $('#customer_list .item');
+    if(span_customer_item.length) {
+        $( span_customer_item ).each(function() {
+            var span_element  = $(this);
+            item[item.length] = span_element.find('.customer').val();
+            item_html[item_html.length] = span_element[0].outerHTML;
+        });
+    }
+
+    item_string      = item.join();
+    item_html_string = item_html.join('');
+    s_customer.val(item_string);
+    s_customer_html.html(item_html_string);
+
+    // implement
+    var item             = new Array();
+    var item_string      = '';
+    var item_html        = new Array();
+    var item_html_string = '';
+
+    var span_implement_item = $('#implement_list .item');
+    if(span_implement_item.length) {
+        $( span_implement_item ).each(function() {
+            var span_element  = $(this);
+            item[item.length] = span_element.find('.implement').val();
+            item_html[item_html.length] = span_element[0].outerHTML;
+        });
+    }
+
+    item_string      = item.join();
+    item_html_string = item_html.join('');
+    s_implement.val(item_string);
+    s_implement_html.html(item_html_string);
+
+    // xem
+    var item             = new Array();
+    var item_string      = '';
+    var item_html        = new Array();
+    var item_html_string = '';
+
+    var span_xem_item = $('#xem_list .item');
+    if(span_xem_item.length) {
+        $( span_xem_item ).each(function() {
+            var span_element  = $(this);
+            item[item.length] = span_element.find('.xem').val();
+            item_html[item_html.length] = span_element[0].outerHTML;
+        });
+    }
+
+    item_string      = item.join();
+    item_html_string = item_html.join('');
+    s_xem.val(item_string);
+    s_xem_html.html(item_html_string);
+
+    //Tasks
+    var checkbox = $("input[name='status[]']:checked");
+    var checkbox_val = new Array();
+    if(checkbox.length) {
+        $( checkbox ).each(function() {
+            checkbox_val[checkbox_val.length] = $(this).val();
+        });
+    }
+
+    checkbox_val = checkbox_val.join(',');
+    s_status.val(checkbox_val);
+
+    // Progress
+    var checkbox = $("input[name='progress[]']:checked");
+    var checkbox_val = new Array();
+    if(checkbox.length) {
+        $( checkbox ).each(function() {
+            checkbox_val[checkbox_val.length] = $(this).val();
+        });
+    }
+
+    checkbox_val = checkbox_val.join(',');
+    s_progress.val(checkbox_val);
+}
+
+function set_form_input(project_id, task_name) {
+    $('#my_search_task span').text(task_name);
+
+    var element_parent  = $('#project_grid_table').find('tr[data-parent='+project_id+']');
+    var s_keywords           = element_parent.find('.s_keywords');
+
+    var s_date_start_radio   = element_parent.find('.s_date_start_radio');
+    var date_start_value     = s_date_start_radio.val();
+    var s_date_start         = element_parent.find('.s_date_start');
+    var s_date_start_from    = element_parent.find('.s_date_start_from');
+    var s_date_start_to      = element_parent.find('.s_date_start_to');
+
+    var s_date_end_radio     = element_parent.find('.s_date_end_radio');
+    var date_end_value       = s_date_end_radio.val();
+    var s_date_end           = element_parent.find('.s_date_end');
+    var s_date_end_from      = element_parent.find('.s_date_end_from');
+    var s_date_end_to        = element_parent.find('.s_date_end_to');
+
+    var s_status             = element_parent.find('.s_status');
+    var s_progress           = element_parent.find('.s_progress');
+
+    var s_trangthai_html     = element_parent.find('.s_trangthai_html');
+    var s_customer_html      = element_parent.find('.s_customer_html');
+    var s_implement_html     = element_parent.find('.s_implement_html');
+    var s_xem_html           = element_parent.find('.s_xem_html');
+
+    $('[name="adv_date_start_radio"]').filter('[value='+date_start_value+']').prop('checked', true);
+    if(date_start_value == 'simple') {
+        $('#adv_date_start').val(s_date_start.val());
+    }else {
+        var s_date_start_from_value = s_date_start_from.val();
+        if(s_date_start_from_value != '') {
+            $('#adv_date_start_from_formatted').val(convert_date(s_date_start_from_value));
+            $('#adv_date_start_from').val(s_date_start_from_value);
+        }
+
+        var s_date_start_to_value = s_date_start_to.val();
+        if(s_date_start_to_value != '') {
+            $('#adv_date_start_to_formatted').val(convert_date(s_date_start_to_value));
+            $('#adv_date_start_to').val(s_date_start_to_value);
+        }
+    }
+
+    $('[name="adv_date_end_radio"]').filter('[value='+date_end_value+']').prop('checked', true);
+    if(date_end_value == 'simple') {
+        $('#adv_date_end').val(s_date_end.val());
+    }else {
+        var s_date_end_from_value = s_date_end_from.val();
+        if(s_date_end_from_value != '') {
+            $('#adv_date_end_from_formatted').val(convert_date(s_date_end_from_value));
+            $('#adv_date_end_from').val(s_date_end_from_value);
+        }
+
+        var s_date_end_to_value = s_date_end_to.val();
+        if(s_date_end_to_value != '') {
+            $('#adv_date_end_to_formatted').val(convert_date(s_date_end_to_value));
+            $('#adv_date_end_to').val(s_date_end_to_value);
+        }
+    }
+
+    $('#adv_name').val(s_keywords.val());
+
+    var html = s_trangthai_html.html();
+    $(html).insertBefore( "#trangthai_result" );
+
+    html = s_customer_html.html();
+    $(html).insertBefore( "#customer_result" );
+
+    html = s_implement_html.html();
+    $(html).insertBefore( "#implement_result" );
+
+    html = s_xem_html.html();
+    $(html).insertBefore( "#xem_result" );
+
+    var s_status_value = s_status.val();
+    var res = new Array();
+    if (s_status_value) {
+        res = convert_string_checkbox(s_status_value);
+        $.each(res, function( index, value ) {
+            $('#status_'+value).prop('checked', true);
+        });
+    }
+
+    var s_progress_value = s_progress.val();
+    res = new Array();
+    if (s_progress_value) {
+        res = convert_string_checkbox(s_progress_value);
+        $.each(res, function( index, value ) {
+            $('#progress_'+value).prop('checked', true);
+        });
+    }
+}
+
+function reset_form() {
+    $('input[name=adv_date_start_radio][value="simple"]').prop('checked', true);
+    $('#adv_date_start').val('all');
+    $('#adv_date_start_from_formatted').val('');
+    $('#adv_date_start_from').val('');
+    $('#adv_date_start_to_formatted').val('');
+    $('#adv_date_start_to').val('');
+
+    $('input[name=adv_date_end_radio][value="simple"]').prop('checked', true);
+    $('#adv_date_end').val('all');
+    $('#adv_date_end_from_formatted').val('');
+    $('#adv_date_end_from').val('');
+    $('#adv_date_end_to_formatted').val('');
+    $('#adv_date_end_to').val('');
+
+    $('#adv_name').val('');
+    $('#trangthai_list span.item').remove();
+    $('#customer_list span.item').remove();
+    $('#implement_list span.item').remove();
+    $('#xem_list span.item').remove();
+
+}
 $( document ).ready(function() {
 	load_list('project-grid', 1);
     var current_project_id = 0;
@@ -323,57 +647,18 @@ $( document ).ready(function() {
         }
     });
 
+    $('body').on('click','#btn_search_advance',function(){
+        set_hidden_input();
+        $('#advance_task_search').modal('toggle');
+    });
+
     //advance search click
     $('body').on('click','.submitf',function(){
         var task_name       = $(this).attr('data-name');
         var project_id      = $(this).attr('data-id');
         current_project_id  = project_id;
-        var element_parent  = $(this).closest('tr[data-parent]');
 
-        var s_date_start_radio   = element_parent.find('.s_date_start_radio');
-        var date_start_value     = s_date_start_radio.val();
-        var s_date_start         = element_parent.find('.s_date_start');
-        var s_date_start_from    = element_parent.find('.s_date_start_from');
-        var s_date_start_to      = element_parent.find('.s_date_start_to');
-
-        var s_date_end_radio     = element_parent.find('.s_date_end_radio');
-        var date_end_value       = s_date_end_radio.val();
-        var s_date_end           = element_parent.find('.s_date_end');
-        var s_date_end_from      = element_parent.find('.s_date_end_from');
-        var s_date_end_to        = element_parent.find('.s_date_end_to');
-
-        $('[name="adv_date_start_radio"]').filter('[value='+date_start_value+']').prop('checked', true);
-        $('#adv_date_start').val(s_date_start.val());
-
-        var s_date_start_from_value = s_date_start_from.val();
-        if(s_date_start_from_value != '') {
-            $('#adv_date_start_from_formatted').val(convert_date(s_date_start_from_value));
-            $('#adv_date_start_from').val(s_date_start_from_value);
-        }
-
-        var s_date_start_to_value = s_date_start_to.val();
-        if(s_date_start_to_value != '') {
-            $('#adv_date_start_to_formatted').val(convert_date(s_date_start_to_value));
-            $('#adv_date_start_to').val(s_date_start_to_value);
-        }
-
-        $('[name="adv_date_end_radio"]').filter('[value='+date_end_value+']').prop('checked', true);
-        $('#adv_date_end').val(s_date_end.val());
-
-        var s_date_end_from_value = s_date_end_from.val();
-        if(s_date_end_from_value != '') {
-            $('#adv_date_end_from_formatted').val(convert_date(s_date_end_from_value));
-            $('#adv_date_end_from').val(s_date_end_from_value);
-        }
-
-        var s_date_end_to_value = s_date_end_to.val();
-        if(s_date_end_to_value != '') {
-            $('#adv_date_end_to_formatted').val(convert_date(s_date_end_to_value));
-            $('#adv_date_end_to').val(s_date_end_to_value);
-        }
-
-        $('#my_search_task span').text(task_name);
-
+        set_form_input(current_project_id, task_name);
         $("#advance_task_search").modal();
     });
 
@@ -385,15 +670,29 @@ $( document ).ready(function() {
         var s_date_end_to        = element_parent.find('.s_date_end_to');
         var s_date_end_from      = element_parent.find('.s_date_end_from');
         var s_trangthai          = element_parent.find('.s_trangthai');
-        var s_trangthai_html     = element_parent.find('.s_trangthai_html');
         var s_date_start_radio   = element_parent.find('.s_date_start_radio');
         var s_date_end_radio     = element_parent.find('.s_date_end_radio');
+        var s_status             = element_parent.find('.s_status');
+        var s_progress           = element_parent.find('.s_progress');
+
+        var s_trangthai_html     = element_parent.find('.s_trangthai_html');
+        var s_customer_html      = element_parent.find('.s_customer_html');
+        var s_implement_html     = element_parent.find('.s_implement_html');
+        var s_xem_html           = element_parent.find('.s_xem_html');
 
         var data = {class: 'trangthai', value: 0, title: 'Chưa thực hiện'};
         var span_trangthai_0 = get_item_autocomplete(data);
 
         var data = {class: 'trangthai', value: 1, title: 'Đang thực hiện'};
         var span_trangthai_1 = get_item_autocomplete(data);
+
+        //reset some element input
+        s_trangthai_html.html('');
+        s_customer_html.html('');
+        s_implement_html.html('');
+        s_xem_html.html('');
+        s_status.val('-1,0,1,2');
+        s_progress.val('-1,0,1,2');
 
         switch(value) {
             case 'today':
@@ -460,8 +759,15 @@ $( document ).ready(function() {
 
     // event when close modal
     $('#advance_task_search').on('hidden.bs.modal', function () {
-
+        reset_form();
     })
+
+    // autocomplete
+    var frame_array = ['customer_list', 'xem_list', 'implement_list', 'trangthai_list'];
+    $.each(frame_array, function( index, value ) {
+        css_form(value);
+        press(value);
+    });
 
     // search process
     date_time_picker_field_report($('#adv_date_start_from'), JS_DATE_FORMAT+ " "+JS_TIME_FORMAT);
@@ -473,7 +779,6 @@ $( document ).ready(function() {
         var element_radio = label_element.prev();
         element_radio.prop("checked", true);
 
-        alert(element_radio.attr('name'));
     });
 
     $( ".date_time" ).focus(function() {

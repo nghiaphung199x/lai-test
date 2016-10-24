@@ -307,8 +307,9 @@ function load_template_project_grid(items) {
                                              +' </select>'
                                              +' </div>'
                                              +'<div class="col-xs-12 col-md-6 pull-left" style="padding-left: 0; padding-right: 0;">'
-                                                 +'<input type="text" class="form-control ui-autocomplete-input s_keywords" value="" placeholder="Tìm kiếm công việc" >'
+                                                 +'<input type="text" class="form-control ui-autocomplete-input search_keywords" value="" placeholder="Tìm kiếm công việc" >'
                                                  +'<button name="submitf" class="btn btn-primary btn-lg submitf" data-id="'+id+'" data-name="'+name+'">Nâng cao</button>'
+                                                 +'<input type="text" class="s_keywords" value="" />'
                                                  +'<input type="text" class="s_date_start" value="all" />'
                                                  +'<input type="text" class="s_date_start_radio" value="simple" />'
                                                  +'<input type="text" class="s_date_start_from" value="" />'
@@ -318,7 +319,14 @@ function load_template_project_grid(items) {
                                                  +'<input type="text" class="s_date_end_from" value="" />'
                                                  +'<input type="text" class="s_date_end_to" value="" />'
                                                  +'<input type="text" class="s_trangthai" value="" />'
+                                                 +'<input type="text" class="s_customer" value="" />'
+                                                 +'<input type="text" class="s_xem" value="" />'
+                                                 +'<input type="text" class="s_status" value="-1,0,1,2" />'
+                                                 +'<input type="text" class="s_progress" value="-1,0,1,2" />'
                                                  +'<div class="s_trangthai_html" style="display: none;"></div>'
+                                                 +'<div class="s_customer_html" style="display: none;"></div>'
+                                                 +'<div class="s_implement_html" style="display: none;"></div>'
+                                                 +'<div class="s_xem_html" style="display: none;"></div>'
                                              +'</div>'
                                          +'</div>'
 										+'<table class="table table-bordered" id="task_childs_'+id+'" data-content="0">'
@@ -460,11 +468,16 @@ function foucs(obj) {
 }
 
 function doneTyping(frame_id) {
-	if(frame_id == 'customer_list')
-		var url = BASE_URL + 'tasks/customerList';
-	else {
-		var url = BASE_URL + 'tasks/userList';
-	}
+    switch(frame_id) {
+        case 'customer_list':
+            var url = BASE_URL + 'tasks/customerList';
+            break;
+        case 'trangthai_list':
+            var url = BASE_URL + 'tasks/trangthaiList';
+            break;
+        default:
+            var url = BASE_URL + 'tasks/userList';
+    }
 
 	$('#'+frame_id+' .result').html('');
 	$('#'+frame_id+' .result').hide();
@@ -483,7 +496,7 @@ function doneTyping(frame_id) {
 				if(array.length) {
 					var html = new Array();
 					$.each(array, function( index, value ) {
-						if(frame_id == 'customer_list')
+						if(frame_id == 'customer_list' || frame_id == 'trangthai_list')
 							html[html.length] = '<li><a href="javascript:;" data-id="'+value.id+'" data-name="'+value.name+'" onclick="add_item(this, \''+frame_id+'\');">'+value.name+'</a></li>';
 						else
 							html[html.length] = '<li><a href="javascript:;" data-id="'+value.id+'" data-name="'+value.name+'" onclick="add_item(this, \''+frame_id+'\');">'+value.name+' - '+value.fullname+'</a></li>';
@@ -516,6 +529,34 @@ function cancel(typeP, type) {
 				gantt.deleteTask(taskId);
 	    }
 	}
+}
+
+function add_item(obj, frame_id) {
+    var item_name = $(obj).attr('data-name');
+    var item_id   = $(obj).attr('data-id');
+    var array = new Array();
+    array['customer_list'] 	    = 'customer';
+    array['trangthai_list'] 	= 'trangthai';
+    array['xem_list'] 		    = 'xem';
+    array['implement_list']     = 'implement';
+    array['create_task_list']   = 'create_task';
+    array['pheduyet_task_list'] = 'pheduyet_task';
+    array['progress_list'] 		= 'progress_task';
+
+    var detect_element 	 = $(obj).parents('.result').prev();
+    var result_frame   	 = $(obj).parents('.result');
+    var class_name 	 	 = array[frame_id];
+    if(!$('#'+class_name+'_'+item_id).length){
+        var html = '<span class="item"><input type="hidden" name="'+class_name+'[]" class="'+class_name+'" id="'+class_name+'_'+item_id+'" value="'+item_id+'"><a>'+item_name+'</a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>';
+        $( html ).insertBefore( detect_element );
+        result_frame.hide();
+        detect_element.val('');
+        detect_element.focus();
+    }
+}
+
+function delete_item(obj) {
+    $(obj).parents('span.item').remove();
 }
 
 function press(frame_id) {
@@ -1210,6 +1251,66 @@ function get_current_date() {
     return output;
 }
 
+function get_yesterday() {
+    var d = new Date();
+    d.setDate(d.getDate() - 1); // yesterday
+
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+
+    var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
+function get_some_days_ago(days) {
+    var d = new Date();
+    d.setDate(d.getDate() - days);
+
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+
+    var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
+function get_first_date_of_last_week() {
+    var curr = new Date;
+    var first = curr.getDate() - curr.getDay();
+    var last = first + 6;
+
+    // first day of current week
+    var d = new Date(curr.setDate(first));
+
+    // take the first day of the last week by taking that day 7 days back
+    d.setDate(d.getDate() - 7);
+
+    // now we get the day that we need
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+
+    var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
+function get_last_date_of_last_week() {
+    var curr = new Date;
+    var first = curr.getDate() - curr.getDay();
+    var last = first + 6;
+
+    // last day of current week
+    var d = new Date(curr.setDate(last));
+
+    // take the last day of the last week by taking that day 7 days back
+    d.setDate(d.getDate() - 7);
+
+    // now we get the day that we need
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+
+    var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
 function get_first_date_of_current_weekend() {
     var curr = new Date;
     var first = curr.getDate() - curr.getDay();
@@ -1235,6 +1336,44 @@ function get_last_date_of_current_weekend() {
     var day = d.getDate();
 
     var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
+function get_first_date_of_last_month() {
+    var date = new Date();
+    var d = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+
+    var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
+function get_last_date_of_last_month() {
+    var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    var d = new Date(y, m , 0);
+
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+
+    var output = d.getFullYear() + '-' + (month<10 ? '0' : '') + month + '-' + (day<10 ? '0' : '') + day;
+    return output;
+}
+
+function get_first_date_of_last_year() {
+    var date = new Date();
+    var y = date.getFullYear() - 1;
+    var output = y+'-01-01';
+
+    return output;
+}
+
+function get_last_date_of_last_year() {
+    var date = new Date();
+    var y = date.getFullYear() - 1;
+
+    var output = y+'-12-31';
     return output;
 }
 
@@ -1286,4 +1425,83 @@ function get_item_autocomplete(data) {
                 +'</span>';
 
     return span;
+}
+
+function convert_string_checkbox(string) {
+    var res = string.split(",");
+
+    if($.inArray('1',res) != -1){
+        res = $.grep(res, function(value) {
+            return value != '1';
+        });
+
+        res = $.grep(res, function(value) {
+            return value != '2';
+        });
+
+        res[res.length] = '1_2';
+    }
+
+    return res;
+}
+
+function get_two_dates(date) {
+    switch(date) {
+        case 'today':
+            var current_date = get_current_date();
+            var date_1 = current_date + ' 00:00';
+            var date_2 = current_date + ' 23:59';
+            break;
+        case 'yesterday':
+            var yesterday = get_yesterday();
+            var date_1 = yesterday + ' 00:00';
+            var date_2 = yesterday + ' 23:59';
+            break;
+        case '7_days_previous':
+            var yesterday = get_yesterday();
+            var days_ago = get_some_days_ago(7);
+
+            var date_1 = days_ago + ' 00:00';
+            var date_2 = yesterday + ' 23:59';
+            break;
+
+        case 'current_week':
+            var date_1 = get_first_date_of_current_weekend() + ' 00:00';
+            var date_2 = get_last_date_of_current_weekend() + ' 23:59';
+
+            break;
+
+        case 'previous_week':
+            var date_1 = get_first_date_of_last_week() + ' 00:00';
+            var date_2 = get_last_date_of_last_week() + ' 23:59';
+            break;
+
+        case 'current_month':
+            var date_1 = get_first_date_of_current_month() + ' 00:00';
+            var date_2 = get_last_date_of_current_month() + ' 23:59';
+
+            break;
+        case 'previous_month':
+            var date_1 = get_first_date_of_last_month() + ' 00:00';
+            var date_2 = get_last_date_of_last_month() + ' 23:59';
+
+            break;
+        case 'current_year':
+            var date_1 = get_first_date_of_current_year() + ' 00:00';
+            var date_2 = get_last_date_of_last_year() + ' 23:59';
+
+            break;
+        case 'previous_year':
+            var date_1 = get_first_date_of_last_year() + ' 00:00';
+            var date_2 = get_last_date_of_last_year() + ' 23:59';
+
+            break;
+        default:
+            var date_1 = '';
+            var date_2 = '';
+    }
+
+    date = {date_1 : date_1, date_2: date_2};
+
+    return date;
 }

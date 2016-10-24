@@ -269,32 +269,7 @@
 		});
 	});
 
-	function add_item(obj, frame_id) {
-		var item_name = $(obj).attr('data-name');
-		var item_id   = $(obj).attr('data-id');
-		var array = new Array();
-		array['customer_list'] 	    = 'customer';
-		array['xem_list'] 		    = 'xem';
-		array['implement_list']     = 'implement';
-		array['create_task_list']   = 'create_task';
-		array['pheduyet_task_list'] = 'pheduyet_task';
-		array['progress_list'] 		= 'progress_task';
 
-		var detect_element 	 = $(obj).parents('.result').prev();
-		var result_frame   	 = $(obj).parents('.result');
-		var class_name 	 	 = array[frame_id];
-		if(!$('#'+class_name+'_'+item_id).length){
-			var html = '<span class="item"><input type="hidden" name="'+class_name+'[]" class="'+class_name+'" id="'+class_name+'_'+item_id+'" value="'+item_id+'"><a>'+item_name+'</a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>';
-			$( html ).insertBefore( detect_element );
-			result_frame.hide();
-			detect_element.val('');
-			detect_element.focus();
-		}
-	}
-
-	function delete_item(obj) {
-		$(obj).parents('span.item').remove();
-	}
 	
 	function load_task(page) {
 		var keywords = $.trim($('#s_keywords').val());

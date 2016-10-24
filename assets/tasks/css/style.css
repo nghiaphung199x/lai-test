@@ -812,6 +812,8 @@ div.dhx_modal_cover {
     height: 100px;
     overflow: auto;
 	margin-bottom: 0;
+    list-style: none;
+    padding-left: 0;
 }
 
 .x-select-users .result li {

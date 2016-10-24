@@ -1,5 +1,5 @@
 <?php
-function rewriteUrl($value){
+function rewriteUrl($value, $options = null){
 
 	/*a à ả ã á ạ ă ằ ẳ ẵ ắ ặ â ầ ẩ ẫ ấ ậ b c d đ e è ẻ ẽ é ẹ ê ề ể ễ ế ệ
 		f g h i ì ỉ ĩ í ị j k l m n o ò ỏ õ ó ọ ô ồ ổ ỗ ố ộ ơ ờ ở ỡ ớ ợ
@@ -33,6 +33,14 @@ function rewriteUrl($value){
 	$replaceCharaterY = 'y';
 	$value = preg_replace($charaterY,$replaceCharaterY,$value);
 
-	$value = trim(mb_strtolower(url_title($value), 'UTF-8'));
+    $charaterD = '#(đ|Đ)#imsU';
+    $replaceCharaterD = 'd';
+    $value = preg_replace($charaterD,$replaceCharaterD,$value);
+
+    if($options == null)
+	    $value = trim(mb_strtolower(url_title($value), 'UTF-8'));
+    else
+        $value = trim(mb_strtolower($value, 'UTF-8'));
+
 	return $value;
 }

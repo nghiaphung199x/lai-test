@@ -103,6 +103,25 @@ class BizTasks extends Secure_area
 			echo json_encode($result);
 		}
 	}
+
+    public function trangthaiList() {
+        $post = $this->input->post();
+        if(!empty($post)) {
+            $keywords       = trim($post['keywords']);
+            $task_trangthai = lang('task_trangthai');
+            $result = array();
+            foreach($task_trangthai as $id => $name) {
+                $re_name = rewriteUrl($name, 'low');
+                if (mb_strpos($name, $keywords) !== false || mb_strpos($re_name, $keywords) !== false) {
+                    $result[] = array(
+                        'id' => $id, 'name' => $name
+                    );
+                }
+            }
+
+            echo json_encode($result);
+        }
+    }
 	
 	public function userList() {
 		$post = $this->input->post();
@@ -1375,13 +1394,19 @@ class BizTasks extends Secure_area
 //		$this->MTasks->test();
 //        echo 'hay nhỉ save liên tục à';
 
-        if($_POST) {
-            echo '<pre>';
-            print_r($_POST);
-            echo '</pre>';
+        $task_trangthai = lang('task_trangthai');
+        foreach($task_trangthai as $id => $name) {
+            if (strpos($name, 'Chua') !== false) {
+                $taskArr[] = array(
+                    'id' => $id, 'name' => $name
+                );
+            }
         }
 
-        $this->load->view('tasks/test_view', $this->_data);
+        echo '<pre>';
+        print_r($taskArr);
+        echo '</pre>';
+        //$this->load->view('tasks/test_view', $this->_data);
 	}
 	
 	public function valid_date($str){
