@@ -9,7 +9,7 @@
 <div class="manage_buttons">
 <div class="manage-row-options">
 	<div class="email_buttons text-center">		
-		<a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_template();"><span class="">Xóa lựa chọn</span></a>		
+		<a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_template();"><span class="">Xóa lựa chọn</span></a>
 	</div>
 </div>
 <div class="cl">
@@ -79,6 +79,7 @@
             </div>
             <div class="modal-body">
                 <form class="form-horizontal form-horizontal-mobiles">
+                    <input type="hidden" name="curret_project_id" id="current_project_id" value="0" />
                     <div class="form-group">
                         <label for="simple_radio" class="col-sm-3 col-md-3 col-lg-2 control-label">Bắt đầu :</label>
                         <div class="col-sm-9 col-md-2 col-lg-2">
@@ -256,7 +257,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 5px;">
                         <div class="form-actions pull-right">
                             <input type="button" name="submitf" value="Thực hiện" id="btn_search_advance" style="margin-right: 16px;" class=" submit_button btn btn-primary">
                         </div>
@@ -306,6 +307,7 @@
 </style>
 <script type="text/javascript">
 function set_hidden_input() {
+    var current_project_id     = $('#current_project_id').val();
     var element_parent         = $('#project_grid_table').find('tr[data-parent='+current_project_id+']');
 
     var search_keywords        = element_parent.find('.search_keywords');
@@ -475,6 +477,8 @@ function set_hidden_input() {
 
     checkbox_val = checkbox_val.join(',');
     s_progress.val(checkbox_val);
+    search_keywords.val('');
+    search_date_type.val('0');
 }
 
 function set_form_input(project_id, task_name) {
@@ -649,6 +653,7 @@ $( document ).ready(function() {
 
     $('body').on('click','#btn_search_advance',function(){
         set_hidden_input();
+
         $('#advance_task_search').modal('toggle');
     });
 
@@ -658,6 +663,7 @@ $( document ).ready(function() {
         var project_id      = $(this).attr('data-id');
         current_project_id  = project_id;
 
+        $('#current_project_id').val(project_id);
         set_form_input(current_project_id, task_name);
         $("#advance_task_search").modal();
     });
@@ -674,6 +680,10 @@ $( document ).ready(function() {
         var s_date_end_radio     = element_parent.find('.s_date_end_radio');
         var s_status             = element_parent.find('.s_status');
         var s_progress           = element_parent.find('.s_progress');
+        var s_customer           = element_parent.find('.s_customer');
+        var s_trangthai          = element_parent.find('.s_trangthai');
+        var s_implement          = element_parent.find('.s_implement');
+        var s_xem                = element_parent.find('.s_xem');
 
         var s_trangthai_html     = element_parent.find('.s_trangthai_html');
         var s_customer_html      = element_parent.find('.s_customer_html');
@@ -687,9 +697,14 @@ $( document ).ready(function() {
         var span_trangthai_1 = get_item_autocomplete(data);
 
         //reset some element input
+
+        s_trangthai.val('');
         s_trangthai_html.html('');
+        s_customer.val('');
         s_customer_html.html('');
+        s_implement.val('');
         s_implement_html.html('');
+        s_xem.val('');
         s_xem_html.html('');
         s_status.val('-1,0,1,2');
         s_progress.val('-1,0,1,2');
@@ -786,7 +801,46 @@ $( document ).ready(function() {
         var radio = range_element.find('input[type="radio"]');
         radio.prop("checked", true);
     });
+
+    //search
+    var typingTimer;
+    $('body').on('keyup','.search_keywords',function(){
+        clearTimeout(typingTimer);
+        var tr_element = $(this).closest('[data-parent]');
+        var project_id = tr_element.attr('data-parent');
+        typingTimer = setTimeout('startSearch('+project_id+')', 500);
+    });
+
+    $('body').on('keydown','.search_keywords',function(){
+        clearTimeout(typingTimer);
+    });
 });
+
+function startSearch (project_id) {
+    var tr_element       = $('#project_grid_table tr[data-parent="'+project_id+'"]');
+    var s_keywords       = tr_element.find('.s_keywords');
+    var search_keywords  = tr_element.find('.search_keywords');
+    var s_customer       = tr_element.find('.s_customer');
+    var s_customer_html  = tr_element.find('.s_customer_html');
+    var s_implement      = tr_element.find('.s_implement');
+    var s_implement_html = tr_element.find('.s_implement_html');
+    var s_xem            = tr_element.find('.s_xem');
+    var s_xem_html       = tr_element.find('.s_xem_html');
+    var s_status         = tr_element.find('.s_status');
+    var s_progress       = tr_element.find('.s_progress');
+
+    s_customer.val('');
+    s_customer_html.html('');
+    s_implement.val('');
+    s_implement_html.html('');
+    s_xem.val('');
+    s_xem_html.html('');
+    s_status.val('-1,0,1,2');
+    s_progress.val('-1,0,1,2');
+
+    s_keywords.val(search_keywords.val());
+
+}
 </script>
 
 <?php $this->load->view("partial/footer"); ?>
