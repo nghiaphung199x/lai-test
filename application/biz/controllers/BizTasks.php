@@ -1356,28 +1356,13 @@ class BizTasks extends Secure_area
 
 		if(!empty($post)) {
 			$project_id = $this->_data['arrParam']['project_id'];
-			/*$this->_data['arrParam']['project'] = $project = $this->MTasks->getItem(array('id'=>$project_id), array('task'=>'information'));
-
-			$config['base_url'] = base_url() . 'tasks/taskByProjectList';
-			$config['total_rows'] = $this->MTasks->countItem($this->_data['arrParam'], array('task'=>'task-by-project'));
-		 
-			$config['per_page'] = $this->_paginator['per_page'];
-			$config['uri_segment'] = $this->_paginator['uri_segment'];
-			$config['use_page_numbers'] = TRUE;
-		
-			$this->load->library("pagination");
-			$this->pagination->initialize($config);
-			$this->pagination->createConfig('front-end');
-		
-			$pagination = $this->pagination->create_ajax();
-		
-			$this->_data['arrParam']['start'] = $this->uri->segment(3);*/
 
 			$result  = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'task-by-project'));
 			$project = $result['project'];
 			$items   = $result['ketqua'];
 
 			$items   = array_merge($items, array());
+            $items   = (!empty($items)) ? $items : array();
 
 			$result = array('items'=>$items, 'project'=>$project);
 
@@ -1392,7 +1377,6 @@ class BizTasks extends Secure_area
 	public function test() {
 //		$this->load->model('MTasks');
 //		$this->MTasks->test();
-//        echo 'hay nhỉ save liên tục à';
 
         $task_trangthai = lang('task_trangthai');
         foreach($task_trangthai as $id => $name) {
@@ -1403,9 +1387,6 @@ class BizTasks extends Secure_area
             }
         }
 
-        echo '<pre>';
-        print_r($taskArr);
-        echo '</pre>';
         //$this->load->view('tasks/test_view', $this->_data);
 	}
 	

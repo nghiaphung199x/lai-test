@@ -65,7 +65,7 @@
 						</tbody>
 					</table>
 				</div>
-			</div>	
+			</div>
 		</div>	
 	</div>
 </div>
@@ -268,6 +268,13 @@
     </div>
 </div>
 
+<div id="task_report" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> <h4 class="modal-title" id="mySmallModalLabel">Thông kê [Dự án]</h4> </div>
+        </div>
+    </div>
+</div>
 <style>
 #project_grid_table .search_keywords {
     width: 400px;
@@ -286,6 +293,17 @@
     width: 300px;
     float: right;
 }
+
+#project_grid_table .btn.statistic {
+    margin-left: 10px;
+    opacity: 0.9;
+    background-color: #fa4444;
+}
+
+#project_grid_table .btn.statistic:hover {
+    opacity: 1;
+}
+
 .search-advance-form {
     font-family: Arial;
 }
@@ -654,6 +672,8 @@ $( document ).ready(function() {
     $('body').on('click','#btn_search_advance',function(){
         set_hidden_input();
 
+        var project_id     = $('#current_project_id').val();
+        load_task_childs(project_id, 1);
         $('#advance_task_search').modal('toggle');
     });
 
@@ -668,9 +688,15 @@ $( document ).ready(function() {
         $("#advance_task_search").modal();
     });
 
+    // statistic click
+    $('body').on('click','.statistic',function(){
+       alert('ha ha');
+    });
+
     $('body').on('change','.search_date_type',function(){
         var value                = $(this).val();
         var element_parent       = $(this).closest('tr[data-parent]');
+        var project_id           = element_parent.attr('data-parent');
         var s_date_start_to      = element_parent.find('.s_date_start_to');
         var s_date_start_from    = element_parent.find('.s_date_start_from');
         var s_date_end_to        = element_parent.find('.s_date_end_to');
@@ -697,7 +723,6 @@ $( document ).ready(function() {
         var span_trangthai_1 = get_item_autocomplete(data);
 
         //reset some element input
-
         s_trangthai.val('');
         s_trangthai_html.html('');
         s_customer.val('');
@@ -770,6 +795,8 @@ $( document ).ready(function() {
                 s_date_start_radio.val('simple');
                 s_date_end_radio.val('simple');
         }
+
+        load_task_childs(project_id, 1);
     });
 
     // event when close modal
@@ -802,7 +829,7 @@ $( document ).ready(function() {
         radio.prop("checked", true);
     });
 
-    //search
+    //search tasks
     var typingTimer;
     $('body').on('keyup','.search_keywords',function(){
         clearTimeout(typingTimer);
@@ -814,7 +841,17 @@ $( document ).ready(function() {
     $('body').on('keydown','.search_keywords',function(){
         clearTimeout(typingTimer);
     });
+
+    // search project
+    $('body').on('keyup','#s_keywords',function(){
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(project_search, 500);
+    });
 });
+
+function project_search() {
+    load_list('project-grid', 1);
+}
 
 function startSearch (project_id) {
     var tr_element       = $('#project_grid_table tr[data-parent="'+project_id+'"]');
@@ -839,6 +876,8 @@ function startSearch (project_id) {
     s_progress.val('-1,0,1,2');
 
     s_keywords.val(search_keywords.val());
+
+    load_task_childs(project_id, 1);
 
 }
 </script>

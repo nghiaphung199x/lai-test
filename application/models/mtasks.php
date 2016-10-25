@@ -828,12 +828,86 @@ class MTasks extends MNested2{
 			$this->db->select("t.id, t.name, t.duration, t.percent, t.progress, t.level, t.parent, t.project_id, t.lft, t.rgt, t.created, t.pheduyet, t.color, t.prioty, t.trangthai")
 					 ->from($this->_table . ' AS t');
 
-
 			if($task_ids == 'all') {
 				$this->db->where('t.project_id', $arrParams['project_id']);
 			}else {
 				$this->db->where('t.id IN ' . implode(', ', $task_ids));
 			}
+
+            // filter
+            if(!empty($arrParams['keywords'])) {
+                $keywords = $arrParams['keywords'];
+                $this->db->where('t.name LIKE \'%'.$keywords.'%\' OR t.detail LIKE \'%'.$keywords.'%\'');
+            }
+
+            if(!empty($arrParams['date_start_from'])) {
+                $date_start_from = $arrParams['date_start_from'];
+                $this->db->where('t.date_start >= \''.$date_start_from.'\'');
+            }
+
+            if(!empty($arrParams['date_start_to'])) {
+                $date_start_to = $arrParams['date_start_to'];
+                $this->db->where('t.date_start <= \''.$date_start_to.'\'');
+            }
+
+            if(!empty($arrParams['date_end_from'])) {
+                $date_end_from = $arrParams['date_end_from'];
+                $this->db->where('t.date_end >= \''.$date_end_from.'\'');
+            }
+
+            if(!empty($arrParams['date_end_to'])) {
+                $date_end_to = $arrParams['date_end_to'];
+                $this->db->where('t.date_end <= \''.$date_end_to.'\'');
+            }
+
+            if(!empty($arrParams['trangthai'])) {
+                $trangthai = $arrParams['trangthai'];
+                $this->db->where('t.trangthai IN ('.$trangthai.')');
+            }
+
+            if(!empty($arrParams['customers'])) {
+                $customers = explode(',', $arrParams['customers']);
+                $where_clause = array();
+                foreach($customers as $cus_id) {
+                    $where_clause[] = "CONCAT(',',customer_ids,',') LIKE '%,$cus_id,%'";
+                }
+
+                $where = implode(' OR ', $where_clause);
+                $this->db->where($where);
+            }
+
+            if(!empty($arrParams['pheduyet']) && $arrParams['pheduyet'] != '-1,0,1-2') {
+                $pheduyet = $arrParams['pheduyet'];
+                $this->db->where('t.pheduyet IN ('.$pheduyet.')');
+            }
+
+            if(!empty($arrParams['implement']) || !empty($arrParams['xem'])) {
+                $where_clause = array();
+                if(!empty($arrParams['implement'])) {
+                    $implement = $arrParams['implement'];
+                    $where_clause[] = '(user_id IN ('.$implement.') AND is_implement = 1)';
+                }
+
+                if(!empty($arrParams['xem'])) {
+                    $xem       = $arrParams['xem'];
+                    $where_clause[] = '(user_id IN ('.$xem.') AND is_xem = 1)';
+                }
+
+                $where_clause = implode(' AND ', $where_clause);
+                $sql = 'SELECT task_id
+                        FROM ' . $this->db->dbprefix(task_user_relations) . '
+                        WHERE ' . $where_clause;
+
+                $this->db->where('t.id IN ('.$sql.')');
+            }
+
+            if(!empty($arrParams['progress']) && $arrParams['progress'] != '-1,0,1-2') {
+                $sql = 'SELECT task_id
+                        FROM ' . $this->db->dbprefix(task_progress) .
+                      ' WHERE trangthai IN ('.$arrParams['progress'].')';
+
+                $this->db->where('t.id IN ('.$sql.')');
+            }
 
 			$flagLevel = false;
 		    if(!empty($arrParams['col']) && !empty($arrParams['order'])){

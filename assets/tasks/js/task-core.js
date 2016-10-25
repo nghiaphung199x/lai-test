@@ -309,20 +309,22 @@ function load_template_project_grid(items) {
                                              +'<div class="col-xs-12 col-md-6 pull-left" style="padding-left: 0; padding-right: 0;">'
                                                  +'<input type="text" class="form-control ui-autocomplete-input search_keywords" value="" placeholder="Tìm kiếm công việc" >'
                                                  +'<button name="submitf" class="btn btn-primary btn-lg submitf" data-id="'+id+'" data-name="'+name+'">Nâng cao</button>'
-                                                 +'<input type="hidden" class="s_keywords" value="" />'
-                                                 +'<input type="hidden" class="s_date_start" value="all" />'
-                                                 +'<input type="hidden" class="s_date_start_radio" value="simple" />'
-                                                 +'<input type="hidden" class="s_date_start_from" value="" />'
-                                                 +'<input type="hidden" class="s_date_start_to" value="" />'
-                                                 +'<input type="hidden" class="s_date_end" value="all" />'
-                                                 +'<input type="hidden" class="s_date_end_radio" value="simple" />'
-                                                 +'<input type="hidden" class="s_date_end_from" value="" />'
-                                                 +'<input type="hidden" class="s_date_end_to" value="" />'
-                                                 +'<input type="hidden" class="s_trangthai" value="" />'
-                                                 +'<input type="hidden" class="s_customer" value="" />'
-                                                 +'<input type="hidden" class="s_xem" value="" />'
-                                                 +'<input type="hidden" class="s_status" value="-1,0,1,2" />'
-                                                 +'<input type="hidden" class="s_progress" value="-1,0,1,2" />'
+                                                 +'<button name="statistic" class="btn btn-primary btn-lg statistic" data-id="'+id+'" data-name="'+name+'">Thống kê</button>'
+                                                 +'<input type="hidden" class="s_keywords s_input_filter" value="" />'
+                                                 +'<input type="hidden" class="s_date_start s_input_filter" value="all" />'
+                                                 +'<input type="hidden" class="s_date_start_radio s_input_filter" value="simple" />'
+                                                 +'<input type="hidden" class="s_date_start_from s_input_filter" value="" />'
+                                                 +'<input type="hidden" class="s_date_start_to s_input_filter" value="" />'
+                                                 +'<input type="hidden" class="s_date_end s_input_filter" value="all" />'
+                                                 +'<input type="hidden" class="s_date_end_radio s_input_filter" value="simple" />'
+                                                 +'<input type="hidden" class="s_date_end_from s_input_filter" value="" />'
+                                                 +'<input type="hidden" class="s_date_end_to s_input_filter" value="" />'
+                                                 +'<input type="hidden" class="s_trangthai s_input_filter" value="" />'
+                                                 +'<input type="hidden" class="s_customer s_input_filter" value="" />'
+                                                 +'<input type="hidden" class="s_implement s_input_filter" value="" />'
+                                                 +'<input type="hidden" class="s_xem s_input_filter" value="" />'
+                                                 +'<input type="hidden" class="s_status s_input_filter" value="-1,0,1,2" />'
+                                                 +'<input type="hidden" class="s_progress s_input_filter" value="-1,0,1,2" />'
                                                  +'<div class="s_trangthai_html" style="display: none;"></div>'
                                                  +'<div class="s_customer_html" style="display: none;"></div>'
                                                  +'<div class="s_implement_html" style="display: none;"></div>'
@@ -965,6 +967,33 @@ function load_task_childs(project_id, page) {
 	var table 	    = $('#task_childs_'+project_id);
 
     var elementSort = $('#task_childs_'+project_id+' td.header');
+
+    // get filter input
+    var tr_element        = $('#project_grid_table tr[data-parent="'+project_id+'"]');
+    var s_keywords        = tr_element.find('.s_keywords');
+    var s_date_start_from = tr_element.find('.s_date_start_from');
+    var s_date_start_to   = tr_element.find('.s_date_start_to');
+    var s_date_end_from   = tr_element.find('.s_date_end_from');
+    var s_date_end_to     = tr_element.find('.s_date_end_to');
+    var s_trangthai       = tr_element.find('.s_trangthai');
+    var s_customer        = tr_element.find('.s_customer');
+    var s_implement       = tr_element.find('.s_implement');
+    var s_xem             = tr_element.find('.s_xem');
+    var s_status          = tr_element.find('.s_status');
+    var s_progress        = tr_element.find('.s_progress');
+
+    data.keywords         = $.trim(s_keywords.val());
+    data.date_start_from  = $.trim(s_date_start_from.val());
+    data.date_start_to    = $.trim(s_date_start_to.val());
+    data.date_end_from    = $.trim(s_date_end_from.val());
+    data.date_end_to      = $.trim(s_date_end_to.val());
+    data.trangthai        = $.trim(s_trangthai.val());
+    data.customers        = $.trim(s_customer.val());
+    data.implement        = $.trim(s_implement.val());
+    data.xem              = $.trim(s_xem.val());
+    data.pheduyet         = $.trim(s_status.val());
+    data.progress         = $.trim(s_progress.val());
+
     // get field sort
     if(elementSort.length){
         if(elementSort.hasClass('headerSortUp')){
