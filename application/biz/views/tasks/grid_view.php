@@ -268,40 +268,30 @@
     </div>
 </div>
 
-<div id="task_report" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-    <div class="modal-dialog modal-sm" role="document">
+<div id="task_report" class="modal fade bs-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
-            <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> <h4 class="modal-title" id="mySmallModalLabel">Thông kê [Dự án]</h4> </div>
+            <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> <h4 class="modal-title" id="my_report_task">Thống kê <span>[Dự án]</span></h4> </div>
+            <div class="modal-body">
+                <ul>
+                    <li class="all">Công việc: <span>0</span></li>
+                    <li class="implement">Phụ trách: <span>0</span></li>
+                    <li class="xem">Theo dõi: <span>0</span></li>
+                    <li class="cancel">Đóng dừng: <span>0</span></li>
+                    <li class="not-done">Không thực hiện: <span>0</span></li>
+                    <li class="unfulfilled">Chưa thực hiện: <span>0</span></li>
+                    <li class="processing">Đang tiến hành: <span>0</span></li>
+                    <li class="slow_proccessing">Chậm tiến độ: <span>0</span></li>
+                    <li class="finish">Đã hoàn thành: <span>0</span></li>
+                    <li class="slow-finish">Đã hoàn thành nhưng chậm tiến độ: <span>0</span></li>
+                </ul>
+             </div>
         </div>
     </div>
 </div>
 <style>
-#project_grid_table .search_keywords {
-    width: 400px;
-    margin-bottom: 5px;
-    float: left;
-    margin-right: 10px;
-}
-
-#project_grid_table .s_list {
-    width: 400px;
-    float: right;
-    margin-bottom: 5px;
-}
-
-#project_grid_table .search_date_type {
-    width: 300px;
-    float: right;
-}
-
-#project_grid_table .btn.statistic {
-    margin-left: 10px;
-    opacity: 0.9;
-    background-color: #fa4444;
-}
-
-#project_grid_table .btn.statistic:hover {
-    opacity: 1;
+.modal .modal-title {
+    font-weight: bold;
 }
 
 .search-advance-form {
@@ -617,6 +607,7 @@ function reset_form() {
 $( document ).ready(function() {
 	load_list('project-grid', 1);
     var current_project_id = 0;
+
 	$('body').on('click','.table-tree .expand_all',function(){
         var symbol = $(this).text();
     	var tr_element = $(this).closest('tr');
@@ -690,7 +681,40 @@ $( document ).ready(function() {
 
     // statistic click
     $('body').on('click','.statistic',function(){
-       alert('ha ha');
+        var task_name       = $(this).attr('data-name');
+        var project_id      = $(this).attr('data-id');
+        current_project_id = project_id;
+
+        $('#current_project_id').val(project_id);
+        $('#my_report_task span').html(task_name);
+
+        var data = new Object();
+        data.project_id = project_id;
+
+        // get filter input
+        var tr_element        = $('#project_grid_table tr[data-parent="'+project_id+'"]');
+        data                  = get_data_child_task(data, project_id, tr_element);
+        $.ajax({
+            type: "POST",
+            url: BASE_URL + 'tasks/tasks_child_statistic',
+            data: data,
+            success: function(string){
+                var result = $.parseJSON(string);
+                $('#task_report li.all span').text(result.all);
+                $('#task_report li.implement span').text(result.implement);
+                $('#task_report li.xem span').text(result.xem);
+                $('#task_report li.cancel span').text(result.cancel);
+                $('#task_report li.not-done span').text(result.not_done);
+                $('#task_report li.unfulfilled span').text(result.unfulfilled);
+                $('#task_report li.processing span').text(result.processing);
+                $('#task_report li.slow_proccessing span').text(result.slow_proccessing);
+                $('#task_report li.finish span').text(result.finish);
+                $('#task_report li.slow-finish span').text(result.slow_finish);
+
+                $("#task_report").modal();
+            }
+        });
+
     });
 
     $('body').on('change','.search_date_type',function(){
@@ -802,6 +826,19 @@ $( document ).ready(function() {
     // event when close modal
     $('#advance_task_search').on('hidden.bs.modal', function () {
         reset_form();
+    })
+
+    $('#task_report').on('hidden.bs.modal', function () {
+        $('#task_report li.all span').text('0');
+        $('#task_report li.implement span').text('0');
+        $('#task_report li.xem span').text('0');
+        $('#task_report li.cancel span').text('0');
+        $('#task_report li.not-done span').text('0');
+        $('#task_report li.unfulfilled span').text('0');
+        $('#task_report li.processing span').text('0');
+        $('#task_report li.slow_proccessing span').text('0');
+        $('#task_report li.finish span').text('0');
+        $('#task_report li.slow-finish span').text('0');
     })
 
     // autocomplete

@@ -960,16 +960,7 @@ function load_list(keyword, page) {
 	});
 }
 
-function load_task_childs(project_id, page) {
-	var data = new Object();
-    data.project_id = project_id;
-	var url	        = BASE_URL + 'tasks/taskByProjectList/'+page;
-	var table 	    = $('#task_childs_'+project_id);
-
-    var elementSort = $('#task_childs_'+project_id+' td.header');
-
-    // get filter input
-    var tr_element        = $('#project_grid_table tr[data-parent="'+project_id+'"]');
+function get_data_child_task(data, project_id, tr_element) {
     var s_keywords        = tr_element.find('.s_keywords');
     var s_date_start_from = tr_element.find('.s_date_start_from');
     var s_date_start_to   = tr_element.find('.s_date_start_to');
@@ -993,6 +984,21 @@ function load_task_childs(project_id, page) {
     data.xem              = $.trim(s_xem.val());
     data.pheduyet         = $.trim(s_status.val());
     data.progress         = $.trim(s_progress.val());
+
+    return data;
+}
+
+function load_task_childs(project_id, page) {
+	var data = new Object();
+    data.project_id = project_id;
+	var url	        = BASE_URL + 'tasks/taskByProjectList/'+page;
+	var table 	    = $('#task_childs_'+project_id);
+
+    var elementSort = $('#task_childs_'+project_id+' td.header');
+
+    // get filter input
+    var tr_element        = $('#project_grid_table tr[data-parent="'+project_id+'"]');
+    data                  = get_data_child_task(data, project_id, tr_element);
 
     // get field sort
     if(elementSort.length){

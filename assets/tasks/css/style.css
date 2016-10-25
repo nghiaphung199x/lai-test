@@ -1357,7 +1357,110 @@ body::-webkit-scrollbar-thumb {
     padding-left: 4px;
 }
 
+.modal-header .close span {
+    font-size: 21px !important;
+}
 
+#task_report .modal-body {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+#task_report ul {
+    padding-left: 0;
+    list-style: none;
+    margin-bottom: 0;
+    font-family: Arial;
+}
+
+#task_report ul li {
+    font-weight: bold;
+    padding-left: 30px;
+    position: relative;
+    height: 35px;
+    line-height: 35px;
+    color: #535353;
+}
+
+#task_report ul li:before {
+    position: absolute;
+    font-family: 'FontAwesome';
+    top: 0;
+    left: 0px;
+    font-size: 20px;
+    color: black;
+}
+
+#task_report ul li.all:before {
+    content: "\f03a";
+}
+
+#task_report ul li.implement:before {
+    content: "\f0a4";
+}
+
+#task_report ul li.xem:before {
+    content: "\f21d";
+}
+
+#task_report ul li.cancel:before {
+    content: "\f28e";
+}
+
+#task_report ul li.not-done:before {
+    content: "\f00d";
+}
+
+#task_report ul li.unfulfilled:before {
+    content: "\f0f4";
+}
+
+#task_report ul li.processing:before {
+    content: "\f0ae";
+}
+
+#task_report ul li.slow_proccessing:before {
+    content: "\f110";
+}
+
+#task_report ul li.finish:before {
+    content: "\f046";
+}
+
+#task_report ul li.slow-finish:before {
+    content: "\f058";
+}
+
+#task_report ul li span {
+    color: red;
+    cursor: pointer;
+}
+#project_grid_table .search_keywords {
+    width: 400px;
+    margin-bottom: 5px;
+    float: left;
+    margin-right: 10px;
+}
+
+#project_grid_table .s_list {
+    width: 400px;
+    float: right;
+    margin-bottom: 5px;
+}
+
+#project_grid_table .search_date_type {
+    width: 300px;
+    float: right;
+}
+
+#project_grid_table .btn.statistic {
+    margin-left: 10px;
+    opacity: 0.9;
+    background-color: #fa4444;
+}
+
+#project_grid_table .btn.statistic:hover {
+    opacity: 1;
+}
 
 @-webkit-keyframes animate-positive {
   0% { width:0%; }

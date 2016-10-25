@@ -109,10 +109,13 @@ class BizTasks extends Secure_area
         if(!empty($post)) {
             $keywords       = trim($post['keywords']);
             $task_trangthai = lang('task_trangthai');
+            $task_trangthai[5] = 'Chậm tiến độ';
+            $task_trangthai[6] = 'Đã hoàn thành nhưng chậm tiến độ';
             $result = array();
             foreach($task_trangthai as $id => $name) {
-                $re_name = rewriteUrl($name, 'low');
-                if (mb_strpos($name, $keywords) !== false || mb_strpos($re_name, $keywords) !== false) {
+                $re_keywords = rewriteUrl($keywords, 'low');
+                $re_name     = rewriteUrl($name, 'low');
+                if (mb_strpos($re_name, $re_keywords) !== false) {
                     $result[] = array(
                         'id' => $id, 'name' => $name
                     );
@@ -716,7 +719,6 @@ class BizTasks extends Secure_area
 					}elseif($arrParam['progress'] > 0 && $arrParam['trangthai'] == 0) {
 						$arrParam['trangthai'] = 1;
 					}	
-
 
 					if($arrParam['pheduyet'] == 3) { // không cần phải gửi request
 						// cập nhật tiến độ cho task
@@ -1369,6 +1371,38 @@ class BizTasks extends Secure_area
 			echo json_encode($result);
 		}
 	}
+
+    public function tasks_child_statistic() {
+        $post  = $this->input->post();
+        $this->load->model('MTasks');
+        if(!empty($post)) {
+            $all              = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-project'));
+            $implement        = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-project-implement'));
+            $xem              = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-project-cc'));
+            $cancel           = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'cancel'));
+            $not_done         = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'not-done'));
+            $unfulfilled      = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'unfulfilled'));
+            $processing       = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'processing'));
+            $slow_proccessing = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'slow_proccessing'));
+            $finish           = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'finish'));
+            $slow_finish      = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'slow-finish'));
+
+            $data = array(
+                'all'              => $all,
+                'implement'        => $implement,
+                'xem'              => $xem,
+                'cancel'           => $cancel,
+                'not_done'         => $not_done,
+                'unfulfilled'      => $unfulfilled,
+                'processing'       => $processing,
+                'slow_proccessing' => $slow_proccessing,
+                'finish'           => $finish,
+                'slow_finish'      => $slow_finish,
+            );
+
+            echo json_encode($data);
+        }
+    }
 	
 	public function grid() {
 		$this->load->view('tasks/grid_view', $this->_data);
@@ -1379,6 +1413,11 @@ class BizTasks extends Secure_area
 //		$this->MTasks->test();
 
         $task_trangthai = lang('task_trangthai');
+        $task_trangthai[5] = 'Chậm tiến độ';
+        $task_trangthai[6] = 'Đã hoàn thành nhưng chậm tiến độ';
+        echo '<pre>';
+        print_r($task_trangthai);
+        echo '</pre>';
         foreach($task_trangthai as $id => $name) {
             if (strpos($name, 'Chua') !== false) {
                 $taskArr[] = array(
