@@ -586,33 +586,7 @@ display: block;
 	margin-top: 10px;
 }
 
-.arrord_nav {
-    margin-top: 5px;
-    height: 30px;
-    line-height: 30px;
-    background: #489ee7;
-}
 
-.arrord_nav ul li {
-	float: left;
-    min-width: 80px;
-    color: white;
-    text-align: center;
-    cursor: pointer;
-    padding: 0 5px;
-}
-
-.arrord_nav ul li span.title {
-	display: block;
-}
-
-.arrord_nav ul li:hover, .arrord_nav ul li.active {
-	background: #2377c1;
-}
-
-.arrord_nav ul li:hover {
-	background-color: rgba(35, 119, 193, 0.6);
-}
 
 
 #add_navigation .title {

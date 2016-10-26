@@ -42,6 +42,8 @@ class MTasks extends MNested2{
 				$this->db->where('t.id IN ' . implode(', ', $task_ids));
 			}
 
+            $this->db->where('t.id != ' . $arrParams['project_id']);
+
             // filter
             $where = $this->get_where_from_filter($arrParams);
             if(!empty($where)) {
@@ -65,7 +67,16 @@ class MTasks extends MNested2{
                 $this->db->where('t.id IN ' . implode(', ', $task_ids));
             }
 
-            $arrParams['implement'] = $this->_id_admin;
+            $this->db->where('t.id != ' . $arrParams['project_id']);
+
+            if(!empty($arrParams['implement'])) {
+                $implement_arr = explode(',', $arrParams['implement']);
+                if(in_array($this->_id_admin, $implement_arr))
+                    $arrParams['implement'] = $this->_id_admin;
+                else
+                    $arrParams['implement'] = '0';
+            }else
+                $arrParams['implement'] = $this->_id_admin;
 
             // filter
             $where = $this->get_where_from_filter($arrParams);
@@ -90,7 +101,16 @@ class MTasks extends MNested2{
                 $this->db->where('t.id IN ' . implode(', ', $task_ids));
             }
 
-            $arrParams['xem'] = $this->_id_admin;
+            $this->db->where('t.id != ' . $arrParams['project_id']);
+
+            if(!empty($arrParams['xem'])) {
+                $xem_arr = explode(',', $arrParams['xem']);
+                if(in_array($this->_id_admin, $xem_arr))
+                    $arrParams['xem'] = $this->_id_admin;
+                else
+                    $arrParams['xem'] = '0';
+            }else
+                $arrParams['implement'] = $this->_id_admin;
 
             // filter
             $where = $this->get_where_from_filter($arrParams);
@@ -115,20 +135,32 @@ class MTasks extends MNested2{
                 $this->db->where('t.id IN ' . implode(', ', $task_ids));
             }
 
+            $this->db->where('t.id != ' . $arrParams['project_id']);
+
             if($options['type'] == 'cancel') // đóng, dừng
-                $arrParams['trangthai'] = 3;
+                $trangthai = 3;
             elseif($options['type'] == 'not-done') // không thực hiện
-                $arrParams['trangthai'] = 4;
+                $trangthai = 4;
             elseif($options['type'] == 'unfulfilled') // chưa thực hiện
-                $arrParams['trangthai'] = 0;
+                $trangthai = 0;
             elseif($options['type'] == 'processing') // đang tiến hành
-                $arrParams['trangthai'] = 1;
+                $trangthai = 1;
             elseif($options['type'] == 'slow_proccessing') // chậm tiến độ
-                $arrParams['trangthai'] = 5;
+                $trangthai = 5;
             elseif($options['type'] == 'finish') // hoàn thành
-                $arrParams['trangthai'] = 2;
+                $trangthai = 2;
             elseif($options['type'] == 'slow-finish') // hoàn thành nhưng chậm tiến độ
-                $arrParams['trangthai'] = 6;
+                $trangthai = 6;
+
+            if(!empty($arrParams['trangthai'])) {
+                $trangthai_arr = explode(',', $arrParams['trangthai']);
+                if(in_array($trangthai, $trangthai_arr)) {
+                    $arrParams['trangthai'] = $trangthai;
+                }else
+                    $arrParams['trangthai'] = '-1';
+
+            }else
+                $arrParams['trangthai'] = $trangthai;
 
             // filter
             $where = $this->get_where_from_filter($arrParams);
@@ -441,7 +473,7 @@ class MTasks extends MNested2{
 			// no full permission
 			if($flagAll == false) {
 				$project_ids = $this->getProjectRelation();
-                if(!empty($project_ids))
+                if(empty($project_ids))
                     $project_ids = array(-1);
 			}
 
@@ -791,7 +823,7 @@ class MTasks extends MNested2{
 			$flagAll = $this->checkAllPermission();
 			if($flagAll == false) {
 				$project_ids = $this->getProjectRelation();
-                if(!empty($project_ids))
+                if(empty($project_ids))
                     $project_ids = array(-1);
 			}
 
@@ -915,6 +947,7 @@ class MTasks extends MNested2{
 		}
 		elseif($options['task'] == 'task-by-project') {
 			$task_ids = $this->getTasksIdsByProject($arrParams['project']);
+
 			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);
 			$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date", FALSE);
 			$this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as finish_date", FALSE);
@@ -929,10 +962,13 @@ class MTasks extends MNested2{
 
             // filter
             $where = $this->get_where_from_filter($arrParams);
+
             if(!empty($where)) {
                 foreach($where as $wh)
                     $this->db->where($wh);
             }
+
+            $this->db->or_where('t.id', $arrParams['project_id']);
 
 			$flagLevel = false;
 		    if(!empty($arrParams['col']) && !empty($arrParams['order'])){
@@ -948,6 +984,7 @@ class MTasks extends MNested2{
 			$query 	   = $this->db->get();
 			
 			$resultTmp = $query->result_array();
+
 			$result    = array();
 
 			if(!empty($resultTmp)) {
@@ -1695,6 +1732,7 @@ class MTasks extends MNested2{
 
             $trangthai     = $arrParams['trangthai'];
             $trangthai_arr = explode(',', $arrParams['trangthai']);
+
             if(in_array(2, $trangthai_arr)) {
                 if(($key = array_search(6, $trangthai_arr)) !== false) {
                     unset($trangthai_arr[$key]);
@@ -1713,7 +1751,6 @@ class MTasks extends MNested2{
             }else {
                 $where_clause = array();
                 if(in_array(5, $trangthai_arr)) {
-                    $trangthai_tmp[] = 5;
                     if(($key = array_search(0, $trangthai_arr)) !== false) {
                         unset($trangthai_arr[$key]);
                     }
@@ -1722,12 +1759,19 @@ class MTasks extends MNested2{
                         unset($trangthai_arr[$key]);
                     }
 
+                    if(($key = array_search(5, $trangthai_arr)) !== false) {
+                        unset($trangthai_arr[$key]);
+                    }
+
                     $where_clause[] = "t.trangthai IN (0,1) AND TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') > 0";
                 }
 
                 if(in_array(6, $trangthai_arr)) {
-                    $trangthai_tmp[] = 6;
                     if(($key = array_search(2, $trangthai_arr)) !== false) {
+                        unset($trangthai_arr[$key]);
+                    }
+
+                    if(($key = array_search(6, $trangthai_arr)) !== false) {
                         unset($trangthai_arr[$key]);
                     }
 
@@ -1741,6 +1785,7 @@ class MTasks extends MNested2{
                 $where_clause = implode(' OR ', $where_clause);
                 $where[] = $where_clause;
             }
+
         }
 
         if(!empty($arrParams['customers'])) {

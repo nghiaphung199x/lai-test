@@ -93,37 +93,41 @@
 					parent: parent
 				},
 				success: function(html){
-				   if(type == 'new') {
-					   create_layer();
-					   $('#my-form').removeClass('quickInfo');
-					   $('#my-form').html(html);
-					   $('#my-form').show();
-
-					   $('#color').colorpicker({color: '#489ee7',});
-				   }else {
-					   if(html != '') {   
-						   create_layer();
-						   $('#my-form').html(html);
-						   $('#my-form').show(); 
-						   $('#color').colorpicker();
-						   
-					   }else {
-						   gantt.alert({
-							    text: 'Bạn không có quyền với chức năng này.', title:"Cảnh báo!",
-							    ok:"Đóng", callback:function(){}
-							});
-					   }
-				   }
-				   
-				   // picker
-				   date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
-				   // end picker
-				   
-				   var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
-				   $.each(frame_array, function( index, value ) {
-					  css_form(value);
-					  press(value);
-				   });
+                   if(type == 'new') {
+                       $('#my_modal').html(html);
+                       $('#my_modal').modal('toggle');
+                   }
+//				   if(type == 'new') {
+//					   create_layer();
+//					   $('#my-form').removeClass('quickInfo');
+//					   $('#my-form').html(html);
+//					   $('#my-form').show();
+//
+//					   $('#color').colorpicker({color: '#489ee7',});
+//				   }else {
+//					   if(html != '') {
+//						   create_layer();
+//						   $('#my-form').html(html);
+//						   $('#my-form').show();
+//						   $('#color').colorpicker();
+//
+//					   }else {
+//						   gantt.alert({
+//							    text: 'Bạn không có quyền với chức năng này.', title:"Cảnh báo!",
+//							    ok:"Đóng", callback:function(){}
+//							});
+//					   }
+//				   }
+//
+//				   //picker
+//				   date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
+//				   // end picker
+//
+//				   var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
+//				   $.each(frame_array, function( index, value ) {
+//					  css_form(value);
+//					  press(value);
+//				   });
 			    }
 			});
 		};

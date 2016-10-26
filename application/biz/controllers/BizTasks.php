@@ -247,13 +247,14 @@ class BizTasks extends Secure_area
 				}
 
 				// nếu là công việc con
-// 				if($arrParam['parent'] > 0){
-// 					//nếu không phải dự án thì update lại progress item : progress => -1
-// 					$this->MTaskProgress->saveItem(array('task_ids'=>$task_ids), array('task'=>'progress-1'));
-// 					//update lại tiến đô + lịch sử
-// 					$arrParam['key'] = 'plus';
-// 					$this->MTaskProgress->solve($arrParam); 
-// 				}
+ 				if($arrParam['parent'] > 0){
+ 					//nếu không phải dự án thì update lại progress item : progress => -1
+ 					$this->MTaskProgress->saveItem(array('task_ids'=>$task_ids), array('task'=>'progress-1'));
+
+ 					//update lại tiến đô + lịch sử
+ 					$arrParam['key'] = 'plus';
+ 					$this->MTaskProgress->solve($arrParam);
+ 				}
 
                 $respon = array('flag'=>'true');
 			}else {
@@ -668,7 +669,7 @@ class BizTasks extends Secure_area
 		
 		if(!empty($post)) {
 			$item = $this->MTasks->getItem(array('id'=>$this->_data['arrParam']['task_id']), array('task'=>'public-info', 'brand'=>'full'));
-			if($item['pheduyet'] == 0) {
+			if($item['pheduyet'] != 1 && $item['pheduyet'] != 2) {
 				$respon = array('flag'=>'false', 'message'=>'Công việc chưa được phê duyệt.');
 			}else {
 				$flagError = false;
@@ -705,13 +706,13 @@ class BizTasks extends Secure_area
 					
 					$task_permission = $user_info['task_permission'];
 						
-					$arrParam['pheduyet'] = 2;
+					$arrParam['pheduyet'] = -1;
 					if(in_array('update_project', $task_permission))
-						$arrParam['pheduyet'] = 3;
+						$arrParam['pheduyet'] = 2;
 					elseif(in_array($user_info['id'], $is_implement) && in_array('update_brand_task', $task_permission))
-						$arrParam['pheduyet'] = 3;
+						$arrParam['pheduyet'] = 2;
 					elseif(count($is_progress) == 0)
-						$arrParam['pheduyet'] = 3;
+						$arrParam['pheduyet'] = 2;
 
 					if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
 						$arrParam['trangthai'] = 2;
@@ -1360,6 +1361,7 @@ class BizTasks extends Secure_area
 			$project_id = $this->_data['arrParam']['project_id'];
 
 			$result  = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'task-by-project'));
+
 			$project = $result['project'];
 			$items   = $result['ketqua'];
 
@@ -1405,6 +1407,11 @@ class BizTasks extends Secure_area
     }
 	
 	public function grid() {
+        $this->load->library('MY_System_Info');
+        $info 			 = new MY_System_Info();
+        $user_info 		 = $info->getInfo();
+        $this->_data['user_info'] = $user_info;
+
 		$this->load->view('tasks/grid_view', $this->_data);
 	}
 	

@@ -275,15 +275,15 @@
             <div class="modal-body">
                 <ul>
                     <li class="all">Công việc: <span>0</span></li>
-                    <li class="implement">Phụ trách: <span>0</span></li>
-                    <li class="xem">Theo dõi: <span>0</span></li>
-                    <li class="cancel">Đóng dừng: <span>0</span></li>
-                    <li class="not-done">Không thực hiện: <span>0</span></li>
-                    <li class="unfulfilled">Chưa thực hiện: <span>0</span></li>
-                    <li class="processing">Đang tiến hành: <span>0</span></li>
-                    <li class="slow_proccessing">Chậm tiến độ: <span>0</span></li>
-                    <li class="finish">Đã hoàn thành: <span>0</span></li>
-                    <li class="slow-finish">Đã hoàn thành nhưng chậm tiến độ: <span>0</span></li>
+                    <li class="implement">Phụ trách: <span onclick="do_change_advance_search('implement');">0</span></li>
+                    <li class="xem">Theo dõi: <span onclick="do_change_advance_search('xem');">0</span></li>
+                    <li class="cancel">Đóng dừng: <span onclick="do_change_advance_search('cancel');">0</span></li>
+                    <li class="not-done">Không thực hiện: <span onclick="do_change_advance_search('not-done');">0</span></li>
+                    <li class="unfulfilled" onclick="do_change_advance_search('unfulfilled');">Chưa thực hiện: <span>0</span></li>
+                    <li class="processing" onclick="do_change_advance_search('processing');">Đang tiến hành: <span>0</span></li>
+                    <li class="slow_proccessing" onclick="do_change_advance_search('slow_proccessing');">Chậm tiến độ: <span>0</span></li>
+                    <li class="finish" onclick="do_change_advance_search('finish');">Đã hoàn thành: <span>0</span></li>
+                    <li class="slow-finish" onclick="do_change_advance_search('slow-finish');">Đã hoàn thành nhưng chậm tiến độ: <span>0</span></li>
                 </ul>
              </div>
         </div>
@@ -314,6 +314,8 @@
 }
 </style>
 <script type="text/javascript">
+var user_id = <?php echo $user_info['id']; ?>;
+var user_name = '<?php echo $user_info['username']; ?>';
 function set_hidden_input() {
     var current_project_id     = $('#current_project_id').val();
     var element_parent         = $('#project_grid_table').find('tr[data-parent='+current_project_id+']');
@@ -465,9 +467,13 @@ function set_hidden_input() {
     //Tasks
     var checkbox = $("input[name='status[]']:checked");
     var checkbox_val = new Array();
+
     if(checkbox.length) {
         $( checkbox ).each(function() {
-            checkbox_val[checkbox_val.length] = $(this).val();
+            var str = $(this).val();
+            var value = str.replace("1-2", "1,2");
+
+            checkbox_val[checkbox_val.length] = value;
         });
     }
 
@@ -479,7 +485,10 @@ function set_hidden_input() {
     var checkbox_val = new Array();
     if(checkbox.length) {
         $( checkbox ).each(function() {
-            checkbox_val[checkbox_val.length] = $(this).val();
+            var str = $(this).val();
+            var value = str.replace("1-2", "1,2");
+
+            checkbox_val[checkbox_val.length] = value;
         });
     }
 
