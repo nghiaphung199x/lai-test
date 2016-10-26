@@ -135,6 +135,7 @@
 							</div>
 						</div>
 					</div>
+                    <!-- nghiavl@115.146.126.125:/opt/repos/4biz2016.git -->
 					<div class="clearfix hang">
 						<div id="add_navigation">
 							<div class="title active" style="border-top: 1px solid #ccc;" data-id="thietlap_content">Thông tin</div>
