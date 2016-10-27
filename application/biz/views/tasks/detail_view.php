@@ -105,6 +105,8 @@
 		                <td class="x-info-label">Mức ưu tiên</td>
 		                <td class="x-info-content"><?php echo $prioty_arr[$prioty]; ?></td>
 		            </tr>
+
+
 		            <tr>
 		                <td class="x-info-label  no-border-left">Phụ trách</td>
 		                <td class="x-info-content">

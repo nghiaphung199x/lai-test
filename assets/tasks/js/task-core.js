@@ -1,3 +1,12 @@
+// multi modal bootstrap
+$(document).on('show.bs.modal', '.modal', function (event) {
+    var zIndex = 9999040 + (10 * $('.modal:visible').length);
+    $(this).css('z-index', zIndex);
+    setTimeout(function() {
+        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+    }, 0);
+});
+
 $( document ).ready(function() {
 	
 	var array_list = ['progress', 'file'];
@@ -17,8 +26,8 @@ $( document ).ready(function() {
 	});
 	
 	// sort
-	$('body').on('click','#my-form .manage-table table th',function(){
-		var thElement = $('#my-form .manage-table table th');
+	$('body').on('click','#my_modal .manage-table table th',function(){
+		var thElement = $('#my_modal .manage-table table th');
 		var attr = $(this).attr('data-field');
 		if (typeof attr !== typeof undefined && attr !== false) {
 		   if($(this).hasClass('header')) {
@@ -424,8 +433,13 @@ function loading(keyword) {
 	if(keyword != 'file'){
 		if(keyword == 'project')
 			$("#loading_3").show();
-		else
-			$("#loading_1").show();
+		else{
+            if(keyword == 'progress' || keyword == 'pheduyet' || keyword == 'request')
+                $('.manage-table #loading_1').show();
+            else
+                $("#loading_1").show();
+        }
+
 	}else{
 		$("#loading_2").show();
 	}
@@ -436,8 +450,13 @@ function close_loading(keyword) {
 	if(keyword != 'file') {
 		if(keyword == 'project')
 			$("#loading_3").hide();
-		else
-			$("#loading_1").hide();
+		else{
+            if(keyword == 'progress' || keyword == 'pheduyet' || keyword == 'request')
+                $('.manage-table #loading_1').hide();
+            else
+                $("#loading_1").hide();
+        }
+
 	}else
 		 $("#loading_2").hide();
 }
@@ -518,18 +537,11 @@ function doneTyping(frame_id) {
 function cancel(typeP, type) {
 	if(typeP == 'quick') {
 		$('#quick-form').html('');
-		$('#quick-form').hide();	
-		
+		$('#quick-form').hide();
+
 		close_layer('quick');
 	}else {
-		$('#my-form').html('');
-		$('#my-form').hide();
-		close_layer();
-
-		if(type == 'new'){
-			if(taskId != undefined)
-				gantt.deleteTask(taskId);
-	    }
+        $('#my_modal').modal('toggle');
 	}
 }
 
@@ -594,8 +606,8 @@ function css_form(obj_id) {
 }
 
 function reset_error() {
-	$('#my-form .form-control').removeClass('has-error');
-	$('#my-form span.errors').text('');
+	$('#my_modal .form-control').removeClass('has-error');
+	$('#my_modal span.errors').text('');
 	$('#quick-form .form-control').removeClass('has-error');
 	$('#quick-form span.errors').text('');
 }
@@ -1045,9 +1057,8 @@ function add_tiendo() {
 			task_id : task_id
 		},
 		success: function(html){
-			  $('#quick-form').html(html);
-			  $('#quick-form').show();
-			  create_layer('quick');
+            $('#quick_modal').html(html);
+            $('#quick_modal').modal('toggle');
 	    }
 	});
 }
@@ -1074,8 +1085,7 @@ function tiendoData(data) {
 		toastr.error(data.message, 'Lỗi!');
 	}else {
 		toastr.success(data.message, 'Thông báo');
-		$('#quick-form').html('');
-		$('#quick-form').hide();
+        $('#quick_modal').modal('toggle');
 		
 		var content_id = $('#progress_manager span.tieude.active').attr('data-id');
 		if(content_id == 'progress_danhsach')
@@ -1088,9 +1098,7 @@ function tiendoData(data) {
 		countTiendo();
 		if(data.reload == 'true')
 			load_task();
-		
-		close_layer('quick');
-		
+
 		$('#progress_manager .button').hide();
 	}
 }
@@ -1105,9 +1113,8 @@ function add_file() {
 			task_id : task_id
 		},
 		success: function(html){
-			  $('#quick-form').html(html);
-			  $('#quick-form').show();
-			  create_layer('quick');
+            $('#quick_modal').html(html);
+            $('#quick_modal').modal('toggle');
 	    }
 	});
 }
@@ -1162,7 +1169,7 @@ function save_file(task) {
 function fileData(data) {
 	if(data.flag == 'false') {
 		$.each(data.errors, function( index, value ) {	
-			element = $( '#quick-form span[for="'+index+'"]' );
+			element = $( '#quick_modal span[for="'+index+'"]' );
 			if(index == 'file_upload')
 				$('#file_display').addClass('has-error');
 			else	
@@ -1173,8 +1180,7 @@ function fileData(data) {
 
 	}else {
 		toastr.success('Cập nhật thành công!', 'Thông báo');
-		$('#quick-form').html('');
-		$('#quick-form').hide();
+        $('#quick_modal').modal('toggle');
 
 		load_list('file', 1);
 		close_layer('quick');

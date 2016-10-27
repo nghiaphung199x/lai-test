@@ -1047,8 +1047,9 @@ class BizTasks extends Secure_area
 				
 			if($this->form_validation->run($this) == FALSE){
 				$errors = $this->form_validation->error_array();
+                $type   = 'content';
 	
-				$response = array('flag'=>'false', 'msg'=>current($errors));
+				$response = array('flag'=>'false', 'msg'=>current($errors), 'type' => $type);
 			}else {
 				$this->MTaskComment->saveItem($arrParam, array('task'=>'add'));
 				$response = array('flag'=>'true', 'msg'=>'Bình luận thành công', 'task_id'=>$arrParam['task_id']);

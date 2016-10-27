@@ -1,9 +1,5 @@
 <?php $this->load->view("partial/header"); ?>
-<!--
-	<link href="https://hstatic.net/0/0/global/design/plugins/font-awesome/4.5.0/css/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css">
-
--->
-
+	<link href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css" media="screen" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" href="<?php echo base_url();?>assets/scripts/tasks/codebase/dhtmlxgantt.css" type="text/css" />
 	
 	<link rel="stylesheet" href="<?php echo base_url();?>assets/tasks/css/style.css" type="text/css" media="screen" />
@@ -70,8 +66,6 @@
 		</h3>
 	</div>
 	<div id="gantt_here" style='width:100%; min-height: 500px;'></div>
-	<div id="my-form" class="gantt_cal_light" style=""></div>
-	<div id="quick-form" class="gantt_cal_light" style=""></div>
 	<div>
 		<input type="hidden" name="start_date_original" id="start_date_original" />
 		<input type="hidden" name="start_date_drag" id="start_date_drag" />
@@ -81,127 +75,15 @@
     <div id="my_modal" class="modal fade bs-example-modal-lg search-advance-form" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
 
     </div>
-<style>
-    #my_modal {
-        font-family: Arial;
-    }
-    #my_modal .modal-header {
-        background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f3f6fc), color-stop(1, #e8ebf1));
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        border-bottom: 1px solid #cecece;
-        padding: 10px;
-    }
 
-    #my_modal .modal-body {
-        padding: 0;
-        margin-left: 2px;
-        margin-right: 2px;
-        border-left: 1px solid #cecece;
-        border-right: 1px solid #cecece;
-        border-bottom: 1px solid #cecece;
-        margin-top: -1px;
-        padding-top: 20px;
-    }
-
-    #my_modal .form-group {
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
-
-    #my_modal .form-horizontal .control-label {
-        text-align: left;
-        font-weight: unset;
-        color: black;
-        margin-bottom: 10px;
-    }
-
-    #my_modal .form-group .form-control {
-        border-radius: 0;
-    }
-
-    #my_modal .toolbars .list {
-        height: 45px;
-        line-height: 44px;
-        border-bottom: 1px solid #ccc;
-        margin-bottom: 0;
-        padding-left: 0;
-        list-style: none;
-        background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f3f6fc), color-stop(1, #e8ebf1));
-    }
-
-    #my_modal .arrord_nav {
-        margin-top: 5px;
-        height: 32px;
-        line-height: 32px;
-        border-bottom: 1px solid #cecece;
-        padding-left: 0;
-        padding-right: 0;
-        margin-left: 2px;
-        margin-right: 2px;
-    }
-
-    #my_modal .arrord_nav ul {
-        list-style: none;
-        padding-left: 0;
-    }
-
-    #my_modal .arrord_nav ul li {
-        float: left;
-        min-width: 80px;
-        text-align: center;
-        cursor: pointer;
-        height: 32px;
-        line-height: 32px;
-        border: 1px solid #cecece;
-        border-left: 0;
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f3f6fc), color-stop(1, #e8ebf1));
-    }
-
-    #my_modal .arrord_nav ul li.active {
-        border: 1px solid #cecece;
-        border-bottom: 1px solid white;
-        background: white;
-    }
-
-    #my_modal .arrord_nav ul li span.title {
-        display: block;
-    }
-
-    #my_modal .toolbars .list li {
-        float: left;
-        border-right: 1px solid #ccc;
-    }
-
-    #my_modal .toolbars .list li.right {
-        float: right;
-        border-right: 0;
-        border-left: 1px solid #ccc;
-    }
-
-    #my_modal .toolbars .list li a {
-        display: block;
-        padding: 0 10px;
-        text-decoration: none;
-        color: black;
-        border-bottom: 1px solid #ccc;
-    }
-
-    #my_modal .toolbars .list li a:hover{
-        background: #ebebeb;
-    }
-
-
-@media (min-width: 992px) {
-    #my_modal .modal-lg {
-        width: 1358px;
-    }
-}
-
-</style>
-
+    <div class="modal fade box-modal" id="quick_modal">
+    </div>
+    <style>
+        #detail_manager {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    </style>
 	<script type="text/javascript">
 	$( document ).ready(function() {
 		load_task(1);

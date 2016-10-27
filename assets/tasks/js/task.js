@@ -70,6 +70,13 @@
 			 }
 			
 	    });
+
+        // event when close my_modal
+        $('#my_modal').on('hidden.bs.modal', function () {
+            var type = $('#current_type').val();
+            if(taskId != undefined && type == 'new')
+                gantt.deleteTask(taskId);
+        })
 		
 		// gantt
 		gantt.showLightbox = function(id) {
@@ -96,41 +103,31 @@
                    if(type == 'new') {
                        $('#my_modal').html(html);
                        $('#my_modal').modal('toggle');
-                   }
-//				   if(type == 'new') {
-//					   create_layer();
-//					   $('#my-form').removeClass('quickInfo');
-//					   $('#my-form').html(html);
-//					   $('#my-form').show();
-//
-//					   $('#color').colorpicker({color: '#489ee7',});
-//				   }else {
-//					   if(html != '') {
-//						   create_layer();
-//						   $('#my-form').html(html);
-//						   $('#my-form').show();
-//						   $('#color').colorpicker();
-//
-//					   }else {
-//						   gantt.alert({
-//							    text: 'Bạn không có quyền với chức năng này.', title:"Cảnh báo!",
-//							    ok:"Đóng", callback:function(){}
-//							});
-//					   }
-//				   }
-//
-//				   //picker
-//				   date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
-//				   // end picker
-//
-//				   var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
-//				   $.each(frame_array, function( index, value ) {
-//					  css_form(value);
-//					  press(value);
-//				   });
+                   }else {
+                       if(html != '') {
+                        $('#my_modal').html(html);
+                        $('#my_modal').modal('toggle');
+                        $('#color').colorpicker();
+
+                    }else {
+                        toastr.warning('Bạn không có quyền với chức năng này!', 'Cảnh báo');
+
+                    }
+                }
+
+               //picker
+               date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
+               // end picker
+
+               var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
+               $.each(frame_array, function( index, value ) {
+                  css_form(value);
+                  press(value);
+               });
 			    }
 			});
 		};
+
 		
 		gantt.attachEvent("onBeforeTaskDrag", function(id, mode, task){
 			 if(mode == 'move' || mode == 'resize') {
@@ -394,14 +391,14 @@
 	function congviecData(data) {
 		if(data.flag == 'false') {
 			$.each(data.errors, function( index, value ) {	
-				element = $( '#my-form span[for="'+index+'"]' );
+				element = $( '#my_modal span[for="'+index+'"]' );
 				element.prev().addClass('has-error');
 				element.text(value);
 			});	
 		}else {
 			toastr.success('Cập nhật thành công!', 'Thông báo');
-			$('#my-form').html('');
-			$('#my-form').hide();
+            $('#my_modal').modal('toggle');
+
 			gantt.deleteTask(taskId);
 			load_task(1);
 			close_layer();
@@ -423,14 +420,13 @@
 	function taskData(data) {
 		if(data.flag == 'false') {
 			$.each(data.errors, function( index, value ) {	
-				element = $( '#my-form span[for="'+index+'"]' );
+				element = $( '#my_modal span[for="'+index+'"]' );
 				element.prev().addClass('has-error');
 				element.text(value);
 			});	
 		}else {
 			toastr.success('Cập nhật thành công!', 'Thông báo');
-			$('#my-form').html('');
-			$('#my-form').hide();
+            $('#my_modal').modal('toggle');
 
 			load_task(1);
 			close_layer();
@@ -492,20 +488,27 @@
 	}
 	
 	function comment() {
+        $('#comment_content').removeClass('error');
 		var checkOptions = {
 				url : BASE_URL + 'tasks/addcomment',
 		        dataType: "json",  
 		        success: commentData
 		    };
-	    $("#task_comment").ajaxSubmit(checkOptions); 
-	}
-	
-	function commentData(data) {
-		gantt.alert(data.msg);
-		if(data.flag == 'true') {
-			load_comment(data.task_id, 1);
-		}
-		$('#comment_content').val('');
+	    $("#task_form").ajaxSubmit(checkOptions);
+    }
+
+    function commentData(data) {
+        if(data.flag == 'false') {
+            if(data.type == 'content'){
+                $('#comment_content').addClass('error');
+                toastr.error(data.msg, 'Lỗi!');
+            }
+        }else {
+            toastr.success(data.msg, 'Thông báo!');
+
+            load_comment(data.task_id, 1);
+            $('#comment_content').val('');
+        }
 	}
 	
 	function edit() {

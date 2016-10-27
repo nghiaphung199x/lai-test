@@ -1,7 +1,13 @@
-@media (max-width: 1400px) {
- 	#my-form {
-		width: 96%;
- 	}  
+@media (min-width: 992px) {
+    #my_modal .modal-lg {
+        width: 1358px;
+    }
+}
+
+@media (min-width: 768px) {
+    .box-modal .modal-content {
+        width: 700px;
+    }
 }
 
 @media print, screen and (max-width: 700px) {

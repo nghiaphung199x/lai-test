@@ -53,7 +53,7 @@ class MY_System_Info{
 		$array['task_permission'] = $task_permission;
 		$array['id'] 			  = $result['id'];
 		$array['username'] 		  = $result['username'];
-		
+
 		return $array;
 	} 
 	

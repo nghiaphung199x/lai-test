@@ -60,7 +60,7 @@
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true" class="x-close">×</span></button>
-            <h4 class="modal-title" id="my_search_task">Tìm kiếm công việc cho "<span>[Tên dự án]</span>"</h4>
+            <h4 class="modal-title"><?php echo $title; ?></h4>
         </div>
         <div class="toolbars">
             <ul class="list clearfix">
@@ -71,13 +71,13 @@
         <div class="arrord_nav">
             <ul class="list clearfix">
                 <li class="active" data-id="basic_manager"><span class="title">Cơ bản</span></li>
-                <li data-id="basic_manager"><span class="title">Tab test</span></li>
             </ul>
         </div>
         <div class="modal-body">
             <form method="POST" name="task_form" id="task_form" class="form-horizontal">
                 <input type="hidden" name="parent" value="<?php echo $parent; ?>" />
                 <input type="hidden" name="project_id" value="<?php echo $project_id; ?>" />
+                <input type="hidden" name="current_type" id="current_type" value="new" />
                 <div class="tabs" id="basic_manager" style="display: block;">
                     <div class="clearfix hang" style="margin-bottom: 10px;">
                         <div class="col-lg-12">
@@ -140,8 +140,172 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="clearfix hang">
+                        <div id="add_navigation">
+                            <div class="title active" style="border-top: 1px solid #ccc;" data-id="thietlap_content">Thông tin</div>
+                            <div id="thietlap_content" class="content">
+                                <div class="row">
+                                    <div class="col-lg-6" style="padding-right: 10px">
+                                        <div class="form-group">
+                                            <label class="col-md-3 col-lg-4 control-label">Bắt đầu</label>
+                                            <div class="col-md-9 col-lg-8">
+                                                <input type="text" name="date_start" class="form-control datepicker" />
+                                                <span for="date_start" class="text-danger errors"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" style="padding-left: 10px;">
+                                        <div class="form-group">
+                                            <label class="col-md-3 col-lg-4 control-label">Kết thúc</label>
+                                            <div class="col-md-9 col-lg-8">
+                                                <input type="text" name="date_end" class="form-control datepicker" />
+                                                <span for="date_end" class="text-danger errors"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" style="padding-right: 10px">
+                                        <div class="form-group">
+                                            <label class="col-md-3 col-lg-4 control-label">Trạng thái</label>
+                                            <div class="col-md-9 col-lg-8">
+                                                <select name="trangthai" class="form-control">
+                                                    <?php
+                                                    foreach($trangthai_arr as $key => $val) {
+                                                        ?>
+                                                        <option value="<?php echo $key; ?>"><?php echo $val; ?></option>
+                                                    <?php
+                                                    }
+                                                    ?>
+
+                                                </select>
+                                                <input type="text" class="form-control" name="trangthai_name" id="trangthai_name" value="Chưa thực hiện" readonly="true" style="display: none;" />
+                                                <input type="number" name="progress" value="0" class="form-control"/>
+                                                <span for="progress" class="text-danger errors"></span>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-6" style="padding-left: 10px">
+                                        <div class="form-group">
+                                            <label class="col-md-3 col-lg-4 control-label">Ưu tiên</label>
+                                            <div class="col-md-9 col-lg-8">
+                                                <select name="prioty" class="form-control">
+                                                    <?php
+                                                    foreach($prioty_arr as $key => $val) {
+                                                        ?>
+                                                        <option value="<?php echo $key; ?>"<?php if($key == 2) echo ' selected'; ?>><?php echo $val; ?></option>
+                                                    <?php
+                                                    }
+                                                    ?>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label class="col-md-3 col-lg-2 control-label">Khách hàng</label>
+                                            <div class="col-md-9 col-lg-10">
+                                                <div class="x-select-users" x-name="customer" id="customer_list" x-title="Khách hàng" style="display: inline-block; width: 100%;" onclick="foucs(this);">
+                                                    <input type="text" autocomplete="off" id="customer_result" class="quick_search" />
+                                                    <div class="result">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label class="col-md-3 col-lg-2 control-label">Được xem</label>
+                                            <div class="col-md-9 col-lg-10">
+                                                <div class="x-select-users" x-name="xem" id="xem_list" x-title="Người được xem" style="display: inline-block; width: 100%;" onclick="foucs(this);">
+                                                    <input type="text" autocomplete="off" id="xem_result" class="quick_search" />
+                                                    <div class="result">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label class="col-md-3 col-lg-2 control-label">Phụ trách</label>
+                                            <div class="col-md-9 col-lg-10">
+                                                <div class="x-select-users" x-name="implement" id="implement_list" x-title="Người phụ trách" style="display: inline-block; width: 100%;" onclick="foucs(this);">
+                                                    <input type="text" autocomplete="off" id="implement_result" class="quick_search" />
+                                                    <div class="result">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php if($is_create_task == true):?>
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <label class="col-md-3 col-lg-2 control-label">Phê duyệt tiến độ</label>
+                                                <div class="col-md-9 col-lg-10">
+                                                    <div class="x-select-users" x-name="progress_list" id="progress_list" x-title="" style="display: inline-block; width: 100%;" onclick="foucs(this);">
+                                                        <input type="text" autocomplete="off" id="progress_result" class="quick_search" />
+                                                        <div class="result">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endif;?>
+                                </div>
+                            </div>
+                            <?php if($is_create_task == true):?>
+                                <div class="title" data-id="permission_content">Cấp quyền</div>
+                                <div id="permission_content" class="content">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <label class="col-md-3 col-lg-2 control-label">Công việc con</label>
+                                                <div class="col-md-9 col-lg-10">
+                                                    <div class="x-select-users" x-name="create_task_list" id="create_task_list" x-title="" style="display: inline-block; width: 100%;" onclick="foucs(this);">
+                                                        <input type="text" autocomplete="off" id="create_task_result" class="quick_search" />
+                                                        <div class="result">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <label class="col-md-3 col-lg-2 control-label">Phê duyệt CV</label>
+                                                <div class="col-md-9 col-lg-10">
+                                                    <div class="x-select-users" x-name="pheduyet_task_list" id="pheduyet_task_list" x-title="" style="display: inline-block; width: 100%;" onclick="foucs(this);">
+                                                        <input type="text" autocomplete="off" id="pheduyet_result" class="quick_search" />
+                                                        <div class="result">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            <?php endif;?>
+
+                        </div>
+                    </div>
                 </div>
              </form>
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    $( document ).ready(function() {
+        $('#add_navigation .title').click(function(e){
+            if(!$(this).hasClass('active')) {
+                $('#add_navigation .active').parent().find('.content').slideUp();
+                $('#add_navigation .active').removeClass('active');
+                $(this).addClass('active');
+
+                var content_show = $(this).attr('data-id');
+                $('#add_navigation #'+ content_show).slideDown();
+            }
+        });
+    });
+</script>
