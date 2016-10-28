@@ -78,12 +78,6 @@
 
     <div class="modal fade box-modal" id="quick_modal">
     </div>
-    <style>
-        #detail_manager {
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-    </style>
 	<script type="text/javascript">
 	$( document ).ready(function() {
 		load_task(1);

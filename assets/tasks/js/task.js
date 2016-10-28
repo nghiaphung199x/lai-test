@@ -54,8 +54,8 @@
 		// template task select box
 		$('body').on('change','#task_template',function(){
 			 var task_template_id = $(this).val();
-             var progress_input = $('#my-form .form-group input[name="progress"]');
-             var trangthai_input = $('#my-form .form-group select[name="trangthai"]');
+             var progress_input = $('#my_modal .form-group input[name="progress"]');
+             var trangthai_input = $('#my_modal .form-group select[name="trangthai"]');
              var trangthai_name = $('#trangthai_name');
 
 			 if(task_template_id > 0) {
@@ -340,43 +340,10 @@
 				
 				//$('#count_project').text(result.count);
 				$('#gantt_pagination').html(pagination_html);
-
 		    }
 		});	
 	}
 
-	function pheduyet() {
-	    gantt.confirm({
-	        text: 'Phê duyệt cho công việc này?',
-	        ok:"Đồng ý", 
-	        cancel:"Hủy bỏ",
-	        callback: function(result){
-	        	if(result == true) {
-	    			var task_id = $('#task_id').val();
-	    			$.ajax({
-	    				type: "POST",
-	    				url: BASE_URL + 'tasks/pheduyet',
-	    				data: {
-	    					id 		   : task_id,
-	    				},
-	    				success: function(string){
-	    					var res = $.parseJSON(string);
-							if(res.flag == 'true'){
-								gantt.alert("Công việc đã được phê duyệt.");
-								
-								$('#my-form').html('');
-								$('#my-form').hide();
-								load_task(1);
-								close_layer();
-							}
-	    			    }
-	    			});
-	        	}
-
-	        }
-	    });
-	}
-	
 	function add_congviec() {
 		reset_error();
 		var checkOptions = {
@@ -384,7 +351,7 @@
 		        dataType: "json",  
 		        success: congviecData
 		    };
-	    $("#task_form").ajaxSubmit(checkOptions); 
+	    $("#task_form").ajaxSubmit(checkOptions);
 	    return false; 
 	}
 	
@@ -398,40 +365,9 @@
 		}else {
 			toastr.success('Cập nhật thành công!', 'Thông báo');
             $('#my_modal').modal('toggle');
-
-			gantt.deleteTask(taskId);
 			load_task(1);
-			close_layer();
 		}
 	}
-	
-	function edit_congviec() {
-		reset_error();
-		var url = BASE_URL + 'tasks/editcongviec';
-		var checkOptions = {
-		        url : url,
-		        dataType: "json",  
-		        success: taskData
-		    };
-	    $("#task_form").ajaxSubmit(checkOptions); 
-	    return false; 
-	}
-	
-	function taskData(data) {
-		if(data.flag == 'false') {
-			$.each(data.errors, function( index, value ) {	
-				element = $( '#my_modal span[for="'+index+'"]' );
-				element.prev().addClass('has-error');
-				element.text(value);
-			});	
-		}else {
-			toastr.success('Cập nhật thành công!', 'Thông báo');
-            $('#my_modal').modal('toggle');
-
-			load_task(1);
-			close_layer();
-		}
-	}	
 
 	function load_comment(task_id, page) {
 		var url = BASE_URL + 'tasks/commentlist/'+page;

@@ -327,23 +327,21 @@ class BizTasks extends Secure_area
 
 			$parentArray[$val['id']] = $this->MTasks->saveItem($params, array('task'=>'add'));
 
-            if($arrParam['pheduyet'] == 2) {
-                $items[] = array(
-                    'task_id'            => $parentArray[$val['id']],
-                    'trangthai'          => 0,
-                    'prioty'             => $params['prioty'],
-                    'progress'           => 0,
-                    'pheduyet'           => $params['pheduyet'],
-                    'note'               => '',
-                    'reply'              => '',
-                    'created'            => @date("Y-m-d H:i:s"),
-                    'created_by'         => $user_info['id'],
-                    'user_pheduyet'      => 0,
-                    'date_pheduyet'      => @date("Y-m-d H:i:s"),
-                    'user_pheduyet_name' => '',
-                    'key'                => 'plus',
-                );
-            }
+            $items[] = array(
+                'task_id'            => $parentArray[$val['id']],
+                'trangthai'          => 0,
+                'prioty'             => $params['prioty'],
+                'progress'           => 0,
+                'pheduyet'           => $params['pheduyet'],
+                'note'               => '',
+                'reply'              => '',
+                'created'            => @date("Y-m-d H:i:s"),
+                'created_by'         => $user_info['id'],
+                'user_pheduyet'      => 0,
+                'date_pheduyet'      => @date("Y-m-d H:i:s"),
+                'user_pheduyet_name' => '',
+                'key'                => 'plus',
+            );
 		}
         if(!empty($items)) {
             $this->MTaskProgress->saveItem(array('items'=>$items), array('task'=>'multi-add'));
@@ -352,6 +350,7 @@ class BizTasks extends Secure_area
 
 	public function editcongviec() {
 		$arrParam   = $this->_data['arrParam'];
+
 		$post 	    = $this->input->post();
 		$this->load->library('MY_System_Info');
 		$info 		= new MY_System_Info();
@@ -366,8 +365,7 @@ class BizTasks extends Secure_area
 			
 		$arrParam = $this->_data['arrParam'];
 		$item = $this->MTasks->getItem(array('id'=>$arrParam['id']), array('task'=>'public-info', 'brand'=>'full'));
-	
-	
+
 		if(!empty($post)) {
 			$this->load->library("form_validation");
 			$this->form_validation->set_rules('name', 'Tiêu đề', 'required|max_length[255]');
@@ -449,6 +447,7 @@ class BizTasks extends Secure_area
 			}
 
 			if(!empty($item['is_create_task'])) {
+
 				foreach($item['is_create_task'] as $key => $val){
 					$is_create_task[] = $val['id'];
 					$keyArr = explode('-', $key);
@@ -488,16 +487,15 @@ class BizTasks extends Secure_area
 				$is_progress 		= array_unique($is_progress);
 			}
 
-			$item['is_pheduyet_parent'] = $is_pheduyet_parent;
-
 			if($item['parent'] > 0){
 				$cid 						 = array($item['parent'], $item['project_id']);
 				$items 						 = $this->MTasks->getItems(array('cid'=>$cid), array('task'=>'public-info'));
+
 				$this->_data['project_item'] = $items[$item['project_id']];
 				$this->_data['parent_item']  = $items[$item['parent']];
-					
+
 				$items 		= $this->MTasks->getInfo(array('lft'=>$item['lft'], 'rgt'=>$item['rgt'], 'project_id'=>$item['project_id']), array('task'=>'create-task'));
-				$task_ids 	= $items['task_ids'];
+                $task_ids 	= $items['task_ids'];
 
 				$project_relation 	  = $this->MTasksRelation->getItems(array('task_ids'=>$task_ids), array('task'=>'by-multi-task'));
 					
@@ -505,7 +503,6 @@ class BizTasks extends Secure_area
 			}
 
 			$this->_data['item'] = $item;
-			
 			if($item['parent'] == 0) { // dự án
 				if(in_array('update_project', $task_permission))
 					$view = 'tasks/editform_view';
@@ -523,11 +520,11 @@ class BizTasks extends Secure_area
 					$view = 'tasks/editform_view';
 				elseif(in_array($user_info['id'], $is_implement) && in_array('update_brand_task', $task_permission))
 					$view = 'tasks/editform_view';
-				elseif(in_array($user_info['id'], $is_create_task_parent)){
+				elseif(in_array($user_info['id'], $is_create_task_parent) || in_array($user_info['id'], $is_create_task)){
 					$view = 'tasks/editform_view';
 				}elseif(in_array($user_info['id'], $is_implement))
 					$view = 'tasks/quickupdate_view';
-				elseif(in_array($user_info['id'], $is_xem) || in_array($user_info['id'], $is_pheduyet_parent)) {
+				elseif(in_array($user_info['id'], $is_xem) || in_array($user_info['id'], $is_pheduyet_parent) || in_array($user_info['id'], $is_pheduyet)) {
 					$this->_data['no_comment'] = true;	
 					$this->_data['is_xem'] 	   = true;
 					$view = 'tasks/detail_view';
@@ -536,7 +533,7 @@ class BizTasks extends Secure_area
 
 			//nhánh dự án/ công việc
 			$this->_data['slbTasks'] = $this->MTasks->itemSelectBox(array('project_id'=>$item['project_id'], 'lft'=>$item['lft'], 'rgt'=>$item['rgt']));
-			
+
 			if(!empty($view))
 				$this->load->view($view,$this->_data);
 		}
@@ -631,7 +628,7 @@ class BizTasks extends Secure_area
 			echo json_encode($result);
 		}
 	}
-	
+
 	public function pheduyetlist() {
 		$this->load->model('MTaskProgress');
 		$post  = $this->input->post();
@@ -790,15 +787,19 @@ class BizTasks extends Secure_area
 					$config['allowed_types'] = 'jpg|png|pdf|docx|doc|xls|xlsx|zip|zar';
 					$config['max_size']	= '10240';
 					$config['encrypt_name'] = FALSE;
+
 					$config['file_name'] = $file_name . '.' . $ext;
+                    if (file_exists($upload_dir . $file_name . '.' . $ext)) {
+                        $config['file_name'] = $file_name . time() . '.' . $ext;
+                    }
 
 					$this->load->library('upload', $config);
 	
 					if($this->upload->do_upload("file_upload")){
 						$file_info             = $this->upload->data();
                         $arrParam['size']      = $_FILES['file_upload']['size'];
-                        $arrParam['extention']  = $ext;
-                        $arrParam['file_name'] = $file_info['name'];
+                        $arrParam['extension'] = $ext;
+                        $arrParam['file_name'] = $config['file_name'];
 
                     }else{
 						$flagError = true;
@@ -858,12 +859,6 @@ class BizTasks extends Secure_area
 					if($flagError == true)
 						$errors['name'] = 'Tên tài liệu đã tồn tại.';
 				}
-				
-				if($flagError == false){
-					$flagError = $this->MTaskFiles->validate($arrParam['file_name'], 'file_name', $arrParam['id']);
-					if($flagError == true)
-						$errors['file_name'] = 'Tên tài file đã tồn tại.';
-				}
 
 				if($flagError == false) {
                     $upload_dir = FILE_TASK_PATH;
@@ -877,15 +872,19 @@ class BizTasks extends Secure_area
 					$config['allowed_types'] = 'jpg|png|pdf|docx|doc|xls|xlsx|zip|zar';
 					$config['max_size']	= '10240';
 					$config['encrypt_name'] = FALSE;
-					$config['file_name'] = $file_name;
-					
+					$config['file_name'] = $file_name . '.' . $ext;
+
+                    if (file_exists($upload_dir . $file_name . '.' . $ext)) {
+                        $config['file_name'] = $file_name . time() . '.' . $ext;
+                    }
+
 					$this->load->library('upload', $config);
-					
+
 					if($this->upload->do_upload("file_upload")){
 						$file_info = $this->upload->data();
 						$arrParam['size']       = $_FILES['file_upload']['size'];
                         $arrParam['extension']  = $ext;
-                        $arrParam['file_name']  = $file_info['name'];
+                        $arrParam['file_name']  = $config['file_name'];
 
 					}else{
 						$flagError = true;
@@ -901,16 +900,11 @@ class BizTasks extends Secure_area
 					$errors = $this->form_validation->error_array();
 					$flagError = true;
 				}
-		
-				if($flagError == false){
-					$flagError = $this->MTaskFiles->validate($arrParam['name'], 'name', $arrParam['id']);
-					if($flagError == true)
-						$errors['file_name'] = 'Tên tài liệu đã tồn tại.';
-				}
-				
+
 				if($flagError == false) {
-					$arrParam['file_name'] = $item['file_name'];
-					$arrParam['size'] 	   = $item['size'];
+					$arrParam['file_name']       = $item['file_name'];
+                    $arrParam['extension']       = $item['extension'];
+					$arrParam['size'] 	         = $item['size'];
 				}
 			}
 
@@ -971,47 +965,7 @@ class BizTasks extends Secure_area
 		}else
 			$this->load->view('tasks/xulytiendo_view',$this->_data);
 	}
-	
 
-	public function detail() {
-		$post  = $this->input->post();
-		if(!empty($post)) {
-			$arrParam = $this->_data['arrParam'];
-			$this->load->library('MY_System_Info');
-			$info 		= new MY_System_Info();
-			$this->_data['user_info'] = $user_info = $info->getInfo();
-				
-			$this->load->model('MTasks');
-			$item = $this->MTasks->getItem(array('id'=>$arrParam['id']), array('task'=>'public-info', 'brand'=>'full'));
-				
-			if($item['parent'] > 0){
-				$cid 						 = array($item['parent'], $item['project_id']);
-				$items 						 = $this->MTasks->getItems(array('cid'=>$cid), array('task'=>'public-info'));
-				$this->_data['project_item'] = $items[$item['project_id']];
-				$this->_data['parent_item']  = $items[$item['parent']];
-	
-				$is_pheduyet_parent = array();
-				if(!empty($item['is_pheduyet'])) {
-					foreach($item['is_pheduyet'] as $key => $val){
-						$is_pheduyet[] = $val['id'];
-	
-						$keyArr = explode('-', $key);
-						if($keyArr[0] != $arrParam['id'])
-							$is_pheduyet_parent[] = $val['id'];
-					}
-						
-					$is_pheduyet_parent = array_unique($is_pheduyet_parent);
-					$is_pheduyet 		= array_unique($is_pheduyet);
-				}
-	
-				$item['is_pheduyet_parent'] = $is_pheduyet_parent;
-			}
-	
-			$this->_data['item'] = $item;
-			$this->load->view('tasks/detail_view',$this->_data);
-		}
-	}
-	
 	public function commentlist() {
 		$this->load->model('MTaskComment');
 		$post  = $this->input->post();
@@ -1088,15 +1042,44 @@ class BizTasks extends Secure_area
 	}
 	
 	public function pheduyet() {
+		$this->load->model('MTasks');
 		$post     = $this->input->post();
 		$arrParam = $this->_data['arrParam'];
+		$item = $this->MTasks->getItem(array('id'=>$arrParam['task_id']), array('task'=>'public-info', 'brand'=>'full'));
+
+		$this->load->library('MY_System_Info');
+		$info 			= new MY_System_Info();
+		$user_info 		= $info->getInfo();
+
 		if(!empty($post)) {
-			$this->load->model('MTasks');
-			$this->MTasks->saveItem(array('id'=>$arrParam['id']), array('task'=>'pheduyet'));
-				
-			$response = array('flag'=>'true');
+            $is_pheduyet_parent = $is_pheduyet = array();
+			if(!empty($item['is_pheduyet'])) {
+				foreach($item['is_pheduyet'] as $key => $val){
+					$is_pheduyet[] = $val['id'];
+
+					$keyArr = explode('-', $key);
+					if($keyArr[0] != $arrParam['id'])
+						$is_pheduyet_parent[] = $val['id'];
+				}
+					
+				$is_pheduyet_parent = array_unique($is_pheduyet_parent);
+			}
+
+			if(in_array($user_info['id'], $is_pheduyet_parent) && $item['pheduyet'] == -1) {
+				// update pheduyet => 1
+                //$arrParam['pheduyet_note'] = ($arrParam['pheduyet_select'] == 0) ? $arrParam['pheduyet_note'] : '';
+				$this->MTasks->saveItem(array('id'=>$arrParam['task_id']), array('task'=>'pheduyet'));
+
+                // return respon
+				$response = array('flag'=>'true', 'msg'=>'Thực hiện tác vụ thành công.');
+			}else
+				$response = array('flag'=>'false', 'msg'=>'Bạn không có quyền thực hiện chức năng này.');
+			
+
 			echo json_encode($response);
-		}
+		}else {
+            $this->load->view('tasks/pheduyet_view',$this->_data);
+        }
 	}
 	
 	public function quickupdate() {
@@ -1420,20 +1403,7 @@ class BizTasks extends Secure_area
 //		$this->load->model('MTasks');
 //		$this->MTasks->test();
 
-        $task_trangthai = lang('task_trangthai');
-        $task_trangthai[5] = 'Chậm tiến độ';
-        $task_trangthai[6] = 'Đã hoàn thành nhưng chậm tiến độ';
-        echo '<pre>';
-        print_r($task_trangthai);
-        echo '</pre>';
-        foreach($task_trangthai as $id => $name) {
-            if (strpos($name, 'Chua') !== false) {
-                $taskArr[] = array(
-                    'id' => $id, 'name' => $name
-                );
-            }
-        }
-
+        echo time();
         //$this->load->view('tasks/test_view', $this->_data);
 	}
 	

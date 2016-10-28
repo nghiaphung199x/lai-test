@@ -7,7 +7,7 @@
         <div class="modal-body">
             <form method="POST" name="file_form" id="file_form" class="form-horizontal" enctype="multipart/form-data">
                 <input type="hidden" name="task_id" value="<?php echo $arrParam['task_id']; ?>" />
-                <div class="clearfix hang" style="margin-bottom: 10px;">
+                <div class="clearfix hang">
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="form-group">
@@ -32,7 +32,7 @@
                                     <span for="file_name" class="text-danger" class="errors"></span>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label class="col-md-3 col-lg-2 control-label">Mô tả</label>
                                 <div class="col-md-9 col-lg-10">
                                     <textarea name="excerpt" class="form-control"></textarea>
@@ -59,8 +59,10 @@
         $( ".file_upload" ).change(function() {
             var yourstring = $(this).val();
             var filename = yourstring.replace(/^.*[\\\/]/, '')
+
+            var output  = filename.split('/').pop().split('.').shift();
             $('#file_display').val(filename);
-            $('#file_name').val(filename);
+            $('#file_name').val(output);
         });
     });
 </script>

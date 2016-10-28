@@ -630,7 +630,7 @@ function load_template_file(items) {
 			  string[string.length] = '<tr style="cursor: pointer;">'
 											+'<td class="center cb"><input type="checkbox" id="file_'+id+'" class="file_checkbox" value="'+id+'"><label for="file_'+id+'"><span></span></label></td>'
 											+'<td class="cb">'+name+'</td>'
-											+'<td><a href="'+link+'" class="download"><i class="fa fa-download" aria-hidden="true"></i></a>'+file_name+'</td>'
+											+'<td><a href="'+link+'" class="download" target="_blank"><i class="fa fa-download" aria-hidden="true"></i></a>'+file_name+'</td>'
 											+'<td class="center cb">'+size+' Kb</td>'
 											+'<td class="center cb">'+created+'</td>'
 											+'<td class="center cb">'+created_name+'</td>'
@@ -1103,6 +1103,70 @@ function tiendoData(data) {
 	}
 }
 
+function pheduyet() {
+    var task_id = $('#task_id').val();
+    $.ajax({
+        type: "GET",
+        url: BASE_URL + 'tasks/pheduyet',
+        data: {
+            id : task_id
+        },
+        success: function(html){
+            $('#quick_modal').html(html);
+            $('#quick_modal').modal('toggle');
+        }
+    });
+}
+
+function pheduyet_confirm() {
+    var checkOptions = {
+        url : BASE_URL+'tasks/pheduyet',
+        dataType: "json",
+        success: pheduyet_confirm_progress
+    };
+    $("#task_pheduyet_form").ajaxSubmit(checkOptions);
+    return false;
+}
+
+function pheduyet_confirm_progress(data) {
+    if(data.flag == 'false') {
+        toastr.error(data.msg, 'Lỗi');
+    }else {
+        toastr.success(data.msg, 'Thông báo');
+    }
+
+    $('#quick_modal').modal('toggle');
+    $('#my_modal').modal('toggle');
+    load_task(1);
+}
+
+function edit_congviec() {
+    reset_error();
+    var url = BASE_URL + 'tasks/editcongviec';
+    var checkOptions = {
+        url : url,
+        dataType: "json",
+        success: taskData
+    };
+    $("#task_form").ajaxSubmit(checkOptions);
+    return false;
+}
+
+function taskData(data) {
+    if(data.flag == 'false') {
+        $.each(data.errors, function( index, value ) {
+            element = $( '#my_modal span[for="'+index+'"]' );
+            element.prev().addClass('has-error');
+            element.text(value);
+        });
+    }else {
+        toastr.success('Cập nhật thành công!', 'Thông báo');
+        $('#my_modal').modal('toggle');
+
+        load_task(1);
+    }
+}
+
 function add_file() {
 	var task_id = $('#task_id').val();
 	var url = BASE_URL + 'tasks/addfile'
@@ -1135,18 +1199,12 @@ function edit_file() {
 				id : file_id,
 			},
 			success: function(string){
-				  $('#quick-form').html(string);
-				  $('#quick-form').show();
-				  create_layer('quick');
+                $('#quick_modal').html(string);
+                $('#quick_modal').modal('toggle');
 		    }
 		});
 	}else {
-		gantt.alert({
-		    text: 'Chỉ chọn một bản ghi',
-		    title:"Lỗi!",
-		    ok:"Đóng",
-		    callback:function(){}
-		});
+        toastr.error('Chỉ chọn 1 bản ghi', 'Thông báo');
 	}
 }
 

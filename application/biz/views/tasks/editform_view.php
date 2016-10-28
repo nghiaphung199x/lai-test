@@ -13,6 +13,9 @@
 	$trangthai  = $item['trangthai'];
 	$prioty 	= $item['prioty'];
 	$pheduyet   = $item['pheduyet'];
+    $date_finish= $item['date_finish'];
+    $pheduyet_note = nl2br($item['pheduyet_note']);
+    $project_name  = $project_item['name'];
 	
 	$task_permission = $user_info['task_permission'];
 	
@@ -50,9 +53,13 @@
 	}
 	$trangthai_arr = array('Chưa thực hiện', 'Đang thực hiện', 'Hoàn thành', 'Đóng/dừng', 'Không thực hiện');
 	$prioty_arr    = array('Rất cao', 'Cao', 'Trung bình', 'Thấp', 'Rất thấp');
-	if($pheduyet == 1)
+	if($pheduyet >= 0)
 		$btnPheduyet = false;
-	
+
+    if($pheduyet == -1)
+        $name_ext = ' (Chờ phê duyệt)';
+    elseif($pheduyet == 0)
+        $name_ext = ' (Không được phê duyệt)';
 ?>
 <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -74,7 +81,10 @@
         <div class="arrord_nav">
             <ul class="list clearfix">
                 <li class="active" data-id="basic_manager"><span class="title">Cơ bản</span></li>
+<?php if($pheduyet == 1 || $pheduyet == 2): ?>
                 <li data-id="progress_manager"><span class="title">Tiến độ</span></li>
+<?php endif; ?>
+
                 <li data-id="file_manager"><span class="title">Tài liệu</span></li>
                 <li data-id="detail_manager"><span class="title">Chi tiết</span></li>
             </ul>
@@ -321,101 +331,104 @@
                         <?php endif; ?>
                     </div>
                 </div>
-                <div class="manage-table tabs" id="progress_manager">
-                    <div class="control clearfix">
-                        <div class="pull-left">
-                            <select name="fields" id="s_task_id" class="form-control" id="fields">
-                                <option value="0">Tất cả</option>
+        <?php if($pheduyet == 1 || $pheduyet == 2): ?>
+            <div class="manage-table tabs" id="progress_manager">
+                <div class="control clearfix">
+                    <div class="pull-left">
+                        <select name="fields" id="s_task_id" class="form-control" id="fields">
+                            <option value="0">Tất cả</option>
+                            <?php
+                            if(!empty($slbTasks)) {
+                                foreach($slbTasks as $val) {
+                                    ?>
+                                    <option value="<?php echo $val['id']; ?>"><?php echo $val['name']; ?></option>
                                 <?php
-                                if(!empty($slbTasks)) {
-                                    foreach($slbTasks as $val) {
-                                        ?>
-                                        <option value="<?php echo $val['id']; ?>"><?php echo $val['name']; ?></option>
-                                    <?php
-                                    }
                                 }
+                            }
 
-                                ?>
+                            ?>
 
 
-                            </select>
-                        </div>
-                        <div class="pull-right">
-                            <div class="buttons-list">
-                                <div class="pull-right-btn">
-                                    <a href="javascript:;" id="new-person-btn" onclick="add_tiendo();" class="btn btn-primary btn-lg" title="Thêm mới tiến độ"><span class="">Thêm mới tiến độ</span></a>
-                                </div>
+                        </select>
+                    </div>
+                    <div class="pull-right">
+                        <div class="buttons-list">
+                            <div class="pull-right-btn">
+                                <a href="javascript:;" id="new-person-btn" onclick="add_tiendo();" class="btn btn-primary btn-lg" title="Thêm mới tiến độ"><span class="">Thêm mới tiến độ</span></a>
                             </div>
                         </div>
                     </div>
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="tieude active" data-id="progress_danhsach">Lịch sử</span>
-                            <span id="count_tiendo" title="total suppliers" class="badge bg-primary tip-left">0</span>
-
-                            <span class="tieude" style="margin-left: 10px;" data-id="request_list">Yêu cầu phê duyệt</span>
-                            <span id="count_request" title="total suppliers" class="badge bg-primary tip-left">0</span>
-
-                            <span class="tieude" style="margin-left: 10px;" data-id="pheduyet_list">Phê duyệt</span>
-                            <span id="count_pheduyet" title="total suppliers" class="badge bg-primary tip-left">0</span>
-                            <i class="fa fa-spinner fa-spin" id="loading_1"></i>
-                        </h3>
-                    </div>
-                    <div class="panel-body nopadding table_holder table-responsive table_list" id="progress_danhsach">
-                        <table class="tablesorter table table-hover sortable_table">
-                            <thead>
-                            <tr>
-                                <th style="width: 20%;" data-field="task_name">Công việc</th>
-                                <th style="width: 10%;" data-field="progress">Tiến độ</th>
-                                <th style="width: 15%;" data-field="trangthai">Tình trạng</th>
-                                <th style="width: 10%;" data-field="prioty">Ưu tiên</th>
-                                <th data-field="username">Tài khoản</th>
-                                <th data-field="date_phe" style="width: 15%;">Ngày</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="panel-body nopadding table_holder table-responsive table_list" id="request_list" style="display: none;">
-                        <table class="tablesorter table table-hover sortable_table">
-                            <thead>
-                            <tr>
-                                <th data-field="task_name">Công việc</th>
-                                <th style="width: 5%;" data-field="progress">Tiến độ</th>
-                                <th style="width: 10%;" data-field="trangthai">Tình trạng</th>
-                                <th style="width: 10%;" data-field="prioty">Ưu tiên</th>
-                                <th style="width: 15%;" data-field="created">Ngày gửi</th>
-                                <th style="width: 10%;" data-field="pheduyet">Phê duyệt</th>
-                                <th style="width: 10%;" data-field="user_pheduyet">Người phê duyệt</th>
-                                <th style="width: 10%;" data-field="date_pheduyet">Ngày phê duyệt</th>
-                                <th style="width: 10%;"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="panel-body nopadding table_holder table-responsive table_list" id="pheduyet_list" style="display: none;">
-                        <table class="tablesorter table table-hover sortable_table">
-                            <thead>
-                            <tr>
-                                <th data-field="task_name">Công việc</th>
-                                <th style="width: 5%;" data-field="progress">Tiến độ</th>
-                                <th style="width: 10%;" data-field="trangthai">Tình trạng</th>
-                                <th style="width: 10%;" data-field="prioty">Ưu tiên</th>
-                                <th style="width: 10%;" data-field="username">Người gửi</th>
-                                <th style="width: 10%;" data-field="created">Ngày gửi</th>
-                                <th style="width: 10%;" data-field="pheduyet">Phê duyệt</th>
-                                <th style="width: 10%;" data-field="date_pheduyet">Ngày phê duyệt</th>
-                                <th style="width: 20%;"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="tieude active" data-id="progress_danhsach">Lịch sử</span>
+                        <span id="count_tiendo" title="total suppliers" class="badge bg-primary tip-left">0</span>
+
+                        <span class="tieude" style="margin-left: 10px;" data-id="request_list">Yêu cầu phê duyệt</span>
+                        <span id="count_request" title="total suppliers" class="badge bg-primary tip-left">0</span>
+
+                        <span class="tieude" style="margin-left: 10px;" data-id="pheduyet_list">Phê duyệt</span>
+                        <span id="count_pheduyet" title="total suppliers" class="badge bg-primary tip-left">0</span>
+                        <i class="fa fa-spinner fa-spin" id="loading_1"></i>
+                    </h3>
+                </div>
+                <div class="panel-body nopadding table_holder table-responsive table_list" id="progress_danhsach">
+                    <table class="tablesorter table table-hover sortable_table">
+                        <thead>
+                        <tr>
+                            <th style="width: 20%;" data-field="task_name">Công việc</th>
+                            <th style="width: 10%;" data-field="progress">Tiến độ</th>
+                            <th style="width: 15%;" data-field="trangthai">Tình trạng</th>
+                            <th style="width: 10%;" data-field="prioty">Ưu tiên</th>
+                            <th data-field="username">Tài khoản</th>
+                            <th data-field="date_phe" style="width: 15%;">Ngày</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-body nopadding table_holder table-responsive table_list" id="request_list" style="display: none;">
+                    <table class="tablesorter table table-hover sortable_table">
+                        <thead>
+                        <tr>
+                            <th data-field="task_name">Công việc</th>
+                            <th style="width: 5%;" data-field="progress">Tiến độ</th>
+                            <th style="width: 10%;" data-field="trangthai">Tình trạng</th>
+                            <th style="width: 10%;" data-field="prioty">Ưu tiên</th>
+                            <th style="width: 15%;" data-field="created">Ngày gửi</th>
+                            <th style="width: 10%;" data-field="pheduyet">Phê duyệt</th>
+                            <th style="width: 10%;" data-field="user_pheduyet">Người phê duyệt</th>
+                            <th style="width: 10%;" data-field="date_pheduyet">Ngày phê duyệt</th>
+                            <th style="width: 10%;"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-body nopadding table_holder table-responsive table_list" id="pheduyet_list" style="display: none;">
+                    <table class="tablesorter table table-hover sortable_table">
+                        <thead>
+                        <tr>
+                            <th data-field="task_name">Công việc</th>
+                            <th style="width: 5%;" data-field="progress">Tiến độ</th>
+                            <th style="width: 10%;" data-field="trangthai">Tình trạng</th>
+                            <th style="width: 10%;" data-field="prioty">Ưu tiên</th>
+                            <th style="width: 10%;" data-field="username">Người gửi</th>
+                            <th style="width: 10%;" data-field="created">Ngày gửi</th>
+                            <th style="width: 10%;" data-field="pheduyet">Phê duyệt</th>
+                            <th style="width: 10%;" data-field="date_pheduyet">Ngày phê duyệt</th>
+                            <th style="width: 20%;"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <?php endif; ?>
+
                 <div class="manage-table manage-table-file tabs" id="file_manager">
                     <div class="manage-row-options 2">
                         <div class="control">
@@ -460,18 +473,24 @@
                         </table>
                     </div>
                 </div>
-                <div class="manage-table tabs" id="detail_manager">
+                <div class="manage-table tabs" id="detail_manager" style="margin-top: -10px;">
                     <table width="100%" cellpadding="7" class="x-info" style="border:0">
                         <tbody>
                             <tr>
-                                <td class="x-info-top" colspan="4" style="padding-left: 10px; padding-right: 10px; border: 0 !important;">
+                                <td class="x-info-top" colspan="4" style="padding-left: 5px; padding-right: 10px; font-size: 16px; border: 0 !important;">
                                     <span class="tl" style="font-weight: bold;"><i class="fa fa-pencil"></i> Thông tin chi tiết</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td class="x-info-label"><?php echo $congviec_title;  ?></td>
-                                <td class="x-info-content" style="color: red;font-weight: bold;" colspan="3"><?php echo $name; ?></td>
+                                <td class="x-info-content" style="font-weight: bold;" colspan="3"><?php echo $name . $name_ext; ?></td>
                             </tr>
+            <?php if($pheduyet == 0 && !empty($pheduyet_note)):?>
+                            <tr>
+                                <td class="x-info-label">Lý do</td>
+                                <td class="x-info-content" colspan="3"><?php echo $pheduyet_note; ?></td>
+                            </tr>
+            <?php endif; ?>
             <?php
             if(!empty($item['customers'])){
                 foreach($item['customers'] as $val)
@@ -491,7 +510,12 @@
                                 <td class="x-info-label">Kết thúc</td>
                                 <td class="x-info-content"><?php echo $date_end; ?></td>
                             </tr>
-
+<?php if($trangthai == 2):?>
+                            <tr>
+                                <td class="x-info-label">Thực tế</td>
+                                <td class="x-info-content" colspan="3" style="font-weight: bold;"><?php echo $date_finish; ?></td>
+                            </tr>
+<?php endif; ?>
                             <tr>
                                 <td class="x-info-label">Tình trạng</td>
                                 <td class="x-info-content"><?php echo $trangthai_arr[$trangthai]; ?></td>
@@ -570,8 +594,24 @@
                                 <td class="x-info-label" style="border-bottom: inherit; border-bottom: 1px solid #d7dce5;"">Tài liệu đính kèm</td>
                                 <td class="x-info-content" colspan="3" style="vertical-align: middle; border-bottom: 1px solid #d7dce5;">
                                     <ul class="attach-file">
-                                        <li><a href="#" target="_blank">bo-tai-lieu-thu-vien.zip (2077302 Byte)</a></li>
-                                        <li><a href="#" target="_blank">tai-lieu-tuyet-mat.rar (248245 Byte)</a></li>
+<?php
+        if(!empty($item['files'])) {
+            $upload_dir = base_url() . 'assets/tasks/files/';
+            foreach($item['files'] as $val) {
+                $file_name = $val['file_name'];
+                $size      = $val['size'] . ' Bytes';
+                $link      = $upload_dir . $file_name;
+?>
+                                        <li><a href="<?php echo $link; ?>" target="_blank"><?php echo $file_name; ?> (<?php echo $size; ?>)</a></li>
+<?php
+            }
+        }else {
+?>
+                                        <li>Không có File đính kèm.</li>
+ <?php
+        }
+?>
+
                                     </ul>
                                 </td>
                             </tr>
@@ -587,7 +627,7 @@
                             <p class="avatar"><img class="fn-useravatar" src="http://data.ht/images/no-avatar.png"></p>
                             <div class="wrap-comment">
                                 <textarea name="content" id="comment_content" cols="30" rows="10"></textarea>
-                                <p class="frm-checkbox">
+                                <p class="frm-checkbox" style="display: none;">
                                     <span>Đính kèm</span>
                                 </p>
                                 <input type="button" value="Bình luận" name="btnSubmit" id="btnComment" class="button btn-dark-blue pull-right" />

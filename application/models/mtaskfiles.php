@@ -39,7 +39,7 @@ class MTaskFiles extends CI_Model{
 			$data['name']					= 				stripslashes($arrParam['name']);
 			$data['file_name']				= 				stripslashes($arrParam['file_name']);
 			$data['size'] 					= 				$arrParam['size'];
-            $data['extension'] 				= 				$arrParam['ext'];
+            $data['extension'] 				= 				$arrParam['extension'];
 			$data['excerpt']				= 				stripslashes($arrParam['excerpt']);
 
 			$data['created']				= 				@date("Y-m-d H:i:s");
@@ -59,7 +59,7 @@ class MTaskFiles extends CI_Model{
 			$data['name']					= 				stripslashes($arrParam['name']);
 			$data['file_name']				= 				stripslashes($arrParam['file_name']);
 			$data['size'] 					= 				$arrParam['size'];
-            $data['extension'] 				= 				$arrParam['ext'];
+            $data['extension'] 				= 				$arrParam['extension'];
 			$data['excerpt']				= 				stripslashes($arrParam['excerpt']);
 			
 			$data['modified']				= 				@date("Y-m-d H:i:s");

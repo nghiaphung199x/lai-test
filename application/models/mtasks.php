@@ -29,6 +29,21 @@ class MTasks extends MNested2{
 		$this->_trangthai = lang('task_trangthai');
 	}
 
+    public function check_lastest_lowel($task_id) {
+        $this->db->select("COUNT(t.id) AS totalItem")
+                  ->from($this->_table . ' AS t')
+                  ->where('t.parent', $task_id);
+
+        $query 	   = $this->db->get();
+
+        $result = $query->row_array();
+        $result = $result['totalItem'];
+        if($result > 0)
+            return false;
+        else
+            return true;
+    }
+
 	public function statistic($arrParams = null, $options = null) {
 		if($options['task'] == 'task-by-project') {
 			$task_ids = $this->getTasksIdsByProject($arrParams['project']);
@@ -344,17 +359,16 @@ class MTasks extends MNested2{
 			$data['date_finish']			= 		$date_finish;
 			$data['duration']				= 		$arrParam['duration'];
 			$data['modified']				= 		@date("Y-m-d H:i:s");
-			$data['modified_by']			= 		$arrParam['user_info']['id'];
-			$data['trangthai']				= 		$arrParam['trangthai'];
-			$data['type']					= 		$arrParam['type'];
+			$data['modified_by']			= 		$this->_id_admin;
 			$data['color']					= 		$arrParam['color'];
 			$data['customer_ids']			= 		$customer_ids;
 			if($arrParam['parent'] != 0)
 				$data['percent']				= 		$arrParam['percent'] / 100;
-			
+
+
 			$this->db->update($this->_table,$data);
 			$this->db->flush_cache();
-			
+
 			$tblRelation = $this->model_load_model('MTasksRelation');
 			$tblRelation->deleteItem(array('cid'=>array($arrParam['id'])), array('task'=>'delete-multi'));
 
@@ -399,8 +413,9 @@ class MTasks extends MNested2{
 			$lastId = $arrParam['id'];
 		}elseif($options['task'] == 'pheduyet') {
 			$this->db->where("id",$arrParam['id']);
-			$data['pheduyet']			= 		1;
-				
+			$data['pheduyet']			= 		$arrParam['pheduyet_select'];
+            $data['pheduyet_note']      = 		stripslashes($arrParam['pheduyet_note']);
+
 			$this->db->update($this->_table,$data);
 				
 			$this->db->flush_cache();
@@ -614,7 +629,7 @@ class MTasks extends MNested2{
 					
 					$val['text'] = $val['text'] . ' ('.($val['progress'] * 100).'%)';
 					if($val['pheduyet'] == -1)
-						$val['text'] = $val['text'] . ' - Pending';
+						$val['text'] = $val['text'] . ' - Chờ phê duyệt';
 					elseif($val['pheduyet'] == 0)
 						$val['text'] = $val['text'] . ' - Không phê duyệt';
 					
@@ -1209,7 +1224,8 @@ class MTasks extends MNested2{
 			$this->db->select("t.*")
 					 ->from($this->_table . ' as t')
 					 ->where('t.id',$arrParams['id']);
-			
+
+            $this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as date_finish", FALSE);
 			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as date_start", FALSE);
 			$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as date_end", FALSE);
 
@@ -1224,7 +1240,6 @@ class MTasks extends MNested2{
 						$task_ids = $this->getIds(array('lft'=>$result['lft'], 'rgt'=>$result['rgt'], 'project_id'=>$result['project_id']), array('task'=>'up-branch'));
 					elseif($options['brand'] == 'detail')
 						$task_ids = $this->getIds(array('lft'=>$result['lft'], 'rgt'=>$result['rgt'], 'project_id'=>$result['project_id']));
-				
 
 					// file list
 					$this->db->select('f.*')
@@ -1399,7 +1414,7 @@ class MTasks extends MNested2{
 		
 		return $project_ids;
 	}
-	
+
 	protected function checkAllPermission() {
 		$flagAll = true;
 		if(!(in_array('update_project', $this->_task_permission) && in_array('update_all_task', $this->_task_permission))){
@@ -1436,7 +1451,7 @@ class MTasks extends MNested2{
 		return $task_ids;
 	}
 
-	protected function do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr, $created_byArr) {
+	protected function do_relation_information($lastId, $xemArr, $implementArr, $create_taskArr, $pheduyet_taskArr, $progress_taskArr) {
 		$array = array();
 		if(isset($xemArr)) {
 			foreach($xemArr as $user_id) {

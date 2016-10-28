@@ -138,6 +138,11 @@
 	position: relative;
 }
 
+#detail_manager {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .table .table td {
     padding: 4px !important;
 }
@@ -176,7 +181,7 @@
 }
 
 .box-modal .modal-header {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f3f6fc), color-stop(1, #e8ebf1));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f9f9f9), color-stop(1, #f9f9f9));
     border-top-left-radius: 5px !important;
     border-top-right-radius: 5px !important;
     border-bottom: 1px solid #cecece !important;
@@ -192,7 +197,7 @@
 }
 
 #my_modal .modal-header {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f3f6fc), color-stop(1, #e8ebf1));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f9f9f9), color-stop(1, #f9f9f9));
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border-bottom: 1px solid #cecece;
@@ -258,7 +263,7 @@
     margin-bottom: 0;
     padding-left: 0;
     list-style: none;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f3f6fc), color-stop(1, #e8ebf1));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f9f9f9), color-stop(1, #f9f9f9));
 }
 
 #my_modal .arrord_nav {
@@ -288,13 +293,16 @@
     border-left: 0;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f3f6fc), color-stop(1, #e8ebf1));
+    font-weight: bold;
 }
 
 #my_modal .arrord_nav ul li.active {
-    border: 1px solid #cecece;
     border-bottom: 1px solid white;
     background: white;
+}
+
+#my_modal .arrord_nav ul li:first-child {
+    border-left: 1px solid #cecece;
 }
 
 #my_modal .arrord_nav ul li span.title {
@@ -349,6 +357,7 @@
 #my_modal .manage-table a.btn {
     background: #489ee7;
     border: 0;
+    line-height: 16px;
 }
 
 #my_modal .manage-table table th {
@@ -796,7 +805,7 @@
 
 #add_navigation .title:hover, #add_navigation .title.active {
 	color: black;
-	background: #ccc;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f9f9f9), color-stop(1, #f9f9f9));
 }
 
 #add_navigation .col-md-9 , #add_navigation .col-lg-8, #add_navigation .col-lg-6, #add_navigation .col-md-3, #add_navigation .col-lg-12 {
@@ -815,17 +824,19 @@
 }
 
 #comment_section {
-	margin-top: 10px;
+	margin-top: 15px;
 }
 
 #comment_section .title {
 	height: 36px;
     line-height: 36px;
     padding: 0 10px;
-    padding-bottom: 45px;
+    padding-bottom: 42px;
     background: white;
     font-weight: bold;
     color: black;
+    font-size: 16px;
+    padding-left: 5px;
 }
 
 #comment_section .phantrang {
@@ -1076,7 +1087,7 @@ div.dhx_modal_cover {
 }
 
 .x-info-label{
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f3f6fc), color-stop(1, #e8ebf1));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f9f9f9), color-stop(1, #f9f9f9));
 	padding-right:10px !important;
 	text-align:right;
 	width:15%;
@@ -1106,7 +1117,7 @@ div.dhx_modal_cover {
     border: 1px solid #d7dce5;
     padding: 20px;
     padding-bottom: 10px;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f2f2f2), color-stop(1, #e8e8e8));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f9f9f9), color-stop(1, #f9f9f9));
 }
 
 .frm-comment .avatar {
