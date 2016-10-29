@@ -29,6 +29,24 @@ class MTasks extends MNested2{
 		$this->_trangthai = lang('task_trangthai');
 	}
 
+    function check_time_distance($parent_item, $date_start, $date_end) {
+        $lft        = $parent_item['lft'];
+        $rgt        = $parent_item['rgt'];
+        $project_id = $parent_item['project_id'];
+
+        $this ->db->select("t.id, t.date_start, t.date_end")
+              ->from($this->_table . ' AS t')
+              ->where('t.lft <' . $lft . ' AND t.rgt > ' . $rgt)
+              ->where("t.date_start > '$date_start' OR t.date_end < '$date_end'")
+              ->order_by('lft ASC');
+
+        $query 	   = $this->db->get();
+
+        $result = $query->row_array();
+
+
+    }
+
     // Check the parents is not approved or not
     public function check_parent_appoval($task) {
         $lft         = $task['lft'];

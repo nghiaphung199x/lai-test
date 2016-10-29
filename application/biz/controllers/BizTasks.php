@@ -181,7 +181,7 @@ class BizTasks extends Secure_area
 				$errors = $this->form_validation->error_array();
 				$flagError = true;
 			}else {
-				// kiểm tra time
+				// time valid
 				$arrParam['date_start'] = date('Y-m-d', strtotime($arrParam['date_start']));
 
 				$arrParam['date_end']   = date('Y-m-d', strtotime($arrParam['date_end']));
@@ -192,9 +192,20 @@ class BizTasks extends Secure_area
 					$flagError = true;
 					$errors['date_start'] = 'Ngày kết thúc phải sau ngày bắt đầu.';
 					$errors['date_end']   = '.';
-				}
-				
-				if($flagError == false && $arrParam['parent'] > 0) {
+				}else {
+                    if($arrParam['parent'] > 0) {
+                        $check = $this->MTasks->check_time_distance($parent_item, $arrParam['date_start'], $arrParam['date_end']);
+                        if($check == false) {
+                            $flagError = true;
+                            $errors['date_start'] = 'Ngày kết thúc phải sau ngày bắt đầu.';
+                            $errors['date_end']   = '.';
+                        }
+
+                    }
+                }
+
+                // max percent valid
+				if($arrParam['parent'] > 0) {
 					$max_percent = $this->MTasks->getMaxPercent($arrParam['parent'], $arrParam['project_id']);
 					// kiểm tra percent
 					if($arrParam['percent'] > $max_percent) {
@@ -1473,7 +1484,10 @@ class BizTasks extends Secure_area
 //		$this->load->model('MTasks');
 //		$this->MTasks->test();
 
-        echo time();
+        $date_start = date('Y-m-d', strtotime('10-3-1990'));
+
+        echo $date_start;
+
         //$this->load->view('tasks/test_view', $this->_data);
 	}
 	
@@ -1487,7 +1501,6 @@ class BizTasks extends Secure_area
 			$this->form_validation->set_message('valid_date', '%s phải mang định dạng m-y-D');
 			return false;
 		}
-
 	}
 	
 }
