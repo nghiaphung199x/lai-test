@@ -1264,7 +1264,7 @@ function delete_file() {
 						type: "POST",
 						url: BASE_URL + 'tasks/deletefile',
 						data: {
-							file_ids   : file_ids,
+							file_ids   : file_ids
 						},
 						success: function(string){
 							toastr.success('Cập nhật thành công!', 'Thông báo');
@@ -1276,38 +1276,10 @@ function delete_file() {
 	    });
 		
 	}else {
-		gantt.alert({
-		    text: 'Chọn ít nhất một bản ghi',
-		    title:"Lỗi!",
-		    ok:"Đóng",
-		    callback:function(){}
-		});
+        toastr.warning('Chọn ít nhất một bản ghi!', 'Cảnh báo');
 	}
 }
 
-function detail() {
-	var task_id = $('#task_id').val();
-	$.ajax({
-		type: "POST",
-		url: BASE_URL + 'tasks/detail?task=quick',
-		data: {
-			id 		   : task_id,
-		},
-		success: function(string){
-			$('#my-form .arrord_nav').remove();
-			$('#my-form .gantt_cal_larea').remove();
-			$('#my-form').append(string);	
-			if($('#my-form .btn-save').length)
-				$('#my-form .btn-save').html('<a href="javascript:;" onclick="edit();"><i class="fa fa-edit"></i>Sửa</a>');
-			else{
-				if(!$('.btn-back').length) {
-					var btn = '<li class="btn-back"><a href="javascript:;" onclick="edit();"><i class="fa fa-calendar"></i>Tiến độ</a></li>';
-					$(btn).insertBefore( ".btn-detail" );
-				}
-			}	
-	    }
-	});
-}
 
 function delete_congviec(id) {
     bootbox.confirm("Bạn có chắc muốn xóa?", function(result){

@@ -3,6 +3,12 @@ class MTasksLinks extends CI_Model{
    
 	protected $_table = 'task_links';
 	public function __construct(){
+        $this->load->library('MY_System_Info');
+        $info 			 = new MY_System_Info();
+        $user_info 		 = $info->getInfo();
+
+        $this->_id_admin = $user_info['id'];
+
 		parent::__construct();
 	}
 	
@@ -25,8 +31,8 @@ class MTasksLinks extends CI_Model{
 			$data['target']					= 		$arrParam['target'];
 			$data['type']					= 		$arrParam['type'];
 			$data['created']				= 		@date("Y-m-d H:i:s");
-			$data['created_by']				= 		$arrParam['user_info']['id'];
-			
+			$data['created_by']				= 		$this->_id_admin;
+
 			$this->db->insert($this->_table,$data);
 			$lastId = $this->db->insert_id();
 		}

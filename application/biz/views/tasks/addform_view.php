@@ -82,7 +82,7 @@
                     <div class="clearfix hang" style="margin-bottom: 10px;">
                         <div class="col-lg-12">
                             <div class="form-group">
-                                <label for="name" class="col-md-3 col-lg-2 control-label"><?php echo $congviec_title; ?></label>
+                                <label for="name" class="col-md-3 col-lg-2 control-label required"><?php echo $congviec_title; ?></label>
                                 <div class="col-md-9 col-lg-10">
                                     <input type="text" name="name" value="" class="form-control" />
                                     <span for="name" class="text-danger errors"></span>
@@ -148,7 +148,7 @@
                                 <div class="row">
                                     <div class="col-lg-6" style="padding-right: 10px">
                                         <div class="form-group">
-                                            <label class="col-md-3 col-lg-4 control-label">Bắt đầu</label>
+                                            <label class="col-md-3 col-lg-4 control-label required">Bắt đầu</label>
                                             <div class="col-md-9 col-lg-8">
                                                 <input type="text" name="date_start" class="form-control datepicker" />
                                                 <span for="date_start" class="text-danger errors"></span>
@@ -157,7 +157,7 @@
                                     </div>
                                     <div class="col-lg-6" style="padding-left: 10px;">
                                         <div class="form-group">
-                                            <label class="col-md-3 col-lg-4 control-label">Kết thúc</label>
+                                            <label class="col-md-3 col-lg-4 control-label required">Kết thúc</label>
                                             <div class="col-md-9 col-lg-8">
                                                 <input type="text" name="date_end" class="form-control datepicker" />
                                                 <span for="date_end" class="text-danger errors"></span>

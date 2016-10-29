@@ -29,6 +29,28 @@ class MTasks extends MNested2{
 		$this->_trangthai = lang('task_trangthai');
 	}
 
+    // Check the parents is not approved or not
+    public function check_parent_appoval($task) {
+        $lft         = $task['lft'];
+        $rgt         = $task['rgt'];
+        $project_id  = $task['project_id'];
+        $this->db->select("COUNT(t.id) AS totalItem")
+                 ->from($this->_table . ' AS t')
+                 ->where('t.lft < ' . $lft . ' AND rgt > ' . $rgt)
+                 ->where('t.pheduyet IN (-1, 0)')
+                 ->where('t.project_id', $project_id);
+
+        $query 	   = $this->db->get();
+
+        $result = $query->row_array();
+        $result = $result['totalItem'];
+
+        if($result > 0)
+            return true;
+        else
+            return false;
+    }
+
     public function check_lastest_lowel($task_id) {
         $this->db->select("COUNT(t.id) AS totalItem")
                   ->from($this->_table . ' AS t')
@@ -455,7 +477,18 @@ class MTasks extends MNested2{
 			$this->db->flush_cache();
 				
 			$lastId = $arrParam['id'];
-		}
+		}elseif($options['task'] == 'custom') {
+            $this->db->where("id",$arrParam['id']);
+
+            foreach($arrParam['fields'] as $key => $val)
+                $data[$key] = $val;
+
+            $this->db->update($this->_table,$data);
+
+            $this->db->flush_cache();
+
+            $lastId = $arrParam['id'];
+        }
 
 		return $lastId;
 	}
@@ -790,6 +823,7 @@ class MTasks extends MNested2{
 				$task_list = array_merge($task_list, array());
 				
 				$result = array('ketqua'=>$task_list, 'deny'=>$deny_task, 'drag_task'=>$drag_task);
+
 			}else {
 				$deny_task = array();
 				if(!in_array('update_project', $this->_task_permission))

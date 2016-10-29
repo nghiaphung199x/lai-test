@@ -229,12 +229,6 @@
     font-family: Arial;
 }
 
-#my_modal .form-horizontal .control-label {
-    text-align: left;
-    font-weight: unset;
-    color: black;
-    margin-bottom: 10px;
-}
 
 #my_modal .form-group .form-control {
     border-radius: 0;
@@ -447,6 +441,10 @@
     font-weight: unset;
     color: black;
     margin-bottom: 10px;
+}
+
+#my_modal .form-horizontal .control-label.required {
+    color: red;
 }
 
 #my_modal.quickInfo {
@@ -1093,6 +1091,7 @@ div.dhx_modal_cover {
 	width:15%;
 	font-weight:bold;
 	color:#333;
+    border: 1px solid #d7dce5 !important;
 }
 
 .x-info-label.no-border-left {
@@ -1107,6 +1106,7 @@ div.dhx_modal_cover {
 	width:35%;
 	border-right: 0 !important;
 	line-height: 17px;
+    border-right: 1px solid #d7dce5 !important;
 }
 
 .x-info-content span.root {

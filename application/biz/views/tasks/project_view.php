@@ -73,8 +73,7 @@
 	</div>
 </div>
 
-<div id="my-form" class="gantt_cal_light" style=""></div>
-<div id="quick-form" class="gantt_cal_light" style=""></div>
+
 <script type="text/javascript">
 $( document ).ready(function() {
 	load_list('project', 1);

@@ -237,8 +237,7 @@ class BizTasks extends Secure_area
                     'date_pheduyet' =>  @date("Y-m-d H:i:s"),
                 );
 
-                if($arrParam['pheduyet'] == 2)
-                    $this->MTaskProgress->saveItem($params, array('task'=>'add'));
+                $this->MTaskProgress->saveItem($params, array('task'=>'add'));
 
 				//add template task
 				if($arrParam['task_template'] > 0) {
@@ -273,24 +272,30 @@ class BizTasks extends Secure_area
 			$this->_data['parent_item'] 		= $parent_item;
 			$this->_data['project_relation'] 	= $project_relation;
 			$this->_data['task_template'] 	    = $task_template;
-
+			
 			//view
 			$this->load->view('tasks/addform_view',$this->_data);
 		}
 	}
 
 	protected function convert_progress_task($arrParam) {
-		if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
-			$arrParam['trangthai'] = 2;
-			$arrParam['progress'] = 100;
-		}elseif($arrParam['progress'] > 0 && $arrParam['trangthai'] == 0) {
-			$arrParam['trangthai'] = 1;
-		}
+        if($arrParam['pheduyet'] == -1) {
+            $arrParam['trangthai'] = 0;
+            $arrParam['progress'] = 0;
+        }else {
+            if($arrParam['trangthai'] == 2 || $arrParam['progress'] == 100) {
+                $arrParam['trangthai'] = 2;
+                $arrParam['progress'] = 100;
+            }elseif($arrParam['progress'] > 0 && $arrParam['trangthai'] == 0) {
+                $arrParam['trangthai'] = 1;
+            }
 
-		if($arrParam['task_template'] > 0) {
-			$arrParam['trangthai'] = 0;
-			$arrParam['progress']  = 0;
-		}
+            if($arrParam['task_template'] > 0) {
+                $arrParam['trangthai'] = 0;
+                $arrParam['progress']  = 0;
+            }
+        }
+
 		return $arrParam;
 	}
 
@@ -452,7 +457,7 @@ class BizTasks extends Secure_area
 					$is_create_task[] = $val['id'];
 					$keyArr = explode('-', $key);
 					if($keyArr[0] != $arrParam['id'])
-						$is_create_task_parent[] = $val['user_id'];
+						$is_create_task_parent[] = $val['id'];
 				}
 
 				$is_create_task_parent = array_unique($is_create_task_parent);
@@ -503,7 +508,7 @@ class BizTasks extends Secure_area
 			}
 
 			$this->_data['item'] = $item;
-			if($item['parent'] == 0) { // dự án
+			if($item['parent'] == 0) { // project
 				if(in_array('update_project', $task_permission))
 					$view = 'tasks/editform_view';
 				elseif(in_array($user_info['id'], $is_implement) && in_array('update_brand_task', $task_permission))
@@ -515,25 +520,26 @@ class BizTasks extends Secure_area
 					$view = 'tasks/detail_view';
 				}
 
-			}else { // công việc thuộc dự án
-				if(in_array('update_all_task', $task_permission))
-					$view = 'tasks/editform_view';
-				elseif(in_array($user_info['id'], $is_implement) && in_array('update_brand_task', $task_permission))
-					$view = 'tasks/editform_view';
-				elseif(in_array($user_info['id'], $is_create_task_parent) || in_array($user_info['id'], $is_create_task)){
-					$view = 'tasks/editform_view';
-				}elseif(in_array($user_info['id'], $is_implement))
-					$view = 'tasks/quickupdate_view';
-				elseif(in_array($user_info['id'], $is_xem) || in_array($user_info['id'], $is_pheduyet_parent) || in_array($user_info['id'], $is_pheduyet)) {
-					$this->_data['no_comment'] = true;	
-					$this->_data['is_xem'] 	   = true;
-					$view = 'tasks/detail_view';
-				}
+			}else { // tasks
+                if(in_array('update_all_task', $task_permission)){
+                        $view = 'tasks/editform_view';
+                }elseif(in_array($user_info['id'], $is_implement) && in_array('update_brand_task', $task_permission)) {
+                        $view = 'tasks/editform_view';
+                }elseif(in_array($user_info['id'], $is_create_task_parent)){
+                        $view = 'tasks/editform_view';
+
+                }elseif(in_array($user_info['id'], $is_implement)) {
+                        $view = 'tasks/quickupdate_view';
+                }
+                elseif(in_array($user_info['id'], $is_xem) || in_array($user_info['id'], $is_pheduyet_parent)) {
+                    $this->_data['no_comment'] = true;
+                    $this->_data['is_xem'] 	   = true;
+                    $view = 'tasks/detail_view';
+                }
 			}
 
-			//nhánh dự án/ công việc
+			//project/task brands
 			$this->_data['slbTasks'] = $this->MTasks->itemSelectBox(array('project_id'=>$item['project_id'], 'lft'=>$item['lft'], 'rgt'=>$item['rgt']));
-
 			if(!empty($view))
 				$this->load->view($view,$this->_data);
 		}
@@ -1014,19 +1020,56 @@ class BizTasks extends Secure_area
 	}
 	
 	public function link()  {
+		$this->load->model('MTasksLinks');
+        $this->load->model('MTasks');
 		$post  = $this->input->post();
+
 		$this->load->library('MY_System_Info');
 		$info 		= new MY_System_Info();
 		$user_info = $info->getInfo();
-	
+
+		//user permission
+		$task_permission = $user_info['task_permission'];
+
 		if(!empty($post)) {
-			$this->load->model('MTasksLinks');
-	
-			$arrParam = $post;
-			$arrParam['user_info'] = $user_info;
-			$this->MTasksLinks->saveItem($arrParam, array('task'=>'add'));
-				
-			$response = array('flag'=>'true');
+			$item = $this->MTasks->getItem(array('id'=>$post['source']), array('task'=>'public-info', 'brand'=>'full'));
+
+            $is_create_task_parent  = $is_implement = array();
+			if(!empty($item['is_create_task'])) {
+				foreach($item['is_create_task'] as $key => $val){
+					$keyArr = explode('-', $key);
+					if($keyArr[0] != $post['source'])
+						$is_create_task_parent[] = $val['id'];
+				}
+
+				$is_create_task_parent = array_unique($is_create_task_parent);
+			}
+
+
+            if(!empty($item['is_implement'])) {
+                foreach($item['is_implement'] as $val)
+                    $is_implement[] = $val['id'];
+
+                $is_implement = array_unique($is_implement);
+            }
+
+			$flag = 'false';
+            if(in_array('update_all_task', $task_permission)){
+                $flag = 'true';
+            }elseif(in_array($user_info['id'], $is_implement) && in_array('update_brand_task', $task_permission)) {
+                $flag = 'true';
+            }elseif(in_array($user_info['id'], $is_create_task_parent)){
+                $flag = 'true';
+            }
+
+            if($flag == 'true') {
+				$arrParam = $post;
+				$arrParam['user_info'] = $user_info;
+				$this->MTasksLinks->saveItem($arrParam, array('task'=>'add'));
+            }else
+            	$msg = 'Bạn không có quyền thực hiện chức năng này.';
+
+			$response = array('flag'=>$flag, 'msg'=>$msg);
 			echo json_encode($response);
 		}
 	}
@@ -1043,6 +1086,7 @@ class BizTasks extends Secure_area
 	
 	public function pheduyet() {
 		$this->load->model('MTasks');
+        $this->load->modal('MTaskProgress');
 		$post     = $this->input->post();
 		$arrParam = $this->_data['arrParam'];
 		$item = $this->MTasks->getItem(array('id'=>$arrParam['task_id']), array('task'=>'public-info', 'brand'=>'full'));
@@ -1065,16 +1109,42 @@ class BizTasks extends Secure_area
 				$is_pheduyet_parent = array_unique($is_pheduyet_parent);
 			}
 
-			if(in_array($user_info['id'], $is_pheduyet_parent) && $item['pheduyet'] == -1) {
-				// update pheduyet => 1
-                //$arrParam['pheduyet_note'] = ($arrParam['pheduyet_select'] == 0) ? $arrParam['pheduyet_note'] : '';
-				$this->MTasks->saveItem(array('id'=>$arrParam['task_id']), array('task'=>'pheduyet'));
+            $flag = 'true';
+            if(empty($item)) {
+                $flag = 'false';
+                $msg = 'Công việc không tồn tại.';
+            }else {
+                if(!in_array($user_info['id'], $is_pheduyet_parent) || $item['pheduyet'] != -1) {
+                    $flag = 'fasle';
+                    $msg = 'Không thực hiện được tác vụ';
+                }
 
-                // return respon
-				$response = array('flag'=>'true', 'msg'=>'Thực hiện tác vụ thành công.');
-			}else
-				$response = array('flag'=>'false', 'msg'=>'Bạn không có quyền thực hiện chức năng này.');
-			
+                if($flag == 'true') {
+                    $check = $this->MTasks->check_parent_appoval($item);
+                    if($check == true) {
+                        $flag = 'false';
+                        $msg = 'Không thực hiện được tác vụ vì công việc cha chưa hoặc không được phê duyệt';
+                    }
+                }
+            }
+
+            if($flag == 'true') {
+                // update pheduyet
+                $arrParam['id'] = $arrParam['task_id'];
+                $this->MTasks->saveItem($arrParam, array('task'=>'pheduyet'));
+
+                // if the task is not approval
+                if($arrParam['pheduyet_select'] == 0) {
+                    // percent = 0
+                    $arrParam['fields'] = array('percent'=>0);
+                    $this->MTasks->saveItem($arrParam, array('task'=>'custom'));
+
+                    // remove progress
+                    $this->MTaskProgress->deleteItem(array('task_ids'=>array($arrParam['id'])), array('task'=>'delete-multi-by-task'));
+                }
+            }
+
+            $response = array('flag'=>$flag, 'msg'=>$msg);
 
 			echo json_encode($response);
 		}else {

@@ -73,7 +73,7 @@ class MTaskProgress extends CI_Model{
 					  -> from($this->_table . ' AS p')
 					  -> where('p.task_id IN ('.implode(', ', $this->_task_ids).')')
 					  -> where('p.pheduyet IN (1, 2)');
-			
+
 			$query = $this->db->get();
 			
 			$result = $query->row()->totalItem;
@@ -149,7 +149,7 @@ class MTaskProgress extends CI_Model{
 			$task_ids = implode(', ', $arrParam['task_ids']);
 			$sqlString   = 'UPDATE ' .$this->db->dbprefix($this->_table)
 						  . ' SET progress = -0.01'
-						  . ' WHERE task_ids IN ('.$task_ids.')';
+						  . ' WHERE task_ids IN ('.$task_ids.') AND pheduyet = -1';
 			
 			$this->db->query($sqlString);
 		}

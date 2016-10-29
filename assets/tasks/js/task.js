@@ -111,7 +111,6 @@
 
                     }else {
                         toastr.warning('Bạn không có quyền với chức năng này!', 'Cảnh báo');
-
                     }
                 }
 
@@ -136,17 +135,11 @@
 					return true;
 				}
 				else{
-					gantt.alert({
-					    text:"Bạn không có quyền với chức năng này.",
-					    title:"Error!",
-					    ok:"Yes",
-					    callback:function(){}
-					});
+                    toastr.warning('Bạn không có quyền với chức năng này!', 'Cảnh báo');
 					return false;
 				}
 			}else if(mode == 'progress')
 				return false;
-
 		});
 
 		gantt.attachEvent("onTaskDrag", function(id, mode, task, original){
@@ -184,60 +177,64 @@
 		    var new_start_date = res_start[2] + '/' + res_start[1] + '/' + res_start[0];
 		    var new_end_date   = res_end[2] + '/' + res_end[1] + '/' + res_end[0];
 
-		    gantt.confirm({
-		        text: 'Cập nhật "'+new_start_date+' đến '+new_end_date+'"',
-		        ok:"Đồng ý", 
-		        cancel:"Hủy bỏ",
-		        callback: function(result){
-		        	if(result == true) {
-						$.ajax({
-							type: "POST",
-							url: BASE_URL + 'tasks/quickupdate',
-							data: {
-								id 		   : id,
-								date_start : start_date,
-								date_end   : end_date,
-							},
-							success: function(string){
-								gantt.alert("Cập nhật thành công.");
-						    }
-						});
-		        	}else{
-		        		//task.start_date = $('#start_date_original').val();
-		        		//gantt.refreshData();
-		        	}
-		        }
-		    });
+            bootbox.confirm('Cập nhật "'+new_start_date+' đến '+new_end_date+'"', function(result){
+                if(result == true) {
+                    $.ajax({
+                        type: "POST",
+                        url: BASE_URL + 'tasks/quickupdate',
+                        data: {
+                            id 		   : id,
+                            date_start : start_date,
+                            date_end   : end_date
+                        },
+                        success: function(string){
+                            toastr.success('Cập nhật thành công!', 'Thông báo');
+                        }
+                    });
+                }else{
+                    //task.start_date = $('#start_date_original').val();
+                    //gantt.refreshData();
+                }
+
+            });
+
 		});
 		
 		// link
 		gantt.attachEvent("onBeforeLinkAdd", function(id,link){
 			var task_id = link.source;
-			
 			if($.inArray(task_id, deny_items) == -1){
-				$.ajax({
-					type: "POST",
-					url: BASE_URL + 'tasks/link',
-					data: {
-						source   : link.source,
-						target   : link.target,
-						type     : parseInt(link.type),
-					},
-					success: function(string){
-						var res = $.parseJSON(string);
-						if(res.flag == 'true')
-							gantt.alert("Cập nhật thành công.");
-				    }
-				});
-				return true;
+                bootbox.confirm("Bạn có chắc chắn không?", function(result){
+                    if (result){
+                        $.ajax({
+                            type: "POST",
+                            url: BASE_URL + 'tasks/link',
+                            data: {
+                                source   : link.source,
+                                target   : link.target,
+                                type     : parseInt(link.type)
+                            },
+                            success: function(string){
+                                var res = $.parseJSON(string);
+
+                                if(res.flag == 'true'){
+                                    toastr.success(res.msg, 'Thông báo');
+                                }else {
+                                    toastr.warning(res.msg, 'Cảnh báo');
+                                    gantt.deleteLink(id);
+                                }
+                            }
+                        });
+                        return true;
+                    }else {
+                        gantt.deleteLink(id);
+                    }
+                });
+
 			}
 			else{
-				gantt.alert({
-				    text:"Bạn không có quyền với chức năng này.",
-				    title:"Lỗi!",
-				    ok:"Đóng",
-				    callback:function(){}
-				});
+                toastr.warning('Bạn không có quyền với chức năng này!', 'Cảnh báo');
+
 				return false;
 			}
 		});
@@ -259,12 +256,8 @@
 				return true;
 			}
 			else{
-				gantt.alert({
-				    text:"Bạn không có quyền với chức năng này.",
-				    title:"Error!",
-				    ok:"Yes",
-				    callback:function(){}
-				});
+                toastr.warning('Bạn không có quyền với chức năng này!', 'Cảnh báo');
+
 				return false;
 			}
 		});
