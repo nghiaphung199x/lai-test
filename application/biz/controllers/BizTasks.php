@@ -1097,7 +1097,7 @@ class BizTasks extends Secure_area
 	
 	public function pheduyet() {
 		$this->load->model('MTasks');
-        $this->load->modal('MTaskProgress');
+        $this->load->model('MTaskProgress');
 		$post     = $this->input->post();
 		$arrParam = $this->_data['arrParam'];
 		$item = $this->MTasks->getItem(array('id'=>$arrParam['task_id']), array('task'=>'public-info', 'brand'=>'full'));
