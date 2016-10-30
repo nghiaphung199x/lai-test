@@ -8,7 +8,6 @@ $(document).on('show.bs.modal', '.modal', function (event) {
 });
 
 $( document ).ready(function() {
-	
 	var array_list = ['progress', 'file'];
 	// phân trang file, progress
 	$.each( array_list, function( key, keyword ) {
@@ -1293,7 +1292,9 @@ function delete_congviec(id) {
 				 ids  : ids
 			 },
 			 success: function(string){
-				 location.reload();
+                 $('#my_modal').modal('toggle');
+                 gantt.clearAll();
+				 load_task(1);
 		     }
 		 });
   		

@@ -9,7 +9,7 @@ class MNested2 extends CI_Model{
 	public function __construct(){
 		parent::__construct();
 	}
-	
+
 	public function removeNode($id,$options = 'branch'){
 		$this->_id = $id;
 	

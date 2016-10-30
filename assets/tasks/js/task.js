@@ -177,6 +177,7 @@
 		    var new_start_date = res_start[2] + '/' + res_start[1] + '/' + res_start[0];
 		    var new_end_date   = res_end[2] + '/' + res_end[1] + '/' + res_end[0];
 
+
             bootbox.confirm('Cập nhật "'+new_start_date+' đến '+new_end_date+'"', function(result){
                 if(result == true) {
                     $.ajax({
@@ -188,12 +189,19 @@
                             date_end   : end_date
                         },
                         success: function(string){
-                            toastr.success('Cập nhật thành công!', 'Thông báo');
+                            var res = $.parseJSON(string);
+                            if(res.flag == 'false') {
+                                toastr.error(res.msg, 'Lỗi');
+                            }else {
+                                toastr.success(res.msg, 'Thông báo');
+                            }
+
+                            load_task(1);
+
                         }
                     });
                 }else{
-                    //task.start_date = $('#start_date_original').val();
-                    //gantt.refreshData();
+                    load_task(1);
                 }
 
             });
@@ -250,7 +258,7 @@
 
 					},
 					success: function(string){
-						//console.log(string);
+
 				    }
 				});
 				return true;
@@ -452,7 +460,7 @@
 			url: url,
 			data: {
 				id 		   : task_id,
-				parent 	   : parent,
+				parent 	   : parent
 			},
 			success: function(string){
 				$('#my-form .arrord_nav').remove();

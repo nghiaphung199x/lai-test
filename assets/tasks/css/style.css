@@ -138,6 +138,10 @@
 	position: relative;
 }
 
+.modal-header .close {
+    margin-top: 1px;
+}
+
 #detail_manager {
     padding-left: 10px;
     padding-right: 10px;

@@ -29,22 +29,17 @@ class MTasks extends MNested2{
 		$this->_trangthai = lang('task_trangthai');
 	}
 
-    function check_time_distance($parent_item, $date_start, $date_end) {
-        $lft        = $parent_item['lft'];
-        $rgt        = $parent_item['rgt'];
-        $project_id = $parent_item['project_id'];
+    // check if a task is exists
+    public function checkItemExist($id) {
+        $this->db -> select('COUNT(t.id) AS totalItem')
+                  -> from($this->_table . ' AS t')
+                  -> where('t.id', $id);
 
-        $this ->db->select("t.id, t.date_start, t.date_end")
-              ->from($this->_table . ' AS t')
-              ->where('t.lft <' . $lft . ' AND t.rgt > ' . $rgt)
-              ->where("t.date_start > '$date_start' OR t.date_end < '$date_end'")
-              ->order_by('lft ASC');
+        $query  = $this->db->get();
+        $result = $query->row()->totalItem;
+        $this->db->flush_cache();
 
-        $query 	   = $this->db->get();
-
-        $result = $query->row_array();
-
-
+        return $result;
     }
 
     // Check the parents is not approved or not
@@ -82,6 +77,23 @@ class MTasks extends MNested2{
             return false;
         else
             return true;
+    }
+
+    public function get_min_max_date($task) {
+        $lft        = $task['lft'];
+        $rgt        = $task['rgt'];
+        $project_id = $task['project_id'];
+        $this->db->select("DATE_FORMAT(min(t.date_start), '%d-%m-%Y') as date_start", FALSE)
+                 ->select("DATE_FORMAT(max(t.date_end), '%d-%m-%Y') as date_end", FALSE)
+                 ->from($this->_table . ' AS t')
+                 ->where('t.lft > ' . $lft . ' AND t.rgt < ' . $rgt)
+                 ->where('t.project_id', $project_id);
+
+        $query 	   = $this->db->get();
+
+        $result = $query->row_array();
+
+        return $result;
     }
 
 	public function statistic($arrParams = null, $options = null) {
@@ -1259,8 +1271,21 @@ class MTasks extends MNested2{
 			$query = $this->db->get();
 				
 			$resultTmp =  $query->result_array();
-			$this->db->flush_cache();	
-		}
+			$this->db->flush_cache();
+		}elseif($options['task'] == 'update-task') {
+            $date_start = $arrParam['date_start'];
+            $date_end   = $arrParam['date_end'];
+            $this->db->select("t.id, t.name, t.date_start, t.date_end")
+                     ->from($this->_table . ' as t')
+                     ->where('t.lft > ' . $arrParam['lft'] . ' AND t.rgt < ' . $arrParam['rgt'])
+                     ->where('t.project_id', $arrParam['project_id'])
+                     ->where("t.date_start < $date_start OR t.date_end > $date_end");
+
+            $query = $this->db->get();
+
+            $result =  $query->result_array();
+            $this->db->flush_cache();
+        }
 		
 		$result = array();
 		if(!empty($resultTmp)) {
@@ -1390,18 +1415,7 @@ class MTasks extends MNested2{
 		}
 	}
 	
-	public function checkItemExist($id) {
-		$this->db -> select('COUNT(t.id) AS totalItem')
-			  	  -> from($this->_table . ' AS t')
-				  -> where('t.id', $id);
-			
-		$query  = $this->db->get();
-		$result = $query->row()->totalItem;
-		$this->db->flush_cache();
-		
-		return $result;
-	}
-	
+
 	public function getMaxPercent($parent_id, $project_id, $id = null) {
 		$this->db->select("t.percent")
 				 ->from($this->_table . ' as t')
