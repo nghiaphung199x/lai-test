@@ -390,7 +390,6 @@ class BizTasks extends Secure_area
             $fields['duration'] = floor($datediff/(60*60*24)) + 1;
 
             $params['fields'] = $fields;
-
             $this->MTasks->saveItem($params, array('task'=>'custom'));
         }
     }
@@ -402,8 +401,7 @@ class BizTasks extends Secure_area
 		$this->load->library('MY_System_Info');
 		$info 		= new MY_System_Info();
 		$this->_data['user_info'] = $user_info = $info->getInfo();
-	
-		//quyền chung của user
+
 		$task_permission = $user_info['task_permission'];
 			
 		$this->load->model('MTasks');
@@ -447,7 +445,7 @@ class BizTasks extends Secure_area
                         }
                     }
                 }
-				
+
 				if($flagError == false) {
 					$max_percent = $this->MTasks->getMaxPercent($arrParam['parent'], $arrParam['project_id'], $arrParam['id']);
 					// valid percent
@@ -472,10 +470,13 @@ class BizTasks extends Secure_area
 				$this->MTasks->saveItem($arrParam, array('task'=>'edit'));
 
                 //update time for tasks child
+
                 $params = $item;
                 $params['date_start'] = $arrParam['date_start'];
                 $params['date_end']   = $arrParam['date_end'];
+
                 $task_items = $this->MTasks->getItems($params, array('task'=>'update-task'));
+
                 if(!empty($task_items)) {
                    $this->update_time_for_tasks_child($task_items, $arrParam['date_start'], $arrParam['date_end']);
                 }
@@ -1224,8 +1225,19 @@ class BizTasks extends Secure_area
             $item = $this->MTasks->getItem($arrParam, array('task'=>'information'));
             if(empty($item)) {
                 $flag = 'false';
-                $msg = 'Dự án/ Công việc này không tòn tại.';
+                $msg = 'Dự án/ Công việc này không tồn tại.';
             }else {
+				if($item['parent'] > 0) {
+					$parent_item = $this->MTasks->getItem(array('id'=>$item['parent']), array('task'=>'information'));
+					$error_date = $this->validate_min_max_date($arrParam['date_start'], $arrParam['date_end'], $parent_item['date_start'], $parent_item['date_end']);
+					if(!empty($error_date)) {
+						$flag = 'false';
+						$msg  = $error_date;
+					}	
+				}
+            }
+			
+			if($flag == 'true') {
                 // update the task
                 $date_start = str_replace('/', '-', $arrParam['date_start']);
                 $arrParam['date_start'] = date('Y-m-d', strtotime($date_start));
@@ -1238,10 +1250,8 @@ class BizTasks extends Secure_area
 
                 $this->MTasks->saveItem($arrParam, array('task'=>'quick-update'));
 
-                // update relation tasks
-
                 $msg = 'Cập nhật thành công.';
-            }
+			}
 
             $response = array('flag'=>$flag, 'msg'=>$msg);
             echo json_encode($response);
@@ -1569,28 +1579,16 @@ class BizTasks extends Secure_area
 		}
 	}
 	
-	public function validate_min_max_date($date_start, $date_end, $date_start_limit, $date_end_limit, $options = null) {
-		$date_start_limit_cover = date('Y-m-d', strtotime($date_start_limit));
-		$date_end_limit_cover   = date('Y-m-d', strtotime($date_end_limit));
-		
+	public function validate_min_max_date($date_start, $date_end, $date_start_limit, $date_end_limit) {
 		$error = '';
+        $datediff_start    		= strtotime($date_start) - strtotime($date_start_limit);
+        $datediff_end      		= strtotime($date_end) - strtotime($date_end_limit);
 
-        if($options == null) {
-            $datediff_start    		= strtotime($date_start) - strtotime($date_start_limit_cover);
-            $datediff_end      		= strtotime($date_end_limit_cover) - strtotime($date_end);
+        $date_start_limit = date('d-m-Y', strtotime($date_start_limit));
+        $date_end_limit   = date('d-m-Y', strtotime($date_end_limit));
 
-            if($datediff_start < 0 || $datediff_end < 0) {
-                $error = 'Thời gian chỉ trong khoảng từ ' . $date_start_limit . ' đến ' . $date_end_limit;
-            }
-        }else {
-            $datediff_start    		= strtotime($date_start_limit_cover) - strtotime($date_start);
-            $datediff_end      		= strtotime($date_end) - strtotime($date_end_limit_cover);
-
-            if($datediff_start < 0)
-                $error = 'Ngày bắt đầu không được sau ' . $date_start_limit;
-            elseif($datediff_end < 0)
-                $error = 'Ngày kết thúc không được trước ' . $date_end_limit;
-
+        if($datediff_start < 0 || $datediff_end > 0) {
+           $error = 'Thời gian chỉ trong khoảng từ ' . $date_start_limit . ' đến ' . $date_end_limit;
         }
 
 		return $error;

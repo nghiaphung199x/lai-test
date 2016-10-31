@@ -192,6 +192,15 @@
     padding: 10px;
 }
 
+#search_form #s_keywords {
+    float: left;
+}
+
+#search_form #btn_tooltip {
+    margin-left: 10px;
+    float: left;
+}
+
 #my_modal {
     font-family: Arial !important;
 }

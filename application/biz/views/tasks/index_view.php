@@ -10,7 +10,7 @@
 
 	<script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/task-core.js" ></script>
 	<script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/task.js" ></script>
-<?php if($tooltip == true): ?>
+<?php if($tooltip == false): ?>
     <script src="<?php echo base_url();?>assets/scripts/tasks/codebase/ext/dhtmlxgantt_tooltip.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 	$( document ).ready(function() {
@@ -25,7 +25,8 @@
 			<form action="" id="search_form" autocomplete="off" class="form-inline" method="post" accept-charset="utf-8">
 				<div class="search no-left-border" style="padding-left: 5px;">
 					<span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span><input type="text" class="form-control ui-autocomplete-input" name="search" id="s_keywords" value="" placeholder="Tìm kiếm dự án" autocomplete="off" style="border: 0;">
-				</div>
+                    <button id="btn_tooltip" class="btn btn-primary btn-lg">Bật Tooltip</button>
+                </div>
 				<div class="clear-block hidden">
 					<a class="clear" href="javascript:;">
 						<i class="ion ion-close-circled"></i>
@@ -36,7 +37,9 @@
 		<div class="pull-right">
 				<div class="buttons-list">
 					<div class="pull-right-btn">
-						 <a href="<?php echo base_url() . 'tasks/project' ?>" class="btn btn-primary btn-lg" title="Quản lý vai trò"><span class="">Quản lý Dự án</span></a>	                    					
+                        <!--
+                        <a href="<?php echo base_url() . 'tasks/project' ?>" class="btn btn-primary btn-lg" title="Quản lý vai trò"><span class="">Quản lý Dự án</span></a>
+                        -->
 					     <div class="piluku-dropdown">	
 							 <button type="button" class="btn btn-more dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 								<i class="ion-android-more-horizontal"></i>

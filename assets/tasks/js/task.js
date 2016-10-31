@@ -129,17 +129,18 @@
 
 		
 		gantt.attachEvent("onBeforeTaskDrag", function(id, mode, task){
-			 if(mode == 'move' || mode == 'resize') {
-				if ($.inArray(id, deny_items) == -1){
-					var task  = gantt.getTask(id);
-					return true;
-				}
-				else{
-                    toastr.warning('Bạn không có quyền với chức năng này!', 'Cảnh báo');
-					return false;
-				}
-			}else if(mode == 'progress')
-				return false;
+            return false;
+//			 if(mode == 'move' || mode == 'resize') {
+//				if ($.inArray(id, deny_items) == -1){
+//					var task  = gantt.getTask(id);
+//					return true;
+//				}
+//				else{
+//                    toastr.warning('Bạn không có quyền với chức năng này!', 'Cảnh báo');
+//					return false;
+//				}
+//			}else if(mode == 'progress')
+//				return false;
 		});
 
 		gantt.attachEvent("onTaskDrag", function(id, mode, task, original){
@@ -196,14 +197,14 @@
                                 toastr.success(res.msg, 'Thông báo');
                             }
 
+                            gantt.clearAll();
                             load_task(1);
-
                         }
                     });
                 }else{
+                    gantt.clearAll();
                     load_task(1);
                 }
-
             });
 
 		});

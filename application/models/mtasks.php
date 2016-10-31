@@ -79,23 +79,6 @@ class MTasks extends MNested2{
             return true;
     }
 
-    public function get_min_max_date($task) {
-        $lft        = $task['lft'];
-        $rgt        = $task['rgt'];
-        $project_id = $task['project_id'];
-        $this->db->select("DATE_FORMAT(min(t.date_start), '%d-%m-%Y') as date_start", FALSE)
-                 ->select("DATE_FORMAT(max(t.date_end), '%d-%m-%Y') as date_end", FALSE)
-                 ->from($this->_table . ' AS t')
-                 ->where('t.lft > ' . $lft . ' AND t.rgt < ' . $rgt)
-                 ->where('t.project_id', $project_id);
-
-        $query 	   = $this->db->get();
-
-        $result = $query->row_array();
-
-        return $result;
-    }
-
 	public function statistic($arrParams = null, $options = null) {
 		if($options['task'] == 'task-by-project') {
 			$task_ids = $this->getTasksIdsByProject($arrParams['project']);
@@ -1275,16 +1258,17 @@ class MTasks extends MNested2{
 		}elseif($options['task'] == 'update-task') {
             $date_start = $arrParam['date_start'];
             $date_end   = $arrParam['date_end'];
-            $this->db->select("t.id, t.name, t.date_start, t.date_end")
+
+            $this->db->select("t.id, t.name, t.date_start, t.date_end, t.lft, t.rgt")
                      ->from($this->_table . ' as t')
                      ->where('t.lft > ' . $arrParam['lft'] . ' AND t.rgt < ' . $arrParam['rgt'])
                      ->where('t.project_id', $arrParam['project_id'])
-                     ->where("t.date_start < $date_start OR t.date_end > $date_end");
+                     ->where("(t.date_start < '$date_start' OR t.date_end > '$date_end')");
 
             $query = $this->db->get();
-
-            $result =  $query->result_array();
+            $resultTmp =  $query->result_array();
             $this->db->flush_cache();
+
         }
 		
 		$result = array();
@@ -1396,7 +1380,7 @@ class MTasks extends MNested2{
 					 ->where('t.id',$arrParams['id']);
 
 			$query = $this->db->get();
-			$result =  $query->result_array();
+			$result =  $query->row_array();
 			$this->db->flush_cache();
 		}
 	
@@ -1782,7 +1766,7 @@ class MTasks extends MNested2{
 		$where = array();
         if(!empty($arrParams['keywords'])) {
             $keywords = $arrParams['keywords'];
-            $where[] = 't.name LIKE \'%'.$keywords.'%\' OR t.detail LIKE \'%'.$keywords.'%\'';
+            $where[] = '(t.name LIKE \'%'.$keywords.'%\' OR t.detail LIKE \'%'.$keywords.'%\')';
         }
 
         if(!empty($arrParams['date_start_from'])) {
