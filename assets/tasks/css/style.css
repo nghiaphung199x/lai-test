@@ -192,13 +192,21 @@
     padding: 10px;
 }
 
-#search_form #s_keywords {
+#search_form #search_keywords {
     float: left;
 }
 
-#search_form #btn_tooltip {
+#btn_tooltip {
     margin-left: 10px;
     float: left;
+    background: #f95757 !important;
+}
+
+#search_form .search_date_type {
+    background: white;
+    float: left;
+    margin-left: 10px;
+    height: 39px;
 }
 
 #my_modal {

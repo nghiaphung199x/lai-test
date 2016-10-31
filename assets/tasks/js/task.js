@@ -5,6 +5,15 @@
 	var drag_task = new Array();
 
 	$( document ).ready(function() {
+        gantt.templates.tooltip_text = function(start,end,task){
+            //return task.tooltip;
+            return false;
+        };
+
+        $( "#btn_tooltip" ).click(function() {
+            gantt_tooltip();
+        });
+
 		// checkbox	
 		$('body').on('click','.manage-table tbody tr td.cb',function(){
 			 var checkbox = $(this).closest('tr').find('input[type="checkbox"]');
@@ -272,7 +281,22 @@
 		});
 	});
 
-
+    function gantt_tooltip() {
+        var element = $( "#btn_tooltip" );
+        if(element.hasClass('active')) {
+            element.removeClass('active').addClass('unactive');
+            element.text('Bật Tooltip');
+            gantt.templates.tooltip_text = function(start,end,task){
+                return false;
+            };
+        }else {
+            element.text('Tắt Tooltip');
+            element.removeClass('unactive').addClass('active');
+            gantt.templates.tooltip_text = function(start,end,task){
+                return task.tooltip;
+            };
+        }
+    }
 	
 	function load_task(page) {
 		var keywords = $.trim($('#s_keywords').val());

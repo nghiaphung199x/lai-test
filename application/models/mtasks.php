@@ -569,7 +569,7 @@ class MTasks extends MNested2{
 			}
 
 			if(!empty($project_ids)) {
-				//danh sách tasks
+				//task list
 				$project_ids = array_unique($project_ids);
 				if(!empty($project_ids)) {
 					$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
@@ -594,12 +594,13 @@ class MTasks extends MNested2{
 						}
 
 						$stt = 1;
+
 						foreach($project_ids as $project_id) {
 							$taskTmp 	     = $resultTmp[$project_id];
 							$taskTmp['order'] = $stt;
 							
 							$task_list_tmp[$project_id] = $taskTmp;
-							$task_ids[] 			    = $val['id'];
+							$task_ids[] 			    = $project_id;
 							$stt = $stt + 1;
 
 							unset($resultTmp[$project_id]);
@@ -618,6 +619,7 @@ class MTasks extends MNested2{
 								}	
 							}
 						}
+
 					}
 				}else
 					$task_list_tmp = array();
@@ -627,8 +629,8 @@ class MTasks extends MNested2{
 			if(!empty($task_list_tmp)) {
 				// task relation
 				$resultTmp = $this->getUsersRelation($task_ids);
-		
 				$implement_ids = $create_task_ids = $is_xem_ids = $task_implements = array();
+
 				if(!empty($resultTmp)) {
 					foreach($resultTmp as $val) {
 						if($val['is_implement'] == 1) {
@@ -651,8 +653,7 @@ class MTasks extends MNested2{
 					$userTable = $this->model_load_model('MTaskUser');
 					$usersInfo = $userTable->getItems(array('user_ids'=>$user_ids));
 				}
-				
-				//
+
 				$implement = array();
 
 				foreach($project_ids as $project_id) {
@@ -666,7 +667,7 @@ class MTasks extends MNested2{
 						}	
 					}
 				}
-	
+
 				foreach($task_list as &$val) {
 					$implement_origin = array();
 					if($val['level'] == 0 || $val['level'] == 1) {
@@ -679,15 +680,15 @@ class MTasks extends MNested2{
 					elseif($val['pheduyet'] == 0)
 						$val['text'] = $val['text'] . ' - Không phê duyệt';
 					
-					if(isset($task_implements[$val['id']]))
-						$implement_origin = $task_implements[$val['id']];
-					
+					if(isset($task_implements[$val['id']])){
+                        $implement_origin = $task_implements[$val['id']];
+                    }
+
 					$implement 		  = $implement_origin;
-	
+                    $implement = array_unique($implement);
+
 					if($val['parent'] > 0)
 						$implement = array_merge($implement, $task_list[$val['parent']]['implement_ids']);
-				
-					$implement = array_unique($implement);
 
 					$val['implement_ids'] = $implement;
 					if(!empty($val['implement_ids'])){
@@ -758,6 +759,7 @@ class MTasks extends MNested2{
 					
 					$tooltip[] = '<strong>Phụ trách</strong>: '.$val['implement'];
 					$val['tooltip'] = implode('<br />', $tooltip);
+
 				}
 			}
 			if(!empty($task_list)) {
