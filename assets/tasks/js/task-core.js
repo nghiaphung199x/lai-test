@@ -23,6 +23,12 @@ $( document ).ready(function() {
 			load_list(keyword, page);
 		});
 	});
+
+    // comment
+    $('body').on('click','#btnComment',function(){
+        comment();
+        return false;
+    });
 	
 	// sort
 	$('body').on('click','#my_modal .manage-table table th',function(){
@@ -131,6 +137,12 @@ $( document ).ready(function() {
 		   }
 		}
 	});
+
+    $( ".date_time" ).focus(function() {
+        var range_element = $(this).closest('.report_date_range_complex');
+        var radio = range_element.find('input[type="radio"]');
+        radio.prop("checked", true);
+    });
 });
 
 function load_template_project(items) {
@@ -202,7 +214,7 @@ function load_template_task_child(items) {
 			  var start_date   = value.start_date;
 			  var end_date     = value.end_date;
 			  var finish_date  = value.finish_date;
-			  var name         = value.name;
+			  var name         = '<a href="javascript:;" onclick="edit_task_grid('+id+')">'+value.name+'</a>';
 			  var duration     = value.duration;
 			  var percent      = value.percent;
 			  var progress     = value.progress;
@@ -559,13 +571,25 @@ function add_item(obj, frame_id) {
     var detect_element 	 = $(obj).parents('.result').prev();
     var result_frame   	 = $(obj).parents('.result');
     var class_name 	 	 = array[frame_id];
-    if(!$('#'+class_name+'_'+item_id).length){
+    var object_section   = $(obj).closest('.x-select-users');
+    var span_element     = object_section.find('#'+class_name+'_'+item_id);
+
+    if(!span_element.length) {
         var html = '<span class="item"><input type="hidden" name="'+class_name+'[]" class="'+class_name+'" id="'+class_name+'_'+item_id+'" value="'+item_id+'"><a>'+item_name+'</a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>';
         $( html ).insertBefore( detect_element );
         result_frame.hide();
         detect_element.val('');
         detect_element.focus();
     }
+
+
+//    if(!$('#'+class_name+'_'+item_id).length){
+//        var html = '<span class="item"><input type="hidden" name="'+class_name+'[]" class="'+class_name+'" id="'+class_name+'_'+item_id+'" value="'+item_id+'"><a>'+item_name+'</a>&nbsp;&nbsp;<span class="x" onclick="delete_item(this);"></span></span>';
+//        $( html ).insertBefore( detect_element );
+//        result_frame.hide();
+//        detect_element.val('');
+//        detect_element.focus();
+//    }
 }
 
 function delete_item(obj) {
@@ -609,6 +633,52 @@ function reset_error() {
 	$('#my_modal span.errors').text('');
 	$('#quick-form .form-control').removeClass('has-error');
 	$('#quick-form span.errors').text('');
+}
+
+function load_comment(task_id, page) {
+    var url = BASE_URL + 'tasks/commentlist/'+page;
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+            task_id : task_id,
+        },
+        success: function(string){
+            var result = $.parseJSON(string);
+            var items = result.items;
+            if(items.length) {
+                var html_string = load_tempate_comment(items);
+                var pagination = load_pagination(pagination);
+
+                $('#commentList').html(html_string);
+                $('#commentList').html(html_string);
+            }
+        }
+    });
+}
+
+function comment() {
+    $('#comment_content').removeClass('error');
+    var checkOptions = {
+        url : BASE_URL + 'tasks/addcomment',
+        dataType: "json",
+        success: commentData
+    };
+    $("#task_form").ajaxSubmit(checkOptions);
+}
+
+function commentData(data) {
+    if(data.flag == 'false') {
+        if(data.type == 'content'){
+            $('#comment_content').addClass('error');
+            toastr.error(data.msg, 'Lỗi!');
+        }
+    }else {
+        toastr.success(data.msg, 'Thông báo!');
+
+        load_comment(data.task_id, 1);
+        $('#comment_content').val('');
+    }
 }
 
 function load_template_file(items) {
@@ -886,7 +956,17 @@ function load_list(keyword, page) {
 			var url	        = BASE_URL + 'tasks/projectGridList/'+page;
 	
 			var elementSort = $('#project_grid_table td.header');
-			data.keywords   = $.trim($('#s_keywords').val());
+
+            data.keywords         = $.trim($('#s_keywords').val());
+            data.date_start_from  = $.trim($('#s_date_start_from').val());
+            data.date_start_to    = $.trim($('#s_date_start_to').val());
+            data.date_end_from    = $.trim($('#s_date_end_from').val());
+            data.date_end_to      = $.trim($('#s_date_end_to').val());
+            data.trangthai        = $.trim($('#s_trangthai').val());
+            data.customers        = $.trim($('#s_customer').val());
+            data.implement        = $.trim($('#s_implement').val());
+            data.xem              = $.trim($('#s_xem').val());
+
 	    }
 	}
 
@@ -1095,8 +1175,13 @@ function tiendoData(data) {
 			load_list('pheduyet', 1);
 		
 		countTiendo();
-		if(data.reload == 'true')
-			load_task();
+		if(data.reload == 'true') {
+            if($('#current_project_id').length) {
+                var project_id = $('#task_form [name="project_id"]').val();
+                load_task_childs(project_id, 1);
+            }else
+                load_task(1,'clearAll');
+        }
 
 		$('#progress_manager .button').hide();
 	}
@@ -1162,7 +1247,11 @@ function taskData(data) {
         toastr.success('Cập nhật thành công!', 'Thông báo');
         $('#my_modal').modal('toggle');
 
-        load_task(1);
+        if($('#current_project_id').length){
+            var project_id = $('#task_form [name="project_id"]').val();
+            load_task_childs(project_id, 1);
+        }else
+            load_task(1, 'clearAll');
     }
 }
 
@@ -1293,14 +1382,49 @@ function delete_congviec(id) {
 			 },
 			 success: function(string){
                  $('#my_modal').modal('toggle');
-                 gantt.clearAll();
-				 load_task(1);
+                 if($('#current_project_id').length) {
+                     var project_id = $('#task_form [name="project_id"]').val();
+                     load_task_childs(project_id, 1);
+                 }else
+                     load_task(1,'clearAll');
 		     }
 		 });
   		
   	   }
    });   
 	  
+}
+
+function edit_task_grid(id) {
+    var url = BASE_URL + 'tasks/editcongviec';
+    $.ajax({
+        type: "GET",
+        url: url,
+        data: {
+            id : id
+        },
+        success: function(html){
+            if(html != '') {
+                $('#my_modal').html(html);
+                $('#my_modal').modal('toggle');
+                $('#color').colorpicker();
+
+            }else {
+                toastr.warning('Bạn không có quyền với chức năng này!', 'Cảnh báo');
+            }
+
+            //picker
+            date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
+            // end picker
+
+            var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
+            $.each(frame_array, function( index, value ) {
+                css_form(value);
+                press(value);
+            });
+
+        }
+    });
 }
 // date support
 function convert_date(string) {

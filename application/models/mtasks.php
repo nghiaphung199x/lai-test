@@ -243,35 +243,30 @@ class MTasks extends MNested2{
 					$sql = $sql . ' AND t.name LIKE \'%'.$arrParams['keywords'].'%\'';
 				}
 
+                $where = $this->get_where_from_filter($arrParams);
+                if(!empty($where)) {
+                   $where = implode(' AND ', $where);
+                   $sql = $sql . ' ' . $where;
+                }
+
 				$query = $this->db->query($sql);
 				$result = $query->row()->totalItem;
 			}else {
+
 				$this->db -> select('COUNT(t.id) AS totalItem')
 						  -> from($this->_table . ' AS t')
 						  -> where('t.parent = 0');
-				
-				if(!empty($arrParams['keywords'])) {
-					$this->db->where('t.name LIKE \'%'.$arrParams['keywords'].'%\'');
-				}
+
+                $where = $this->get_where_from_filter($arrParams);
+                if(!empty($where)) {
+                    foreach($where as $wh)
+                        $this->db->where($wh);
+                }
 					
 				$query = $this->db->get();
 				
 				$result = $query->row()->totalItem;
 			}
-		}elseif ($options['task'] == 'public-list') {
-			$this->db -> select('COUNT(t.id) AS totalItem')
-					  -> from($this->_table . ' AS t')
-			  		  -> where('t.parent = 0');
-			
-			if(!empty($arrParams['keywords'])) {
-				$this->db->where('t.name LIKE \'%'.$arrParams['keywords'].'%\'');
-			}
-			
-			$query = $this->db->get();
-				
-			$result = $query->row()->totalItem;
-				
-			$this->db->flush_cache();
 		}
 		return $result;
 
@@ -538,19 +533,21 @@ class MTasks extends MNested2{
                     $project_ids = array(-1);
 			}
 
-			$this->db->select("id")
-				     ->from($this->_table)
-					 ->where('parent = 0')
-					 ->order_by("prioty",'ASC')
-				     ->order_by('sort', 'ASC');
+			$this->db->select("t.id")
+				     ->from($this->_table . ' AS t')
+					 ->where('t.parent = 0')
+					 ->order_by("t.prioty",'ASC')
+				     ->order_by('t.sort', 'ASC');
 
 			if(!empty($project_ids)){
                 $this->db->where('project_id IN ('.implode(', ', $project_ids).')');
             }
-
-			if(!empty($arrParams['keywords'])) {
-				$this->db->where('name LIKE \'%'.$arrParams['keywords'].'%\'');
-			}
+			
+			$where = $this->get_where_from_filter($arrParams);
+            if(!empty($where)) {
+                foreach($where as $wh)
+                    $this->db->where($wh);
+            }
 
 			$page = (empty($arrParams['start'])) ? 1 : $arrParams['start'];
 			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);
@@ -911,9 +908,11 @@ class MTasks extends MNested2{
 			if(!empty($project_ids))
 				$this->db->where('t.project_id IN ('.implode(', ', $project_ids).')');
 
-			if(!empty($arrParams['keywords'])) {
-				$this->db->where('t.name LIKE \'%'.$arrParams['keywords'].'%\'');
-			}
+            $where = $this->get_where_from_filter($arrParams);
+            if(!empty($where)) {
+                foreach($where as $wh)
+                    $this->db->where($wh);
+            }
 
 			$page = (empty($arrParams['start'])) ? 1 : $arrParams['start'];
 			$this->db->limit($paginator['per_page'],($page - 1)*$paginator['per_page']);

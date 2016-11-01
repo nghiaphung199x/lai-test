@@ -14,6 +14,155 @@
             gantt_tooltip();
         });
 
+        // enable autocomplete
+        var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
+        $.each(frame_array, function( index, value ) {
+            css_form(value);
+            press(value);
+        });
+
+        // search process
+        date_time_picker_field_report($('#adv_date_start_from'), JS_DATE_FORMAT+ " "+JS_TIME_FORMAT);
+        date_time_picker_field_report($('#adv_date_start_to'), JS_DATE_FORMAT+ " "+JS_TIME_FORMAT);
+        date_time_picker_field_report($('#adv_date_end_from'), JS_DATE_FORMAT+ " "+JS_TIME_FORMAT);
+        date_time_picker_field_report($('#adv_date_end_to'), JS_DATE_FORMAT+ " "+JS_TIME_FORMAT);
+
+        // search
+        var typingTimer;
+        $('body').on('keyup','#search_keywords',function(){
+            clearTimeout(typingTimer);
+            var text = $(this).val();
+            $('#s_keywords').val(text);
+            typingTimer = setTimeout(startSearch, 500);
+        });
+
+        $('body').on('keydown','#search_keywords',function(){
+            clearTimeout(typingTimer);
+        });
+
+        function startSearch () {
+            gantt.clearAll();
+            load_task(1, 'clearAll');
+        }
+
+        $('body').on('change','#search_date_type',function(){
+            var value                = $(this).val();
+
+            var s_date_start_to      = $('#s_date_start_to');
+            var s_date_start_from    = $('#s_date_start_from');
+            var s_date_end_to        = $('#s_date_end_to');
+            var s_date_end_from      = $('#s_date_end_from');
+            var s_trangthai          = $('#s_trangthai');
+            var s_date_start_radio   = $('#s_date_start_radio');
+            var s_date_end_radio     = $('#s_date_end_radio');
+            var s_status             = $('#s_status');
+            var s_progress           = $('#s_progress');
+            var s_customer           = $('#s_customer');
+            var s_trangthai          = $('#s_trangthai');
+            var s_implement          = $('#s_implement');
+            var s_xem                = $('#s_xem');
+
+            var s_trangthai_html     = $('#s_trangthai_html');
+            var s_customer_html      = $('#s_customer_html');
+            var s_implement_html     = $('#s_implement_html');
+            var s_xem_html           = $('#s_xem_html');
+
+            var data = {class: 'trangthai', value: 0, title: 'Chưa thực hiện'};
+            var span_trangthai_0 = get_item_autocomplete(data);
+
+            var data = {class: 'trangthai', value: 1, title: 'Đang thực hiện'};
+            var span_trangthai_1 = get_item_autocomplete(data);
+
+            //reset some element input
+            s_trangthai.val('');
+            s_trangthai_html.html('');
+            s_customer.val('');
+            s_customer_html.html('');
+            s_implement.val('');
+            s_implement_html.html('');
+            s_xem.val('');
+            s_xem_html.html('');
+
+            switch(value) {
+                case 'today':
+                    var current_date = get_current_date();
+                    s_date_start_to.val(current_date + ' 23:59');
+                    s_date_end_from.val(current_date + ' 00:00');
+                    s_trangthai.val('0,1');
+                    s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
+
+                    s_date_start_radio.val('complex');
+                    s_date_end_radio.val('complex');
+                    break;
+
+                case 'weekend':
+                    var firstDay = get_first_date_of_current_weekend();
+                    var lastDay = get_last_date_of_current_weekend();
+
+                    s_date_start_to.val(lastDay + ' 23:59');
+                    s_date_end_from.val(firstDay + ' 00:00');
+                    s_trangthai.val('0,1');
+                    s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
+
+                    s_date_start_radio.val('complex');
+                    s_date_end_radio.val('complex');
+
+                    break;
+
+                case 'month':
+                    var firstDay = get_first_date_of_current_month();
+                    var lastDay = get_last_date_of_current_month();
+
+                    s_date_start_to.val(lastDay + ' 59:59');
+                    s_date_end_from.val(firstDay + ' 00:00');
+                    s_trangthai.val('0,1');
+                    s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
+
+                    s_date_start_radio.val('complex');
+                    s_date_end_radio.val('complex');
+                    break;
+
+                case 'year':
+                    var firstDay = get_first_date_of_current_year();
+                    var lastDay = get_last_date_of_current_year();
+
+                    s_date_start_to.val(lastDay + ' 59:59');
+                    s_date_end_from.val(firstDay + ' 00:00');
+                    s_trangthai.val('0,1');
+                    s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
+
+                    s_date_start_radio.val('complex');
+                    s_date_end_radio.val('complex');
+                    break;
+
+                default:
+                    s_date_start_to.val('');
+                    s_date_end_from.val('');
+                    s_trangthai.val('');
+                    s_trangthai_html.html('');
+
+                    s_date_start_radio.val('simple');
+                    s_date_end_radio.val('simple');
+            }
+            load_task(1, 'clearAll');
+        });
+
+        //advance search click
+        $('body').on('click','#btn_advance_project',function(){
+            set_project_form_input();
+            $("#advance_project_search").modal();
+        });
+
+        $('#advance_project_search').on('hidden.bs.modal', function () {
+            reset_form();
+        })
+
+        $('body').on('click','#btn_p_search_advance',function(){
+            set_project_hidden_input();
+            load_task(1, 'clearAll');
+            $('#advance_project_search').modal('toggle');
+        });
+
 		// checkbox	
 		$('body').on('click','.manage-table tbody tr td.cb',function(){
 			 var checkbox = $(this).closest('tr').find('input[type="checkbox"]');
@@ -34,9 +183,8 @@
 		
 		// task pagination
 		$('body').on('click', '#pagination_top a', function(){
-			gantt.clearAll();
 			var page = $(this).attr('data-page');
-			load_task(page);
+			load_task(page, 'clearAll');
 		});
 
 		// check all
@@ -52,12 +200,6 @@
 				  checkbox.prop('checked', true);
 				  $(this).parents('.table').find('td input[type="checkbox"]').prop('checked', true);
 			  }
-	    });
-
-		// comment
-		$('body').on('click','#btnComment',function(){
-			 comment();
-			 return false; 
 	    });
 
 		// template task select box
@@ -106,7 +248,7 @@
 				url: url,
 				data: {
 					id : id,
-					parent: parent
+                    parent : parent
 				},
 				success: function(html){
                    if(type == 'new') {
@@ -118,20 +260,20 @@
                         $('#my_modal').modal('toggle');
                         $('#color').colorpicker();
 
-                    }else {
-                        toastr.warning('Bạn không có quyền với chức năng này!', 'Cảnh báo');
+                        }else {
+                            toastr.warning('Bạn không có quyền với chức năng này!', 'Cảnh báo');
+                        }
                     }
-                }
 
-               //picker
-               date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
-               // end picker
+                   //picker
+                   date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
+                   // end picker
 
-               var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
-               $.each(frame_array, function( index, value ) {
-                  css_form(value);
-                  press(value);
-               });
+                   var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
+                   $.each(frame_array, function( index, value ) {
+                      css_form(value);
+                      press(value);
+                   });
 			    }
 			});
 		};
@@ -206,13 +348,11 @@
                                 toastr.success(res.msg, 'Thông báo');
                             }
 
-                            gantt.clearAll();
-                            load_task(1);
+                            load_task(1, 'clearAll');
                         }
                     });
                 }else{
-                    gantt.clearAll();
-                    load_task(1);
+                    load_task(1, 'clearAll');
                 }
             });
 
@@ -298,19 +438,42 @@
         }
     }
 	
-	function load_task(page) {
-		var keywords = $.trim($('#s_keywords').val());
+	function load_task(page, type) {
+        var data = new Object();
+
+        var s_keywords        = $('#s_keywords');
+        var s_date_start_from = $('#s_date_start_from');
+        var s_date_start_to   = $('#s_date_start_to');
+        var s_date_end_from   = $('#s_date_end_from');
+        var s_trangthai       = $('#s_trangthai');
+        var s_date_end_to     = $('#s_date_end_to');
+        var s_customer        = $('#s_customer');
+        var s_implement       = $('#s_implement');
+        var s_xem             = $('#s_xem');
+
+        data.keywords         = $.trim(s_keywords.val());
+        data.date_start_from  = $.trim(s_date_start_from.val());
+        data.date_start_to    = $.trim(s_date_start_to.val());
+        data.date_end_from    = $.trim(s_date_end_from.val());
+        data.date_end_to      = $.trim(s_date_end_to.val());
+        data.trangthai        = $.trim(s_trangthai.val());
+        data.customers        = $.trim(s_customer.val());
+        data.implement        = $.trim(s_implement.val());
+        data.xem              = $.trim(s_xem.val());
+
 		$.ajax({
 			type: "POST",
 			url: BASE_URL + 'tasks/danhsach/'+page,
-			data: {
-				keywords : keywords
-			},
+			data: data,
 			beforeSend: function() {
 	             loading();
 	        },
-			success: function(string){ 
+			success: function(string){
 			   close_loading();
+
+               if(type == 'clearAll')
+                   gantt.clearAll();
+
 			   var result 	  = $.parseJSON(string);
 			   var data 	  = new Array();
 			   var deny_items = new Array();
@@ -391,31 +554,10 @@
 		}else {
 			toastr.success('Cập nhật thành công!', 'Thông báo');
             $('#my_modal').modal('toggle');
-			load_task(1);
+			load_task(1,'clearAll');
 		}
 	}
 
-	function load_comment(task_id, page) {
-		var url = BASE_URL + 'tasks/commentlist/'+page;
-		$.ajax({
-			type: "POST",
-			url: url,
-			data: {
-				task_id : task_id,
-			},
-			success: function(string){
-				var result = $.parseJSON(string);
-				var items = result.items;
-				if(items.length) {
-					var html_string = load_tempate_comment(items);
-					var pagination = load_pagination(pagination);
-					
-					$('#commentList').html(html_string);	
-					$('#commentList').html(html_string);	
-				}
-		    }
-		});
-	}
 
 	function xuly_tiendo(id) {
 		var url = BASE_URL + 'tasks/xulytiendo';
@@ -448,61 +590,245 @@
 		    }
 		});
 	}
-	
-	function comment() {
-        $('#comment_content').removeClass('error');
-		var checkOptions = {
-				url : BASE_URL + 'tasks/addcomment',
-		        dataType: "json",  
-		        success: commentData
-		    };
-	    $("#task_form").ajaxSubmit(checkOptions);
+
+
+    function set_project_hidden_input() {
+        var search_keywords        = $('#search_keywords');
+        var search_date_type       = $('#search_date_type');
+
+        var s_keywords             = $('#s_keywords');
+
+        var s_date_start           = $('#s_date_start');
+        var s_date_start_radio     = $('#s_date_start_radio');
+        var s_date_start_from      = $('#s_date_start_from');
+        var s_date_start_to        = $('#s_date_start_to');
+
+        var s_date_end             = $('#s_date_end');
+        var s_date_end_radio       = $('#s_date_end_radio');
+        var s_date_end_from        = $('#s_date_end_from');
+        var s_date_end_to          = $('#s_date_end_to');
+
+        var s_trangthai            = $('#s_trangthai');
+        var s_customer             = $('#s_customer');
+        var s_implement            = $('#s_implement');
+        var s_xem                  = $('#s_xem');
+
+        var s_trangthai_html       = $('#s_trangthai_html');
+        var s_customer_html        = $('#s_customer_html');
+        var s_implement_html       = $('#s_implement_html');
+        var s_xem_html             = $('#s_xem_html');
+
+        //set values for each elements
+        var adv_date_start_radio_value = $('[name="adv_date_start_radio"]:checked').val();
+
+        s_keywords.val($('#adv_name').val());
+
+        // date_start
+        s_date_start_radio.val(adv_date_start_radio_value);
+        if(adv_date_start_radio_value == 'simple') {
+            var adv_date_start_value = $('#adv_date_start').val();
+            var date = get_two_dates(adv_date_start_value);
+
+            s_date_start_from.val(date.date_1);
+            s_date_start_to.val(date.date_2);
+            s_date_start_radio.val(adv_date_start_radio_value);
+        }else {
+            s_date_start.val('all');
+            s_date_start_from.val($('#adv_date_start_from').val());
+            s_date_start_to.val($('#adv_date_start_to').val());
+        }
+        s_date_start.val($('#adv_date_start').val());
+
+        // date_end
+        var adv_date_end_radio_value = $('[name="adv_date_end_radio"]:checked').val();
+        s_date_end_radio.val(adv_date_end_radio_value);
+        if(adv_date_end_radio_value == 'simple') {
+            var adv_date_end_value = $('#adv_date_end').val();
+            var date = get_two_dates(adv_date_end_value);
+
+            s_date_end_from.val(date.date_1);
+            s_date_end_to.val(date.date_2);
+            s_date_end_radio.val(adv_date_end_radio_value);
+        }else {
+            s_date_end.val('all');
+            s_date_end_from.val($('#adv_date_end_from').val());
+            s_date_end_to.val($('#adv_date_end_to').val());
+        }
+        s_date_end.val($('#adv_date_end').val());
+
+        // trangthai
+        var item             = new Array();
+        var item_string      = '';
+        var item_html        = new Array();
+        var item_html_string = '';
+        var span_trangthai_item = $('#trangthai_list .item');
+        if(span_trangthai_item.length) {
+            $( span_trangthai_item ).each(function() {
+                var span_element  = $(this);
+                item[item.length] = span_element.find('.trangthai').val();
+                item_html[item_html.length] = span_element[0].outerHTML;
+            });
+        }
+
+        item_string      = item.join();
+        item_html_string = item_html.join('');
+        s_trangthai.val(item_string);
+        s_trangthai_html.html(item_html_string);
+
+        // customer
+        var item             = new Array();
+        var item_string      = '';
+        var item_html        = new Array();
+        var item_html_string = '';
+
+        var span_customer_item = $('#customer_list .item');
+        if(span_customer_item.length) {
+            $( span_customer_item ).each(function() {
+                var span_element  = $(this);
+                item[item.length] = span_element.find('.customer').val();
+                item_html[item_html.length] = span_element[0].outerHTML;
+            });
+        }
+
+        item_string      = item.join();
+        item_html_string = item_html.join('');
+        s_customer.val(item_string);
+        s_customer_html.html(item_html_string);
+
+        // implement
+        var item             = new Array();
+        var item_string      = '';
+        var item_html        = new Array();
+        var item_html_string = '';
+
+        var span_implement_item = $('#implement_list .item');
+        if(span_implement_item.length) {
+            $( span_implement_item ).each(function() {
+                var span_element  = $(this);
+                item[item.length] = span_element.find('.implement').val();
+                item_html[item_html.length] = span_element[0].outerHTML;
+            });
+        }
+
+        item_string      = item.join();
+        item_html_string = item_html.join('');
+        s_implement.val(item_string);
+        s_implement_html.html(item_html_string);
+
+        // xem
+        var item             = new Array();
+        var item_string      = '';
+        var item_html        = new Array();
+        var item_html_string = '';
+
+        var span_xem_item = $('#xem_list .item');
+        if(span_xem_item.length) {
+            $( span_xem_item ).each(function() {
+                var span_element  = $(this);
+                item[item.length] = span_element.find('.xem').val();
+                item_html[item_html.length] = span_element[0].outerHTML;
+            });
+        }
+
+        item_string      = item.join();
+        item_html_string = item_html.join('');
+        s_xem.val(item_string);
+        s_xem_html.html(item_html_string);
+
+        // others
+        search_keywords.val('');
+        search_date_type.val('0');
     }
 
-    function commentData(data) {
-        if(data.flag == 'false') {
-            if(data.type == 'content'){
-                $('#comment_content').addClass('error');
-                toastr.error(data.msg, 'Lỗi!');
-            }
+    function set_project_form_input() {
+        var s_keywords           = $('#s_keywords');
+
+        var s_date_start_radio   = $('#s_date_start_radio');
+        var date_start_value     = s_date_start_radio.val();
+        var s_date_start         = $('#s_date_start');
+        var s_date_start_from    = $('#s_date_start_from');
+        var s_date_start_to      = $('#s_date_start_to');
+
+        var s_date_end_radio     = $('#s_date_end_radio');
+        var date_end_value       = s_date_end_radio.val();
+        var s_date_end           = $('#s_date_end');
+        var s_date_end_from      = $('#s_date_end_from');
+        var s_date_end_to        = $('#s_date_end_to');
+
+        var s_trangthai_html     = $('#s_trangthai_html');
+        var s_customer_html      = $('#s_customer_html');
+        var s_implement_html     = $('#s_implement_html');
+        var s_xem_html           = $('#s_xem_html');
+
+        $('[name="adv_date_start_radio"]').filter('[value='+date_start_value+']').prop('checked', true);
+        if(date_start_value == 'simple') {
+            $('#adv_date_start').val(s_date_start.val());
         }else {
-            toastr.success(data.msg, 'Thông báo!');
+            var s_date_start_from_value = s_date_start_from.val();
+            if(s_date_start_from_value != '') {
+                $('#adv_date_start_from_formatted').val(convert_date(s_date_start_from_value));
+                $('#adv_date_start_from').val(s_date_start_from_value);
+            }
 
-            load_comment(data.task_id, 1);
-            $('#comment_content').val('');
+            var s_date_start_to_value = s_date_start_to.val();
+            if(s_date_start_to_value != '') {
+                $('#adv_date_start_to_formatted').val(convert_date(s_date_start_to_value));
+                $('#adv_date_start_to').val(s_date_start_to_value);
+            }
         }
-	}
-	
-	function edit() {
-		$('.btn-back').remove();
-		var task_id = $('#task_id').val();
-		var parent = $('#parent').val();
 
-		var url = BASE_URL+'tasks/editcongviec?t=quick'
+        $('[name="adv_date_end_radio"]').filter('[value='+date_end_value+']').prop('checked', true);
+        if(date_end_value == 'simple') {
+            $('#adv_date_end').val(s_date_end.val());
+        }else {
+            var s_date_end_from_value = s_date_end_from.val();
+            if(s_date_end_from_value != '') {
+                $('#adv_date_end_from_formatted').val(convert_date(s_date_end_from_value));
+                $('#adv_date_end_from').val(s_date_end_from_value);
+            }
 
-		$.ajax({
-			type: "GET",
-			url: url,
-			data: {
-				id 		   : task_id,
-				parent 	   : parent
-			},
-			success: function(string){
-				$('#my-form .arrord_nav').remove();
-				$('#my-form .gantt_cal_larea').remove();
-				$('#my-form').append(string);	
-				
-				$('#my-form .btn-save').html('<a href="javascript:;" onclick="edit_congviec();"><i class="fa fa-floppy-o"></i>Lưu</a>');
+            var s_date_end_to_value = s_date_end_to.val();
+            if(s_date_end_to_value != '') {
+                $('#adv_date_end_to_formatted').val(convert_date(s_date_end_to_value));
+                $('#adv_date_end_to').val(s_date_end_to_value);
+            }
+        }
 
-			    var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
-			    $.each(frame_array, function( index, value ) {
-				   css_form(value);
-				   press(value);
-			    });
-			    
-			    // picker
-				date_time_picker_field($('.datepicker'), JS_DATE_FORMAT);
-				// end picker
-		    }
-		});
-	}
+        $('#adv_name').val(s_keywords.val());
+
+        var html = s_trangthai_html.html();
+        $(html).insertBefore( "#trangthai_result" );
+
+        html = s_customer_html.html();
+        $(html).insertBefore( "#customer_result" );
+
+        html = s_implement_html.html();
+        $(html).insertBefore( "#implement_result" );
+
+        html = s_xem_html.html();
+        $(html).insertBefore( "#xem_result" );
+    }
+
+    function reset_form() {
+        $('input[name=adv_date_start_radio][value="simple"]').prop('checked', true);
+        $('#adv_date_start').val('all');
+        $('#adv_date_start_from_formatted').val('');
+        $('#adv_date_start_from').val('');
+        $('#adv_date_start_to_formatted').val('');
+        $('#adv_date_start_to').val('');
+
+        $('input[name=adv_date_end_radio][value="simple"]').prop('checked', true);
+        $('#adv_date_end').val('all');
+        $('#adv_date_end_from_formatted').val('');
+        $('#adv_date_end_from').val('');
+        $('#adv_date_end_to_formatted').val('');
+        $('#adv_date_end_to').val('');
+
+        $('#adv_name').val('');
+        $('#trangthai_list span.item').remove();
+        $('#customer_list span.item').remove();
+        $('#implement_list span.item').remove();
+        $('#xem_list span.item').remove();
+
+    }
+

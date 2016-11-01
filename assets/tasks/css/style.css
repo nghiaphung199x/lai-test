@@ -142,6 +142,7 @@
     margin-top: 1px;
 }
 
+
 #detail_manager {
     padding-left: 10px;
     padding-right: 10px;
@@ -162,6 +163,14 @@
 
 .button_new:hover {
 	opacity: 0.9;
+}
+
+.buttons-list .pull-right-btn .btn {
+    margin-right: 10px;
+}
+
+.buttons-list .pull-right-btn .btn.btn-more {
+    background: white !important;
 }
 
 #template_list .panel-heading {
@@ -197,12 +206,15 @@
 }
 
 #btn_tooltip {
-    margin-left: 10px;
-    float: left;
+    margin-right: 10px;
     background: #f95757 !important;
 }
 
-#search_form .search_date_type {
+#btn_advance_project {
+    margin-left: 10px;
+}
+
+#search_form #search_date_type {
     background: white;
     float: left;
     margin-left: 10px;
@@ -1646,8 +1658,13 @@ body::-webkit-scrollbar-thumb {
     color: red;
     cursor: pointer;
 }
+
+#project_grid_table td {
+    background: white !important;
+}
+
 #project_grid_table .search_keywords {
-    width: 400px;
+    width: 300px;
     margin-bottom: 5px;
     float: left;
     margin-right: 10px;

@@ -64,7 +64,7 @@ class BizTasks extends Secure_area
 		$this->_data['arrParam']['paginator'] = $this->_paginator;
 		
 		$this->load->model('MTasks');
-		$config['total_rows'] = $this->MTasks->countItem($this->_data['arrParam'], array('task'=>'public-list'));
+		$config['total_rows'] = $this->MTasks->countItem($this->_data['arrParam']);
 		
 		$config['per_page'] = $this->_paginator['per_page'];
 		$config['uri_segment'] = $this->_paginator['uri_segment'];
@@ -417,7 +417,7 @@ class BizTasks extends Secure_area
 			$this->form_validation->set_rules('color', 'Màu', 'required');
 			$this->form_validation->set_rules('date_start', 'Bắt đầu', 'required');
 			$this->form_validation->set_rules('date_end', 'Kết thúc', 'required');
-			if($arrParam['parent'] > 0)
+			if($item['parent'] > 0)
 				$this->form_validation->set_rules('percent', 'Tỷ lệ', 'required|greater_than[-1]|less_than[101]');
 
 			if($this->form_validation->run($this) == FALSE){
