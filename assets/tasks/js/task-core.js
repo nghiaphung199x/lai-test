@@ -277,7 +277,7 @@ function load_template_project_grid(items) {
 			  var start_date   = value.start_date;
 			  var end_date     = value.end_date;
 			  var finish_date  = value.finish_date;
-			  var name         = value.name;
+			  var name         = '<a href="javascript:;" onclick="edit_task_grid('+id+');">'+value.name+'</a>';
 			  var duration     = value.duration;
 			  var percent      = value.percent;
 			  var progress     = value.progress;
@@ -377,6 +377,59 @@ function load_template_project_grid(items) {
 	 return string;
 }
 
+function load_template_personal(items) {
+    if(items.length) {
+        var string = new Array();
+        $.each(items, function( index, value ) {
+            var id      	 = value.id;
+            var start_date   = value.start_date;
+            var end_date     = value.end_date;
+            var finish_date  = value.finish_date;
+            var name         = '<a href="javascript:;" onclick="edit_task_grid('+id+');">'+value.name+'</a>';
+            var duration     = value.duration;
+            var percent      = value.percent;
+            var progress     = value.progress;
+            var parent       = value.parent;
+            var p_color      = value.p_color;
+            var n_color      = value.color;
+            var prioty       = value.prioty;
+            var trangthai    = value.trangthai;
+            var note    	   = value.note;
+
+            var positive = parseFloat(progress) * 100;
+            var negative = 100 - positive;
+
+            string[string.length] =    '<tr>'
+                                            +'<td class="center cb">'
+                                                +'<input type="checkbox" id="task_'+id+'" class="task_checkbox" value="'+id+'"><label for="task_'+id+'"><span></span></label>'
+                                            +'</td>'
+                                            +'<td>'+name+'</td>'
+                                            +'<td align="center">'+prioty+'</td>'
+                                            +'<td align="center">'+start_date+'</td>'
+                                            +'<td align="center">'+end_date+'</td>'
+                                            +'<td align="center">'
+                                                +'<div class="clearfix">'
+                                                    +'<div class="progress-bar" style="float: left;">'
+                                                        +'<div class="bar positive" style="width: '+positive+'%; background: '+p_color+'">'
+                                                        +'</div>'
+                                                        +'<div class="bar negative" style="width: '+negative+'%; background: '+n_color+'">'
+                                                        +'</div>'
+                                                        +'<span>'+positive+'%</span>'
+                                                        +'</div>'
+                                                    +'<div class="progress-text">'+note+'</div>'
+                                                +'</div>'
+                                            +'</td>'
+                                            +'<td align="center">Chưa thực hiện</td>'
+                                       +'</tr>';
+        });
+
+        string = string.join("");
+    }else
+        var string = '<tr style="cursor: pointer;"><td colspan="8"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
+
+    return string;
+}
+
 function load_pagination(pagination, template) {
 	var linkTask = BASE_URL + 'tasks/'
 	if(jQuery.type(pagination) == 'object') {
@@ -445,9 +498,9 @@ function loading(keyword) {
 		if(keyword == 'project')
 			$("#loading_3").show();
 		else{
-            if(keyword == 'progress' || keyword == 'pheduyet' || keyword == 'request')
-                $('.manage-table #loading_1').show();
-            else
+            if(keyword == 'progress' || keyword == 'pheduyet' || keyword == 'request'){
+                $('#task_form #loading_1').show();
+            } else
                 $("#loading_1").show();
         }
 
@@ -968,6 +1021,22 @@ function load_list(keyword, page) {
             data.xem              = $.trim($('#s_xem').val());
 
 	    }
+        case 'personal' : {
+            var manager_div = 'project_grid_list';
+            var url	        = BASE_URL + 'tasks/personalList/'+page;
+
+            var elementSort = $('#project_grid_table td.header');
+
+            data.keywords         = $.trim($('#s_keywords').val());
+            data.date_start_from  = $.trim($('#s_date_start_from').val());
+            data.date_start_to    = $.trim($('#s_date_start_to').val());
+            data.date_end_from    = $.trim($('#s_date_end_from').val());
+            data.date_end_to      = $.trim($('#s_date_end_to').val());
+            data.trangthai        = $.trim($('#s_trangthai').val());
+            data.customers        = $.trim($('#s_customer').val());
+            data.xem              = $.trim($('#s_xem').val());
+
+        }
 	}
 
 	// get field sort
@@ -1037,6 +1106,12 @@ function load_list(keyword, page) {
 					 var pagination = load_pagination(pagination);	 
 					 break;
 			    }
+
+                case 'personal' : {
+                    var html_string = load_template_personal(items);
+                    var pagination = load_pagination(pagination);
+                    break;
+                }
 			}
 
 			 $('#'+manager_div+' .table tbody').html(html_string);

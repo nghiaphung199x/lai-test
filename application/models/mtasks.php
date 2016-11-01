@@ -6,6 +6,8 @@ class MTasks extends MNested2{
 	protected $_id_admin 		= null;
 	protected $_task_permission = null;
 	protected $_fields 		    = array();
+    protected $_prioty          = null;
+    protected $_trangthai       = null;
 
 	public function __construct(){
 		parent::__construct();

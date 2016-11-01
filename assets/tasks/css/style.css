@@ -1659,10 +1659,6 @@ body::-webkit-scrollbar-thumb {
     cursor: pointer;
 }
 
-#project_grid_table td {
-    background: white !important;
-}
-
 #project_grid_table .search_keywords {
     width: 300px;
     margin-bottom: 5px;
@@ -1689,6 +1685,11 @@ body::-webkit-scrollbar-thumb {
 
 #project_grid_table .btn.statistic:hover {
     opacity: 1;
+}
+
+
+#project_grid_table td[data-field] {
+    cursor: pointer;
 }
 
 @-webkit-keyframes animate-positive {

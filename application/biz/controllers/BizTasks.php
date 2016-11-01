@@ -1493,27 +1493,6 @@ class BizTasks extends Secure_area
 			echo json_encode($result);
 		}
 	}
-	
-	public function taskByProjectList() {
-		$this->load->model('MTasks');
-		$post  = $this->input->post();
-
-		if(!empty($post)) {
-			$project_id = $this->_data['arrParam']['project_id'];
-
-			$result  = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'task-by-project'));
-
-			$project = $result['project'];
-			$items   = $result['ketqua'];
-
-			$items   = array_merge($items, array());
-            $items   = (!empty($items)) ? $items : array();
-
-			$result = array('items'=>$items, 'project'=>$project);
-
-			echo json_encode($result);
-		}
-	}
 
     public function tasks_child_statistic() {
         $post  = $this->input->post();
@@ -1546,7 +1525,28 @@ class BizTasks extends Secure_area
             echo json_encode($data);
         }
     }
-	
+
+	public function taskByProjectList() {
+		$this->load->model('MTasks');
+		$post  = $this->input->post();
+
+		if(!empty($post)) {
+			$project_id = $this->_data['arrParam']['project_id'];
+
+			$result  = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'task-by-project'));
+
+			$project = $result['project'];
+			$items   = $result['ketqua'];
+
+			$items   = array_merge($items, array());
+            $items   = (!empty($items)) ? $items : array();
+
+			$result = array('items'=>$items, 'project'=>$project);
+
+			echo json_encode($result);
+		}
+	}
+
 	public function grid() {
         $this->load->library('MY_System_Info');
         $info 			 = new MY_System_Info();
@@ -1555,6 +1555,42 @@ class BizTasks extends Secure_area
 
 		$this->load->view('tasks/grid_view', $this->_data);
 	}
+
+    public function add_personal() {
+
+    }
+
+    public function personal() {
+        $this->load->view('tasks/personal_grid_view', $this->_data);
+    }
+
+    public function personalList() {
+        $this->load->model('MTaskPersonal');
+        $this->_paginator['per_page']    	  = 20;
+        $this->_data['arrParam']['paginator'] = $this->_paginator;
+        $post  = $this->input->post();
+
+        if(!empty($post)) {
+            $config['base_url'] = base_url() . 'tasks/personalList';
+            $config['total_rows'] = $this->MTaskPersonal->countItem($this->_data['arrParam']);
+
+            $config['per_page'] = $this->_paginator['per_page'];
+            $config['uri_segment'] = $this->_paginator['uri_segment'];
+            $config['use_page_numbers'] = TRUE;
+
+            $this->load->library("pagination");
+            $this->pagination->initialize($config);
+            $this->pagination->createConfig('front-end');
+
+            $pagination = $this->pagination->create_ajax();
+
+            $this->_data['arrParam']['start'] = $this->uri->segment(3);
+            $items = $this->MTaskPersonal->listItem($this->_data['arrParam']);
+
+            $result = array('count'=> $config['total_rows'], 'items'=>$items, 'pagination'=>$pagination);
+            echo json_encode($result);
+        }
+    }
 	
 	public function test() {
 //		$this->load->model('MTasks');
