@@ -5,6 +5,8 @@ class MTaskPersonal extends CI_Model{
     protected $_fields        = array();
     protected $_id_admin      = null;
 
+    protected $_prioty          = null;
+    protected $_trangthai       = null;
 
     public function __construct(){
         parent::__construct();
@@ -24,10 +26,14 @@ class MTaskPersonal extends CI_Model{
             'username' 		=> 'e.username',
         );
 
+        $this->_prioty    = lang('task_prioty');
+        $this->_trangthai = lang('task_trangthai');
+
     }
 
     public function countItem($arrParams = null, $options = null) {
         if($options == null) {
+            $id_admin = $this->_id_admin;
             $this->db -> select('COUNT(t.id) AS totalItem')
                       -> from($this->_table . ' AS t');
 
@@ -139,6 +145,49 @@ class MTaskPersonal extends CI_Model{
         }
 
         return $result;
+    }
+
+    public function saveItem($arrParam = null, $options = null) {
+        if($options['task'] == 'add') {
+            if(isset($arrParam['customer'])) {
+                $customer_ids = implode(',', $arrParam['customer']);
+            }
+
+            if(isset($arrParam['implement'])) {
+                $implements = implode(',', $arrParam['implement']);
+            }
+
+            if(isset($arrParam['xem'])) {
+                $xems = implode(',', $arrParam['xem']);
+            }
+
+            if($arrParam['progress'] == 100)
+                $date_finish = @date("Y-m-d H:i:s");
+            else
+                $date_finish = '0000/00/00 00:00:00';
+
+            $data['name']				    =       stripslashes($arrParam['name']);
+            $data['detail']				    =       stripslashes($arrParam['detail']);
+            $data['progress']				= 		$arrParam['progress'] / 100;
+            $data['date_start']				= 		$arrParam['date_start'];
+            $data['date_end']				= 		$arrParam['date_end'];
+            $data['date_finish']			= 		$date_finish;
+            $data['duration']				= 		$arrParam['duration'];
+            $data['created']				= 		@date("Y-m-d H:i:s");
+            $data['created_by']				= 		$this->_id_admin;
+            $data['modified']				= 		@date("Y-m-d H:i:s");
+            $data['modified_by']			= 		$this->_id_admin;
+            $data['trangthai']				= 		$arrParam['trangthai'];
+            $data['prioty']					= 		$arrParam['prioty'];
+            $data['customer_ids']			= 		$customer_ids;
+            $data['implements']			    = 		$implements;
+            $data['xems']			        = 		$xems;
+
+            $this->db->insert($this->_table,$data);
+            $lastId = $this->db->insert_id();
+        }
+
+        return $lastId;
     }
 
     protected function get_where_from_filter($arrParams, $options = null) {

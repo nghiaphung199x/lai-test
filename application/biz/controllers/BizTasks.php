@@ -315,6 +315,7 @@ class BizTasks extends Secure_area
 	}
 
 	protected function add_template_for_task($arrParam) {
+        $arrParam   = $this->_data['arrParam'];
         $info 		    = new MY_System_Info();
         $user_info      = $info->getInfo();
 
@@ -1557,7 +1558,71 @@ class BizTasks extends Secure_area
 	}
 
     public function add_personal() {
+        $arrParam   = $this->_data['arrParam'];
+		$this->load->model('MTaskPersonal');
+		$this->load->model('MTaskPersonalProgress');
+        $post  = $this->input->post();
+        if(!empty($post)) {
+			$this->load->library("form_validation");
+			$this->form_validation->set_rules('name', 'Tiêu đề', 'required|max_length[255]');
+			$this->form_validation->set_rules('progress', 'Tiến độ', 'required|greater_than[-1]|less_than[101]');
+			$this->form_validation->set_rules('date_start', 'Bắt đầu', 'required');
+			$this->form_validation->set_rules('date_end', 'Kết thúc', 'required');
+			
+			$flagError = false;
+	
+			if($this->form_validation->run($this) == FALSE){
+				$errors = $this->form_validation->error_array();
+                if(isset($errors['date_start']) && !isset($errors['date_end']))
+                    $errors['date_end'] = '.';
 
+                if(!isset($errors['date_start']) && isset($errors['date_end']))
+                    $errors['date_start'] = '.';
+
+                $flagError = true;
+			}else {
+				// time valid
+				$arrParam['date_start'] = date('Y-m-d', strtotime($arrParam['date_start']));
+
+				$arrParam['date_end']   = date('Y-m-d', strtotime($arrParam['date_end']));
+
+				$datediff = strtotime($arrParam['date_end']) - strtotime($arrParam['date_start']);
+				$arrParam['duration'] = floor($datediff/(60*60*24));
+				if($arrParam['duration'] <= 0) {
+					$flagError = true;
+					$errors['date_start'] = 'Ngày kết thúc phải sau ngày bắt đầu.';
+					$errors['date_end']   = '.';
+				}
+			}
+			if($flagError == false) {
+				// covert status and progress
+				$arrParam = $this->convert_progress_task($arrParam);
+				$last_id = $this->MTaskPersonal->saveItem($arrParam, array('task'=>'add'));
+				
+				 //update first progress
+                $params = array(
+                    'task_id'  => $last_id               , 'trangthai' => $arrParam['trangthai'],
+                    'prioty'   => $arrParam['prioty']    , 'progress'  => $arrParam['progress'],
+					'note'      => '', 
+                );
+
+                $this->MTaskPersonalProgress->saveItem($params, array('task'=>'add'));
+				 
+				$response = array('flag'=>'true', 'msg'=>'Cập nhật thành công');
+			}else {
+				$response = array('flag'=>'false', 'errors'=>$errors);
+			}
+			
+			echo json_encode($response);
+			
+        }else {
+            $this->load->library('MY_System_Info');
+            $info 			 = new MY_System_Info();
+            $user_info 		 = $info->getInfo();
+            $this->_data['user_info'] = $user_info;
+
+            $this->load->view('tasks/add_personal_form_view', $this->_data);
+        }
     }
 
     public function personal() {
@@ -1570,7 +1635,7 @@ class BizTasks extends Secure_area
         $this->_data['arrParam']['paginator'] = $this->_paginator;
         $post  = $this->input->post();
 
-        if(!empty($post)) {
+        //if(!empty($post)) {
             $config['base_url'] = base_url() . 'tasks/personalList';
             $config['total_rows'] = $this->MTaskPersonal->countItem($this->_data['arrParam']);
 
@@ -1589,7 +1654,7 @@ class BizTasks extends Secure_area
 
             $result = array('count'=> $config['total_rows'], 'items'=>$items, 'pagination'=>$pagination);
             echo json_encode($result);
-        }
+       //}
     }
 	
 	public function test() {

@@ -1,6 +1,7 @@
-function update_personal_task(task, id, type) {
+function update_personal_task(task, type, id) {
     if (typeof id == 'undefined')
       id = 0;
+
     if(task == 'new') {
         url = BASE_URL + 'tasks/add_personal';
     }else if(task == 'edit')
@@ -10,7 +11,8 @@ function update_personal_task(task, id, type) {
         type: "GET",
         url: url,
         data: {
-            id : id
+            id : id,
+            type: type
         },
         success: function(html){
             if(task == 'new') {
@@ -37,4 +39,29 @@ function update_personal_task(task, id, type) {
             });
         }
     });
+}
+
+function add_personal_task() {
+    reset_error();
+    var checkOptions = {
+        url : BASE_URL+'tasks/add_personal',
+        dataType: "json",
+        success: add_personal_task_data
+    };
+    $("#task_form").ajaxSubmit(checkOptions);
+    return false;
+}
+
+function add_personal_task_data(data) {
+    if(data.flag == 'false') {
+        $.each(data.errors, function( index, value ) {
+            element = $( '#my_modal span[for="'+index+'"]' );
+            element.prev().addClass('has-error');
+            element.text(value);
+        });
+    }else {
+        toastr.success('Cập nhật thành công!', 'Thông báo');
+        $('#my_modal').modal('toggle');
+        load_list('personal', 1);
+    }
 }

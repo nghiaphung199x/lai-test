@@ -535,14 +535,14 @@
 
 	function add_congviec() {
 		reset_error();
-		var checkOptions = {
-		        url : BASE_URL+'tasks/addcongviec',
-		        dataType: "json",  
-		        success: congviecData
-		    };
-	    $("#task_form").ajaxSubmit(checkOptions);
-	    return false; 
-	}
+        var checkOptions = {
+            url : BASE_URL+'tasks/addcongviec',
+            dataType: "json",
+            success: congviecData
+        };
+        $("#task_form").ajaxSubmit(checkOptions);
+        return false;
+    }
 	
 	function congviecData(data) {
 		if(data.flag == 'false') {
