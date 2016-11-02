@@ -51,7 +51,7 @@
 
 .gantt_title {
 	border-bottom: 1px solid #e9e9e9;
-    background: white;
+    background: #f9f9f9;
     width: 100%;
     padding: 10px 15px;
 }
@@ -114,7 +114,7 @@
 }
 
 .manage-table .panel-title span.tieude {
-	background: white;
+	background: #f9f9f9;
     display: inline-block;
     height: 37px;
     line-height: 37px;

@@ -50,7 +50,7 @@
             <div class="pull-right">
                 <div class="buttons-list">
                     <div class="pull-right-btn">
-                        <a href="javascript:;" onclick="update_personal_task('new');" class="btn btn-primary btn-lg" title="Thêm mới"><span class="">Thêm mới</span></a>
+                        <a href="javascript:;" onclick="update_personal_task('new', 'personal');" class="btn btn-primary btn-lg" title="Thêm mới"><span class="">Thêm mới</span></a>
                         <div class="piluku-dropdown">
                             <button type="button" class="btn btn-more dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                 <i class="ion-android-more-horizontal"></i>
@@ -87,7 +87,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="table-responsive">
-                        <table class="table tablesorter table-reports table-bordered table-tree" id="project_grid_table">
+                        <table class="table tablesorter table-reports table-bordered table-tree" id="project_grid_table" data-table="personal">
                             <thead>
                             <tr align="center" style="font-weight:bold">
                                 <td class="hidden-print" style="width: 30px;">

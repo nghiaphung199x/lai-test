@@ -328,8 +328,8 @@ function load_template_project_grid(items) {
                                              +' </div>'
                                              +'<div class="col-xs-12 col-md-6 pull-left" style="padding-left: 0; padding-right: 0;">'
                                                  +'<input type="text" class="form-control ui-autocomplete-input search_keywords" value="" placeholder="Tìm kiếm công việc" >'
-                                                 +'<button name="submitf" class="btn btn-primary btn-lg submitf" data-id="'+id+'" data-name="'+name+'">Nâng cao</button>'
-                                                 +'<button name="statistic" class="btn btn-primary btn-lg statistic" data-id="'+id+'" data-name="'+name+'">Thống kê</button>'
+                                                 +'<button name="submitf" class="btn btn-primary btn-lg submitf" data-id="'+id+'" data-name="'+value.name+'">Nâng cao</button>'
+                                                 +'<button name="statistic" class="btn btn-primary btn-lg statistic" data-id="'+id+'" data-name="'+value.name+'">Thống kê</button>'
                                                  +'<input type="hidden" class="s_keywords s_input_filter" value="" />'
                                                  +'<input type="hidden" class="s_date_start s_input_filter" value="all" />'
                                                  +'<input type="hidden" class="s_date_start_radio s_input_filter" value="simple" />'
@@ -385,7 +385,7 @@ function load_template_personal(items) {
             var start_date   = value.start_date;
             var end_date     = value.end_date;
             var finish_date  = value.finish_date;
-            var name         = '<a href="javascript:;" onclick="edit_task_grid('+id+');">'+value.name+'</a>';
+            var name         = '<a href="javascript:;" onclick="update_personal_task(\'edit\', \'personal\', '+id+')">'+value.name+'</a>';
             var duration     = value.duration;
             var percent      = value.percent;
             var progress     = value.progress;
@@ -1002,6 +1002,8 @@ function load_list(keyword, page) {
 			
 			var elementSort = $('#project_list th.header');
 			data.keywords   = $.trim($('#s_keywords').val());
+
+            break;
 	    }
 	    
 	    case 'project-grid' : {
@@ -1020,6 +1022,7 @@ function load_list(keyword, page) {
             data.implement        = $.trim($('#s_implement').val());
             data.xem              = $.trim($('#s_xem').val());
 
+            break;
 	    }
         case 'personal' : {
             var manager_div = 'project_grid_list';
@@ -1036,6 +1039,7 @@ function load_list(keyword, page) {
             data.customers        = $.trim($('#s_customer').val());
             data.xem              = $.trim($('#s_xem').val());
 
+            break;
         }
 	}
 

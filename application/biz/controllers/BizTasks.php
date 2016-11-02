@@ -49,7 +49,7 @@ class BizTasks extends Secure_area
         $this->load->helper('filterext');
 	}
 	
-	function index() {
+	public function index() {
 		$this->load->library('MY_System_Info');
 		$info 					  = new MY_System_Info();
 		$user_info = $info->getInfo();
@@ -59,7 +59,7 @@ class BizTasks extends Secure_area
 		$this->load->view('tasks/index_view', $this->_data);
 	}
 	
-	function danhsach() {
+	public function danhsach() {
 		$this->_paginator['per_page'] 		  = 5;
 		$this->_data['arrParam']['paginator'] = $this->_paginator;
 		
@@ -1625,6 +1625,8 @@ class BizTasks extends Secure_area
         }
     }
 
+
+
     public function personal() {
         $this->load->view('tasks/personal_grid_view', $this->_data);
     }
@@ -1635,7 +1637,7 @@ class BizTasks extends Secure_area
         $this->_data['arrParam']['paginator'] = $this->_paginator;
         $post  = $this->input->post();
 
-        //if(!empty($post)) {
+        if(!empty($post)) {
             $config['base_url'] = base_url() . 'tasks/personalList';
             $config['total_rows'] = $this->MTaskPersonal->countItem($this->_data['arrParam']);
 
@@ -1654,7 +1656,7 @@ class BizTasks extends Secure_area
 
             $result = array('count'=> $config['total_rows'], 'items'=>$items, 'pagination'=>$pagination);
             echo json_encode($result);
-       //}
+       }
     }
 	
 	public function test() {

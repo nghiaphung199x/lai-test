@@ -761,6 +761,7 @@ class MTasks extends MNested2{
 
 				}
 			}
+
 			if(!empty($task_list)) {
 				//allow task
 				$allow_tasks = $deny_task = $drag_task = $click_task = array();
@@ -965,6 +966,7 @@ class MTasks extends MNested2{
 
 						$datediff 	= strtotime($now) - strtotime($date_end);
 						$duration 	= floor($datediff/(60*60*24));
+
 						if($duration <= 0){
 							$val['note'] 		= 'Còn '.abs($duration).' ngày';
 							$val['p_color'] 	= '#4388c2';
@@ -1285,13 +1287,15 @@ class MTasks extends MNested2{
 
 	public function getItem($arrParams = null, $options = null){
 		if($options['task'] == 'public-info') {
+            $this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as date_finish", FALSE);
+            $this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as date_start", FALSE);
+            $this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as date_end", FALSE);
+
 			$this->db->select("t.*")
 					 ->from($this->_table . ' as t')
 					 ->where('t.id',$arrParams['id']);
 
-            $this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as date_finish", FALSE);
-			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as date_start", FALSE);
-			$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as date_end", FALSE);
+
 
 			$query = $this->db->get();
 				

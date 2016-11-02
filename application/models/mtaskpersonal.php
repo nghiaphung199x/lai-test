@@ -52,6 +52,56 @@ class MTaskPersonal extends CI_Model{
         return $result;
     }
 
+    public function getItem($arrParams = null, $options = null){
+        if($options['task'] == 'public-info') {
+            $tblCustomers = $this->model_load_model('MTaskCustomers');
+            $tblUsers     = $this->model_load_model('MTaskUser');
+            $this->db->select("t.*")
+                ->from($this->_table . ' as t')
+                ->where('t.id',$arrParams['id']);
+
+            $query = $this->db->get();
+            $result =  $query->row_array();
+            $this->db->flush_cache();
+            if(!empty($result)) {
+                $customers = array();
+                if(!empty($result['customer_ids'])) {
+                    $cid = explode(',', $result['customer_ids']);
+                    $customers = $tblCustomers->getItems(array('cid'=>$cid));
+                }
+
+                $user_ids = $implements = $xems = array();
+                if(!empty($result['implements'])) {
+                    $implement_ids = explode(',', $result['implements']);
+                    $user_ids = array_merge($user_ids, $implement_ids);
+                }
+
+                if(!empty($result['xems'])) {
+                    $xem_ids = explode(',', $result['xems']);
+                    $user_ids = array_merge($user_ids, $xem_ids);
+                }
+
+                if(!empty($user_ids)) {
+                    $users = $tblUsers->getItems(array('user_ids'=>$user_ids));
+                }
+
+                if(!empty($implement_ids)) {
+                    foreach($implement_ids as $user_id)
+                        $implements[$user_id] = $users[$user_id];
+                }
+
+                if(!empty($xem_ids)) {
+                    foreach($xem_ids as $user_id)
+                        $xems[$user_id] = $users[$user_id];
+                }
+
+                $result['implements'] = $implements;
+                $result['xems']       = $xems;
+            }
+        }
+        return $result;
+    }
+
     public function listItem($arrParams = null, $options = null) {
         $paginator = $arrParams['paginator'];
         if($options == null) {
@@ -60,7 +110,7 @@ class MTaskPersonal extends CI_Model{
             $this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);
             $this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date", FALSE);
             $this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as finish_date", FALSE);
-            $this->db->select("t.id, t.name, t.duration, t.created, t.prioty, t.trangthai")
+            $this->db->select("t.id, t.name, t.duration, t.created, t.prioty, t.trangthai, t.progress")
                      ->from($this->_table . ' AS t');
 
             $this->db->where("CONCAT(',',t.implements,',') LIKE '%,$id_admin,%'");
@@ -313,6 +363,13 @@ class MTaskPersonal extends CI_Model{
 
         return $where;
 
+    }
+
+    function model_load_model($model_name)
+    {
+        $CI =& get_instance();
+        $CI->load->model($model_name);
+        return $CI->$model_name;
     }
 
 }

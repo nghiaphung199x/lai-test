@@ -6,8 +6,8 @@
 
 	$( document ).ready(function() {
         gantt.templates.tooltip_text = function(start,end,task){
-            //return task.tooltip;
-            return false;
+            return task.tooltip;
+            //return false;
         };
 
         $( "#btn_tooltip" ).click(function() {

@@ -1,3 +1,30 @@
+$( document ).ready(function() {
+    //sort
+    $('body').on('click','table [data-field]',function(){
+        var attr     = $(this).attr('data-field');
+        var table    = $(this).closest('table');
+        var table_id = table.attr('id');
+        if($(this).hasClass('header')) {
+            if($(this).hasClass('headerSortUp')){
+                $(this).removeClass('headerSortUp');
+                $(this).addClass('headerSortDown');
+            }else {
+                $(this).removeClass('headerSortDown');
+                $(this).addClass('headerSortUp');
+            }
+        }else {
+            table.find('td').removeClass('header');
+            table.find('td').removeClass('headerSortUp');
+            table.find('td').removeClass('headerSortDown');
+            $(this).addClass('header headerSortUp');
+        }
+
+        var data_table = $('#project_grid_table').attr('data-table');
+        load_list(data_table, 1);
+
+    });
+
+});
 function update_personal_task(task, type, id) {
     if (typeof id == 'undefined')
       id = 0;
