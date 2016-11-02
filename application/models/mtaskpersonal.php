@@ -56,9 +56,14 @@ class MTaskPersonal extends CI_Model{
         if($options['task'] == 'public-info') {
             $tblCustomers = $this->model_load_model('MTaskCustomers');
             $tblUsers     = $this->model_load_model('MTaskUser');
+
             $this->db->select("t.*")
-                ->from($this->_table . ' as t')
-                ->where('t.id',$arrParams['id']);
+                     ->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as date_finish", FALSE)
+                     ->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as date_start", FALSE)
+                     ->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as date_end", FALSE)
+                     ->from($this->_table . ' as t')
+                     ->where('t.id',$arrParams['id']);
+
 
             $query = $this->db->get();
             $result =  $query->row_array();
@@ -70,7 +75,7 @@ class MTaskPersonal extends CI_Model{
                     $customers = $tblCustomers->getItems(array('cid'=>$cid));
                 }
 
-                $user_ids = $implements = $xems = array();
+                $user_ids = $implement_ids = $xem_ids = $implements = $xems = array();
                 if(!empty($result['implements'])) {
                     $implement_ids = explode(',', $result['implements']);
                     $user_ids = array_merge($user_ids, $implement_ids);
@@ -95,8 +100,10 @@ class MTaskPersonal extends CI_Model{
                         $xems[$user_id] = $users[$user_id];
                 }
 
-                $result['implements'] = $implements;
-                $result['xems']       = $xems;
+                $result['implements']    = $implements;
+                $result['xems']          = $xems;
+                $result['implement_ids'] = $implement_ids;
+                $result['xem_ids']       = $xem_ids;
             }
         }
         return $result;

@@ -1287,15 +1287,12 @@ class MTasks extends MNested2{
 
 	public function getItem($arrParams = null, $options = null){
 		if($options['task'] == 'public-info') {
-            $this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as date_finish", FALSE);
-            $this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as date_start", FALSE);
-            $this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as date_end", FALSE);
-
 			$this->db->select("t.*")
+                     ->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as date_finish", FALSE)
+                     ->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as date_start", FALSE)
+                     ->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as date_end", FALSE)
 					 ->from($this->_table . ' as t')
 					 ->where('t.id',$arrParams['id']);
-
-
 
 			$query = $this->db->get();
 				

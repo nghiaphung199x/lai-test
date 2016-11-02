@@ -1625,7 +1625,32 @@ class BizTasks extends Secure_area
         }
     }
 
+    public function edit_personal() {
+		$this->load->model('MTaskPersonal');
+		
+		$arrParam = $this->_data['arrParam'];
+		$post 	    = $this->input->post();
+		$item = $this->MTaskPersonal->getItem(array('id'=>$arrParam['id']), array('task'=>'public-info'));
 
+		if(!empty($post)) {
+			
+		}else {
+            $this->load->library('MY_System_Info');
+            $info 			 = new MY_System_Info();
+            $user_info 		 = $info->getInfo();
+			$id_admin = $user_info['id'];
+			
+			if($id_admin == $item['created_by'])
+				$view = 'tasks/edit_personal_form_view';
+			elseif(in_array($id_admin, $item['implement_ids']) || in_array($id_admin, $item['xem_ids']))
+				$view = 'tasks/quickupdate_personal_view';
+
+            $this->_data['item'] = $item;
+			if(!empty($view))
+				$this->load->view($view, $this->_data);
+
+		}
+    }
 
     public function personal() {
         $this->load->view('tasks/personal_grid_view', $this->_data);
@@ -1658,7 +1683,33 @@ class BizTasks extends Secure_area
             echo json_encode($result);
        }
     }
-	
+
+    public function personal_progress_list() {
+        $this->load->model('MTaskPersonalProgress');
+        $post  = $this->input->post();
+
+        if(!empty($post)) {
+            $config['base_url'] = base_url() . 'tasks/personal_progress_list';
+            $config['total_rows'] = $this->MTaskPersonalProgress->countItem($this->_data['arrParam'], array('task'=>'public-list'));
+
+            $config['per_page'] = $this->_paginator['per_page'];
+            $config['uri_segment'] = $this->_paginator['uri_segment'];
+            $config['use_page_numbers'] = TRUE;
+
+            $this->load->library("pagination");
+            $this->pagination->initialize($config);
+            $this->pagination->createConfig('front-end');
+
+            $pagination = $this->pagination->create_ajax();
+
+            $this->_data['arrParam']['start'] = $this->uri->segment(3);
+            $items = $this->MTaskPersonalProgress->listItem($this->_data['arrParam'], array('task'=>'public-list'));
+
+            $result = array('count'=> $config['total_rows'], 'items'=>$items, 'pagination'=>$pagination);
+
+            echo json_encode($result);
+        }
+    }
 	public function test() {
 //		$this->load->model('MTasks');
 //		$this->MTasks->test();

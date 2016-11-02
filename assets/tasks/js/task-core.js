@@ -947,16 +947,35 @@ function load_list(keyword, page) {
 			var elementSort = $('#progress_danhsach th.header');
 	        break;
 	    }
-	    
+
+        case 'progress-personal' : {
+            var url	        = BASE_URL + 'tasks/personal_progress_list/'+page;
+            var manager_div = 'progress_danhsach';
+            var count_span  = 'count_tiendo';
+
+            var elementSort = $('#progress_danhsach th.header');
+            break;
+        }
+
 	    case 'file' : {
 			var url 		  = BASE_URL + 'tasks/filelist/'+page;
 			var manager_div   = 'file_manager';
 			var count_span 	  = 'count_tailieu';
-			
+
 			var elementSort = $('#file_manager th.header');
-			
+
 			break;
 	    }
+
+        case 'file-personal' : {
+            var url 		  = BASE_URL + 'tasks/personel_file_list/'+page;
+            var manager_div   = 'file_manager';
+            var count_span 	  = 'count_tailieu';
+
+            var elementSort = $('#file_manager th.header');
+
+            break;
+        }
 	    
 	    case 'request' : {
 			var url 		  = BASE_URL + 'tasks/requestlist/'+page;
@@ -1065,7 +1084,7 @@ function load_list(keyword, page) {
 			close_loading(keyword);
 			var result = $.parseJSON(string);
 			var items = result.items; 
-			//console.log(items);
+			console.log(items);
 			var pagination = result.pagination;
 
 			switch (keyword){
@@ -1074,12 +1093,24 @@ function load_list(keyword, page) {
 			    	var pagination = load_pagination(pagination);
 			    	break;
 			    }
-			    
+
+                case 'progress-personal' : {
+                    var html_string = load_template_progress(items);
+                    var pagination = load_pagination(pagination);
+                    break;
+                }
+
 			    case 'file' : {
 					 var html_string = load_template_file(items);
 					 var pagination = load_pagination(pagination);
 					 break;
 			    }
+
+                case 'file-personal' : {
+                    var html_string = load_template_file(items);
+                    var pagination = load_pagination(pagination);
+                    break;
+                }
 			    
 			    case 'request' : {
 					 var html_string = load_template_request(items);
