@@ -77,7 +77,7 @@
 <div class="container-fluid" id="project_grid_list">
 	<div class="row manage-table">
 		<div class="panel panel-piluku">
-			<div class="panel-heading" style="border: 0; padding-left: 0;">
+			<div class="panel-heading" style="border: 0; padding-left: 0; padding-right: 0;">
 				<div class="gantt_title">
 					<h3 class="panel-title">
 						<span class="tieude"><a href="<?php echo base_url() . 'tasks'; ?>">Lược đồ</a></span>

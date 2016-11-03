@@ -201,11 +201,16 @@ function save_personal_tiendo_data(data) {
     }
 }
 
+function delete_personal() {
+    var checkbox = $('[data-table="personal"].file_checkbox:checked');
+    var url = BASE_URL + 'tasks/delete_personal'
+}
+
 function add_personal_file() {
     var task_id = $('#task_id').val();
     var url = BASE_URL + 'tasks/add_personal_file'
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: url,
         data: {
             task_id : task_id

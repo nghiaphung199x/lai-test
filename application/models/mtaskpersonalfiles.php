@@ -185,8 +185,9 @@ class MTaskPersonalFiles extends CI_Model{
     }
 
     public function deleteItem($arrParam = null, $options = null){
+        $upload_dir = FILE_TASK_PATH;
         if($options['task'] == 'delete-multi'){
-            $items = $this->getItems($arrParam, array('task'=>'public-info'));
+            $items = $this->getItems(array('task_ids'=>$arrParam['cid']), array('task'=>'public-info'));
             if(!empty($items)) {
                 foreach($items as $val) {
                     $ids[] 		  = $val['id'];
@@ -198,24 +199,23 @@ class MTaskPersonalFiles extends CI_Model{
 
                 $this->db->flush_cache();
 
-                // xóa file
-                $upload_dir = FILE_TASK_PATH;
+                // remove files
                 foreach($file_names as $file_name)
                     @unlink($upload_dir . $file_name);
             }
         }elseif($options['task'] == 'delete-by-tasks') {
             $items = $this->getItems($arrParam, array('task'=>'by-tasks'));
             if(!empty($items)) {
-                $upload_dir = FILE_TASK_PATH;
                 foreach($items as $val) {
                     $file_name = $val['file_name'];
                     @unlink($upload_dir . $file_name);
                 }
+
+                $this->db->where('task_id IN (' . implode(', ', $arrParam['cid']) . ')');
+                $this->db->delete($this->_table);
+                $this->db->flush_cache();
             }
 
-            $this->db->where('task_id IN (' . implode(', ', $arrParam['task_ids']) . ')');
-            $this->db->delete($this->_table);
-            $this->db->flush_cache();
         }
     }
 

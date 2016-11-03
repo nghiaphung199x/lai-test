@@ -317,6 +317,15 @@ class MTaskPersonal extends CI_Model{
         return $lastId;
     }
 
+    public function deleteItem($arrParam = null, $options = null){
+        if($options['task'] == 'delete-multi'){
+            $cid = implode(',', $arrParam['cid']);
+            $this->db->where('id IN ('.$cid.')');
+            $this->db->delete($this->_table);
+
+            $this->db->flush_cache();
+        }
+    }
 
     protected function get_where_from_filter($arrParams, $options = null) {
         $where = array();

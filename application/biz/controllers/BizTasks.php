@@ -1700,7 +1700,17 @@ class BizTasks extends Secure_area
     }
 
     public function delete_personal() {
+        $post  = $this->input->post();
+        if(!empty($post)) {
+            $cid = $this->_data['arrParam']['ids'];
+            $this->load->model('MTaskPersonal');
+            $this->load->model('MTaskPersonalFiles');
+            $this->load->model('MTaskPersonalComment');
 
+            $this->MTaskPersonal->deleteItem(array('cid'=>$cid), array('task'=>'delete-multi'));
+            $this->MTaskPersonalFiles->deleteItem(array('cid'=>$cid), array('task'=>'delete-by-tasks'));
+            $this->MTaskPersonalComment->deleteItem(array('cid'=>$cid), array('task'=>'delete-multi-by-task'));
+        }
     }
 
     public function personal() {
@@ -1986,9 +1996,9 @@ class BizTasks extends Secure_area
 	
 		if(!empty($post)) {
 			$this->load->model('MTaskPersonalFiles');
-			$this->_data['arrParam']['cid'] = $this->_data['arrParam']['file_ids'];
-				
-			$this->MTaskPersonalFiles->deleteItem($this->_data['arrParam'], array('task'=>'delete-multi'));
+			$cid = $this->_data['arrParam']['file_ids'];
+
+            $this->MTaskPersonalFiles->deleteItem(array('cid'=>$cid), array('task'=>'delete-multi'));
 		}
     }
      
