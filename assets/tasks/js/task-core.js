@@ -358,7 +358,12 @@ function load_template_personal(items) {
             var n_color      = value.color;
             var prioty       = value.prioty;
             var trangthai    = value.trangthai;
-            var note    	   = value.note;
+
+            if (typeof value.note === 'undefined' || !value.note) {
+                var note = '';
+            }else{
+                var note    	   = value.note;
+            }
 
             var positive = parseFloat(progress) * 100;
             var negative = 100 - positive;

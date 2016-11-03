@@ -108,5 +108,12 @@ class MTaskPersonalProgress extends CI_Model{
         return $result;
     }
 
+    public function deleteItem($arrParam = null, $options = null){
+        if($options['task'] == 'delete-multi-by-task'){
+            $this->db->where('task_id IN (' . implode(', ', $arrParam['cid']) . ')');
+            $this->db->delete($this->_table);
 
+            $this->db->flush_cache();
+        }
+    }
 }

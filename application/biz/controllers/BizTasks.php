@@ -1704,10 +1704,12 @@ class BizTasks extends Secure_area
         if(!empty($post)) {
             $cid = $this->_data['arrParam']['ids'];
             $this->load->model('MTaskPersonal');
+            $this->load->model('MTaskPersonalProgress');
             $this->load->model('MTaskPersonalFiles');
             $this->load->model('MTaskPersonalComment');
 
             $this->MTaskPersonal->deleteItem(array('cid'=>$cid), array('task'=>'delete-multi'));
+            $this->MTaskPersonalProgress->deleteItem(array('cid'=>$cid), array('task'=>'delete-multi-by-task'));
             $this->MTaskPersonalFiles->deleteItem(array('cid'=>$cid), array('task'=>'delete-by-tasks'));
             $this->MTaskPersonalComment->deleteItem(array('cid'=>$cid), array('task'=>'delete-multi-by-task'));
         }

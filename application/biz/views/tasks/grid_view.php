@@ -352,7 +352,7 @@
 }
 
 #project_grid_table td {
-    padding: 4px;
+    padding: 4px 10px;
 }
 
 #project_grid_table td[data-field] {

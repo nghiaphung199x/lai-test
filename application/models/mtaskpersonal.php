@@ -70,6 +70,7 @@ class MTaskPersonal extends CI_Model{
             $this->db->flush_cache();
             if(!empty($result)) {
                 $customers = array();
+
                 if(!empty($result['customer_ids'])) {
                     $cid = explode(',', $result['customer_ids']);
                     $customers = $tblCustomers->getItems(array('cid'=>$cid));
@@ -100,6 +101,7 @@ class MTaskPersonal extends CI_Model{
                         $xems[$user_id] = $users[$user_id];
                 }
 
+                $result['customers']     = $customers;
                 $result['implements']    = $implements;
                 $result['xems']          = $xems;
                 $result['implement_ids'] = $implement_ids;
@@ -212,6 +214,7 @@ class MTaskPersonal extends CI_Model{
                     $val['trangthai'] = $this->_trangthai[$val['trangthai']];
                 }
             }
+
         }
 
         return $result;

@@ -408,6 +408,7 @@ a, a:hover, a:active, a:visited {
 #my_modal .manage-table table td {
     border-top: 1px solid #d7dce5;
     border-bottom: 1px solid #d7dce5;
+    padding: 4px 10px;
 }
 
 #my_modal .manage-table table td:last-child {
