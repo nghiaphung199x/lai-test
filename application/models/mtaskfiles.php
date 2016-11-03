@@ -3,6 +3,7 @@ class MTaskFiles extends CI_Model{
    
 	protected $_table  = 'task_files';
 	protected $_fields = array();
+    protected $_id_admin 		= null;
 	public function __construct(){
 		parent::__construct();
 		$this->_fields = array(
@@ -13,7 +14,12 @@ class MTaskFiles extends CI_Model{
 						  'username' 	 =>  'e.username',
 						  'modified' 	 =>  'f.modified',
 					   );
-		
+
+        $this->load->library('MY_System_Info');
+        $info 			 = new MY_System_Info();
+        $user_info 		 = $info->getInfo();
+
+        $this->_id_admin = $user_info['id'];
 	}
 	
 	public function countItem($arrParam = null, $options = null){
@@ -44,8 +50,8 @@ class MTaskFiles extends CI_Model{
 
 			$data['created']				= 				@date("Y-m-d H:i:s");
 			$data['modified']				= 				@date("Y-m-d H:i:s");
-			$data['created_by']     		=				$arrParam['adminInfo']['id'];
-			$data['modified_by']     		=				$arrParam['adminInfo']['id'];
+			$data['created_by']     		=				$this->_id_admin;
+			$data['modified_by']     		=				$this->_id_admin;
 
 			$this->db->insert($this->_table,$data);
 			$lastId = $this->db->insert_id();
@@ -63,7 +69,7 @@ class MTaskFiles extends CI_Model{
 			$data['excerpt']				= 				stripslashes($arrParam['excerpt']);
 			
 			$data['modified']				= 				@date("Y-m-d H:i:s");
-			$data['modified_by']     		=				$arrParam['adminInfo']['id'];
+			$data['modified_by']     		=				$this->_id_admin;
 			
 			$this->db->update($this->_table,$data);
 			

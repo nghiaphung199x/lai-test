@@ -105,6 +105,17 @@ class MTaskPersonal extends CI_Model{
                 $result['implement_ids'] = $implement_ids;
                 $result['xem_ids']       = $xem_ids;
             }
+        }elseif($options['task'] == 'information') {
+            $this->db->select("t.*")
+                    ->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as date_finish", FALSE)
+                    ->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as date_start", FALSE)
+                    ->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as date_end", FALSE)
+                    ->from($this->_table . ' as t')
+                    ->where('t.id',$arrParams['id']);
+
+            $query = $this->db->get();
+            $result =  $query->row_array();
+            $this->db->flush_cache();
         }
         return $result;
     }
@@ -242,6 +253,63 @@ class MTaskPersonal extends CI_Model{
 
             $this->db->insert($this->_table,$data);
             $lastId = $this->db->insert_id();
+        }elseif($options['task'] == 'edit') {
+			$lastId = $arrParam['id'];
+            if(isset($arrParam['customer'])) {
+                $customer_ids = implode(',', $arrParam['customer']);
+            }
+
+            if(isset($arrParam['implement'])) {
+                $implements = implode(',', $arrParam['implement']);
+            }
+
+            if(isset($arrParam['xem'])) {
+                $xems = implode(',', $arrParam['xem']);
+            }
+
+			$this->db->where("id",$arrParam['id']);
+
+			if($arrParam['progress'] == 100)
+				$date_finish = @date("Y-m-d H:i:s");
+			else
+				$date_finish = '0000/00/00 00:00:00';
+			
+            $data['name']				    =       stripslashes($arrParam['name']);
+            $data['detail']				    =       stripslashes($arrParam['detail']);
+            $data['progress']				= 		$arrParam['progress'] / 100;
+            $data['date_start']				= 		$arrParam['date_start'];
+            $data['date_end']				= 		$arrParam['date_end'];
+            $data['date_finish']			= 		$date_finish;
+            $data['duration']				= 		$arrParam['duration'];
+            $data['modified']				= 		@date("Y-m-d H:i:s");
+            $data['modified_by']			= 		$this->_id_admin;
+            $data['trangthai']				= 		$arrParam['trangthai'];
+            $data['prioty']					= 		$arrParam['prioty'];
+            $data['customer_ids']			= 		$customer_ids;
+            $data['implements']			    = 		$implements;
+            $data['xems']			        = 		$xems;
+			
+			$this->db->update($this->_table,$data);
+			$this->db->flush_cache();
+			
+		}elseif($options['task'] == 'update-progress') {
+            if($arrParam['progress'] == 100)
+                $date_finish = @date("Y-m-d H:i:s");
+            else
+                $date_finish = '0000/00/00 00:00:00';
+
+            $this->db->where("id",$arrParam['id']);
+            $data['progress'] 				= 				$arrParam['progress'] / 100;
+            $data['trangthai'] 				= 				$arrParam['trangthai'];
+            $data['date_finish'] 			= 				$date_finish;
+            $data['modified']				= 				@date("Y-m-d H:i:s");
+            $data['modified_by']     		=				$arrParam['adminInfo']['id'];
+
+            $this->db->update($this->_table,$data);
+
+            $this->db->flush_cache();
+
+            $lastId = $arrParam['id'];
         }
 
         return $lastId;

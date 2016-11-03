@@ -29,43 +29,7 @@ $( document ).ready(function() {
         comment();
         return false;
     });
-	
-	// sort
-	$('body').on('click','#my_modal .manage-table table th',function(){
-		var thElement = $('#my_modal .manage-table table th');
-		var attr = $(this).attr('data-field');
-		if (typeof attr !== typeof undefined && attr !== false) {
-		   if($(this).hasClass('header')) {
-			   if($(this).hasClass('headerSortUp')){
-				   $(this).removeClass('headerSortUp');
-				   $(this).addClass('headerSortDown');
-			   }else {
-				   $(this).removeClass('headerSortDown');
-				   $(this).addClass('headerSortUp');
-			   }   
-		   }else {
-			   thElement.removeClass('header');
-			   thElement.removeClass('headerSortUp');
-			   thElement.removeClass('headerSortDown');
-			   $(this).addClass('header headerSortUp');
-		   }
-		   
-		   var li_element = $('.arrord_nav ul li.active');
-		   var className  = li_element.attr('data-id');
-		   if(className == 'progress_manager') {
-				var content_id = $('#progress_manager span.tieude.active').attr('data-id');
-				if(content_id == 'progress_danhsach') {
-					load_list('progress', 1);
-				}else if(content_id == 'request_list')
-					load_list('request', 1);
-				else if(content_id == 'pheduyet_list'){
-					load_list('pheduyet', 1);
-				}   
-		   }else
-			   load_list('file', 1);
-		}
-	});
-	
+
 	// progress
 	$('body').on('click','#progress_manager .panel-title span.tieude',function(){
 		$('#progress_manager .panel-title span.tieude').removeClass('active');
@@ -401,13 +365,13 @@ function load_template_personal(items) {
 
             string[string.length] =    '<tr>'
                                             +'<td class="center cb">'
-                                                +'<input type="checkbox" id="task_'+id+'" class="task_checkbox" value="'+id+'"><label for="task_'+id+'"><span></span></label>'
+                                                +'<input type="checkbox" id="task_'+id+'" class="file_checkbox" value="'+id+'"><label for="task_'+id+'"><span></span></label>'
                                             +'</td>'
                                             +'<td>'+name+'</td>'
-                                            +'<td align="center">'+prioty+'</td>'
-                                            +'<td align="center">'+start_date+'</td>'
-                                            +'<td align="center">'+end_date+'</td>'
-                                            +'<td align="center">'
+                                            +'<td class="center cb">'+prioty+'</td>'
+                                            +'<td class="center cb">'+start_date+'</td>'
+                                            +'<td class="center cb">'+end_date+'</td>'
+                                            +'<td class="center">'
                                                 +'<div class="clearfix">'
                                                     +'<div class="progress-bar" style="float: left;">'
                                                         +'<div class="bar positive" style="width: '+positive+'%; background: '+p_color+'">'
@@ -419,7 +383,7 @@ function load_template_personal(items) {
                                                     +'<div class="progress-text">'+note+'</div>'
                                                 +'</div>'
                                             +'</td>'
-                                            +'<td align="center">Chưa thực hiện</td>'
+                                            +'<td align="center">'+trangthai+'</td>'
                                        +'</tr>';
         });
 
@@ -498,9 +462,10 @@ function loading(keyword) {
 		if(keyword == 'project')
 			$("#loading_3").show();
 		else{
-            if(keyword == 'progress' || keyword == 'pheduyet' || keyword == 'request'){
+            var key_arr = new Array('progress', 'pheduyet', 'request', 'progress-personal', 'file-personal');
+            if(key_arr.indexOf(keyword) != -1)
                 $('#task_form #loading_1').show();
-            } else
+            else
                 $("#loading_1").show();
         }
 
@@ -515,8 +480,9 @@ function close_loading(keyword) {
 		if(keyword == 'project')
 			$("#loading_3").hide();
 		else{
-            if(keyword == 'progress' || keyword == 'pheduyet' || keyword == 'request')
-                $('.manage-table #loading_1').hide();
+            var key_arr = new Array('progress', 'pheduyet', 'request', 'progress-personal', 'file-personal');
+            if(key_arr.indexOf(keyword) != -1)
+                $('#task_form #loading_1').hide();
             else
                 $("#loading_1").hide();
         }
@@ -537,7 +503,6 @@ function create_layer(type) {
 		$( "body" ).append( '<div class="'+classLayer+'" style="display: inline-block;"></div>' );
 	}
 }	
-
 
 function close_layer(type) {
 	if(type == 'quick')
@@ -847,6 +812,41 @@ function load_template_pheduyet(items) {
 	 return string;
 }
 
+function load_template_personal_progress(items) {
+    if(items.length) {
+        var string = new Array();
+        $.each(items, function( index, value ) {
+            var id      	= value.id;
+            var user_id 	= value.created_by;
+            var user_name = value.username;
+            var created 	= value.created;
+            var progress  = value.progress;
+            var trangthai = value.trangthai;
+            var pheduyet 	= value.pheduyet;
+            var note 		= value.note;
+
+            var prioty 	 = value.prioty;
+            var task_name  = value.task_name;
+            var task_name  = value.task_name;
+
+            user_name = '<span style="font-weight: bold">'+user_name+'</span>';
+            string[string.length] = '<tr style="cursor: pointer;">'
+                +'<td class="center cb">'+progress+'</td>'
+                +'<td class="center cb">'+trangthai+'</td>'
+                +'<td class="center cb">'+prioty+'</td>'
+                +'<td class="center cb">'+user_name+'</td>'
+                +'<td class="center cb">'+created+'</td>'
+                +'</tr>	';
+        });
+
+        string = string.join("");
+    }else
+        var string = '<tr style="cursor: pointer;"><td colspan="5"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
+
+    return string;
+}
+
+
 function load_template_progress(items) {
 	 if(items.length) {
 		 var string = new Array();
@@ -1073,92 +1073,93 @@ function load_list(keyword, page) {
 		}
 	}
 
-	$.ajax({
-		type: "POST",
-		url: url,
-		data: data,
-		beforeSend: function() {
-             loading(keyword);
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: data,
+        beforeSend: function() {
+            loading(keyword);
         },
-		success: function(string){
-			close_loading(keyword);
-			var result = $.parseJSON(string);
-			var items = result.items; 
-			console.log(items);
-			var pagination = result.pagination;
+        success: function(string){
+            close_loading(keyword);
+            var result = $.parseJSON(string);
+            var items = result.items;
+            //console.log(items);
+            var pagination = result.pagination;
 
-			switch (keyword){
-			    case 'progress' : {
-			    	var html_string = load_template_progress(items);
-			    	var pagination = load_pagination(pagination);
-			    	break;
-			    }
-
-                case 'progress-personal' : {
+            switch (keyword){
+                case 'progress' : {
                     var html_string = load_template_progress(items);
                     var pagination = load_pagination(pagination);
                     break;
                 }
 
-			    case 'file' : {
-					 var html_string = load_template_file(items);
-					 var pagination = load_pagination(pagination);
-					 break;
-			    }
+                case 'progress-personal' : {
+                    var html_string = load_template_personal_progress(items);
+                    var pagination = load_pagination(pagination);
+                    break;
+                }
+
+                case 'file' : {
+                    var html_string = load_template_file(items);
+                    var pagination = load_pagination(pagination);
+                    break;
+                }
 
                 case 'file-personal' : {
                     var html_string = load_template_file(items);
                     var pagination = load_pagination(pagination);
                     break;
                 }
-			    
-			    case 'request' : {
-					 var html_string = load_template_request(items);
-					 var pagination = load_pagination(pagination);
-					 break;
-			    }
-			    
-			    case 'pheduyet' : {
-					 var html_string = load_template_pheduyet(items);
-					 var pagination = load_pagination(pagination); 
-					 break;
-			    }
-			    
-			    case 'template' : {
-			    	 var html_string = load_template_template(items);
-					 var pagination = load_pagination(pagination);
-					 break;
-			    }
-			    
-			    case 'project' : {
-			    	 var html_string = load_template_project(items);
-					 var pagination = load_pagination(pagination, 'gantt');	 
-					 break;
-			    }
-			    
-			    case 'project-grid' : {
-			    	 var html_string = load_template_project_grid(items);
-					 var pagination = load_pagination(pagination);	 
-					 break;
-			    }
+
+                case 'request' : {
+                    var html_string = load_template_request(items);
+                    var pagination = load_pagination(pagination);
+                    break;
+                }
+
+                case 'pheduyet' : {
+                    var html_string = load_template_pheduyet(items);
+                    var pagination = load_pagination(pagination);
+                    break;
+                }
+
+                case 'template' : {
+                    var html_string = load_template_template(items);
+                    var pagination = load_pagination(pagination);
+                    break;
+                }
+
+                case 'project' : {
+                    var html_string = load_template_project(items);
+                    var pagination = load_pagination(pagination, 'gantt');
+                    break;
+                }
+
+                case 'project-grid' : {
+                    var html_string = load_template_project_grid(items);
+                    var pagination = load_pagination(pagination);
+                    break;
+                }
 
                 case 'personal' : {
                     var html_string = load_template_personal(items);
                     var pagination = load_pagination(pagination);
                     break;
                 }
-			}
+            }
 
-			 $('#'+manager_div+' .table tbody').html(html_string);
-			 if($('#'+manager_div+' .text-center').length)
-				 $('#'+manager_div+' .text-center').replaceWith( pagination );
-			 else
-				 $('#'+manager_div).append(pagination);
-			 
-			 $('#'+count_span).text(result.count);
-			 
-	    }
-	});
+            $('#'+manager_div+' .table tbody').html(html_string);
+            if($('#'+manager_div+' .text-center').length)
+                $('#'+manager_div+' .text-center').replaceWith( pagination );
+            else
+                $('#'+manager_div).append(pagination);
+
+            $('#'+count_span).text(result.count);
+
+        }
+    });
+
 }
 
 function get_data_child_task(data, project_id, tr_element) {
@@ -1439,7 +1440,6 @@ function fileData(data) {
         $('#quick_modal').modal('toggle');
 
 		load_list('file', 1);
-		close_layer('quick');
 	}
 }
 

@@ -1,3 +1,6 @@
+a, a:hover, a:active, a:visited {
+    text-decoration:none;
+}
 #gantt_here {
 	font-size: 14px;
 	background: white;
@@ -552,6 +555,19 @@
 
 #my_modal .table {
     margin-bottom: 5px;
+}
+
+#progress_form [name="trangthai"] {
+    width: 70%;
+    margin-right: 20px;
+    float: left;
+    margin-bottom: 10px;
+}
+
+
+#progress_form [name="progress"] {
+    float: left;
+    width: calc(30% - 20px);
 }
 
 #project_list .panel-heading {
@@ -1690,6 +1706,14 @@ body::-webkit-scrollbar-thumb {
 
 #project_grid_table td[data-field] {
     cursor: pointer;
+}
+
+#project_grid_table td.cb {
+    cursor: pointer;
+}
+
+#project_grid_table td.center {
+    text-align: center;
 }
 
 @-webkit-keyframes animate-positive {

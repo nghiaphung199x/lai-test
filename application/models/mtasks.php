@@ -1011,8 +1011,8 @@ class MTasks extends MNested2{
 					$val['trangthai'] = $this->_trangthai[$val['trangthai']];
 				}
 			}
-		}
-		elseif($options['task'] == 'task-by-project') {
+
+		}elseif($options['task'] == 'task-by-project') {
 			$task_ids = $this->getTasksIdsByProject($arrParams['project']);
 
 			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);

@@ -7,7 +7,7 @@
     <script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/personal.js" ></script>
 
     <div class="manage_buttons">
-        <div class="manage-row-options">
+        <div class="manage-row-options" data-table="personal">
             <div class="email_buttons text-center">
                 <a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_template();"><span class="">Xóa lựa chọn</span></a>
             </div>
@@ -90,16 +90,16 @@
                         <table class="table tablesorter table-reports table-bordered table-tree" id="project_grid_table" data-table="personal">
                             <thead>
                             <tr align="center" style="font-weight:bold">
-                                <td class="hidden-print" style="width: 30px;">
+                                <th class="hidden-print" style="width: 30px;">
                                     <input type="checkbox">
                                     <label for="select_all" class="check_tatca"><span></span></label>
-                                </td>
-                                <td align="center" data-field="name">Tên Công việc</td>
-                                <td align="center" style="width: 8%;" data-field="prioty">Ưu tiên</td>
-                                <td align="center" style="width: 100px;" data-field="date_start">Bắt đầu</td>
-                                <td align="center" style="width: 100px;" data-field="date_end">Kết thúc</td>
-                                <td align="center" style="width: 256px;" data-field="progress">Tiến độ</td>
-                                <td align="center" style="width: 10%;" data-field="trangthai">Tình trạng</td>
+                                </th>
+                                <th align="center" data-field="name">Tên Công việc</th>
+                                <th align="center" style="width: 8%;" data-field="prioty">Ưu tiên</th>
+                                <th align="center" style="width: 100px;" data-field="date_start">Bắt đầu</th>
+                                <th align="center" style="width: 100px;" data-field="date_end">Kết thúc</th>
+                                <th align="center" style="width: 256px;" data-field="progress">Tiến độ</th>
+                                <th align="center" style="width: 10%;" data-field="trangthai">Tình trạng</th>
                             </tr>
                             </thead>
                             <tbody>

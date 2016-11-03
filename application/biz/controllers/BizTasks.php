@@ -90,7 +90,7 @@ class BizTasks extends Secure_area
 		
 		$result['count']      = $config['total_rows'];
 		$result['pagination'] = $pagination;
-		
+
 		echo json_encode($result);
 	}
 	
@@ -832,17 +832,14 @@ class BizTasks extends Secure_area
 				'<p>The file you are attempting to upload is larger than the permitted size.</p>' => 'File tải lên không được quá 10 Mb'
 		);
 		$post  = $this->input->post();
-	
-		$this->load->library('MY_System_Info');
-		$info 		= new MY_System_Info();
+
 
 		if(!empty($post)) {
 			$arrParam = $this->_data['arrParam'];
-			$arrParam['adminInfo'] = $user_info = $info->getInfo();
 			$this->load->library("form_validation");
 			$this->form_validation->set_rules('name', 'Tên tài liệu', 'required|max_length[255]|is_unique[task_files.name]');
-			$this->form_validation->set_rules('file_name', 'Tên file', 'required|max_length[255]|is_unique[task_files.file_name]');
-	
+			$this->form_validation->set_rules('file_name', 'Tên file', 'required|max_length[255]');
+
 			if($this->form_validation->run($this) == FALSE){
 				$errors = $this->form_validation->error_array();
 				$flagError = true;
@@ -902,15 +899,13 @@ class BizTasks extends Secure_area
 		);
 		$post  = $this->input->post();
 	
-		$this->load->library('MY_System_Info');
-		$info 		= new MY_System_Info();
+
 		$this->load->model('MTaskFiles');
 		$item		= $this->MTaskFiles->getItem($this->_data['arrParam'], array('task'=>'public-info'));
 		if(!empty($post)) {
 			$arrParam 			   = $this->_data['arrParam'];
 			$arrParam['task_id']   = $item['task_id'];
-			$arrParam['adminInfo'] = $user_info = $info->getInfo();
-	
+
 			$this->load->library("form_validation");
 			$flagError = false;
 
@@ -1633,7 +1628,48 @@ class BizTasks extends Secure_area
 		$item = $this->MTaskPersonal->getItem(array('id'=>$arrParam['id']), array('task'=>'public-info'));
 
 		if(!empty($post)) {
-			
+			$this->load->library("form_validation");
+			$this->form_validation->set_rules('name', 'Tiêu đề', 'required|max_length[255]');
+			$this->form_validation->set_rules('progress', 'Tiến độ', 'required|greater_than[-1]|less_than[101]');
+			$this->form_validation->set_rules('date_start', 'Bắt đầu', 'required');
+			$this->form_validation->set_rules('date_end', 'Kết thúc', 'required');
+
+			$flagError = false;
+	
+			if($this->form_validation->run($this) == FALSE){
+				$errors = $this->form_validation->error_array();
+                if(isset($errors['date_start']) && !isset($errors['date_end']))
+                    $errors['date_end'] = '.';
+
+                if(!isset($errors['date_start']) && isset($errors['date_end']))
+                    $errors['date_start'] = '.';
+
+                $flagError = true;
+			}else {
+				// time valid
+				$arrParam['date_start'] = date('Y-m-d', strtotime($arrParam['date_start']));
+
+				$arrParam['date_end']   = date('Y-m-d', strtotime($arrParam['date_end']));
+
+				$datediff = strtotime($arrParam['date_end']) - strtotime($arrParam['date_start']);
+				$arrParam['duration'] = floor($datediff/(60*60*24));
+				if($arrParam['duration'] <= 0) {
+					$flagError = true;
+					$errors['date_start'] = 'Ngày kết thúc phải sau ngày bắt đầu.';
+					$errors['date_end']   = '.';
+				}
+			}
+
+			if($flagError == false) {
+				// covert status and progress
+				$arrParam = $this->convert_progress_task($arrParam);
+				$last_id = $this->MTaskPersonal->saveItem($arrParam, array('task'=>'edit'));
+				
+				$response = array('flag'=>'true', 'msg'=>'Cập nhật thành công');
+			}else {
+				$response = array('flag'=>'false', 'errors'=>$errors);
+			}
+
 		}else {
             $this->load->library('MY_System_Info');
             $info 			 = new MY_System_Info();
@@ -1648,7 +1684,6 @@ class BizTasks extends Secure_area
             $this->_data['item'] = $item;
 			if(!empty($view))
 				$this->load->view($view, $this->_data);
-
 		}
     }
 
@@ -1684,6 +1719,50 @@ class BizTasks extends Secure_area
        }
     }
 
+    public function add_personal_tiendo() {
+        $this->load->model('MTaskPersonalProgress');
+        $this->load->model('MTaskPersonal');
+        $post  = $this->input->post();
+        $arrParam = $this->_data['arrParam'];
+
+        $item = $this->MTaskPersonal->getItem(array('id'=>$arrParam['task_id']), array('task'=>'information'));
+        if(!empty($post)) {
+            $flag = 'true';
+            if(empty($item)){
+                $flag = 'false';
+                $msg  = 'Công việc không tồn tại';
+            }else {
+                $this->form_validation->set_rules('progress', 'Tiến độ', 'required|greater_than[-1]|less_than[101]');
+                if($this->form_validation->run($this) == FALSE){
+                    $errors = $this->form_validation->error_array();
+                    $flag = 'false';
+                    $msg = current($errors);
+                }
+            }
+
+            if($flag == 'true') {
+				$arrParam = $this->convert_progress_task($arrParam);
+				$params = array(
+					'id' => $arrParam['task_id'],
+					'trangthai' => $arrParam['trangthai'],
+					'progress' => $arrParam['progress']
+				);
+                $this->MTaskPersonalProgress->saveItem($arrParam, array('task'=>'add'));
+				$this->MTaskPersonal->saveItem($params, array('task'=>'update-progress'));
+				
+				$msg = 'Cập nhật thành công.';
+                
+            }
+			
+			$response = array('flag'=>$flag, 'msg'=>$msg);
+			
+			echo json_encode($response);
+        }else {
+            $this->_data['item'] = $item;
+            $this->load->view('tasks/add_personal_tiendo_view', $this->_data);
+        }
+    }
+
     public function personal_progress_list() {
         $this->load->model('MTaskPersonalProgress');
         $post  = $this->input->post();
@@ -1710,6 +1789,102 @@ class BizTasks extends Secure_area
             echo json_encode($result);
         }
     }
+
+    public function add_personal_file() {
+		$fileError = array(
+				'<p>The filetype you are attempting to upload is not allowed.</p>'=>'File tải lên phải có định dạng jpg|png|pdf|docx|doc|xls|xlsx|zip|zar',
+				'<p>The file you are attempting to upload is larger than the permitted size.</p>' => 'File tải lên không được quá 10 Mb'
+		);
+		$post  = $this->input->post();
+
+		if(!empty($post)) {
+			$arrParam = $this->_data['arrParam'];
+			$this->load->library("form_validation");
+			$this->form_validation->set_rules('name', 'Tên tài liệu', 'required|max_length[255]|is_unique[task_files.name]');
+			$this->form_validation->set_rules('file_name', 'Tên file', 'required|max_length[255]|is_unique[task_files.file_name]');
+	
+			if($this->form_validation->run($this) == FALSE){
+				$errors = $this->form_validation->error_array();
+
+				$flagError = true;
+			}else {
+				if($_FILES["file_upload"]['name'] != ""){
+					$upload_dir = FILE_TASK_PATH;
+                    $ext = pathinfo($_FILES["file_upload"]['name'], PATHINFO_EXTENSION);
+                    $file_name = rewriteUrl($post['file_name']);
+
+					$config['upload_path'] = $upload_dir;
+					$config['allowed_types'] = 'jpg|png|pdf|docx|doc|xls|xlsx|zip|zar';
+					$config['max_size']	= '10240';
+					$config['encrypt_name'] = FALSE;
+
+					$config['file_name'] = $file_name . '.' . $ext;
+                    if (file_exists($upload_dir . $file_name . '.' . $ext)) {
+                        $config['file_name'] = $file_name . time() . '.' . $ext;
+                    }
+
+					$this->load->library('upload', $config);
+	
+					if($this->upload->do_upload("file_upload")){
+						$file_info             = $this->upload->data();
+                        $arrParam['size']      = $_FILES['file_upload']['size'];
+                        $arrParam['extension'] = $ext;
+                        $arrParam['file_name'] = $config['file_name'];
+
+                    }else{
+						$flagError = true;
+						$err = $this->upload->display_errors();
+
+						$errors['file_upload'] = $fileError[$err];
+					}
+				}else {
+					$flagError = true;
+					$errors['file_upload'] = 'Phải tải file lên.';
+				}
+			}
+	
+			if($flagError == true) {
+				$respon = array('flag'=>'false', 'errors'=>$errors);
+			}else {
+				$this->load->model('MTaskPersonalFiles');
+				$this->MTaskPersonalFiles->saveItem($arrParam, array('task'=>'add'));
+	
+				$respon = array('flag'=>'true', 'message'=>'Cập nhật thành công');
+			}
+			
+			echo json_encode($respon);
+		}else
+			$this->load->view('tasks/add_personal_file_view',$this->_data);
+
+    }
+    
+    public function personel_file_list() {
+		$this->load->model('MTaskPersonalFiles');
+		$post  = $this->input->post();
+	
+		if(!empty($post)) {
+			$config['base_url'] = base_url() . 'tasks/personel_file_list';
+            $config['total_rows'] = $this->MTaskPersonalFiles->countItem($this->_data['arrParam'], array('task'=>'public-list'));
+
+            $config['per_page'] = $this->_paginator['per_page'];
+			$config['uri_segment'] = $this->_paginator['uri_segment'];
+			$config['use_page_numbers'] = TRUE;
+				
+			$this->load->library("pagination");
+			$this->pagination->initialize($config);
+			$this->pagination->createConfig('front-end');
+				
+			$pagination = $this->pagination->create_ajax();
+	
+			$this->_data['arrParam']['start'] = $this->uri->segment(3);
+			$items = $this->MTaskPersonalFiles->listItem($this->_data['arrParam'], array('task'=>'public-list'));
+	
+			$result = array('count'=> $config['total_rows'], 'items'=>$items, 'pagination'=>$pagination);
+				
+			echo json_encode($result);
+		}
+    }
+
 	public function test() {
 //		$this->load->model('MTasks');
 //		$this->MTasks->test();

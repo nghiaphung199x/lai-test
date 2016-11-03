@@ -258,7 +258,43 @@
 		gantt.templates.quick_info_date = function(start, end, task){
 		       return gantt.templates.task_time(start, end, task);
 		};
-	});
+
+        $('body').on('click','#my_modal .manage-table table th',function(){
+            var thElement = $('#my_modal .manage-table table th');
+            var attr = $(this).attr('data-field');
+            if (typeof attr !== typeof undefined && attr !== false) {
+                if($(this).hasClass('header')) {
+                    if($(this).hasClass('headerSortUp')){
+                        $(this).removeClass('headerSortUp');
+                        $(this).addClass('headerSortDown');
+                    }else {
+                        $(this).removeClass('headerSortDown');
+                        $(this).addClass('headerSortUp');
+                    }
+                }else {
+                    thElement.removeClass('header');
+                    thElement.removeClass('headerSortUp');
+                    thElement.removeClass('headerSortDown');
+                    $(this).addClass('header headerSortUp');
+                }
+
+                var li_element = $('.arrord_nav ul li.active');
+                var className  = li_element.attr('data-id');
+                if(className == 'progress_manager') {
+                    var content_id = $('#progress_manager span.tieude.active').attr('data-id');
+                    if(content_id == 'progress_danhsach') {
+                        load_list('progress', 1);
+                    }else if(content_id == 'request_list')
+                        load_list('request', 1);
+                    else if(content_id == 'pheduyet_list'){
+                        load_list('pheduyet', 1);
+                    }
+                }else
+                    load_list('file', 1);
+            }
+        });
+
+    });
 
 	</script>
 <?php $this->load->view("partial/footer"); ?>

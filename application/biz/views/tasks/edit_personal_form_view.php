@@ -234,14 +234,13 @@ $prioty_arr    = array('Rất cao', 'Cao', 'Trung bình', 'Thấp', 'Rất thấ
                         </h3>
                     </div>
                     <div class="panel-body nopadding table_holder table-responsive table_list" id="progress_danhsach">
-                        <table class="tablesorter table table-hover sortable_table">
+                        <table class="tablesorter table table-hover sortable_table" data-table="progress-personal">
                             <thead>
                             <tr>
-                                <th style="width: 20%;" data-field="task_name">Công việc</th>
                                 <th style="width: 10%;" data-field="progress">Tiến độ</th>
-                                <th style="width: 15%;" data-field="trangthai">Tình trạng</th>
+                                <th data-field="trangthai">Tình trạng</th>
                                 <th style="width: 10%;" data-field="prioty">Ưu tiên</th>
-                                <th data-field="username">Tài khoản</th>
+                                <th data-field="username" style="width: 20%;" >Tài khoản</th>
                                 <th data-field="date_phe" style="width: 15%;">Ngày</th>
                             </tr>
                             </thead>
@@ -252,7 +251,48 @@ $prioty_arr    = array('Rất cao', 'Cao', 'Trung bình', 'Thấp', 'Rất thấ
                 </div>
 
                 <div class="manage-table manage-table-file tabs" id="file_manager">
+                    <div class="manage-row-options 2" data-table="file-personal">
+                        <div class="control">
+                            <a href="javascript:;" class="btn btn-red btn-lg delete_inactive" title="Sửa" onclick="edit_personal_file();"><span class="">Sửa</span></a>
+                            <a href="javascript:;" class="btn btn-lg btn-clear-selection btn-warning" onclick="delete_personal_file();">Xóa lựa chọn</a>
+                        </div>
+                    </div>
+                    <div class="control clearfix">
+                        <div class="pull-right">
+                            <div class="buttons-list">
+                                <div class="pull-right-btn">
+                                    <a href="javascript:;" id="new-person-btn" onclick="add_personal_file();" class="btn btn-primary btn-lg" title="Thêm mới tiến độ"><span class="">Thêm mới File</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="tieude active">Danh sách tài liệu</span>
+                            <span id="count_tailieu" title="total suppliers" class="badge bg-primary tip-left">0</span>
+                            <i class="fa fa-spinner fa-spin" id="loading_2"></i>
+                        </h3>
+                    </div>
+
+                    <div class="panel-body nopadding table_holder table-responsive table_list">
+                        <table class="tablesorter table table-hover" id="sortable_table">
+                            <thead>
+                            <tr>
+                                <th style="width: 50px;"><input type="checkbox"><label><span class="check_tatca"></span></label></th>
+                                <th data-field="name">Tên tài liệu</th>
+                                <th style="width: 20%;" data-field="file_name">Tên file</th>
+                                <th style="width: 14%;" data-field="size">Kích thước</th>
+                                <th style="width: 14%;" data-field="created">Ngày tạo</th>
+                                <th style="width: 10%;" data-field="username">Người tạo</th>
+                                <th style="width: 14%;" data-field="modified">Cập nhật cuối</th>
+                                <th style="width: 10%;">Cập nhật bởi</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </form>
         </div>
@@ -262,7 +302,7 @@ $prioty_arr    = array('Rất cao', 'Cao', 'Trung bình', 'Thấp', 'Rất thấ
 <script type="text/javascript">
     $( document ).ready(function() {
         load_list('progress-personal', 1);
-        //load_list('file', 1);
+        load_list('file-personal', 1);
 
         $('#add_navigation .title').click(function(e){
             if(!$( this ).hasClass( "active" )) {
