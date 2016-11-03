@@ -970,7 +970,6 @@ class BizTasks extends Secure_area
                 $new_file_name = rewriteUrl($arrParam['file_name']) . '.' . $item['extension'];
 
                 if(!isset($errors['file_name']) && $new_file_name != $item['file_name']) {
-                    echo $upload_dir . $new_file_name;
                     if (file_exists($upload_dir . $new_file_name)) {
                         $flagError           = true;
                         $errors['file_name'] = 'Tên File đã được sử dụng';
@@ -985,15 +984,11 @@ class BizTasks extends Secure_area
 				}
 			}
 
-            echo '<pre>';
-            print_r($errors);
-            echo '</pre>';
-
 			if($flagError == true) {
 				$respon = array('flag'=>'false', 'errors'=>$errors);
 			}else {
-				//$this->load->model('MTaskFiles');
-				//$this->MTaskFiles->saveItem($arrParam, array('task'=>'edit'));
+				$this->load->model('MTaskFiles');
+				$this->MTaskFiles->saveItem($arrParam, array('task'=>'edit'));
 	
 				$respon = array('flag'=>'true', 'message'=>'Cập nhật thành công');
 			}
@@ -1704,6 +1699,10 @@ class BizTasks extends Secure_area
 		}
     }
 
+    public function delete_personal() {
+
+    }
+
     public function personal() {
         $this->load->view('tasks/personal_grid_view', $this->_data);
     }
@@ -1882,16 +1881,117 @@ class BizTasks extends Secure_area
 				'<p>The file you are attempting to upload is larger than the permitted size.</p>' => 'File tải lên không được quá 10 Mb'
 		);
 
-		$item		= $this->MTaskPersonalFiles->getItem($this->_data['arrParam'], array('task'=>'public-info'));
-        $post  = $this->input->post();
+		$item   = $this->MTaskPersonalFiles->getItem($this->_data['arrParam'], array('task'=>'public-info'));
+        $post  	= $this->input->post();
         if(!empty($post)) {
-        	
+			$arrParam 			   = $this->_data['arrParam'];
+            $arrParam['file_name'] = trim($arrParam['file_name']);
+			$arrParam['task_id']   = $item['task_id'];
+
+			$this->load->library("form_validation");
+			$flagError = false;
+            $upload_dir = FILE_TASK_PATH;
+
+            if($_FILES["file_upload"]['name'] != ""){
+				$this->form_validation->set_rules('name', 'Tên tài liệu', 'required|max_length[255]');
+				$this->form_validation->set_rules('file_name', 'Tên file', 'required|max_length[255]');
+
+				if($this->form_validation->run($this) == FALSE){
+					$errors = $this->form_validation->error_array();
+					$flagError = true;
+				}
+					
+				if($flagError == false){
+					$flagError = $this->MTaskPersonalFiles->validate($arrParam['name'], 'name', $arrParam['id']);
+					if($flagError == true)
+						$errors['name'] = 'Tên tài liệu đã tồn tại.';
+				}
+
+				if($flagError == false) {
+                    $ext        = pathinfo($_FILES["file_upload"]['name'], PATHINFO_EXTENSION);
+                    $file_name  = rewriteUrl($post['file_name']);
+
+					// remove file cũ
+					@unlink($upload_dir . $item['file_name']);
+					
+					$config['upload_path'] = $upload_dir;
+					$config['allowed_types'] = 'jpg|png|pdf|docx|doc|xls|xlsx|zip|zar';
+					$config['max_size']	= '10240';
+					$config['encrypt_name'] = FALSE;
+					$config['file_name'] = $file_name . '.' . $ext;
+
+                    if (file_exists($upload_dir . $file_name . '.' . $ext)) {
+                        $config['file_name'] = $file_name . time() . '.' . $ext;
+                    }
+
+					$this->load->library('upload', $config);
+
+					if($this->upload->do_upload("file_upload")){
+						$file_info = $this->upload->data();
+						$arrParam['size']       = $_FILES['file_upload']['size'];
+                        $arrParam['extension']  = $ext;
+                        $arrParam['file_name']  = $config['file_name'];
+
+					}else{
+						$flagError = true;
+						$err = $this->upload->display_errors();
+						$errors['file_upload'] = $fileError[$err];
+					}
+				}
+
+            }else {
+				$this->form_validation->set_rules('name', 'Tên tài liệu', 'required|max_length[255]');
+                $this->form_validation->set_rules('file_name', 'Tên file', 'required|max_length[255]');
+	
+				if($this->form_validation->run($this) == FALSE){
+                    $flagError = true;
+					$errors    = $this->form_validation->error_array();
+				}
+
+                $new_file_name = rewriteUrl($arrParam['file_name']) . '.' . $item['extension'];
+
+                if(!isset($errors['file_name']) && $new_file_name != $item['file_name']) {
+                    if (file_exists($upload_dir . $new_file_name)) {
+                        $flagError           = true;
+                        $errors['file_name'] = 'Tên File đã được sử dụng';
+                    }else
+                        $item['file_name'] = $new_file_name;
+                }
+
+				if($flagError == false) {
+					$arrParam['file_name']       = $item['file_name'];
+                    $arrParam['extension']       = $item['extension'];
+					$arrParam['size'] 	         = $item['size'];
+				}
+            }
+
+           	if($flagError == true) {
+				$respon = array('flag'=>'false', 'errors'=>$errors);
+			}else {
+				$this->MTaskPersonalFiles->saveItem($arrParam, array('task'=>'edit'));
+	
+				$respon = array('flag'=>'true', 'message'=>'Cập nhật thành công');
+			}
+	
+			echo json_encode($respon);
+
         }else {
         	$this->_data['item'] = $item;            
         	$this->load->view('tasks/edit_personal_file_view',$this->_data);
         }
     }
-    
+
+    public function delete_personal_file() {
+		$post  = $this->input->post();
+	
+		if(!empty($post)) {
+			$this->load->model('MTaskPersonalFiles');
+			$this->_data['arrParam']['cid'] = $this->_data['arrParam']['file_ids'];
+				
+			$this->MTaskPersonalFiles->deleteItem($this->_data['arrParam'], array('task'=>'delete-multi'));
+		}
+    }
+     
     public function personel_file_list() {
 		$this->load->model('MTaskPersonalFiles');
 		$post  = $this->input->post();
@@ -1914,6 +2014,53 @@ class BizTasks extends Secure_area
 			$items = $this->MTaskPersonalFiles->listItem($this->_data['arrParam'], array('task'=>'public-list'));
 	
 			$result = array('count'=> $config['total_rows'], 'items'=>$items, 'pagination'=>$pagination);
+				
+			echo json_encode($result);
+		}
+    }
+
+    public function add_personal_comment() {
+		$this->load->model('MTaskPersonalComment');
+		$post  	  = $this->input->post();
+		$arrParam = $this->_data['arrParam'];
+	
+		if(!empty($post)) {
+			$this->form_validation->set_rules('content', 'Nội dung', 'required');
+				
+			if($this->form_validation->run($this) == FALSE){
+				$errors = $this->form_validation->error_array();
+                $type   = 'content';
+	
+				$response = array('flag'=>'false', 'msg'=>current($errors), 'type' => $type);
+			}else {
+				$this->MTaskPersonalComment->saveItem($arrParam, array('task'=>'add'));
+				$response = array('flag'=>'true', 'msg'=>'Bình luận thành công', 'task_id'=>$arrParam['task_id']);
+			}
+				
+			echo json_encode($response);
+		}
+    }
+
+    public function personal_comment_list() {
+		$this->load->model('MTaskPersonalComment');
+		$post  = $this->input->post();
+		if(!empty($post)) {
+			$config['base_url'] = base_url() . 'tasks/personal_comment_list';
+			$config['total_rows'] = $this->MTaskPersonalComment->countItem($this->_data['arrParam'], array('task'=>'public-list'));
+			$config['per_page'] = $this->_paginator['per_page'];
+			$config['uri_segment'] = $this->_paginator['uri_segment'];
+			$config['use_page_numbers'] = TRUE;
+				
+			$this->load->library("pagination");
+			$this->pagination->initialize($config);
+			$this->pagination->createConfig('front-end');
+				
+			$pagination = $this->pagination->create_ajax();
+	
+			$this->_data['arrParam']['start'] = $this->uri->segment(3);
+			$items = $this->MTaskPersonalComment->listItem($this->_data['arrParam'], array('task'=>'public-list'));
+	
+			$result = array('items'=>$items, 'pagination'=>$pagination);
 				
 			echo json_encode($result);
 		}

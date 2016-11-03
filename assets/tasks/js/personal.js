@@ -32,7 +32,6 @@ $( document ).ready(function() {
         if (checkbox.prop('checked') == true){
             checkbox.prop('checked', false);
         }else{
-            $('.manage-row-options').show();
             checkbox.prop('checked', true);
         }
 
@@ -44,7 +43,56 @@ $( document ).ready(function() {
         }
 
     });
+
+    // check all
+    $('body').on('click','table[data-table] .check_tatca',function(){
+        var checkbox = $(this).closest('th').find('input[type="checkbox"]');
+        var table = checkbox.closest('[data-table]');
+        var data_table = table.attr('data-table');
+
+        if (checkbox.prop('checked') == true){
+            $('.manage-row-options[data-table="'+data_table+'"]').addClass('hidden');
+            checkbox.prop('checked', false);
+            table.find('td input[type="checkbox"]').prop('checked', false);
+        }else{
+            $('.manage-row-options[data-table="'+data_table+'"]').removeClass('hidden');
+            checkbox.prop('checked', true);
+            table.find('td input[type="checkbox"]').prop('checked', true);
+        }
+
+        var checked_box = table.find('.file_checkbox:checked');
+        if(checked_box.length == 0){
+            $('.manage-row-options[data-table="'+data_table+'"]').addClass('hidden');
+        }else {
+            $('.manage-row-options[data-table="'+data_table+'"]').removeClass('hidden');
+        }
+    });
+
 });
+
+function load_personal_comment(task_id, page) {
+    var url = BASE_URL + 'tasks/personal_comment_list/'+page;
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+            task_id : task_id
+        },
+        success: function(string){
+            var result = $.parseJSON(string);
+            var items = result.items;
+            if(items.length) {
+                var html_string = load_tempate_comment(items);
+                var pagination = load_pagination(pagination);
+
+                $('#commentList').html(html_string);
+                $('#commentList').html(html_string);
+            }
+        }
+    });
+}
+
+
 function update_personal_task(task, type, id) {
     if (typeof id == 'undefined')
       id = 0;
@@ -165,6 +213,7 @@ function add_personal_file() {
         success: function(html){
             $('#quick_modal').html(html);
             $('#quick_modal').modal('toggle');
+
         }
     });
 }
@@ -187,6 +236,7 @@ function edit_personal_file() {
             success: function(string){
                 $('#quick_modal').html(string);
                 $('#quick_modal').modal('toggle');
+
             }
         });
     }else {
@@ -227,6 +277,61 @@ function save_personal_file_data(data) {
         $('#quick_modal').modal('toggle');
 
         load_list('file-personal', 1);
+        $('.manage-row-options[data-table="file-personal"]').addClass('hidden');
     }
 }
 
+function delete_personal_file() {
+    var checkbox = $("#file_manager .file_checkbox:checked");
+
+    if(checkbox.length) {
+        var file_ids = new Array();
+        $(checkbox).each(function( index ) {
+            file_ids[file_ids.length] = $(this).val();
+        });
+
+        bootbox.confirm("Bạn có chắc chắn không?", function(result){
+            if (result){
+                $.ajax({
+                    type: "POST",
+                    url: BASE_URL + 'tasks/delete_personal_file',
+                    data: {
+                        file_ids   : file_ids
+                    },
+                    success: function(string){
+                        toastr.success('Cập nhật thành công!', 'Thông báo');
+                        load_list('file-personal', 1);
+
+                        $('.manage-row-options[data-table="file-personal"]').addClass('hidden');
+                    }
+                });
+            }
+        });
+    }else {
+        toastr.warning('Chọn ít nhất một bản ghi!', 'Cảnh báo');
+    }
+}
+
+function comment_personal() {
+    $('#comment_content').removeClass('error');
+    var checkOptions = {
+        url : BASE_URL + 'tasks/add_personal_comment',
+        dataType: "json",
+        success: comment_personal_data
+    };
+    $("#task_form").ajaxSubmit(checkOptions);
+}
+
+function comment_personal_data(data) {
+    if(data.flag == 'false') {
+        if(data.type == 'content'){
+            $('#comment_content').addClass('error');
+            toastr.error(data.msg, 'Lỗi!');
+        }
+    }else {
+        toastr.success(data.msg, 'Thông báo!');
+
+        load_personal_comment(data.task_id, 1);
+        $('#comment_content').val('');
+    }
+}

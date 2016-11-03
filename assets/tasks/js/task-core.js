@@ -458,7 +458,7 @@ function load_pagination(pagination, template) {
 }
 
 function loading(keyword) {
-	if(keyword != 'file'){
+	if(keyword != 'file' && keyword != 'file-personal'){
 		if(keyword == 'project')
 			$("#loading_3").show();
 		else{
@@ -476,7 +476,7 @@ function loading(keyword) {
 }
 
 function close_loading(keyword) {
-	if(keyword != 'file') {
+	if(keyword != 'file' && keyword != 'file-personal') {
 		if(keyword == 'project')
 			$("#loading_3").hide();
 		else{
@@ -659,7 +659,7 @@ function load_comment(task_id, page) {
         type: "POST",
         url: url,
         data: {
-            task_id : task_id,
+            task_id : task_id
         },
         success: function(string){
             var result = $.parseJSON(string);
@@ -1451,28 +1451,23 @@ function delete_file() {
 		$(checkbox).each(function( index ) {
 			file_ids[file_ids.length] = $(this).val();
 		});
-		
-	    gantt.confirm({
-	        text: 'Xóa tài liệu',
-	        ok:"Đồng ý", 
-	        cancel:"Hủy bỏ",
-	        callback: function(result){
-	        	if(result == true) {
-					$.ajax({
-						type: "POST",
-						url: BASE_URL + 'tasks/deletefile',
-						data: {
-							file_ids   : file_ids
-						},
-						success: function(string){
-							toastr.success('Cập nhật thành công!', 'Thông báo');
-							load_list('file', 1);
-					    }
-					});
-	        	}
-	        }
-	    });
-		
+
+        bootbox.confirm("Bạn có chắc chắn không?", function(result){
+            if (result){
+                $.ajax({
+                    type: "POST",
+                    url: BASE_URL + 'tasks/deletefile',
+                    data: {
+                        file_ids   : file_ids
+                    },
+                    success: function(string){
+                        toastr.success('Cập nhật thành công!', 'Thông báo');
+                        load_list('file', 1);
+                    }
+                });
+            }
+        });
+
 	}else {
         toastr.warning('Chọn ít nhất một bản ghi!', 'Cảnh báo');
 	}

@@ -7,9 +7,9 @@
     <script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/personal.js" ></script>
 
     <div class="manage_buttons">
-        <div class="manage-row-options" data-table="personal">
+        <div class="manage-row-options hidden" data-table="personal">
             <div class="email_buttons text-center">
-                <a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_template();"><span class="">Xóa lựa chọn</span></a>
+                <a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_personal();"><span class="">Xóa lựa chọn</span></a>
             </div>
         </div>
         <div class="cl">

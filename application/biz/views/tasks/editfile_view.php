@@ -44,7 +44,7 @@
                             <div class="form-group">
                                 <label class="col-md-3 col-lg-2 control-label">Mô tả</label>
                                 <div class="col-md-9 col-lg-10">
-                                    <textarea name="excerpt" class="form-control"><?php echo $excerpt; ?></textarea>
+                                    <textarea name="excerpt" class="form-control" style="margin-bottom: 0;"><?php echo $excerpt; ?></textarea>
                                 </div>
                             </div>
                         </div>
@@ -54,7 +54,7 @@
             </form>
 
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" style="padding-top: 0;">
             <a href="javascript:;" onclick="save_file('edit');" class="btn btn-primary">Lưu</a>
         </div>
     </div>

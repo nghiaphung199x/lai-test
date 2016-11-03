@@ -56,6 +56,7 @@ class MTaskPersonal extends CI_Model{
         if($options['task'] == 'public-info') {
             $tblCustomers = $this->model_load_model('MTaskCustomers');
             $tblUsers     = $this->model_load_model('MTaskUser');
+            $tblFiles     = $this->model_load_model('MTaskPersonalFiles');
 
             $this->db->select("t.*")
                      ->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as date_finish", FALSE)
@@ -63,7 +64,6 @@ class MTaskPersonal extends CI_Model{
                      ->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as date_end", FALSE)
                      ->from($this->_table . ' as t')
                      ->where('t.id',$arrParams['id']);
-
 
             $query = $this->db->get();
             $result =  $query->row_array();
@@ -104,6 +104,8 @@ class MTaskPersonal extends CI_Model{
                 $result['xems']          = $xems;
                 $result['implement_ids'] = $implement_ids;
                 $result['xem_ids']       = $xem_ids;
+                $result['files']         = $tblFiles->getItems(array('task_ids'=>array($arrParams['id'])), array('task'=>'by-tasks'));
+
             }
         }elseif($options['task'] == 'information') {
             $this->db->select("t.*")
@@ -314,6 +316,7 @@ class MTaskPersonal extends CI_Model{
 
         return $lastId;
     }
+
 
     protected function get_where_from_filter($arrParams, $options = null) {
         $where = array();

@@ -157,7 +157,7 @@ class MTaskFiles extends CI_Model{
 			$result = $query->result_array();
 			$this->db->flush_cache();
 		}elseif($options['task'] == 'by-tasks') {
-            $this->db->select('f.*')
+            $this->db->select('f.id, f.name, f.file_name, f.extension')
                  ->from($this->_table . ' as f')
                  ->where('f.task_id IN ('.implode(', ', $arrParam['task_ids']).')');
 

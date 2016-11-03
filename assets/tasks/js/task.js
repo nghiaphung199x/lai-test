@@ -178,7 +178,9 @@
 
 			var checked_box = $(".file_checkbox:checked");
 			if(checked_box.length == 0) 
-				$('.manage-row-options').hide();
+				$('.manage-row-options').addClass('hidden');
+            else
+                $('.manage-row-options').removeClass('hidden');
 	    });
 		
 		// task pagination

@@ -333,10 +333,7 @@ if($pheduyet == 0) {
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
-
                 </div>
             </div>
         <?php endif; ?>
@@ -360,8 +357,6 @@ if($pheduyet == 0) {
                     }
 
                     ?>
-
-
                 </select>
             </div>
             <div class="pull-right">
@@ -446,7 +441,7 @@ if($pheduyet == 0) {
     <div class="manage-row-options 2">
         <div class="control">
             <a href="javascript:;" class="btn btn-red btn-lg delete_inactive" title="Sửa" onclick="edit_file();"><span class="">Sửa</span></a>
-            <a href="javascript:;" class="btn btn-lg btn-clear-selection btn-warning" onclick="delete_file();">Xóa lựa chọn</a>
+            <a href="javascript:;" class="btn btn-delete" onclick="delete_file();">Xóa lựa chọn</a>
         </div>
     </div>
     <div class="control clearfix">

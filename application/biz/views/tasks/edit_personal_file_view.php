@@ -1,11 +1,12 @@
 <?php
-$id  	   = $item['id'];
-$task_id   = $item['task_id'];
-$name 	   = $item['name'];
-$file_name = $item['file_name'];
-$size  	   = $item['size'];
-$excerpt   = $item['excerpt'];
+$id  	                = $item['id'];
+$task_id                = $item['task_id'];
+$name 	                = $item['name'];
+$file_name              = $item['file_name'];
+$size  	                = $item['size'];
+$excerpt                = nl2br($item['excerpt']);
 
+$file_name_without_ext  = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file_name);
 ?>
 <div class="modal-dialog">
     <div class="modal-content">
@@ -13,7 +14,7 @@ $excerpt   = $item['excerpt'];
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <h4 class="modal-title">Sửa File</h4>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" style="padding-bottom: 0;">
             <form method="POST" name="file_form" id="file_form" action="" class="form-horizontal" enctype="multipart/form-data">
                 <input type="hidden" name="id" value="<?php echo $id; ?>" />
                 <div class="clearfix hang" style="margin-bottom: 10px;">
@@ -37,14 +38,14 @@ $excerpt   = $item['excerpt'];
                             <div class="form-group">
                                 <label class="col-md-3 col-lg-2 control-label">Tên file</label>
                                 <div class="col-md-9 col-lg-10">
-                                    <input type="text" name="file_name" id="file_name" value="<?php echo $file_name; ?>" class="form-control">
+                                    <input type="text" name="file_name" id="file_name" value="<?php echo $file_name_without_ext; ?>" class="form-control">
                                     <span for="file_name" class="text-danger errors"></span>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-3 col-lg-2 control-label">Mô tả</label>
                                 <div class="col-md-9 col-lg-10">
-                                    <textarea name="excerpt" class="form-control"><?php echo $excerpt; ?></textarea>
+                                    <textarea name="excerpt" class="form-control" style="margin-bottom: 0;"><?php echo $excerpt; ?></textarea>
                                 </div>
                             </div>
                         </div>
@@ -54,7 +55,7 @@ $excerpt   = $item['excerpt'];
             </form>
 
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" style="padding-top: 0;">
             <a href="javascript:;" onclick="save_personal_file('edit');" class="btn btn-primary">Lưu</a>
         </div>
     </div>

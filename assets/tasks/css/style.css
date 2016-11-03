@@ -982,7 +982,7 @@ div.dhx_modal_cover {
 }
 
 .manage-row-options {
-	display: none;
+	display: block;
 }
 
 .manage-row-options .control {
@@ -1478,6 +1478,12 @@ div.overlay2 {
 
 .manage-row-options .email_buttons {
 	z-index: 10000;
+}
+
+#my_modal .manage-table .btn-delete {
+    background: orange !important;
+    line-height: 23px !important;
+    color: white;
 }
 
 #loading_1, #loading_2, #loading_3  {
