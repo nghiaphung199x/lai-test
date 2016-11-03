@@ -25,6 +25,20 @@ class MTaskPersonalFiles extends CI_Model{
 
     }
 
+    public function getItem($arrParam = null, $options = null){
+        if($options['task'] == 'public-info'){
+            $this->db->select('f.*')
+                     ->from($this->_table . ' as f')
+                     ->where('f.id',$arrParam['id']);
+
+            $query = $this->db->get();
+            $result = $query->row_array();
+            $this->db->flush_cache();
+        }
+
+        return $result;
+    }
+
     public function countItem($arrParam = null, $options = null){
         if($options['task'] == 'public-list'){
             $ssFilter  = $arrParam['ssFilter'];

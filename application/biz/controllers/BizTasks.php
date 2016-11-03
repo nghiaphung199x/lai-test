@@ -898,16 +898,18 @@ class BizTasks extends Secure_area
 				'<p>The file you are attempting to upload is larger than the permitted size.</p>' => 'File tải lên không được quá 10 Mb'
 		);
 		$post  = $this->input->post();
-	
 
 		$this->load->model('MTaskFiles');
-		$item		= $this->MTaskFiles->getItem($this->_data['arrParam'], array('task'=>'public-info'));
+		$item		 = $this->MTaskFiles->getItem($this->_data['arrParam'], array('task'=>'public-info'));
+
 		if(!empty($post)) {
 			$arrParam 			   = $this->_data['arrParam'];
+            $arrParam['file_name'] = trim($arrParam['file_name']);
 			$arrParam['task_id']   = $item['task_id'];
 
 			$this->load->library("form_validation");
 			$flagError = false;
+            $upload_dir = FILE_TASK_PATH;
 
 			if($_FILES["file_upload"]['name'] != ""){
 				$this->form_validation->set_rules('name', 'Tên tài liệu', 'required|max_length[255]');
@@ -925,7 +927,6 @@ class BizTasks extends Secure_area
 				}
 
 				if($flagError == false) {
-                    $upload_dir = FILE_TASK_PATH;
                     $ext        = pathinfo($_FILES["file_upload"]['name'], PATHINFO_EXTENSION);
                     $file_name  = rewriteUrl($post['file_name']);
 
@@ -959,11 +960,23 @@ class BizTasks extends Secure_area
 					
 			}else {
 				$this->form_validation->set_rules('name', 'Tên tài liệu', 'required|max_length[255]');
+                $this->form_validation->set_rules('file_name', 'Tên file', 'required|max_length[255]');
 	
 				if($this->form_validation->run($this) == FALSE){
-					$errors = $this->form_validation->error_array();
-					$flagError = true;
+                    $flagError = true;
+					$errors    = $this->form_validation->error_array();
 				}
+
+                $new_file_name = rewriteUrl($arrParam['file_name']) . '.' . $item['extension'];
+
+                if(!isset($errors['file_name']) && $new_file_name != $item['file_name']) {
+                    echo $upload_dir . $new_file_name;
+                    if (file_exists($upload_dir . $new_file_name)) {
+                        $flagError           = true;
+                        $errors['file_name'] = 'Tên File đã được sử dụng';
+                    }else
+                        $item['file_name'] = $new_file_name;
+                }
 
 				if($flagError == false) {
 					$arrParam['file_name']       = $item['file_name'];
@@ -972,11 +985,15 @@ class BizTasks extends Secure_area
 				}
 			}
 
+            echo '<pre>';
+            print_r($errors);
+            echo '</pre>';
+
 			if($flagError == true) {
 				$respon = array('flag'=>'false', 'errors'=>$errors);
 			}else {
-				$this->load->model('MTaskFiles');
-				$this->MTaskFiles->saveItem($arrParam, array('task'=>'edit'));
+				//$this->load->model('MTaskFiles');
+				//$this->MTaskFiles->saveItem($arrParam, array('task'=>'edit'));
 	
 				$respon = array('flag'=>'true', 'message'=>'Cập nhật thành công');
 			}
@@ -1857,6 +1874,23 @@ class BizTasks extends Secure_area
 			$this->load->view('tasks/add_personal_file_view',$this->_data);
 
     }
+
+    public function edit_personal_file() {
+        $this->load->model('MTaskPersonalFiles');
+		$fileError = array(
+				'<p>The filetype you are attempting to upload is not allowed.</p>'=>'File tải lên phải có định dạng jpg|png|pdf|docx|doc|xls|xlsx|zip|zar',
+				'<p>The file you are attempting to upload is larger than the permitted size.</p>' => 'File tải lên không được quá 10 Mb'
+		);
+
+		$item		= $this->MTaskPersonalFiles->getItem($this->_data['arrParam'], array('task'=>'public-info'));
+        $post  = $this->input->post();
+        if(!empty($post)) {
+        	
+        }else {
+        	$this->_data['item'] = $item;            
+        	$this->load->view('tasks/edit_personal_file_view',$this->_data);
+        }
+    }
     
     public function personel_file_list() {
 		$this->load->model('MTaskPersonalFiles');
@@ -1889,10 +1923,7 @@ class BizTasks extends Secure_area
 //		$this->load->model('MTasks');
 //		$this->MTasks->test();
 
-        $date_start = date('Y-m-d', strtotime('10-3-1990'));
-
-        echo $date_start;
-
+        echo $ext        = pathinfo('tai liệu.doc', PATHINFO_EXTENSION);
         //$this->load->view('tasks/test_view', $this->_data);
 	}
 	

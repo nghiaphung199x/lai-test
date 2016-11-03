@@ -1,11 +1,11 @@
-<?php 
-	$id  	                = $item['id'];
-	$task_id                = $item['task_id'];
-	$name 	                = $item['name'];
-	$file_name              = $item['file_name'];
-    $file_name_without_ext  = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file_name);
-	$size  	                = $item['size'];
-	$excerpt                = $item['excerpt'];
+<?php
+$id  	   = $item['id'];
+$task_id   = $item['task_id'];
+$name 	   = $item['name'];
+$file_name = $item['file_name'];
+$size  	   = $item['size'];
+$excerpt   = $item['excerpt'];
+
 ?>
 <div class="modal-dialog">
     <div class="modal-content">
@@ -37,7 +37,7 @@
                             <div class="form-group">
                                 <label class="col-md-3 col-lg-2 control-label">Tên file</label>
                                 <div class="col-md-9 col-lg-10">
-                                    <input type="text" name="file_name" id="file_name" value="<?php echo $file_name_without_ext; ?>" class="form-control">
+                                    <input type="text" name="file_name" id="file_name" value="<?php echo $file_name; ?>" class="form-control">
                                     <span for="file_name" class="text-danger errors"></span>
                                 </div>
                             </div>
@@ -55,7 +55,7 @@
 
         </div>
         <div class="modal-footer">
-            <a href="javascript:;" onclick="save_file('edit');" class="btn btn-primary">Lưu</a>
+            <a href="javascript:;" onclick="save_personal_file('edit');" class="btn btn-primary">Lưu</a>
         </div>
     </div>
 </div>

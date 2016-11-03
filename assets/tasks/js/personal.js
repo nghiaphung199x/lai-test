@@ -169,6 +169,31 @@ function add_personal_file() {
     });
 }
 
+function edit_personal_file() {
+    var checkbox = $("#file_manager .file_checkbox:checked");
+    var url = BASE_URL + 'tasks/edit_personal_file';
+
+    if(checkbox.length == 1) {
+        $(checkbox).each(function( index ) {
+            file_id = $(this).val();
+        });
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: {
+                id : file_id,
+            },
+            success: function(string){
+                $('#quick_modal').html(string);
+                $('#quick_modal').modal('toggle');
+            }
+        });
+    }else {
+        toastr.error('Chỉ chọn 1 bản ghi', 'Thông báo');
+    }
+}
+
 function save_personal_file(task) {
     reset_error();
     if(task == 'edit')
@@ -204,3 +229,4 @@ function save_personal_file_data(data) {
         load_list('file-personal', 1);
     }
 }
+

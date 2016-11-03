@@ -276,7 +276,7 @@ $prioty_arr    = array('Rất cao', 'Cao', 'Trung bình', 'Thấp', 'Rất thấ
                     </div>
 
                     <div class="panel-body nopadding table_holder table-responsive table_list">
-                        <table class="tablesorter table table-hover" id="sortable_table">
+                        <table class="tablesorter table table-hover" id="sortable_table" data-table="file-personal">
                             <thead>
                             <tr>
                                 <th style="width: 50px;"><input type="checkbox"><label><span class="check_tatca"></span></label></th>

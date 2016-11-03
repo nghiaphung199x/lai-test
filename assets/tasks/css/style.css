@@ -388,6 +388,7 @@ a, a:hover, a:active, a:visited {
     background: #489ee7;
     border: 0;
     line-height: 16px;
+    margin-right: 10px;
 }
 
 #my_modal .manage-table table th {
@@ -776,7 +777,7 @@ a, a:hover, a:active, a:visited {
 }
 
 .manage-table .control {
-	padding: 4px 15px 15px 15px;
+	padding: 4px 15px 20px 15px;
 }
 
 .manage-table .control ul {
@@ -1714,6 +1715,11 @@ body::-webkit-scrollbar-thumb {
 
 #project_grid_table td.center {
     text-align: center;
+}
+
+.modal .modal-title {
+    font-family: Arial;
+    font-weight: bold;
 }
 
 @-webkit-keyframes animate-positive {

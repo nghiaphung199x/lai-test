@@ -1384,27 +1384,27 @@ function add_file() {
 
 function edit_file() {
 	var checkbox = $(".file_checkbox:checked");
-	var url = BASE_URL + 'tasks/editfile';
-	
-	if(checkbox.length == 1) {
-		$(checkbox).each(function( index ) {
-			 file_id = $(this).val();
-		});
+    var url = BASE_URL + 'tasks/editfile';
 
-		$.ajax({
-			type: "GET",
-			url: url,
-			data: {
-				id : file_id,
-			},
-			success: function(string){
+    if(checkbox.length == 1) {
+        $(checkbox).each(function( index ) {
+            file_id = $(this).val();
+        });
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: {
+                id : file_id,
+            },
+            success: function(string){
                 $('#quick_modal').html(string);
                 $('#quick_modal').modal('toggle');
-		    }
-		});
-	}else {
+            }
+        });
+    }else {
         toastr.error('Chỉ chọn 1 bản ghi', 'Thông báo');
-	}
+    }
 }
 
 function save_file(task) {
