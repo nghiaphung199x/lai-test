@@ -14,7 +14,7 @@
                                 <label class="col-md-3 col-lg-2 control-label">Tên tài liệu</label>
                                 <div class="col-md-9 col-lg-10">
                                     <input type="text" name="name" value="" class="form-control">
-                                    <span for="name" class="text-danger" class="errors"></span>
+                                    <span for="name" class="text-danger errors"></span>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -22,14 +22,14 @@
                                 <div class="col-md-9 col-lg-10">
                                     <input type="file" name="file_upload" id="file_upload" class="filestyle file_upload" tabindex="-1" style="position: absolute; clip: rect(0px 0px 0px 0px);">
                                     <div class="bootstrap-filestyle input-group"><input type="text" name="file_display" id="file_display" class="form-control " disabled=""> <span class="group-span-filestyle input-group-btn" tabindex="0"><label for="image_id" class="btn btn-file-upload "><span class="glyphicon glyphicon-folder-open"></span> <span class="buttonText" id="choose_file">Choose file</span></label></span></div>
-                                    <span for="file_upload" class="text-danger" class="errors"></span>
+                                    <span for="file_upload" class="text-danger errors"></span>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-3 col-lg-2 control-label">Tên file</label>
                                 <div class="col-md-9 col-lg-10">
                                     <input type="text" name="file_name" id="file_name" value="" class="form-control">
-                                    <span for="file_name" class="text-danger" class="errors"></span>
+                                    <span for="file_name" class="text-danger errors"></span>
                                 </div>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">

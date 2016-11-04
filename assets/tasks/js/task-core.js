@@ -725,9 +725,9 @@ function load_template_file(items) {
 											+'<td><a href="'+link+'" class="download" target="_blank"><i class="fa fa-download" aria-hidden="true"></i></a>'+file_name+'</td>'
 											+'<td class="center cb">'+size+' Kb</td>'
 											+'<td class="center cb">'+created+'</td>'
-											+'<td class="center cb">'+created_name+'</td>'
+											+'<td class="center cb bold">'+created_name+'</td>'
 											+'<td class="center cb">'+modified+'</td>'
-											+'<td class="center cb">'+modified_name+'</td>'
+											+'<td class="center cb bold">'+modified_name+'</td>'
 										+'</tr>';
 
 		 });
@@ -934,7 +934,6 @@ function countTiendo() {
 	});
 }
 
-
 function load_list(keyword, page) {
 	var task_id = $('#task_id').val();
 	var data = new Object();
@@ -1036,15 +1035,18 @@ function load_list(keyword, page) {
 	
 			var elementSort = $('#project_grid_table td.header');
 
-            data.keywords         = $.trim($('#s_keywords').val());
-            data.date_start_from  = $.trim($('#s_date_start_from').val());
-            data.date_start_to    = $.trim($('#s_date_start_to').val());
-            data.date_end_from    = $.trim($('#s_date_end_from').val());
-            data.date_end_to      = $.trim($('#s_date_end_to').val());
-            data.trangthai        = $.trim($('#s_trangthai').val());
-            data.customers        = $.trim($('#s_customer').val());
-            data.implement        = $.trim($('#s_implement').val());
-            data.xem              = $.trim($('#s_xem').val());
+            data.keywords         =  $.trim($('#s_keywords').val());
+            data.date_start_from  =  $.trim($('#s_date_start_from').val());
+            data.date_start_to    =  $.trim($('#s_date_start_to').val());
+            data.date_end_from    =  $.trim($('#s_date_end_from').val());
+            data.date_end_to      =  $.trim($('#s_date_end_to').val());
+            data.trangthai        =  $.trim($('#s_trangthai').val());
+            data.customers        =  $.trim($('#s_customer').val());
+            data.implement        =  $.trim($('#s_implement').val());
+            data.xem              =  $.trim($('#s_xem').val());
+
+            if(data.trangthai == '0')
+                data.trangthai = 'zero';
 
             break;
 	    }
@@ -1061,7 +1063,12 @@ function load_list(keyword, page) {
             data.date_end_to      = $.trim($('#s_date_end_to').val());
             data.trangthai        = $.trim($('#s_trangthai').val());
             data.customers        = $.trim($('#s_customer').val());
+            data.implement        = $.trim($('#s_implement').val());
             data.xem              = $.trim($('#s_xem').val());
+
+            if(data.trangthai == '0') {
+                data.trangthai = 'zero';
+            }
 
             break;
         }
@@ -1812,18 +1819,29 @@ function get_two_dates(date) {
     return date;
 }
 
-function do_change_advance_search(type) {
+function do_change_advance_search(type, options) {
     var project_id     = $('#current_project_id').val();
     var element_parent = $('#project_grid_table').find('tr[data-parent="'+project_id+'"]');
 
-    var s_trangthai            = element_parent.find('.s_trangthai');
-    var s_implement            = element_parent.find('.s_implement');
-    var s_xem                  = element_parent.find('.s_xem');
-    var s_trangthai            = element_parent.find('.s_trangthai');
+    if (typeof options == 'undefined'){
+        var s_trangthai            = element_parent.find('.s_trangthai');
+        var s_implement            = element_parent.find('.s_implement');
+        var s_xem                  = element_parent.find('.s_xem');
+        var s_trangthai            = element_parent.find('.s_trangthai');
 
-    var s_trangthai_html       = element_parent.find('.s_trangthai_html');
-    var s_implement_html       = element_parent.find('.s_implement_html');
-    var s_xem_html             = element_parent.find('.s_xem_html');
+        var s_trangthai_html       = element_parent.find('.s_trangthai_html');
+        var s_implement_html       = element_parent.find('.s_implement_html');
+        var s_xem_html             = element_parent.find('.s_xem_html');
+    }else {
+        var s_trangthai            = $('#s_trangthai');
+        var s_implement            = $('#s_implement');
+        var s_xem                  = $('#s_xem');
+        var s_trangthai            = $('#s_trangthai');
+
+        var s_trangthai_html       = $('#s_trangthai_html');
+        var s_implement_html       = $('#s_implement_html');
+        var s_xem_html             = $('#s_xem_html');
+    }
 
     switch(type) {
         case 'implement':
@@ -1866,7 +1884,6 @@ function do_change_advance_search(type) {
             s_trangthai_html.html(html);
 
             break;
-
         case 'slow_proccessing':
             var html = get_item_autocomplete({class : 'trangthai', value: 5, title: 'Chậm tiến độ'});
             s_trangthai.val(5);
@@ -1887,9 +1904,14 @@ function do_change_advance_search(type) {
             s_trangthai_html.html(html);
 
             break;
-
     }
 
     $('#task_report').modal('toggle');
-    load_task_childs(project_id, 1);
+
+    if (typeof options == 'undefined'){
+        load_task_childs(project_id, 1);
+    }else {
+        var data_table = $('#project_grid_table').attr('data-table');
+        load_list(data_table, 1);
+    }
 }

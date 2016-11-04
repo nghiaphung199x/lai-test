@@ -1,16 +1,12 @@
 <?php $this->load->view("partial/header"); ?>
-<link href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css" media="screen" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="<?php echo base_url();?>assets/tasks/css/style.css" type="text/css" media="screen" />
-<link rel="stylesheet" href="<?php echo base_url();?>assets/tasks/css/responsive.css" type="text/css" media="screen" />
+    <link href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css" media="screen" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/tasks/css/style.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/tasks/css/responsive.css" type="text/css" media="screen" />
 
-<script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/task-core.js" ></script>
-<script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/personal.js" ></script>
+    <script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/task-core.js" ></script>
+    <script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/script.js" ></script>
+
     <div class="manage_buttons">
-        <div class="manage-row-options hidden" data-table="personal">
-            <div class="email_buttons text-center">
-                <a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_personal();"><span class="">Xóa lựa chọn</span></a>
-            </div>
-        </div>
         <div class="cl">
             <div class="pull-left">
                 <div action="" id="search_form" autocomplete="off" class="form-inline" method="post" accept-charset="utf-8">
@@ -23,8 +19,8 @@
                             <option value="month">Trong tháng</option>
                             <option value="year">Trong năm</option>
                         </select>
-                        <button name="btn_advance_task" id="btn_advance_task" class="btn btn-primary btn-lg">Nâng cao</button>
-                        <button name="statistic" class="btn btn-primary btn-lg statistic" id="btn_statistic">Thống kê</button>
+                        <button name="btn_advance_project" id="btn_advance_project" class="btn btn-primary btn-lg">Nâng cao</button>
+
                         <input type="hidden" id="s_keywords" />
                         <input type="hidden" id="s_date_start" value="all" />
                         <input type="hidden" id="s_date_start_radio" value="simple" />
@@ -36,7 +32,7 @@
                         <input type="hidden" id="s_date_end_to" value="" />
                         <input type="hidden" id="s_trangthai" value="" />
                         <input type="hidden" id="s_customer" value="" />
-                        <input type="hidden" id="s_implement" value="">
+                        <input type="hidden" id="s_implement" value="" />
                         <input type="hidden" id="s_xem" value="" />
                         <div id="s_trangthai_html" style="display: none;"></div>
                         <div id="s_customer_html" style="display: none;"></div>
@@ -51,7 +47,7 @@
             <div class="pull-right">
                 <div class="buttons-list">
                     <div class="pull-right-btn">
-                        <a href="javascript:;" onclick="update_personal_task('new', 'personal');" class="btn btn-primary btn-lg" title="Thêm mới"><span class="">Thêm mới</span></a>
+                        <a href="<?php echo base_url() . 'tasks/project' ?>" class="btn btn-primary btn-lg" title="Quản lý vai trò"><span class="">Dự án</span></a>
                         <div class="piluku-dropdown">
                             <button type="button" class="btn btn-more dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                 <i class="ion-android-more-horizontal"></i>
@@ -76,33 +72,39 @@
     <div class="container-fluid" id="project_grid_list">
         <div class="row manage-table">
             <div class="panel panel-piluku">
-                <div class="panel-heading" style="border: 0; padding-left: 0;">
+                <div class="panel-heading" style="border: 0; padding-left: 0; padding-right: 0;">
                     <div class="gantt_title">
                         <h3 class="panel-title">
-                            <span class="tieude">Cá nhân</span>
+                            <span class="tieude"><a href="<?php echo base_url() . 'tasks'; ?>">Lược đồ</a></span>
+                            <span class="tieude active">Danh sách</span>
                             <i class="fa fa-spinner fa-spin" id="loading_1"></i>
                         </h3>
                     </div>
                 </div>
                 <div class="panel-body">
                     <div class="table-responsive">
-                        <table class="table tablesorter table-reports table-bordered table-tree" id="project_grid_table" data-table="personal">
+                        <table class="table tablesorter table-reports table-bordered table-tree" id="project_grid_table">
                             <thead>
                             <tr align="center" style="font-weight:bold">
-                                <th class="hidden-print" style="width: 30px;">
-                                    <input type="checkbox">
-                                    <label for="select_all" class="check_tatca"><span></span></label>
-                                </th>
                                 <th align="center" data-field="name">Tên Công việc</th>
                                 <th align="center" style="width: 8%;" data-field="prioty">Ưu tiên</th>
                                 <th align="center" style="width: 100px;" data-field="date_start">Bắt đầu</th>
                                 <th align="center" style="width: 100px;" data-field="date_end">Kết thúc</th>
                                 <th align="center" style="width: 256px;" data-field="progress">Tiến độ</th>
                                 <th align="center" style="width: 10%;" data-field="trangthai">Tình trạng</th>
+                                <th align="center" style="width: 20%;">Phụ trách</th>
                             </tr>
                             </thead>
                             <tbody>
-
+                                <tr>
+                                    <td><a href="javascript:;" onclick="edit_task_grid(60);">công việc template</a></td>
+                                    <td align="center">Trung bình</td>
+                                    <td align="center">01-10-2016</td>
+                                    <td align="center">01-10-2016</td>
+                                    <td align="center"><div class="clearfix"><div class="progress-bar" style="float: left;"><div class="bar positive" style="width: 0%; background: #aa142f"></div><div class="bar negative" style="width: 100%; background: #c90d2f"></div><span>0%</span></div><div class="progress-text">Quá 8 ngày</div></div></td>
+                                    <td align="center">Chưa thực hiện</td>
+                                    <td align="center"><strong>admin</strong></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -121,7 +123,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true" class="x-close">×</span></button>
-                    <h4 class="modal-title" id="my_search_task">Tìm kiếm công việc cá nhân</h4>
+                    <h4 class="modal-title" id="my_search_task">Tìm kiếm công việc cho "<span>[Tên dự án]</span>"</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal form-horizontal-mobiles">
@@ -265,7 +267,44 @@
                                 </div>
                             </div>
                         </div>
-
+                        <div class="form-group" id="task_section">
+                            <label for="" class="col-sm-3 col-md-3 col-lg-2 col-sm-3 col-md-3 col-lg-2 control-label">Công việc :</label>
+                            <div class="col-sm-9 col-md-9 col-lg-10">
+                                <ul class="list-inline">
+                                    <li>
+                                        <input type="checkbox" name="status[]" value="-1" id="status_-1" class="reports_selected_location_ids_checkboxes">
+                                        <label for="status_-1"><span></span>Chờ xử lý</label>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" name="status[]" value="0" id="status_0" class="reports_selected_location_ids_checkboxes">
+                                        <label for="status_0"><span></span>Không phê duyệt</label>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" name="status[]" value="1-2" id="status_1_2" class="reports_selected_location_ids_checkboxes">
+                                        <label for="status_1_2"><span></span>Đã phê duyệt</label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="form-group" id="progress_section">
+                            <label for="" class="col-sm-3 col-md-3 col-lg-2 col-sm-3 col-md-3 col-lg-2 control-label">Tiến độ :</label>
+                            <div class="col-sm-9 col-md-9 col-lg-10">
+                                <ul class="list-inline">
+                                    <li>
+                                        <input type="checkbox" name="progress[]" value="-1" id="progress_-1" class="reports_selected_location_ids_checkboxes">
+                                        <label for="progress_-1"><span></span>Chờ xử lý</label>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" name="progress[]" value="0" id="progress_0" class="reports_selected_location_ids_checkboxes">
+                                        <label for="progress_0"><span></span>Không phê duyệt</label>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" name="progress[]" value="1-2" id="progress_1_2" class="reports_selected_location_ids_checkboxes">
+                                        <label for="progress_1_2"><span></span>Đã phê duyệt</label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                         <div class="form-group" style="margin-bottom: 5px;">
                             <div class="form-actions pull-right">
                                 <input type="button" name="submitf" value="Thực hiện" id="btn_search_advance" style="margin-right: 16px;" class=" submit_button btn btn-primary">
@@ -280,18 +319,19 @@
     <div id="task_report" class="modal fade bs-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
         <div class="modal-dialog modal-md" role="document">
             <div class="modal-content">
-                <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> <h4 class="modal-title" id="my_report_task">Thống kê Công việc cá nhân</h4> </div>
+                <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> <h4 class="modal-title" id="my_report_task">Thống kê <span>[Dự án]</span></h4> </div>
                 <div class="modal-body">
                     <ul>
                         <li class="all">Công việc: <span>0</span></li>
-                        <li class="cancel">Đóng dừng: <span onclick="do_change_advance_search('cancel', 'personal');">0</span></li>
-                        <li class="not-done">Không thực hiện: <span onclick="do_change_advance_search('not-done', 'personal');">0</span></li>
-                        <li class="unfulfilled" onclick="do_change_advance_search('unfulfilled', 'personal');">Chưa thực hiện: <span>0</span></li>
-                        <li class="processing" onclick="do_change_advance_search('processing', 'personal');">Đang tiến hành: <span>0</span></li>
-                        <li class="slow_proccessing" onclick="do_change_advance_search('slow_proccessing', 'personal');">Chậm tiến độ: <span>0</span></li>
-                        <li class="finish" onclick="do_change_advance_search('finish', 'personal');">Đã hoàn thành: <span>0</span></li>
-                        <li class="slow-finish" onclick="do_change_advance_search('slow-finish', 'personal');">Đã hoàn thành nhưng chậm tiến độ: <span>0</span></li>
-
+                        <li class="implement">Phụ trách: <span onclick="do_change_advance_search('implement');">0</span></li>
+                        <li class="xem">Theo dõi: <span onclick="do_change_advance_search('xem');">0</span></li>
+                        <li class="cancel">Đóng dừng: <span onclick="do_change_advance_search('cancel');">0</span></li>
+                        <li class="not-done">Không thực hiện: <span onclick="do_change_advance_search('not-done');">0</span></li>
+                        <li class="unfulfilled" onclick="do_change_advance_search('unfulfilled');">Chưa thực hiện: <span>0</span></li>
+                        <li class="processing" onclick="do_change_advance_search('processing');">Đang tiến hành: <span>0</span></li>
+                        <li class="slow_proccessing" onclick="do_change_advance_search('slow_proccessing');">Chậm tiến độ: <span>0</span></li>
+                        <li class="finish" onclick="do_change_advance_search('finish');">Đã hoàn thành: <span>0</span></li>
+                        <li class="slow-finish" onclick="do_change_advance_search('slow-finish');">Đã hoàn thành nhưng chậm tiến độ: <span>0</span></li>
                     </ul>
                 </div>
             </div>
@@ -313,18 +353,14 @@
             margin-right: 0;
         }
 
-        #project_grid_table td {
-            padding: 4px;
-            height: 61px !important;
-        }
-
-        #project_grid_table input[type="checkbox"] + label span {
-            margin: 0;
-        }
     </style>
     <script type="text/javascript">
+        var user_id = <?php echo $user_info['id']; ?>;
+        var user_name = '<?php echo $user_info['username']; ?>';
+        var current_project_id = 0;
+
         $( document ).ready(function() {
-            load_list('personal', 1);
+            //load_list('project-grid', 1);
         });
     </script>
 

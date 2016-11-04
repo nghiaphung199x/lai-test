@@ -1,5 +1,5 @@
 <?php $this->load->view("partial/header"); ?>
-    <link href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css" media="screen" rel="stylesheet" type="text/css">
+<link href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css" media="screen" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/tasks/css/style.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<?php echo base_url();?>assets/tasks/css/responsive.css" type="text/css" media="screen" />
 
@@ -7,72 +7,67 @@
 <script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/script.js" ></script>
 
 <div class="manage_buttons">
-<div class="manage-row-options">
-	<div class="email_buttons text-center">		
-		<a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_template();"><span class="">Xóa lựa chọn</span></a>
-	</div>
-</div>
-<div class="cl">
-	<div class="pull-left">
-		<div action="" id="search_form" autocomplete="off" class="form-inline" method="post" accept-charset="utf-8">
-			<div class="search no-left-border">
-				<span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span><input type="text" class="form-control ui-autocomplete-input" id="search_keywords" value="" placeholder="Tìm kiếm đự án" autocomplete="off">
-                <select class="form-control" id="search_date_type">
-                    <option value="0" selected="selected">-- Thời gian --</option>
-                    <option value="today">Trong ngày</option>
-                    <option value="weekend">Trong tuần</option>
-                    <option value="month">Trong tháng</option>
-                    <option value="year">Trong năm</option>
-                </select>
-                <button name="btn_advance_project" id="btn_advance_project" class="btn btn-primary btn-lg">Nâng cao</button>
+    <div class="cl">
+        <div class="pull-left">
+            <div action="" id="search_form" autocomplete="off" class="form-inline" method="post" accept-charset="utf-8">
+                <div class="search no-left-border">
+                    <span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span><input type="text" class="form-control ui-autocomplete-input" id="search_keywords" value="" placeholder="Tìm kiếm đự án" autocomplete="off">
+                    <select class="form-control" id="search_date_type">
+                        <option value="0" selected="selected">-- Thời gian --</option>
+                        <option value="today">Trong ngày</option>
+                        <option value="weekend">Trong tuần</option>
+                        <option value="month">Trong tháng</option>
+                        <option value="year">Trong năm</option>
+                    </select>
+                    <button name="btn_advance_project" id="btn_advance_project" class="btn btn-primary btn-lg">Nâng cao</button>
 
-                <input type="hidden" id="s_keywords" />
-                <input type="hidden" id="s_date_start" value="all" />
-                <input type="hidden" id="s_date_start_radio" value="simple" />
-                <input type="hidden" id="s_date_start_from" value="" />
-                <input type="hidden" id="s_date_start_to" value="" />
-                <input type="hidden" id="s_date_end" value="all" />
-                <input type="hidden" id="s_date_end_radio" value="simple" />
-                <input type="hidden" id="s_date_end_from" value="" />
-                <input type="hidden" id="s_date_end_to" value="" />
-                <input type="hidden" id="s_trangthai" value="" />
-                <input type="hidden" id="s_customer" value="" />
-                <input type="hidden" id="s_implement" value="" />
-                <input type="hidden" id="s_xem" value="" />
-                <div id="s_trangthai_html" style="display: none;"></div>
-                <div id="s_customer_html" style="display: none;"></div>
-                <div id="s_implement_html" style="display: none;"></div>
-                <div id="s_xem_html" style="display: none;"></div>
-			</div>
-			<div class="clear-block hidden">
-			    <i class="ion ion-close-circled"></i>
-			</div>
-		</div>
-	</div>
-    <div class="pull-right">
-        <div class="buttons-list">
-            <div class="pull-right-btn">
-                <a href="<?php echo base_url() . 'tasks/project' ?>" class="btn btn-primary btn-lg" title="Quản lý vai trò"><span class="">Dự án</span></a>
-                <div class="piluku-dropdown">
-                    <button type="button" class="btn btn-more dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                        <i class="ion-android-more-horizontal"></i>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li>
-                            <a href="<?php echo base_url() . 'tasks/template' ?>" class="hidden-xs" title="Danh sách template"><span class="">Danh sách Template</span></a>
-                        </li>
-                    </ul>
+                    <input type="hidden" id="s_keywords" />
+                    <input type="hidden" id="s_date_start" value="all" />
+                    <input type="hidden" id="s_date_start_radio" value="simple" />
+                    <input type="hidden" id="s_date_start_from" value="" />
+                    <input type="hidden" id="s_date_start_to" value="" />
+                    <input type="hidden" id="s_date_end" value="all" />
+                    <input type="hidden" id="s_date_end_radio" value="simple" />
+                    <input type="hidden" id="s_date_end_from" value="" />
+                    <input type="hidden" id="s_date_end_to" value="" />
+                    <input type="hidden" id="s_trangthai" value="" />
+                    <input type="hidden" id="s_customer" value="" />
+                    <input type="hidden" id="s_implement" value="" />
+                    <input type="hidden" id="s_xem" value="" />
+                    <div id="s_trangthai_html" style="display: none;"></div>
+                    <div id="s_customer_html" style="display: none;"></div>
+                    <div id="s_implement_html" style="display: none;"></div>
+                    <div id="s_xem_html" style="display: none;"></div>
+                </div>
+                <div class="clear-block hidden">
+                    <i class="ion ion-close-circled"></i>
                 </div>
             </div>
         </div>
+        <div class="pull-right">
+            <div class="buttons-list">
+                <div class="pull-right-btn">
+                    <a href="<?php echo base_url() . 'tasks/project' ?>" class="btn btn-primary btn-lg" title="Quản lý vai trò"><span class="">Dự án</span></a>
+                    <div class="piluku-dropdown">
+                        <button type="button" class="btn btn-more dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            <i class="ion-android-more-horizontal"></i>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li>
+                                <a href="<?php echo base_url() . 'tasks/template' ?>" class="hidden-xs" title="Danh sách template"><span class="">Danh sách Template</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cl"></div>
     </div>
-    <div class="cl"></div>
-</div>
 </div>
 <div class="container-fluid" id="project_grid_list">
 	<div class="row manage-table">
@@ -147,7 +142,7 @@
                     </div>
                     <div class="report_date_range_complex">
                         <div class="form-group">
-                            <label for="complex_radio" class="col-sm-3 col-md-3 col-lg-2 control-label  ">Tùy chỉnh :</label>
+                            <label for="simple_radio" class="col-sm-3 col-md-3 col-lg-2 control-label  ">Tùy chỉnh :</label>
                             <div class="col-sm-9 col-md-9 col-lg-10">
                                 <input type="radio" name="adv_date_start_radio" value="complex">
                                 <label for="simple_radio"><span></span></label>
@@ -196,7 +191,7 @@
                             <label for="simple_radio" class="col-sm-3 col-md-3 col-lg-2 control-label  ">Tùy chỉnh :</label>
                             <div class="col-sm-9 col-md-9 col-lg-10">
                                 <input type="radio" name="adv_date_end_radio" value="complex">
-                                <label for="complex_radio"><span></span></label>
+                                <label for="simple_radio"><span></span></label>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="input-group input-daterange" id="reportrange">
@@ -349,14 +344,6 @@
 .detailed-reports i.fa-search {
 	font-size: 16px;
     margin-right: 0;
-}
-
-#project_grid_table td {
-    padding: 4px 10px;
-}
-
-#project_grid_table td[data-field] {
-    cursor: pointer;
 }
 </style>
 <script type="text/javascript">

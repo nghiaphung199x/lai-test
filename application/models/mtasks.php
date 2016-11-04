@@ -98,6 +98,7 @@ class MTasks extends MNested2{
 
             // filter
             $where = $this->get_where_from_filter($arrParams);
+
             if(!empty($where)) {
                 foreach($where as $wh)
                     $this->db->where($wh);
@@ -132,6 +133,7 @@ class MTasks extends MNested2{
 
             // filter
             $where = $this->get_where_from_filter($arrParams);
+
             if(!empty($where)) {
                 foreach($where as $wh)
                     $this->db->where($wh);
@@ -1776,7 +1778,6 @@ class MTasks extends MNested2{
         if(!empty($arrParams['date_start_from'])) {
             $date_start_from = $arrParams['date_start_from'];
             $where[] 	     = 't.date_start >= \''.$date_start_from.'\'';
-       
         }
 
         if(!empty($arrParams['date_start_to'])) {
@@ -1793,14 +1794,15 @@ class MTasks extends MNested2{
         if(!empty($arrParams['date_end_to'])) {
             $date_end_to = $arrParams['date_end_to'];
             $where[] 	 = 't.date_end <= \''.$date_end_to.'\'';
-
         }
 
         if(!empty($arrParams['trangthai'])) {
-            $current_now = date('Y-m-d H:i:s');
+            if($arrParams['trangthai'] == 'zero')
+                $arrParams['trangthai'] = '0';
 
-            $trangthai     = $arrParams['trangthai'];
+            $current_now = date('Y-m-d H:i:s');
             $trangthai_arr = explode(',', $arrParams['trangthai']);
+            $trangthai     = $arrParams['trangthai'];
 
             if(in_array(2, $trangthai_arr)) {
                 if(($key = array_search(6, $trangthai_arr)) !== false) {

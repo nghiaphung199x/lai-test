@@ -24,7 +24,6 @@ class MTaskPersonalProgress extends CI_Model{
         $this->_fields 			= array(
             'task_name' 	 => 't.name',        'progress' 	=> 'p.progress',
             'trangthai' 	 => 'p.trangthai',   'prioty'		=> 'p.prioty',
-
             'created'   	 => 'p.created',      'username'   => 'e.username',
         );
 

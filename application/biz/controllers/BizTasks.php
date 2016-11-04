@@ -23,8 +23,15 @@ class BizTasks extends Secure_area
 		$this->_data['arrParam'] = array_merge($get, $post);
 		
 		$this->_data['arrParam']['paginator'] = $this->_paginator;
+
+        // file error messs
+        $this->_data['file_errors'] = array(
+            '<p>The filetype you are attempting to upload is not allowed.</p>'=>'File tải lên phải có định dạng jpg|png|pdf|docx|doc|xls|xlsx|zip|zar',
+            '<p>The file you are attempting to upload is larger than the permitted size.</p>' => 'File tải lên không được quá 10 Mb',
+            '<p>The uploaded file exceeds the maximum allowed size in your PHP configuration file.</p>' => 'Tập tin được tải lên vượt quá kích thước tối đa cho phép trong cấu hình PHP'
+        );
 		
-		//định nghĩa lại ngông ngữ báo lỗi
+		// error message redefined Vietnamese language
 		$this->load->library("form_validation");
 		$this->form_validation->set_message('required', '%s không được rỗng.');
 		$this->form_validation->set_message('isset', 'Trường %s phải có giá trị.');
@@ -1564,6 +1571,15 @@ class BizTasks extends Secure_area
 		$this->load->view('tasks/grid_view', $this->_data);
 	}
 
+    public function task_list()  {
+        $this->load->library('MY_System_Info');
+        $info 			 = new MY_System_Info();
+        $user_info 		 = $info->getInfo();
+        $this->_data['user_info'] = $user_info;
+
+        $this->load->view('tasks/task_list_view', $this->_data);
+    }
+
     public function add_personal() {
         $arrParam   = $this->_data['arrParam'];
 		$this->load->model('MTaskPersonal');
@@ -1703,6 +1719,7 @@ class BizTasks extends Secure_area
         $post  = $this->input->post();
         if(!empty($post)) {
             $cid = $this->_data['arrParam']['ids'];
+
             $this->load->model('MTaskPersonal');
             $this->load->model('MTaskPersonalProgress');
             $this->load->model('MTaskPersonalFiles');
@@ -1743,6 +1760,7 @@ class BizTasks extends Secure_area
             $items = $this->MTaskPersonal->listItem($this->_data['arrParam']);
 
             $result = array('count'=> $config['total_rows'], 'items'=>$items, 'pagination'=>$pagination);
+
             echo json_encode($result);
        }
     }
@@ -1819,10 +1837,7 @@ class BizTasks extends Secure_area
     }
 
     public function add_personal_file() {
-		$fileError = array(
-				'<p>The filetype you are attempting to upload is not allowed.</p>'=>'File tải lên phải có định dạng jpg|png|pdf|docx|doc|xls|xlsx|zip|zar',
-				'<p>The file you are attempting to upload is larger than the permitted size.</p>' => 'File tải lên không được quá 10 Mb'
-		);
+		$fileError = $this->_data['file_errors'];
 		$post  = $this->input->post();
 
 		if(!empty($post)) {
@@ -2078,11 +2093,37 @@ class BizTasks extends Secure_area
 		}
     }
 
+    public function personal_statistic() {
+        $this->load->model('MTaskPersonal');
+        $post = $this->input->post();
+        if(!empty($post)) {
+            $all              = $this->MTaskPersonal->statistic($this->_data['arrParam'], array('task'=>'task-by-project'));
+            $cancel           = $this->MTaskPersonal->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'cancel'));
+            $not_done         = $this->MTaskPersonal->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'not-done'));
+            $unfulfilled      = $this->MTaskPersonal->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'unfulfilled'));
+            $processing       = $this->MTaskPersonal->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'processing'));
+            $slow_proccessing = $this->MTaskPersonal->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'slow_proccessing'));
+            $finish           = $this->MTaskPersonal->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'finish'));
+            $slow_finish      = $this->MTaskPersonal->statistic($this->_data['arrParam'], array('task'=>'task-by-project-trangthai', 'type'=>'slow-finish'));
+
+            $data = array(
+                'all'              => $all,
+                'cancel'           => $cancel,
+                'not_done'         => $not_done,
+                'unfulfilled'      => $unfulfilled,
+                'processing'       => $processing,
+                'slow_proccessing' => $slow_proccessing,
+                'finish'           => $finish,
+                'slow_finish'      => $slow_finish
+            );
+
+            echo json_encode($data);
+       }
+    }
+
 	public function test() {
 //		$this->load->model('MTasks');
 //		$this->MTasks->test();
-
-        echo $ext        = pathinfo('tai liệu.doc', PATHINFO_EXTENSION);
         //$this->load->view('tasks/test_view', $this->_data);
 	}
 	

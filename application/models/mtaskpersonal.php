@@ -8,6 +8,7 @@ class MTaskPersonal extends CI_Model{
     protected $_prioty          = null;
     protected $_trangthai       = null;
 
+
     public function __construct(){
         parent::__construct();
 
@@ -31,6 +32,80 @@ class MTaskPersonal extends CI_Model{
 
     }
 
+    public function statistic($arrParams = null, $options = null) {
+        $id_admin = $this->_id_admin;
+        if($options['task'] == 'task-by-project') {
+            $this->db->select("COUNT(t.id) AS totalItem")
+                     ->from($this->_table . ' AS t');
+
+            if($arrParams['data_table'] == 'personal')
+                $this->db->where("CONCAT(',',t.implements,',') LIKE '%,$id_admin,%'");
+            elseif($arrParams['data_table'] == 'follow')
+                $this->db->where("CONCAT(',',t.xems,',') LIKE '%,$id_admin,%'");
+
+            // filter
+            $where = $this->get_where_from_filter($arrParams);
+
+            if(!empty($where)) {
+                foreach($where as $wh)
+                    $this->db->where($wh);
+            }
+
+            $query 	   = $this->db->get();
+
+            $result = $query->row_array();
+            $result = $result['totalItem'];
+        }elseif($options['task'] == 'task-by-project-trangthai') {
+            $this->db->select("COUNT(t.id) AS totalItem")
+                     ->from($this->_table . ' AS t');
+
+            if($arrParams['data_table'] == 'personal')
+                $this->db->where("CONCAT(',',t.implements,',') LIKE '%,$id_admin,%'");
+            elseif($arrParams['data_table'] == 'follow')
+                $this->db->where("CONCAT(',',t.xems,',') LIKE '%,$id_admin,%'");
+
+            if($options['type'] == 'cancel') // đóng, dừng
+                $trangthai = 3;
+            elseif($options['type'] == 'not-done') // không thực hiện
+                $trangthai = 4;
+            elseif($options['type'] == 'unfulfilled') // chưa thực hiện
+                $trangthai = 'zero';
+            elseif($options['type'] == 'processing') // đang tiến hành
+                $trangthai = 1;
+            elseif($options['type'] == 'slow_proccessing') // chậm tiến độ
+                $trangthai = 5;
+            elseif($options['type'] == 'finish') // hoàn thành
+                $trangthai = 2;
+            elseif($options['type'] == 'slow-finish') // hoàn thành nhưng chậm tiến độ
+                $trangthai = 6;
+
+            if(!empty($arrParams['trangthai'])) {
+                $trangthai_arr = explode(',', $arrParams['trangthai']);
+                if(in_array($trangthai, $trangthai_arr)) {
+                    $arrParams['trangthai'] = $trangthai;
+                }else
+                    $arrParams['trangthai'] = '-1';
+
+            }else
+                $arrParams['trangthai'] = $trangthai;
+
+            $where = $this->get_where_from_filter($arrParams);
+
+            if(!empty($where)) {
+                foreach($where as $wh)
+                    $this->db->where($wh);
+            }
+
+            $query 	   = $this->db->get();
+
+            $result = $query->row_array();
+            $result = $result['totalItem'];
+        }
+
+        return $result;
+    }
+
+
     public function countItem($arrParams = null, $options = null) {
         if($options == null) {
             $id_admin = $this->_id_admin;
@@ -38,7 +113,6 @@ class MTaskPersonal extends CI_Model{
                       -> from($this->_table . ' AS t');
 
             $this->db->where("CONCAT(',',t.implements,',') LIKE '%,$id_admin,%'");
-
             $where = $this->get_where_from_filter($arrParams);
             if(!empty($where)) {
                 foreach($where as $wh)
@@ -351,19 +425,18 @@ class MTaskPersonal extends CI_Model{
         if(!empty($arrParams['date_end_from'])) {
             $date_end_from = $arrParams['date_end_from'];
             $where[] 	   = 't.date_end >= \''.$date_end_from.'\'';
-
         }
 
         if(!empty($arrParams['date_end_to'])) {
             $date_end_to = $arrParams['date_end_to'];
             $where[] 	 = 't.date_end <= \''.$date_end_to.'\'';
-
         }
 
         if(!empty($arrParams['trangthai'])) {
-            $current_now = date('Y-m-d H:i:s');
+            if($arrParams['trangthai']  == 'zero')
+                $arrParams['trangthai'] = '0';
 
-            $trangthai     = $arrParams['trangthai'];
+            $current_now = date('Y-m-d H:i:s');
             $trangthai_arr = explode(',', $arrParams['trangthai']);
 
             if(in_array(2, $trangthai_arr)) {
@@ -379,8 +452,7 @@ class MTaskPersonal extends CI_Model{
             }
 
             if(!in_array(5, $trangthai_arr) && !in_array(6, $trangthai_arr)) {
-                $where[] = 't.trangthai IN ('.$trangthai.')';
-
+                $where[] = 't.trangthai IN ('.$arrParams['trangthai'].')';
             }else {
                 $where_clause = array();
                 if(in_array(5, $trangthai_arr)) {
@@ -418,7 +490,6 @@ class MTaskPersonal extends CI_Model{
                 $where_clause = implode(' OR ', $where_clause);
                 $where[] = $where_clause;
             }
-
         }
 
         if(!empty($arrParams['customers'])) {
@@ -452,7 +523,6 @@ class MTaskPersonal extends CI_Model{
         }
 
         return $where;
-
     }
 
     function model_load_model($model_name)

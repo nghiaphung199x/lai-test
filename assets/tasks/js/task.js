@@ -15,7 +15,7 @@
         });
 
         // enable autocomplete
-        var frame_array = ['customer_list', 'xem_list', 'implement_list', 'create_task_list', 'pheduyet_task_list', 'progress_list'];
+        var frame_array = ['customer_list', 'xem_list', 'implement_list', 'trangthai_list','create_task_list', 'pheduyet_task_list', 'progress_list'];
         $.each(frame_array, function( index, value ) {
             css_form(value);
             press(value);
@@ -26,6 +26,12 @@
         date_time_picker_field_report($('#adv_date_start_to'), JS_DATE_FORMAT+ " "+JS_TIME_FORMAT);
         date_time_picker_field_report($('#adv_date_end_from'), JS_DATE_FORMAT+ " "+JS_TIME_FORMAT);
         date_time_picker_field_report($('#adv_date_end_to'), JS_DATE_FORMAT+ " "+JS_TIME_FORMAT);
+        $('label[for="simple_radio"] span').click(function() {
+            var label_element = $(this).closest('label');
+            var element_radio = label_element.prev();
+            element_radio.prop("checked", true);
+
+        });
 
         // search
         var typingTimer;
@@ -41,7 +47,6 @@
         });
 
         function startSearch () {
-            gantt.clearAll();
             load_task(1, 'clearAll');
         }
 
@@ -462,6 +467,9 @@
         data.customers        = $.trim(s_customer.val());
         data.implement        = $.trim(s_implement.val());
         data.xem              = $.trim(s_xem.val());
+
+        if(data.trangthai == '0')
+            data.trangthai = 'zero';
 
 		$.ajax({
 			type: "POST",

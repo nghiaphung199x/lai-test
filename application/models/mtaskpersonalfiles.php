@@ -187,7 +187,8 @@ class MTaskPersonalFiles extends CI_Model{
     public function deleteItem($arrParam = null, $options = null){
         $upload_dir = FILE_TASK_PATH;
         if($options['task'] == 'delete-multi'){
-            $items = $this->getItems(array('task_ids'=>$arrParam['cid']), array('task'=>'public-info'));
+            $items = $this->getItems(array('cid'=>$arrParam['cid']), array('task'=>'public-info'));
+
             if(!empty($items)) {
                 foreach($items as $val) {
                     $ids[] 		  = $val['id'];
@@ -204,7 +205,7 @@ class MTaskPersonalFiles extends CI_Model{
                     @unlink($upload_dir . $file_name);
             }
         }elseif($options['task'] == 'delete-by-tasks') {
-            $items = $this->getItems($arrParam, array('task'=>'by-tasks'));
+            $items = $this->getItems(array('task_ids'=>$arrParam['cid']), array('task'=>'by-tasks'));
             if(!empty($items)) {
                 foreach($items as $val) {
                     $file_name = $val['file_name'];
