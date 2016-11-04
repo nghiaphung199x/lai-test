@@ -34,3 +34,33 @@ phê duyêt:
 
 
 ===
+
+
+	- count:
+	select COUNT(DISTINCT t.id) AS total_item
+	FROM phppos_tasks as t 
+	inner join
+	(
+	select phppos_tasks.id, phppos_tasks.lft, phppos_tasks.rgt, phppos_tasks.project_id, phppos_tasks.level
+	from phppos_tasks 
+	inner join phppos_task_user_relations
+	on phppos_tasks.id = phppos_task_user_relations.task_id AND phppos_task_user_relations.user_id = 1
+	) as tmp
+	on t.project_id = tmp.project_id and t.lft >= tmp.lft and t.rgt <= tmp.rgt
+	where t.parent != 0
+	
+	- list:
+	select DISTINCT t.id, t.name, t.project_id, t.date_start, t.date_end, t.date_finish
+	FROM phppos_tasks as t 
+	inner join
+	(
+	select phppos_tasks.id, phppos_tasks.lft, phppos_tasks.rgt, phppos_tasks.project_id, phppos_tasks.level
+	from phppos_tasks 
+	inner join phppos_task_user_relations
+	on phppos_tasks.id = phppos_task_user_relations.task_id AND phppos_task_user_relations.user_id = 1
+	) as tmp
+	on t.project_id = tmp.project_id and t.lft >= tmp.lft and t.rgt <= tmp.rgt
+	where t.parent != 0
+
+	order by t.date_start asc
+	limit 0, 2

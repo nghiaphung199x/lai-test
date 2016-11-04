@@ -617,8 +617,7 @@ button[name="statistic"]:hover, button[name="statistic"]:focus{
 
 #project_grid_table td {
     padding: 4px 10px;
-    height: 52px;
-    line-height: 52px !important;
+    height: 62px !important;
 }
 
 

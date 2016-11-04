@@ -233,6 +233,115 @@ function load_template_task_child(items) {
 	 return string;
 }
 
+function load_template_task_list(items) {
+    if(items.length) {
+        var string = new Array();
+        $.each(items, function( index, value ) {
+            var id      	 = value.id;
+            var start_date   = value.start_date;
+            var end_date     = value.end_date;
+            var finish_date  = value.finish_date;
+            var name         = '<a href="javascript:;" onclick="edit_task_grid('+id+');">'+value.name+'</a>';
+            var duration     = value.duration;
+            var percent      = value.percent;
+            var progress     = value.progress;
+            var parent       = value.parent;
+            var p_color      = value.p_color;
+            var n_color      = value.color;
+            var implement    = value.implement;
+            var prioty       = value.prioty;
+            var trangthai    = value.trangthai;
+            var note    	   = value.note;
+
+            var positive = parseFloat(progress) * 100;
+            var negative = 100 - positive;
+
+            string[string.length] = '<tr data-tree="'+id+'">'
+                +'<td class="hidden-print" style="width: 25px; text-align: center;"><a href="javascript:;" class="expand_all">-</a></td>'
+                +'<td>'+name+'</td>'
+                +'<td align="center">'+prioty+'</td>'
+                +'<td align="center">'+start_date+'</td>'
+                +'<td align="center">'+end_date+'</td>'
+                +'<td align="center">'
+                +'<div class="clearfix">'
+                +'<div class="progress-bar" style="float: left;">'
+                +'<div class="bar positive" style="width: '+positive+'%; background: '+p_color+'">'
+                +'</div>'
+                +'<div class="bar negative" style="width: '+negative+'%; background: '+n_color+'">'
+                +'</div>'
+                +'<span>'+positive+'%</span>'
+                +'</div>'
+                +'<div class="progress-text">'+note+'</div>'
+                +'</div>'
+                +'</td>'
+                +'<td align="center">'+trangthai+'</td>'
+                +'<td align="center">'+implement+'</td>'
+                +'</tr>'
+                +'<tr data-parent="'+id+'" data-content="0" style="display: none;">'
+                +'<td colspan="8" class="innertable" style="display: table-cell;">'
+                +'<div class="clearfix">'
+                +'<div class="col-xs-12 col-md-6 pull-right" style="padding-left: 0; padding-right: 0">'
+                +' <select class="form-control search_date_type">'
+                +'<option value="0" selected="selected">-- Thời gian --</option>'
+                +'<option value="today">Trong ngày</option>'
+                +'<option value="weekend">Trong tuần</option>'
+                +'<option value="month">Trong tháng</option>'
+                +'<option value="year">Trong năm</option>'
+
+                +' </select>'
+                +' </div>'
+                +'<div class="col-xs-12 col-md-6 pull-left" style="padding-left: 0; padding-right: 0;">'
+                +'<input type="text" class="form-control ui-autocomplete-input search_keywords" value="" placeholder="Tìm kiếm công việc" >'
+                +'<button name="submitf" class="btn btn-primary btn-lg submitf" data-id="'+id+'" data-name="'+value.name+'">Nâng cao</button>'
+                +'<button name="statistic" class="btn btn-primary btn-lg statistic" data-id="'+id+'" data-name="'+value.name+'">Thống kê</button>'
+                +'<input type="hidden" class="s_keywords s_input_filter" value="" />'
+                +'<input type="hidden" class="s_date_start s_input_filter" value="all" />'
+                +'<input type="hidden" class="s_date_start_radio s_input_filter" value="simple" />'
+                +'<input type="hidden" class="s_date_start_from s_input_filter" value="" />'
+                +'<input type="hidden" class="s_date_start_to s_input_filter" value="" />'
+                +'<input type="hidden" class="s_date_end s_input_filter" value="all" />'
+                +'<input type="hidden" class="s_date_end_radio s_input_filter" value="simple" />'
+                +'<input type="hidden" class="s_date_end_from s_input_filter" value="" />'
+                +'<input type="hidden" class="s_date_end_to s_input_filter" value="" />'
+                +'<input type="hidden" class="s_trangthai s_input_filter" value="" />'
+                +'<input type="hidden" class="s_customer s_input_filter" value="" />'
+                +'<input type="hidden" class="s_implement s_input_filter" value="" />'
+                +'<input type="hidden" class="s_xem s_input_filter" value="" />'
+                +'<input type="hidden" class="s_status s_input_filter" value="-1,0,1,2" />'
+                +'<input type="hidden" class="s_progress s_input_filter" value="-1,0,1,2" />'
+                +'<div class="s_trangthai_html" style="display: none;"></div>'
+                +'<div class="s_customer_html" style="display: none;"></div>'
+                +'<div class="s_implement_html" style="display: none;"></div>'
+                +'<div class="s_xem_html" style="display: none;"></div>'
+                +'</div>'
+                +'</div>'
+                +'<table class="table table-bordered" id="task_childs_'+id+'" data-content="0">'
+                +'<thead>'
+                +'<tr align="center" style="font-weight:bold">'
+                +'<td align="center" data-field="name">Tên công việc</td>'
+                +'<td align="center" style="width: 8%;" data-field="prioty">Ưu tiên</td>'
+                +'<td align="center" style="width: 100px;" data-field="date_start">Bắt đầu</td>'
+                +'<td align="center" style="width: 100px;" data-field="date_end">Kết thúc</td>'
+                +'<td align="center" style="width: 256px;" data-field="progress">Tiến độ</td>'
+                +'<td align="center" style="width: 10%;" data-field="trangthai">Tình trạng</td>'
+                +'<td align="center" style="width: 20%;">Phụ trách</td>'
+                +'</tr>'
+                +'</thead>'
+                +'<tbody>'
+                +'</tbody>'
+                +'</table>'
+                +'</tr>';
+
+        });
+
+        string = string.join("");
+    }else
+        var string = '<tr style="cursor: pointer;"><td colspan="8"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>';
+
+    return string;
+}
+
+
 function load_template_project_grid(items) {
 	if(items.length) {
 		 var string = new Array();
@@ -1033,7 +1142,7 @@ function load_list(keyword, page) {
 	    	var manager_div = 'project_grid_list';
 			var url	        = BASE_URL + 'tasks/projectGridList/'+page;
 	
-			var elementSort = $('#project_grid_table td.header');
+			var elementSort = $('#project_grid_table th.header');
 
             data.keywords         =  $.trim($('#s_keywords').val());
             data.date_start_from  =  $.trim($('#s_date_start_from').val());
@@ -1055,6 +1164,29 @@ function load_list(keyword, page) {
             var url	        = BASE_URL + 'tasks/personalList/'+page;
 
             var elementSort = $('#project_grid_table td.header');
+
+            data.keywords         = $.trim($('#s_keywords').val());
+            data.date_start_from  = $.trim($('#s_date_start_from').val());
+            data.date_start_to    = $.trim($('#s_date_start_to').val());
+            data.date_end_from    = $.trim($('#s_date_end_from').val());
+            data.date_end_to      = $.trim($('#s_date_end_to').val());
+            data.trangthai        = $.trim($('#s_trangthai').val());
+            data.customers        = $.trim($('#s_customer').val());
+            data.implement        = $.trim($('#s_implement').val());
+            data.xem              = $.trim($('#s_xem').val());
+
+            if(data.trangthai == '0') {
+                data.trangthai = 'zero';
+            }
+
+            break;
+        }
+
+        case 'task_list' : {
+            var manager_div = 'project_grid_list';
+            var url	        = BASE_URL + 'tasks/personalList/'+page;
+
+            var elementSort = $('#project_grid_table th.header');
 
             data.keywords         = $.trim($('#s_keywords').val());
             data.date_start_from  = $.trim($('#s_date_start_from').val());
@@ -1156,6 +1288,12 @@ function load_list(keyword, page) {
 
                 case 'personal' : {
                     var html_string = load_template_personal(items);
+                    var pagination = load_pagination(pagination);
+                    break;
+                }
+
+                case 'task_list' : {
+                    var html_string = load_template_task_list(items);
                     var pagination = load_pagination(pagination);
                     break;
                 }

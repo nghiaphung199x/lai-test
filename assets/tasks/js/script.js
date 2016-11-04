@@ -1,4 +1,5 @@
 $( document ).ready(function() {
+    var data_table = $('#project_grid_table').attr('data-table');
     // autocomplete
     var frame_array = ['customer_list', 'xem_list', 'implement_list', 'trangthai_list'];
     $.each(frame_array, function( index, value ) {
@@ -209,7 +210,11 @@ $( document ).ready(function() {
     //advance project search click
     $('body').on('click','#btn_advance_project',function(){
         set_project_form_input();
-        $('#my_search_task').text('Tìm kiếm dự án');
+        if(data_table == 'task_list')
+            $('#my_search_task').text('Tìm kiếm Công việc');
+        else
+            $('#my_search_task').text('Tìm kiếm Dự án');
+
         $('#task_section').hide();
         $('#progress_section').hide();
         $("#advance_task_search").modal();
@@ -656,6 +661,7 @@ function set_project_hidden_input() {
 
 
 function project_search() {
+
     load_list('project-grid', 1);
 }
 
@@ -707,6 +713,9 @@ function set_project_form_input() {
     var s_implement_html     = $('#s_implement_html');
     var s_xem_html           = $('#s_xem_html');
 
+    var s_status             = $('#s_status');
+    var s_progress           = $('#s_progress');
+
     $('[name="adv_date_start_radio"]').filter('[value='+date_start_value+']').prop('checked', true);
     if(date_start_value == 'simple') {
         $('#adv_date_start').val(s_date_start.val());
@@ -754,6 +763,24 @@ function set_project_form_input() {
 
     html = s_xem_html.html();
     $(html).insertBefore( "#xem_result" );
+
+    var s_status_value = s_status.val();
+    var res = new Array();
+    if (s_status_value) {
+        res = convert_string_checkbox(s_status_value);
+        $.each(res, function( index, value ) {
+            $('#status_'+value).prop('checked', true);
+        });
+    }
+
+    var s_progress_value = s_progress.val();
+    res = new Array();
+    if (s_progress_value) {
+        res = convert_string_checkbox(s_progress_value);
+        $.each(res, function( index, value ) {
+            $('#progress_'+value).prop('checked', true);
+        });
+    }
 }
 
 

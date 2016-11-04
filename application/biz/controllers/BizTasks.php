@@ -1580,6 +1580,32 @@ class BizTasks extends Secure_area
         $this->load->view('tasks/task_list_view', $this->_data);
     }
 
+    public function task_list_store()  {
+		$this->load->model('MTasks');
+		$post  = $this->input->post();
+
+		if(!empty($post)) {
+			$config['base_url'] = base_url() . 'tasks/task_list_store';
+			$config['total_rows'] = $this->MTasks->count_item($this->_data['arrParam']);
+
+			$config['per_page'] = $this->_paginator['per_page'];
+			$config['uri_segment'] = $this->_paginator['uri_segment'];
+			$config['use_page_numbers'] = TRUE;
+		
+			$this->load->library("pagination");
+			$this->pagination->initialize($config);
+			$this->pagination->createConfig('front-end');
+		
+			$pagination = $this->pagination->create_ajax();
+		
+			$this->_data['arrParam']['start'] = $this->uri->segment(3);
+			$items = $this->MTasks->list_item($this->_data['arrParam']);
+
+			$result = array('count'=> $config['total_rows'], 'items'=>$items, 'pagination'=>$pagination);
+			echo json_encode($result);
+		}
+    }
+
     public function add_personal() {
         $arrParam   = $this->_data['arrParam'];
 		$this->load->model('MTaskPersonal');
@@ -2122,8 +2148,6 @@ class BizTasks extends Secure_area
     }
 
 	public function test() {
-//		$this->load->model('MTasks');
-//		$this->MTasks->test();
         //$this->load->view('tasks/test_view', $this->_data);
 	}
 	

@@ -44,7 +44,7 @@ class MTasks extends MNested2{
         return $result;
     }
 
-    // Check the parents is not approved or not
+    // Check the parents is approved or not
     public function check_parent_appoval($task) {
         $lft         = $task['lft'];
         $rgt         = $task['rgt'];
@@ -524,6 +524,42 @@ class MTasks extends MNested2{
 		
 		return $result;
 	}
+
+    public function list_item($arrParams = null, $options = null) {
+        if($options == null) {
+            $phppos_tasks = $this->db->dbprefix($this->_table);
+            $phppos_task_user_relations = $this->db->dbprefix(task_user_relations);
+            $id_admin = $this->_id_admin;
+
+            $sql = "SELECT DISTINCT t.id, t.name, t.project_id, t.date_start, t.date_end, t.date_finish
+                    FROM  $phppos_tasks AS t
+                    INNER JOIN
+                    (
+                        SELECT $phppos_tasks.id, $phppos_tasks.lft, $phppos_tasks.rgt, $phppos_tasks.project_id, $phppos_tasks.level
+                        FROM $phppos_tasks
+                        INNER JOIN $phppos_task_user_relations
+                        ON phppos_tasks.id = phppos_task_user_relations.task_id AND phppos_task_user_relations.user_id = 1
+                    )";
+            /*
+	select DISTINCT t.id, t.name, t.project_id, t.date_start, t.date_end, t.date_finish
+	FROM phppos_tasks as t
+	inner join
+	(
+	select phppos_tasks.id, phppos_tasks.lft, phppos_tasks.rgt, phppos_tasks.project_id, phppos_tasks.level
+	from phppos_tasks
+	inner join phppos_task_user_relations
+	on phppos_tasks.id = phppos_task_user_relations.task_id AND phppos_task_user_relations.user_id = 1
+	) as tmp
+	on t.project_id = tmp.project_id and t.lft >= tmp.lft and t.rgt <= tmp.rgt
+	where t.parent != 0
+
+	order by t.date_start asc
+	limit 0, 2
+             */
+        }
+
+        return $result;
+    }
 
 	public function listItem($arrParams = null, $options = null) {
 		$paginator = $arrParams['paginator'];
@@ -1456,9 +1492,9 @@ class MTasks extends MNested2{
 		$sql = 'SELECT t.id, t.project_id
 				FROM ' . $this->db->dbprefix($this->_table).' AS t
 				WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')'
-			 .' ORDER BY t.prioty ASC, t.id DESC';
-		
-		$query = $this->db->query($sql);
+             .' ORDER BY t.prioty ASC, t.id DESC';
+
+        $query = $this->db->query($sql);
 		$resultTmp = $query->result_array();
 		$project_ids = array();
 		if(!empty($resultTmp)) {
@@ -1867,7 +1903,6 @@ class MTasks extends MNested2{
             }
 
             $where[] = implode(' OR ', $where_clause);
-
         }
 
         if(!empty($arrParams['pheduyet']) && $arrParams['pheduyet'] != '-1,0,1,2') {
@@ -1912,19 +1947,5 @@ class MTasks extends MNested2{
 		$CI =& get_instance();
 		$CI->load->model($model_name);
 		return $CI->$model_name;
-	}
-	
-	public function test() {
-		$sql = 'DELETE FROM phppos_tasks WHERE id != 1';
-		$this->db->query($sql);
-		
-		echo '<br />'.$sql = 'DELETE FROM phppos_task_user_relations WHERE task_id != 1';
-		$this->db->query($sql);
-		
-		echo '<br />'.$sql = 'DELETE FROM phppos_task_progress';
-		$this->db->query($sql);
-		
-		echo '<br />'.$sql = 'UPDATE phppos_tasks SET progress = 0';
-		$this->db->query($sql);
 	}
 }

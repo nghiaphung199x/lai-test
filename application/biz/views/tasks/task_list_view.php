@@ -34,6 +34,8 @@
                         <input type="hidden" id="s_customer" value="" />
                         <input type="hidden" id="s_implement" value="" />
                         <input type="hidden" id="s_xem" value="" />
+                        <input type="hidden" id="s_status" value="-1,0,1,2">
+                        <input type="hidden" id="s_progress" value="-1,0,1,2">
                         <div id="s_trangthai_html" style="display: none;"></div>
                         <div id="s_customer_html" style="display: none;"></div>
                         <div id="s_implement_html" style="display: none;"></div>
@@ -83,21 +85,23 @@
                 </div>
                 <div class="panel-body">
                     <div class="table-responsive">
-                        <table class="table tablesorter table-reports table-bordered table-tree" id="project_grid_table">
+                        <table class="table tablesorter table-reports table-bordered table-tree" id="project_grid_table" data-table="task_list">
                             <thead>
                             <tr align="center" style="font-weight:bold">
                                 <th align="center" data-field="name">Tên Công việc</th>
-                                <th align="center" style="width: 8%;" data-field="prioty">Ưu tiên</th>
+                                <th align="center" style="width: 10%;" data-field="project_name">Dự án</th>
+                                <th align="center" style="width: 15%;" data-field="prioty">Ưu tiên</th>
                                 <th align="center" style="width: 100px;" data-field="date_start">Bắt đầu</th>
                                 <th align="center" style="width: 100px;" data-field="date_end">Kết thúc</th>
                                 <th align="center" style="width: 256px;" data-field="progress">Tiến độ</th>
                                 <th align="center" style="width: 10%;" data-field="trangthai">Tình trạng</th>
-                                <th align="center" style="width: 20%;">Phụ trách</th>
+                                <th align="center" style="width: 15%;">Phụ trách</th>
                             </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td><a href="javascript:;" onclick="edit_task_grid(60);">công việc template</a></td>
+                                    <td align="center">Dự án A</td>
                                     <td align="center">Trung bình</td>
                                     <td align="center">01-10-2016</td>
                                     <td align="center">01-10-2016</td>
@@ -267,7 +271,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group" id="task_section">
+                        <div class="form-group">
                             <label for="" class="col-sm-3 col-md-3 col-lg-2 col-sm-3 col-md-3 col-lg-2 control-label">Công việc :</label>
                             <div class="col-sm-9 col-md-9 col-lg-10">
                                 <ul class="list-inline">
@@ -286,7 +290,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="form-group" id="progress_section">
+                        <div class="form-group">
                             <label for="" class="col-sm-3 col-md-3 col-lg-2 col-sm-3 col-md-3 col-lg-2 control-label">Tiến độ :</label>
                             <div class="col-sm-9 col-md-9 col-lg-10">
                                 <ul class="list-inline">
