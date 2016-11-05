@@ -54,6 +54,7 @@ class BizTasks extends Secure_area
 
         // load helper
         $this->load->helper('filterext');
+        $this->load->helper('sort_items');
 	}
 	
 	public function index() {
@@ -1541,6 +1542,38 @@ class BizTasks extends Secure_area
         }
     }
 
+    public function tasks_statistic() {
+        $post  = $this->input->post();
+        $this->load->model('MTasks');
+        if(!empty($post)) {
+            $all              = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-all'));
+            $implement        = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-all-implement'));
+            $xem              = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-all-cc'));
+            $cancel           = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-all-trangthai', 'type'=>'cancel'));
+            $not_done         = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-all-trangthai', 'type'=>'not-done'));
+            $unfulfilled      = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-all-trangthai', 'type'=>'unfulfilled'));
+            $processing       = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-all-trangthai', 'type'=>'processing'));
+            $slow_proccessing = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-all-trangthai', 'type'=>'slow_proccessing'));
+            $finish           = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-all-trangthai', 'type'=>'finish'));
+            $slow_finish      = $this->MTasks->statistic($this->_data['arrParam'], array('task'=>'task-by-all-trangthai', 'type'=>'slow-finish'));
+
+            $data = array(
+                'all'              => $all,
+                'implement'        => $implement,
+                'xem'              => $xem,
+                'cancel'           => $cancel,
+                'not_done'         => $not_done,
+                'unfulfilled'      => $unfulfilled,
+                'processing'       => $processing,
+                'slow_proccessing' => $slow_proccessing,
+                'finish'           => $finish,
+                'slow_finish'      => $slow_finish,
+            );
+
+            echo json_encode($data);
+        }
+    }
+
 	public function taskByProjectList() {
 		$this->load->model('MTasks');
 		$post  = $this->input->post();
@@ -1563,20 +1596,10 @@ class BizTasks extends Secure_area
 	}
 
 	public function grid() {
-        $this->load->library('MY_System_Info');
-        $info 			 = new MY_System_Info();
-        $user_info 		 = $info->getInfo();
-        $this->_data['user_info'] = $user_info;
-
 		$this->load->view('tasks/grid_view', $this->_data);
 	}
 
     public function task_list()  {
-        $this->load->library('MY_System_Info');
-        $info 			 = new MY_System_Info();
-        $user_info 		 = $info->getInfo();
-        $this->_data['user_info'] = $user_info;
-
         $this->load->view('tasks/task_list_view', $this->_data);
     }
 
@@ -2148,6 +2171,30 @@ class BizTasks extends Secure_area
     }
 
 	public function test() {
+        $array = array();
+        $tmp = array(
+            'id' => 1, 'name' => 'Sản phẩm 1', 'lft' => 1
+        );
+        $array[] = $tmp;
+
+        $tmp = array(
+            'id' => 2, 'name' => 'Sản phẩm 2', 'lft' => 0
+        );
+        $array[] = $tmp;
+
+        $tmp = array(
+            'id' => 3, 'name' => 'Sản phẩm 3', 'lft' => 3
+        );
+        $array[] = $tmp;
+
+        $new_array = array();
+        foreach ($array as $key => $row)
+        {
+            $new_array[$key] = $row['lft'];
+        }
+        array_multisort($new_array, SORT_ASC, $array);
+
+
         //$this->load->view('tasks/test_view', $this->_data);
 	}
 	

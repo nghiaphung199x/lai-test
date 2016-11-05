@@ -5,7 +5,11 @@
 
 <script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/task-core.js" ></script>
 <script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/script.js" ></script>
-
+<?php
+    $this->load->library('MY_System_Info');
+    $info 			 = new MY_System_Info();
+    $user_info 		 = $info->getInfo();
+?>
 <div class="manage_buttons">
     <div class="cl">
         <div class="pull-left">
@@ -76,7 +80,8 @@
 				<div class="gantt_title">
 					<h3 class="panel-title">
 						<span class="tieude"><a href="<?php echo base_url() . 'tasks'; ?>">Lược đồ</a></span>
-						<span class="tieude active">Danh sách</span>
+						<span class="tieude active">Dự án</span>
+                        <span class="tieude"><a href="<?php echo base_url() . 'tasks/task_list'; ?>">Công việc</a></span>
 						<i class="fa fa-spinner fa-spin" id="loading_1"></i>	
 					</h3>
 				</div>

@@ -438,7 +438,7 @@ if($pheduyet == 0) {
 <?php endif; ?>
 
 <div class="manage-table manage-table-file tabs" id="file_manager">
-    <div class="manage-row-options 2">
+    <div class="manage-row-options 2 hidden">
         <div class="control">
             <a href="javascript:;" class="btn btn-red btn-lg delete_inactive" title="Sửa" onclick="edit_file();"><span class="">Sửa</span></a>
             <a href="javascript:;" class="btn btn-delete" onclick="delete_file();">Xóa lựa chọn</a>

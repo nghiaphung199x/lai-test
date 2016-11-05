@@ -170,7 +170,10 @@ $( document ).ready(function() {
         }
 
         if(table_id == 'project_grid_table') {
-            load_list('project-grid', 1);
+            if(data_table == 'task_list')
+                load_list(data_table, 1);
+            else
+                load_list('project-grid', 1);
         }else {
             var tr_parent = table.closest('[data-parent]');
             var project_id = tr_parent.attr('data-parent');
@@ -222,24 +225,30 @@ $( document ).ready(function() {
 
     // statistic click
     $('body').on('click','.statistic',function(){
-        var task_name       = $(this).attr('data-name');
-        var project_id      = $(this).attr('data-id');
-        current_project_id = project_id;
+        if(data_table == 'task_list') {
+            var data = get_data_hidden();
+            var url  = BASE_URL + 'tasks/tasks_statistic';
+        }else {
+            var task_name       = $(this).attr('data-name');
+            var project_id      = $(this).attr('data-id');
+            var data            = new Object();
+            var tr_element      = $('#project_grid_table tr[data-parent="'+project_id+'"]');
+            var url             = BASE_URL + 'tasks/tasks_child_statistic';
 
-        $('#current_project_id').val(project_id);
-        $('#my_report_task span').html(task_name);
+            current_project_id = project_id;
+            $('#current_project_id').val(project_id);
+            $('#my_report_task span').html(task_name);
 
-        var data = new Object();
-        data.project_id = project_id;
+            data                  = get_data_child_task(data, project_id, tr_element);
+            data.project_id       = project_id;
+        }
 
-        // get filter input
-        var tr_element        = $('#project_grid_table tr[data-parent="'+project_id+'"]');
-        data                  = get_data_child_task(data, project_id, tr_element);
         $.ajax({
             type: "POST",
-            url: BASE_URL + 'tasks/tasks_child_statistic',
+            url: url,
             data: data,
             success: function(string){
+
                 var result = $.parseJSON(string);
                 $('#task_report li.all span').text(result.all);
                 $('#task_report li.implement span').text(result.implement);
@@ -255,7 +264,6 @@ $( document ).ready(function() {
                 $("#task_report").modal();
             }
         });
-
     });
 
     $('body').on('change','.search_date_type',function(){
@@ -388,6 +396,7 @@ $( document ).ready(function() {
         clearTimeout(typingTimer);
         var tr_element = $(this).closest('[data-parent]');
         var project_id = tr_element.attr('data-parent');
+
         typingTimer = setTimeout('startSearch('+project_id+')', 500);
     });
 
@@ -506,7 +515,11 @@ $( document ).ready(function() {
                 s_date_start_radio.val('simple');
                 s_date_end_radio.val('simple');
         }
-        load_list('project-grid', 1);
+
+        if(data_table == 'task_list')
+            load_list(data_table, 1);
+        else
+            load_list('project-grid', 1);
     });
 
 });
@@ -661,8 +674,11 @@ function set_project_hidden_input() {
 
 
 function project_search() {
-
-    load_list('project-grid', 1);
+    var dt = $('#project_grid_table').attr('data-table')
+    if(dt == 'task_list')
+        load_list(dt, 1);
+    else
+        load_list('project-grid', 1);
 }
 
 function startSearch (project_id) {

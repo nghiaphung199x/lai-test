@@ -5,7 +5,12 @@
 
     <script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/task-core.js" ></script>
     <script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/script.js" ></script>
+<?php
+    $this->load->library('MY_System_Info');
+    $info 			 = new MY_System_Info();
+    $user_info 		 = $info->getInfo();
 
+?>
     <div class="manage_buttons">
         <div class="cl">
             <div class="pull-left">
@@ -20,7 +25,7 @@
                             <option value="year">Trong năm</option>
                         </select>
                         <button name="btn_advance_project" id="btn_advance_project" class="btn btn-primary btn-lg">Nâng cao</button>
-
+                        <button name="statistic" class="btn btn-primary btn-lg statistic" id="btn_statistic">Thống kê</button>
                         <input type="hidden" id="s_keywords" />
                         <input type="hidden" id="s_date_start" value="all" />
                         <input type="hidden" id="s_date_start_radio" value="simple" />
@@ -78,7 +83,8 @@
                     <div class="gantt_title">
                         <h3 class="panel-title">
                             <span class="tieude"><a href="<?php echo base_url() . 'tasks'; ?>">Lược đồ</a></span>
-                            <span class="tieude active">Danh sách</span>
+                            <span class="tieude"><a href="<?php echo base_url() . 'tasks/grid'; ?>">Dự án</a></span>
+                            <span class="tieude active">Công việc</span>
                             <i class="fa fa-spinner fa-spin" id="loading_1"></i>
                         </h3>
                     </div>
@@ -89,26 +95,16 @@
                             <thead>
                             <tr align="center" style="font-weight:bold">
                                 <th align="center" data-field="name">Tên Công việc</th>
-                                <th align="center" style="width: 10%;" data-field="project_name">Dự án</th>
+                                <th align="center" style="width: 10%;" data-field="project">Dự án</th>
                                 <th align="center" style="width: 15%;" data-field="prioty">Ưu tiên</th>
                                 <th align="center" style="width: 100px;" data-field="date_start">Bắt đầu</th>
                                 <th align="center" style="width: 100px;" data-field="date_end">Kết thúc</th>
-                                <th align="center" style="width: 256px;" data-field="progress">Tiến độ</th>
+                                <th align="center" style="width: 270px;" data-field="progress">Tiến độ</th>
                                 <th align="center" style="width: 10%;" data-field="trangthai">Tình trạng</th>
                                 <th align="center" style="width: 15%;">Phụ trách</th>
                             </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><a href="javascript:;" onclick="edit_task_grid(60);">công việc template</a></td>
-                                    <td align="center">Dự án A</td>
-                                    <td align="center">Trung bình</td>
-                                    <td align="center">01-10-2016</td>
-                                    <td align="center">01-10-2016</td>
-                                    <td align="center"><div class="clearfix"><div class="progress-bar" style="float: left;"><div class="bar positive" style="width: 0%; background: #aa142f"></div><div class="bar negative" style="width: 100%; background: #c90d2f"></div><span>0%</span></div><div class="progress-text">Quá 8 ngày</div></div></td>
-                                    <td align="center">Chưa thực hiện</td>
-                                    <td align="center"><strong>admin</strong></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -323,7 +319,7 @@
     <div id="task_report" class="modal fade bs-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
         <div class="modal-dialog modal-md" role="document">
             <div class="modal-content">
-                <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> <h4 class="modal-title" id="my_report_task">Thống kê <span>[Dự án]</span></h4> </div>
+                <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> <h4 class="modal-title" id="my_report_task">Thống kê công việc</h4> </div>
                 <div class="modal-body">
                     <ul>
                         <li class="all">Công việc: <span>0</span></li>
@@ -364,7 +360,7 @@
         var current_project_id = 0;
 
         $( document ).ready(function() {
-            //load_list('project-grid', 1);
+            load_list('task_list', 1);
         });
     </script>
 

@@ -19,6 +19,7 @@ class MTasks extends MNested2{
 		$this->_task_permission  = $user_info['task_permission'];
 		
 		$this->_fields 	 =  array(
+                            'project' 	 	=> 't.project_id',
 							'name' 	 		=> 't.name',
 							'prioty' 	 	=> 't.prioty',
                             'date_start' 	=> 't.date_start',
@@ -82,6 +83,9 @@ class MTasks extends MNested2{
     }
 
 	public function statistic($arrParams = null, $options = null) {
+        $id_admin            =  $this->_id_admin;
+        $tasks               =  $this->db->dbprefix($this->_table);
+        $task_user_relations =  $this->db->dbprefix(task_user_relations);
 		if($options['task'] == 'task-by-project') {
 			$task_ids = $this->getTasksIdsByProject($arrParams['project']);
 
@@ -227,10 +231,173 @@ class MTasks extends MNested2{
 
             $result = $query->row_array();
             $result = $result['totalItem'];
+        }elseif($options['task'] == 'task-by-all') {
+            // clause
+            $where = $this->get_where_from_filter($arrParams);
+            if(!empty($where)) {
+                $where = implode(' AND ', $where );
+                $where = 'AND ' . $where;
+            }else
+                $where = '';
+
+            $sql = "SELECT COUNT(DISTINCT t.id) AS totalItem
+                    FROM  $tasks AS t
+                    INNER JOIN
+                    (
+                        SELECT $tasks.id, $tasks.lft, $tasks.rgt, $tasks.project_id, $tasks.level
+                        FROM $tasks
+                        INNER JOIN $task_user_relations
+                        ON $tasks.id = $task_user_relations.task_id AND $task_user_relations.user_id = $id_admin
+                    ) AS tmp
+                    ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt
+                    WHERE t.parent != 0
+                    $where";
+
+            $query  = $this->db->query($sql);
+            $result = $query->row_array();
+            $result = $result['totalItem'];
+        }elseif($options['task'] == 'task-by-all-implement') {
+            if(!empty($arrParams['implement'])) {
+                $implement_arr = explode(',', $arrParams['implement']);
+                if(in_array($this->_id_admin, $implement_arr))
+                    $arrParams['implement'] = $this->_id_admin;
+                else
+                    $arrParams['implement'] = '0';
+            }else
+                $arrParams['implement'] = $this->_id_admin;
+
+            // clause
+            $where = $this->get_where_from_filter($arrParams);
+            if(!empty($where)) {
+                $where = implode(' AND ', $where );
+                $where = 'AND ' . $where;
+            }else
+                $where = '';
+
+            $sql = "SELECT COUNT(DISTINCT t.id) AS totalItem
+                    FROM  $tasks AS t
+                    INNER JOIN
+                    (
+                        SELECT $tasks.id, $tasks.lft, $tasks.rgt, $tasks.project_id, $tasks.level
+                        FROM $tasks
+                        INNER JOIN $task_user_relations
+                        ON $tasks.id = $task_user_relations.task_id AND $task_user_relations.user_id = $id_admin
+                    ) AS tmp
+                    ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt
+                    WHERE t.parent != 0
+                    $where";
+
+            $query  = $this->db->query($sql);
+            $result = $query->row_array();
+            $result = $result['totalItem'];
+        }elseif($options['task'] == 'task-by-all-cc') {
+            if(!empty($arrParams['xem'])) {
+                $xem_arr = explode(',', $arrParams['xem']);
+                if(in_array($this->_id_admin, $xem_arr))
+                    $arrParams['xem'] = $this->_id_admin;
+                else
+                    $arrParams['xem'] = '0';
+            }else
+                $arrParams['implement'] = $this->_id_admin;
+
+            // clause
+            $where = $this->get_where_from_filter($arrParams);
+            if(!empty($where)) {
+                $where = implode(' AND ', $where );
+                $where = 'AND ' . $where;
+            }else
+                $where = '';
+
+            $sql = "SELECT COUNT(DISTINCT t.id) AS totalItem
+                    FROM  $tasks AS t
+                    INNER JOIN
+                    (
+                        SELECT $tasks.id, $tasks.lft, $tasks.rgt, $tasks.project_id, $tasks.level
+                        FROM $tasks
+                        INNER JOIN $task_user_relations
+                        ON $tasks.id = $task_user_relations.task_id AND $task_user_relations.user_id = $id_admin
+                    ) AS tmp
+                    ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt
+                    WHERE t.parent != 0
+                    $where";
+
+            $query  = $this->db->query($sql);
+            $result = $query->row_array();
+            $result = $result['totalItem'];
+        }elseif($options['task'] == 'task-by-all-trangthai') {
+            if($options['type'] == 'cancel') // đóng, dừng
+                $trangthai = 3;
+            elseif($options['type'] == 'not-done') // không thực hiện
+                $trangthai = 4;
+            elseif($options['type'] == 'unfulfilled') // chưa thực hiện
+                $trangthai = 0;
+            elseif($options['type'] == 'processing') // đang tiến hành
+                $trangthai = 1;
+            elseif($options['type'] == 'slow_proccessing') // chậm tiến độ
+                $trangthai = 5;
+            elseif($options['type'] == 'finish') // hoàn thành
+                $trangthai = 2;
+            elseif($options['type'] == 'slow-finish') // hoàn thành nhưng chậm tiến độ
+                $trangthai = 6;
+
+            if(!empty($arrParams['trangthai'])) {
+                $trangthai_arr = explode(',', $arrParams['trangthai']);
+                if(in_array($trangthai, $trangthai_arr)) {
+                    $arrParams['trangthai'] = $trangthai;
+                }else
+                    $arrParams['trangthai'] = '-1';
+
+            }else
+                $arrParams['trangthai'] = $trangthai;
+ 
+            // clause
+            $where = $this->get_where_from_filter($arrParams);
+            if(!empty($where)) {
+                $where = implode(' AND ', $where );
+                $where = 'AND ' . $where;
+            }else
+                $where = '';
+
+            $sql = "SELECT COUNT(DISTINCT t.id) AS totalItem
+                    FROM  $tasks AS t
+                    INNER JOIN
+                    (
+                        SELECT $tasks.id, $tasks.lft, $tasks.rgt, $tasks.project_id, $tasks.level
+                        FROM $tasks
+                        INNER JOIN $task_user_relations
+                        ON $tasks.id = $task_user_relations.task_id AND $task_user_relations.user_id = $id_admin
+                    ) AS tmp
+                    ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt
+                    WHERE t.parent != 0
+                    $where";
+
+            $query  = $this->db->query($sql);
+            $result = $query->row_array();
+            $result = $result['totalItem'];
         }
 
 		return $result;
 	}
+
+    public function itemSelectBox($arrParams = null, $options = null) {
+        if($options == null) {
+            $this->db->select("t.id, t.name, t.level")
+                ->from('tasks as t')
+                ->where('t.lft >= ' . $arrParams['lft'] . ' AND rgt <= ' . $arrParams['rgt'])
+                ->where('t.project_id', $arrParams['project_id']);
+
+            $query = $this->db->get();
+            $result = $query->result_array();
+            $this->db->flush_cache();
+            if(!empty($result)) {
+                foreach($result as &$val) {
+                    $val['name'] = str_repeat('-', $val['level']) . ' ' . $val['name'];
+                }
+            }
+        }
+
+        return $result;
+    }
 
 	public function countItem($arrParams = null, $options = null) {
 		if($options == null || $options['task'] == 'grid-project') {
@@ -504,58 +671,229 @@ class MTasks extends MNested2{
 
 		return $lastId;
 	}
-	
-	public function itemSelectBox($arrParams = null, $options = null) {
-		if($options == null) {
-			$this->db->select("t.id, t.name, t.level")
-					->from('tasks as t')
-					->where('t.lft >= ' . $arrParams['lft'] . ' AND rgt <= ' . $arrParams['rgt'])
-					->where('t.project_id', $arrParams['project_id']);
 
-			$query = $this->db->get();
-			$result = $query->result_array();
-			$this->db->flush_cache();
-			if(!empty($result)) {
-				foreach($result as &$val) {
-					$val['name'] = str_repeat('-', $val['level']) . ' ' . $val['name'];
-				}
-			}
-		}
-		
-		return $result;
-	}
-
-    public function list_item($arrParams = null, $options = null) {
+    public function count_item($arrParams = null, $options = null) {
         if($options == null) {
-            $phppos_tasks = $this->db->dbprefix($this->_table);
-            $phppos_task_user_relations = $this->db->dbprefix(task_user_relations);
-            $id_admin = $this->_id_admin;
+            $id_admin            =  $this->_id_admin;
+            $tasks               =  $this->db->dbprefix($this->_table);
+            $task_user_relations =  $this->db->dbprefix(task_user_relations);
 
-            $sql = "SELECT DISTINCT t.id, t.name, t.project_id, t.date_start, t.date_end, t.date_finish
-                    FROM  $phppos_tasks AS t
+            // clause
+            $where = $this->get_where_from_filter($arrParams);
+            if(!empty($where)) {
+                $where = implode(' AND ', $where );
+                $where = 'AND ' . $where;
+            }else
+                $where = '';
+
+            $sql = "SELECT COUNT(DISTINCT t.id) AS totalItem
+                    FROM  $tasks AS t
                     INNER JOIN
                     (
-                        SELECT $phppos_tasks.id, $phppos_tasks.lft, $phppos_tasks.rgt, $phppos_tasks.project_id, $phppos_tasks.level
-                        FROM $phppos_tasks
-                        INNER JOIN $phppos_task_user_relations
-                        ON phppos_tasks.id = phppos_task_user_relations.task_id AND phppos_task_user_relations.user_id = 1
-                    )";
-            /*
-	select DISTINCT t.id, t.name, t.project_id, t.date_start, t.date_end, t.date_finish
-	FROM phppos_tasks as t
-	inner join
-	(
-	select phppos_tasks.id, phppos_tasks.lft, phppos_tasks.rgt, phppos_tasks.project_id, phppos_tasks.level
-	from phppos_tasks
-	inner join phppos_task_user_relations
-	on phppos_tasks.id = phppos_task_user_relations.task_id AND phppos_task_user_relations.user_id = 1
-	) as tmp
-	on t.project_id = tmp.project_id and t.lft >= tmp.lft and t.rgt <= tmp.rgt
-	where t.parent != 0
+                        SELECT $tasks.id, $tasks.lft, $tasks.rgt, $tasks.project_id, $tasks.level
+                        FROM $tasks
+                        INNER JOIN $task_user_relations
+                        ON $tasks.id = $task_user_relations.task_id AND $task_user_relations.user_id = $id_admin
+                    ) AS tmp
+                    ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt
+                    WHERE t.parent != 0
+                    $where";
 
-	order by t.date_start asc
-	limit 0, 2
-             */
+            $query  = $this->db->query($sql);
+            $result = $query->row_array();
+            $result = $result['totalItem'];
+        }
+        return $result;
+    }
+
+    public function list_item($arrParams = null, $options = null) {
+    	$paginator = $arrParams['paginator'];
+        if($options == null) {
+            $flagLevel           = false;
+            $id_admin            =  $this->_id_admin;
+            $tasks               =  $this->db->dbprefix($this->_table);
+            $task_user_relations =  $this->db->dbprefix(task_user_relations);
+
+           	// clause
+            $where = $this->get_where_from_filter($arrParams);
+            if(!empty($where)) {
+            	$where = implode(' AND ', $where );
+            	$where = 'AND ' . $where;
+            }else
+                $where = '';
+
+            // order by
+			if(!empty($arrParams['col']) && !empty($arrParams['order'])){
+				$col   = $this->_fields[$arrParams['col']];
+				$order = $arrParams['order'];
+
+				$order_by = $col . ' ' . $order;
+				if($col != 't.date_start')
+					$order_by = $order_by . ',t.date_start ASC';
+
+                if($col == 't.lft' && $order == 'ASC')
+                    $flagLevel = true;
+			}else {
+                $flagLevel = true;
+				$order_by = 't.lft ASC, t.date_start ASC';
+			} 
+
+			$page = (empty($arrParams['start'])) ? 1 : $arrParams['start'];
+
+			$limit = $paginator['per_page'];
+			$offset = ($page - 1)*$paginator['per_page'];
+
+            $sql = "SELECT DISTINCT t.id, t.name, t.project_id, t.parent, t.progress,t.trangthai, t.prioty, DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date, DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date, DATE_FORMAT(date_finish, '%d-%m-%Y') as finish_date, t.lft, t.rgt, t.project_id
+                    FROM  $tasks AS t
+                    INNER JOIN
+                    (
+                        SELECT $tasks.id, $tasks.lft, $tasks.rgt, $tasks.project_id, $tasks.level
+                        FROM $tasks
+                        INNER JOIN $task_user_relations
+                        ON $tasks.id = $task_user_relations.task_id AND $task_user_relations.user_id = $id_admin
+                    ) AS tmp
+                    ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt
+                    WHERE t.parent != 0
+                    $where
+                    ORDER BY $order_by
+                    LIMIT $offset, $limit";
+
+             $query = $this->db->query($sql);
+             $result = $query->result_array();
+
+             if(!empty($result)) {
+                 $task_implements = $project_ids = array();
+                 foreach($result as $val)
+                     $task_ids[] = $val['id'];
+
+                 $resultTmp              = $this->getUsersRelation($task_ids);
+                 $task_implements_origin = $this->task_implements($resultTmp);
+                 $sort_lft_items = $this->sort_lft_items($result);
+
+                 foreach($sort_lft_items as $val) {
+                     $task_id = $val['id'];
+                     $origin = (isset($task_implements_origin[$task_id])) ? $task_implements_origin[$task_id] : array();
+                     if(!in_array($val['project_id'], $project_ids))
+                         $project_ids[] = $val['project_id'];
+
+                     $parent  = $val['parent'];
+
+                     if(!isset($task_implements[$parent])) {
+                         $parent_item = $this->getItem(array('id'=>$parent), array('task'=>'information'));
+                         $task_ids    = $this->getIds(array('lft'=>$parent_item['lft'], 'rgt'=>$parent_item['rgt'], 'project_id'=>$parent_item['project_id']), array('task'=>'up-branch'));
+                         $tmp = $this->getUsersRelation($task_ids, 'implement');
+                         $task_implements[$task_id] = array_merge($tmp, $origin);
+                     }else{
+                         $task_implements[$task_id] = array_merge($task_implements[$parent], $origin);
+                     }
+
+                     $task_implements[$task_id] = array_unique($task_implements[$task_id]);
+                 }
+
+                 // get project information
+                 $project_informations = $this->getItems(array('cid'=>$project_ids), array('task'=>'public-info'));
+
+                 $user_ids = array();
+                 if(!empty($task_implements)) {
+                 	foreach($task_implements as $val)
+                 		$user_ids = array_merge($user_ids, $val); 
+                 }
+
+				// get users list by ids
+				if(!empty($user_ids)) {
+					$userTable = $this->model_load_model('MTaskUser');
+					$usersInfo = $userTable->getItems(array('user_ids'=>$user_ids));
+				}
+
+				foreach($result as &$val) {
+					$task_id = $val['id'];
+                    $val['project_name']  = $project_informations[$val['project_id']]['name'];
+					$val['implement_ids'] = $task_implements[$val['id']];
+					$val['implement'] 	   = '';
+					if(!empty($val['implement_ids'])){
+						foreach($val['implement_ids'] as $user_id){
+							if(in_array($user_id, $task_implements_origin[$task_id]))
+								$val['implement'][] = '<strong>'.$usersInfo[$user_id]['username'].'</strong>';
+							else
+								$val['implement'][] = $usersInfo[$user_id]['username'];
+						}
+
+						$val['implement'] = implode(', ', $val['implement']);
+					}
+
+					if($val['trangthai'] == 0 || $val['trangthai'] == 1){	// chưa thực hiên + đang thực hiện
+						$now        = date('Y-m-d', strtotime(date("d-m-Y")));
+						$date_end   = date('Y-m-d', strtotime($val['end_date']));
+
+						$datediff 	= strtotime($now) - strtotime($date_end);
+						$duration 	= floor($datediff/(60*60*24));
+
+						if($duration <= 0){
+							$val['note'] 		= 'Còn '.abs($duration).' ngày';
+							$val['p_color'] 	= '#4388c2';
+							$val['color'] 		= '#489ee7';
+							
+						}else{
+							$val['note']    =  'Quá '.abs($duration).' ngày';
+							$val['p_color'] = '#aa142f';
+							$val['color']   = '#c90d2f';
+						}
+								
+					}elseif($val['trangthai'] == 2) {// hoàn thành
+						$end_date      = date('Y-m-d', strtotime($val['end_date']));
+						$finish_date   = date('Y-m-d', strtotime($val['finish_date']));
+
+						$datediff 	= strtotime($end_date) - strtotime($finish_date);
+						$duration 	= floor($datediff/(60*60*24));
+						
+						if($duration < 0){
+							$val['note']    = 'Trễ '.abs($duration).' ngày';
+							$val['p_color'] = '#4a6242';
+							$val['color']   = '#516e47';
+						
+						}elseif($duration > 0){
+							$val['p_color']   = '#a9fa01';
+							$val['color']     = '#91d20a';
+							$val['note']      = 'Sớm '.abs($duration).' ngày';
+						}else{
+							$val['p_color'] = '#18c33e';
+							$val['color']   = '#12e841';
+						}
+
+					}elseif($val['trangthai'] == 3) {
+						$val['p_color'] = '#e0d91c';
+						$val['color']   = '#bdb720';
+					}elseif($val['trangthai'] == 4) {
+						$val['p_color'] = '#303020';
+						$val['color']   = '#303023';
+					}
+
+					$val['prioty']    = $this->_prioty[$val['prioty']];
+					$val['trangthai'] = $this->_trangthai[$val['trangthai']];
+				}
+
+                 if($flagLevel == true) {
+                     $resultTmp = array();
+                     foreach($result as $value)
+                         $resultTmp[$value['id']] = $value;
+
+                     $result = $resultTmp;
+                     foreach($result as &$val) {
+                         if(!isset($result[$val['parent']]))
+                             $val['space'] = '';
+                         else
+                             $val['space'] = $val['space'] . '&nbsp&nbsp&nbsp';
+                     }
+
+                     $resultTmp = array();
+                     foreach($result as $value){
+                         $resultTmp[] = $value;
+                     }
+
+                     $result = $resultTmp;
+                 }
+             }
+
         }
 
         return $result;
@@ -891,7 +1229,7 @@ class MTasks extends MNested2{
 			$this->db->select("DATE_FORMAT(t.modified, '%d/%m/%Y %H:%i:%s') as modified", FALSE);
 			$this->db->select("t.*, e.username")
 				     ->from($this->_table . ' AS t')
-				     -> join('employees AS e', 'e.id = t.modified_by', 'left')
+				     ->join('employees AS e', 'e.id = t.modified_by', 'left')
 					 ->where('t.parent = 0');
 
 			$page = (empty($arrParams['start'])) ? 1 : $arrParams['start'];
@@ -1236,19 +1574,18 @@ class MTasks extends MNested2{
 	}
 	
 	public function getIds($arrParam = null, $options = null) {
-		if($options == null) {
+		if($options['task'] == null) {
 			$this->db->select("t.id")
 					->from($this->_table . ' as t')
 					->where('t.project_id', $arrParam['project_id']);
 			
-			if($options['type'] == 'un-root') 
+			if($options['type'] == 'un-root')
 				$this->db->where('t.lft > ' . $arrParam['lft'] . ' AND t.rgt < '.$arrParam['rgt'] );
 			else
 				$this->db->where('t.lft >= ' . $arrParam['lft'] . ' AND t.rgt <= '.$arrParam['rgt'] );
 			
 			$query = $this->db->get();	
 			$resultTmp =  $query->result_array();
-			
 
 		}elseif($options['task'] == 'up-branch') {
 			$this->db->select("t.id")
@@ -1281,6 +1618,11 @@ class MTasks extends MNested2{
 			$query = $this->db->get();
 			
 			$resultTmp =  $query->result_array();
+            $result = array();
+            if(!empty($resultTmp)) {
+                foreach($resultTmp as $val)
+                    $result[$val['id']][] = $val;
+            }
 			$this->db->flush_cache();
 			
 
@@ -1458,6 +1800,7 @@ class MTasks extends MNested2{
 		if(empty($result))
 			$percent = 0;
 		else {
+            $percent = 0;
 			foreach($result as $value)
 				$percent = $percent + 100 * $value['percent']; 
 		}
@@ -1468,23 +1811,44 @@ class MTasks extends MNested2{
 	}
 
 	public function deleteItem($id) {
-		    $this->removeNode($id);
+		$this->removeNode($id);
 	}
-	
-	protected function getUsersRelation($task_ids) {
-		// task relation
+
+	protected function getUsersRelation($task_ids, $options = null) {
 		$this->db->select("r.task_id, r.is_implement, r.is_create_task, r.is_pheduyet, r.is_progress, r.is_xem, r.user_id")
 				 ->from('task_user_relations as r')
 				 ->where('r.task_id IN ('.implode(', ', $task_ids).')');
+
+        if($options == 'implement')
+            $this->db->where('r.is_implement', 1);
 		
 		$query = $this->db->get();
 		
 		$resultTmp = $query->result_array();
+        if($options == 'implement') {
+            $result = array();
+            foreach($resultTmp as $val)
+                $result[] = $val['user_id'];
+        }else
+            $result = $resultTmp;
 		
 		$this->db->flush_cache();
 		
-		return $resultTmp;
+		return $result;
 	}
+
+    protected function task_implements($items) {
+        $result = array();
+        if(!empty($items)) {
+            foreach($items as $val) {
+                if($val['is_implement'] == 1) {
+                    $result[$val['task_id']][] = $val['user_id'];
+                }
+            }
+        }
+
+        return $result;
+    }
 	
 	// support function
 	protected function getProjectRelation() {
@@ -1793,22 +2157,37 @@ class MTasks extends MNested2{
 					unset($progress_taskArr[$key]);
 				}
 
-		
 				$tmp['created']				= 		@date("Y-m-d H:i:s");
 					
 				$array[] = $tmp;
 			}
 		}
-		
-		
+
 		return $array;
 	}
+
+    protected function sort_lft_items($items) {
+        $result = array();
+        foreach($items as $item)
+            $items_project[$item['project_id']][] = $item;
+
+        foreach($items_project as $item_s) {
+            $tmp    = sort_items($item_s, 'lft', 'ASC');
+            $result = array_merge($result, $tmp);
+        }
+
+        return $result;
+    }
 
 	protected function get_where_from_filter($arrParams) {
 		$where = array();
         if(!empty($arrParams['keywords'])) {
             $keywords = $arrParams['keywords'];
             $where[] = '(t.name LIKE \'%'.$keywords.'%\' OR t.detail LIKE \'%'.$keywords.'%\')';
+        }
+
+        if($arrParams['project_id'] > 0) {
+            $where[] = 't.project_id = ' . (int)$arrParams['project_id'];
         }
 
         if(!empty($arrParams['date_start_from'])) {
