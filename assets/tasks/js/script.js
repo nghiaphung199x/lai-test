@@ -226,13 +226,15 @@ $( document ).ready(function() {
     // statistic click
     $('body').on('click','.statistic',function(){
         if(data_table == 'task_list') {
-            var data = get_data_hidden();
-            var url  = BASE_URL + 'tasks/tasks_statistic';
+            var data        = get_data_hidden();
+            var url         = BASE_URL + 'tasks/tasks_statistic';
+            var s_trangthai = $('#s_trangthai');
         }else {
             var task_name       = $(this).attr('data-name');
             var project_id      = $(this).attr('data-id');
             var data            = new Object();
             var tr_element      = $('#project_grid_table tr[data-parent="'+project_id+'"]');
+            var s_trangthai     = tr_element.find('.s_trangthai');
             var url             = BASE_URL + 'tasks/tasks_child_statistic';
 
             current_project_id = project_id;
@@ -242,24 +244,44 @@ $( document ).ready(function() {
             data                  = get_data_child_task(data, project_id, tr_element);
             data.project_id       = project_id;
         }
-
+        console.log(data);
         $.ajax({
             type: "POST",
             url: url,
             data: data,
             success: function(string){
+               var status = ['unfulfilled', 'processing', 'finish', 'cancel', 'not-done', 'slow_proccessing', 'slow-finish'];
+               var trangthai_value = s_trangthai.val();
+
+               if(trangthai_value)
+                  var trangthai_arr = trangthai_value.split(",");
+               else
+                  var trangthai_arr = new Array();
+
+                if(trangthai_arr.length == 0)
+                    $('#task_report li a').removeClass('unclick');
+                else {
+                    $('#task_report li a').removeClass('unclick');
+                    for (i = 0; i < status.length; i++) {
+                        var str = i.toString();
+                        var status_element = status[i];
+                        if(trangthai_arr.indexOf(str) == -1){
+                            $('#task_report li.'+status_element+' a').addClass('unclick');
+                        }
+                    }
+                }
 
                 var result = $.parseJSON(string);
-                $('#task_report li.all span').text(result.all);
-                $('#task_report li.implement span').text(result.implement);
-                $('#task_report li.xem span').text(result.xem);
-                $('#task_report li.cancel span').text(result.cancel);
-                $('#task_report li.not-done span').text(result.not_done);
-                $('#task_report li.unfulfilled span').text(result.unfulfilled);
-                $('#task_report li.processing span').text(result.processing);
-                $('#task_report li.slow_proccessing span').text(result.slow_proccessing);
-                $('#task_report li.finish span').text(result.finish);
-                $('#task_report li.slow-finish span').text(result.slow_finish);
+                $('#task_report li.all a').text(result.all);
+                $('#task_report li.implement a').text(result.implement);
+                $('#task_report li.xem a').text(result.xem);
+                $('#task_report li.cancel a').text(result.cancel);
+                $('#task_report li.not-done a').text(result.not_done);
+                $('#task_report li.unfulfilled a').text(result.unfulfilled);
+                $('#task_report li.processing a').text(result.processing);
+                $('#task_report li.slow_proccessing a').text(result.slow_proccessing);
+                $('#task_report li.finish a').text(result.finish);
+                $('#task_report li.slow-finish a').text(result.slow_finish);
 
                 $("#task_report").modal();
             }
@@ -1218,7 +1240,6 @@ function add_template() {
 	    }
 	});
 }
-
 
 function add_project() {
 	url = BASE_URL + 'tasks/addcongviec';

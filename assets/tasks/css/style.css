@@ -1733,9 +1733,12 @@ body::-webkit-scrollbar-thumb {
     content: "\f058";
 }
 
-#task_report ul li span {
+#task_report ul li a {
     color: red;
-    cursor: pointer;
+}
+
+#task_report ul li a.unclick {
+    color: black;
 }
 
 #project_grid_table .search_keywords {

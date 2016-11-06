@@ -3,8 +3,8 @@
     $name   	= $item['name'];
     $color   	= $item['color'];
     $detail 	= nl2br($item['detail']);
-    $progress 	= $item['progress'] * 100;
-    $percent 	= $item['percent'] * 100;
+    $progress 	= $item['progress'];
+    $percent 	= $item['percent'];
     $parent 	= $item['parent'];
     $project_id = $item['project_id'];
     $date_start = $item['date_start'];

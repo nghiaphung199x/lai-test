@@ -4,7 +4,7 @@ $prioty_arr    = array('Rất cao', 'Cao', 'Trung bình', 'Thấp', 'Rất thấ
 
 $trangthai  = $item['trangthai'];
 $prioty 	= $item['prioty'];
-$progress   = $item['progress'] * 100;
+$progress   = $item['progress'];
 $note 		= nl2br($item['note']);
 ?>	
 		<div class="gantt_cal_ltitle" style="cursor: pointer;"><span class="gantt_mark">&nbsp;</span>

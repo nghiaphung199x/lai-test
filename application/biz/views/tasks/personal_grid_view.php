@@ -52,6 +52,7 @@
                 <div class="buttons-list">
                     <div class="pull-right-btn">
                         <a href="javascript:;" onclick="update_personal_task('new', 'personal');" class="btn btn-primary btn-lg" title="Thêm mới"><span class="">Thêm mới</span></a>
+                        <a href="<?php echo base_url() . 'tasks'; ?>" class="btn btn-primary btn-lg" title="Công việc dự án"><span class="">Công việc Dự án</span></a>
                         <div class="piluku-dropdown">
                             <button type="button" class="btn btn-more dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                 <i class="ion-android-more-horizontal"></i>
@@ -283,14 +284,14 @@
                 <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> <h4 class="modal-title" id="my_report_task">Thống kê Công việc cá nhân</h4> </div>
                 <div class="modal-body">
                     <ul>
-                        <li class="all">Công việc: <span>0</span></li>
-                        <li class="cancel">Đóng dừng: <span onclick="do_change_advance_search('cancel', 'personal');">0</span></li>
-                        <li class="not-done">Không thực hiện: <span onclick="do_change_advance_search('not-done', 'personal');">0</span></li>
-                        <li class="unfulfilled" onclick="do_change_advance_search('unfulfilled', 'personal');">Chưa thực hiện: <span>0</span></li>
-                        <li class="processing" onclick="do_change_advance_search('processing', 'personal');">Đang tiến hành: <span>0</span></li>
-                        <li class="slow_proccessing" onclick="do_change_advance_search('slow_proccessing', 'personal');">Chậm tiến độ: <span>0</span></li>
-                        <li class="finish" onclick="do_change_advance_search('finish', 'personal');">Đã hoàn thành: <span>0</span></li>
-                        <li class="slow-finish" onclick="do_change_advance_search('slow-finish', 'personal');">Đã hoàn thành nhưng chậm tiến độ: <span>0</span></li>
+                        <li class="all">Công việc: <a>0</a></li>
+                        <li class="cancel">Đóng dừng: <a onclick="do_change_advance_search('cancel');">0</a></li>
+                        <li class="not-done">Không thực hiện: <a onclick="do_change_advance_search('not-done');">0</a></li>
+                        <li class="unfulfilled">Chưa thực hiện: <a onclick="do_change_advance_search('unfulfilled');">0</a></li>
+                        <li class="processing">Đang tiến hành: <a onclick="do_change_advance_search('processing');">0</a></li>
+                        <li class="slow_proccessing">Chậm tiến độ: <a onclick="do_change_advance_search('slow_proccessing');">0</a></li>
+                        <li class="finish">Đã hoàn thành: <a onclick="do_change_advance_search('finish');">0</a></li>
+                        <li class="slow-finish">Đã hoàn thành nhưng chậm tiến độ: <a onclick="do_change_advance_search('slow-finish');">0</a></li>
 
                     </ul>
                 </div>

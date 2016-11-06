@@ -113,7 +113,7 @@ class MTaskProgress extends CI_Model{
 			$data['task_id'] 			= $arrParam['task_id'];
 			$data['trangthai'] 			= $arrParam['trangthai'];
 			$data['prioty'] 			= $arrParam['prioty'];
-			$data['progress'] 			= $arrParam['progress'] / 100;
+			$data['progress'] 			= $arrParam['progress'];
 			$data['pheduyet'] 			= $arrParam['pheduyet'];
 			$data['note']				= stripslashes($arrParam['note']);
 			$data['reply']				= '';		
@@ -148,7 +148,7 @@ class MTaskProgress extends CI_Model{
 		}elseif($options['task'] == 'progress-1') {
 			$task_ids = implode(', ', $arrParam['task_ids']);
 			$sqlString   = 'UPDATE ' .$this->db->dbprefix($this->_table)
-						  . ' SET progress = -0.01'
+						  . ' SET progress = -1'
 						  . ' WHERE task_ids IN ('.$task_ids.') AND pheduyet = -1';
 			
 			$this->db->query($sqlString);
@@ -190,7 +190,7 @@ class MTaskProgress extends CI_Model{
 				foreach($result as &$val) {
 					$val['trangthai'] = $trangthai_arr[$val['trangthai']];
 					
-					$val['progress'] = $val['progress'] * 100 . '%';
+					$val['progress'] = $val['progress'] . '%';
 					$val['prioty'] = $prioty_arr[$val['prioty']];
 
 					if(!empty($val['key']))
@@ -227,10 +227,10 @@ class MTaskProgress extends CI_Model{
 			if(!empty($result)) {
 				foreach($result as &$val) {
 					$val['trangthai'] = $trangthai_arr[$val['trangthai']];
-					if($val['progress'] == -0.01)
+					if($val['progress'] == -1)
 						$val['progress'] = '_';
 					else
-						$val['progress'] = $val['progress'] * 100 . '%';
+						$val['progress'] = $val['progress'] . '%';
 			
 					$val['prioty'] = $prioty_arr[$val['prioty']];
 					$val['date_pheduyet'] = ($val['date_pheduyet'] == '00/00/0000 00:00:00') ? '' : $val['date_pheduyet'];
@@ -289,10 +289,9 @@ class MTaskProgress extends CI_Model{
 						elseif($val['pheduyet'] == 1)
 							$val['pheduyet'] = '<i class="fa fa-check"></i>';
 						
-						if($val['progress'] == -0.01){
+						if($val['progress'] == -1){
 							$val['progress'] = '_';
 						}else{
-							$val['progress'] = $val['progress'] * 100;
 							$val['progress'] = $val['progress'] . '%';
 						}
 					}
@@ -316,8 +315,6 @@ class MTaskProgress extends CI_Model{
 				foreach($last_level as $task) {
 					$new_parent_progress = $new_parent_progress + $task['percent'] * $task['progress'];
 				}
-				
-				$new_parent_progress = $new_parent_progress * 100;
 
 				//update parent
 				$taskTable->saveItem(array('id'=>$parent_id, 'progress'=>$new_parent_progress), array('task'=>'update-progress'));
@@ -327,7 +324,7 @@ class MTaskProgress extends CI_Model{
 					foreach($level as &$l) {
 						foreach($l as &$task) {
 							if($parent_id == $task[id]) { 
-								$task['progress'] = $new_parent_progress / 100;
+								$task['progress'] = $new_parent_progress;
 								$parent_item = $task;
 								
 								if($parent_item['trangthai'] == 2 || $parent_item['progress'] == 100) {
@@ -425,12 +422,12 @@ class MTaskProgress extends CI_Model{
 			$progress_item = $this->getItem(array('id'=>$arrParam['id']), array('task'=>'public-info'));
 		elseif($options['task'] == 'progress'){
 			$progress_item 			   = $arrParam;
-			$progress_item['progress'] = $progress_item['progress'] / 100;
+			$progress_item['progress'] = $progress_item['progress'];
 		}
 		$taskTable = $this->model_load_model('MTasks');
 		$task = $taskTable->getItem(array('id'=>$progress_item['task_id']), array('task'=>'public-info'));
 		
-		if($progress_item['progress'] == -0.01) { // chỉ cập nhật trạng thái
+		if($progress_item['progress'] == -1) { // chỉ cập nhật trạng thái
 			$arrParam['id'] 	   = $progress_item['task_id'];
 			$arrParam['prioty']    = $progress_item['prioty'];
 			$arrParam['trangthai'] = $progress_item['trangthai'];
@@ -447,7 +444,7 @@ class MTaskProgress extends CI_Model{
 			
 			foreach($task_items as $task_id => $task) {
 				if($task_id == $progress_item['task_id']){
-					$task['progress']  = $progress_item['progress'] * 100;
+					$task['progress']  = $progress_item['progress'];
 					$task['prioty']    = $progress_item['prioty'];
 					$task['trangthai'] = $progress_item['trangthai'];
 			

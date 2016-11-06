@@ -2,7 +2,7 @@
 $id   		= $item['id'];
 $name   	= $item['name'];
 $detail 	= nl2br($item['detail']);
-$progress 	= $item['progress'] * 100;
+$progress 	= $item['progress'];
 $parent 	= $item['parent'];
 $date_start = $item['date_start'];
 $date_end 	= $item['date_end'];

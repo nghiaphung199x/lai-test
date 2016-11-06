@@ -380,7 +380,7 @@ function load_template_project_grid(items) {
 													+'<td align="center" style="width: 8%;" data-field="prioty">Ưu tiên</td>'
 													+'<td align="center" style="width: 100px;" data-field="date_start">Bắt đầu</td>'
 													+'<td align="center" style="width: 100px;" data-field="date_end">Kết thúc</td>'
-													+'<td align="center" style="width: 256px;" data-field="progress">Tiến độ</td>'
+													+'<td align="center" style="width: 270px;" data-field="progress">Tiến độ</td>'
 													+'<td align="center" style="width: 10%;" data-field="trangthai">Tình trạng</td>'
 													+'<td align="center" style="width: 20%;">Phụ trách</td>'
 												+'</tr>'
@@ -1303,6 +1303,9 @@ function get_data_child_task(data, project_id, tr_element) {
     data.pheduyet         = $.trim(s_status.val());
     data.progress         = $.trim(s_progress.val());
 
+    if(data.trangthai == '0')
+        data.trangthai = 'zero';
+
     return data;
 }
 
@@ -1923,99 +1926,103 @@ function get_two_dates(date) {
     return date;
 }
 
-function do_change_advance_search(type, options) {
-    var project_id     = $('#current_project_id').val();
-    var element_parent = $('#project_grid_table').find('tr[data-parent="'+project_id+'"]');
+function do_change_advance_search(obj, type, options) {
+    var class_name     = $(obj).attr('class');
+    if(class_name != 'unclick') {
+        var project_id     = $('#current_project_id').val();
+        var element_parent = $('#project_grid_table').find('tr[data-parent="'+project_id+'"]');
 
-    if (typeof options == 'undefined'){
-        var s_trangthai            = element_parent.find('.s_trangthai');
-        var s_implement            = element_parent.find('.s_implement');
-        var s_xem                  = element_parent.find('.s_xem');
-        var s_trangthai            = element_parent.find('.s_trangthai');
+        if (typeof options == 'undefined'){
+            var s_trangthai            = element_parent.find('.s_trangthai');
+            var s_implement            = element_parent.find('.s_implement');
+            var s_xem                  = element_parent.find('.s_xem');
+            var s_trangthai            = element_parent.find('.s_trangthai');
 
-        var s_trangthai_html       = element_parent.find('.s_trangthai_html');
-        var s_implement_html       = element_parent.find('.s_implement_html');
-        var s_xem_html             = element_parent.find('.s_xem_html');
-    }else {
-        var s_trangthai            = $('#s_trangthai');
-        var s_implement            = $('#s_implement');
-        var s_xem                  = $('#s_xem');
-        var s_trangthai            = $('#s_trangthai');
+            var s_trangthai_html       = element_parent.find('.s_trangthai_html');
+            var s_implement_html       = element_parent.find('.s_implement_html');
+            var s_xem_html             = element_parent.find('.s_xem_html');
+        }else {
+            var s_trangthai            = $('#s_trangthai');
+            var s_implement            = $('#s_implement');
+            var s_xem                  = $('#s_xem');
+            var s_trangthai            = $('#s_trangthai');
 
-        var s_trangthai_html       = $('#s_trangthai_html');
-        var s_implement_html       = $('#s_implement_html');
-        var s_xem_html             = $('#s_xem_html');
+            var s_trangthai_html       = $('#s_trangthai_html');
+            var s_implement_html       = $('#s_implement_html');
+            var s_xem_html             = $('#s_xem_html');
+        }
+
+        switch(type) {
+            case 'implement':
+                var html = get_item_autocomplete({class : 'implement', value: user_id, title: user_name});
+                s_implement.val(user_id);
+                s_implement_html.html(html);
+                break;
+
+            case 'xem':
+                var html = get_item_autocomplete({class : 'xem', value: user_id, title: user_name});
+                s_xem.val(user_id);
+                s_xem_html.html(html);
+
+                break;
+
+            case 'cancel':
+                var html = get_item_autocomplete({class : 'trangthai', value: 3, title: 'Đóng/ Dừng'});
+                s_trangthai.val(3);
+                s_trangthai_html.html(html);
+
+                break;
+
+            case 'not-done':
+                var html = get_item_autocomplete({class : 'trangthai', value: 4, title: 'Không thực hiện'});
+                s_trangthai.val(4);
+                s_trangthai_html.html(html);
+
+                break;
+
+            case 'unfulfilled':
+                var html = get_item_autocomplete({class : 'trangthai', value: 0, title: 'Chưa thực hiện'});
+                s_trangthai.val(0);
+                s_trangthai_html.html(html);
+
+                break;
+
+            case 'processing':
+                var html = get_item_autocomplete({class : 'trangthai', value: 1, title: 'Đang tiến hành'});
+                s_trangthai.val(1);
+                s_trangthai_html.html(html);
+
+                break;
+            case 'slow_proccessing':
+                var html = get_item_autocomplete({class : 'trangthai', value: 5, title: 'Chậm tiến độ'});
+                s_trangthai.val(5);
+                s_trangthai_html.html(html);
+
+                break;
+
+            case 'finish':
+                var html = get_item_autocomplete({class : 'trangthai', value: 2, title: 'Đã hoàn thành'});
+                s_trangthai.val(2);
+                s_trangthai_html.html(html);
+
+                break;
+
+            case 'slow-finish':
+                var html = get_item_autocomplete({class : 'trangthai', value: 6, title: 'Đã hoàn thành nhưng chậm tiến độ'});
+                s_trangthai.val(6);
+                s_trangthai_html.html(html);
+
+                break;
+        }
+
+        $('#task_report').modal('toggle');
+
+        if (typeof options == 'undefined'){
+            load_task_childs(project_id, 1);
+        }else {
+            var data_table = $('#project_grid_table').attr('data-table');
+            load_list(data_table, 1);
+        }
     }
 
-    switch(type) {
-        case 'implement':
-            var html = get_item_autocomplete({class : 'implement', value: user_id, title: user_name});
-            s_implement.val(user_id);
-            s_implement_html.html(html);
-            break;
-
-        case 'xem':
-            var html = get_item_autocomplete({class : 'xem', value: user_id, title: user_name});
-            s_xem.val(user_id);
-            s_xem_html.html(html);
-
-            break;
-
-        case 'cancel':
-            var html = get_item_autocomplete({class : 'trangthai', value: 3, title: 'Đóng/ Dừng'});
-            s_trangthai.val(3);
-            s_trangthai_html.html(html);
-
-            break;
-
-        case 'not-done':
-            var html = get_item_autocomplete({class : 'trangthai', value: 4, title: 'Không thực hiện'});
-            s_trangthai.val(4);
-            s_trangthai_html.html(html);
-
-            break;
-
-        case 'unfulfilled':
-            var html = get_item_autocomplete({class : 'trangthai', value: 0, title: 'Chưa thực hiện'});
-            s_trangthai.val(0);
-            s_trangthai_html.html(html);
-
-            break;
-
-        case 'processing':
-            var html = get_item_autocomplete({class : 'trangthai', value: 1, title: 'Đang tiến hành'});
-            s_trangthai.val(1);
-            s_trangthai_html.html(html);
-
-            break;
-        case 'slow_proccessing':
-            var html = get_item_autocomplete({class : 'trangthai', value: 5, title: 'Chậm tiến độ'});
-            s_trangthai.val(5);
-            s_trangthai_html.html(html);
-
-            break;
-
-        case 'finish':
-            var html = get_item_autocomplete({class : 'trangthai', value: 2, title: 'Đã hoàn thành'});
-            s_trangthai.val(2);
-            s_trangthai_html.html(html);
-
-            break;
-
-        case 'slow-finish':
-            var html = get_item_autocomplete({class : 'trangthai', value: 6, title: 'Đã hoàn thành nhưng chậm tiến độ'});
-            s_trangthai.val(6);
-            s_trangthai_html.html(html);
-
-            break;
-    }
-
-    $('#task_report').modal('toggle');
-
-    if (typeof options == 'undefined'){
-        load_task_childs(project_id, 1);
-    }else {
-        var data_table = $('#project_grid_table').attr('data-table');
-        load_list(data_table, 1);
-    }
 }

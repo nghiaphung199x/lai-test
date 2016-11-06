@@ -48,7 +48,7 @@
 				<div class="buttons-list">
 					<div class="pull-right-btn">
                         <button id="btn_tooltip" class="btn btn-primary btn-lg active">Tắt Tooltip</button>
-                        <a href="<?php echo base_url() . 'tasks/project' ?>" class="btn btn-primary btn-lg" title="Quản lý vai trò"><span class="">Dự án</span></a>
+                        <a href="<?php echo base_url() . 'tasks/personal' ?>" class="btn btn-primary btn-lg" title="Quản lý Công việc cá nhân"><span class="">Công việc cá nhân</span></a>
 					     <div class="piluku-dropdown">	
 							 <button type="button" class="btn btn-more dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 								<i class="ion-android-more-horizontal"></i>

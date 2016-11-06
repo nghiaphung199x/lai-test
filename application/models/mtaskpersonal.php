@@ -315,7 +315,7 @@ class MTaskPersonal extends CI_Model{
 
             $data['name']				    =       stripslashes($arrParam['name']);
             $data['detail']				    =       stripslashes($arrParam['detail']);
-            $data['progress']				= 		$arrParam['progress'] / 100;
+            $data['progress']				= 		$arrParam['progress'];
             $data['date_start']				= 		$arrParam['date_start'];
             $data['date_end']				= 		$arrParam['date_end'];
             $data['date_finish']			= 		$date_finish;
@@ -355,7 +355,7 @@ class MTaskPersonal extends CI_Model{
 			
             $data['name']				    =       stripslashes($arrParam['name']);
             $data['detail']				    =       stripslashes($arrParam['detail']);
-            $data['progress']				= 		$arrParam['progress'] / 100;
+            $data['progress']				= 		$arrParam['progress'];
             $data['date_start']				= 		$arrParam['date_start'];
             $data['date_end']				= 		$arrParam['date_end'];
             $data['date_finish']			= 		$date_finish;
@@ -378,7 +378,7 @@ class MTaskPersonal extends CI_Model{
                 $date_finish = '0000/00/00 00:00:00';
 
             $this->db->where("id",$arrParam['id']);
-            $data['progress'] 				= 				$arrParam['progress'] / 100;
+            $data['progress'] 				= 				$arrParam['progress'];
             $data['trangthai'] 				= 				$arrParam['trangthai'];
             $data['date_finish'] 			= 				$date_finish;
             $data['modified']				= 				@date("Y-m-d H:i:s");

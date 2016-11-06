@@ -733,7 +733,23 @@ function create_breadcrumb()
 		}
 		
 	}
-
+    elseif($ci->uri->segment(1) == 'tasks') {
+        $project_link  = base_url() . 'tasks';
+        $personal_link = base_url() . 'tasks/personal';
+        if($ci->uri->segment(2) == 'personal') {
+            $return.= '<a tabindex="-1" class="current" href="'.$personal_link.'">Công việc cá nhân</a>';
+        }else {
+            $return.= '<a tabindex="-1" class="current" href="'.$project_link.'">Công việc dự án</a>';
+            if ($ci->uri->segment(2) == NULL) //Main page
+            {
+                $return.= '<a tabindex="-1" class="current" href="javascript:;">Lược đồ</a>';
+            }elseif($ci->uri->segment(2) == 'grid') {
+                $return.= '<a tabindex="-1" class="current" href="javascript:;">Danh sách</a>';
+            }elseif($ci->uri->segment(2) == 'task_list') {
+                $return.= '<a tabindex="-1" class="current" href="javascript:;">Công việc</a>';
+            }
+        }
+    }
     if (!empty($global_breadcrumb)) {
         $return = array();
         foreach ($global_breadcrumb as $item) {

@@ -4,8 +4,7 @@ $prioty_arr       = lang('task_prioty');
 $task_id          = $item['id'];
 $trangthai        = $item['trangthai'];
 $prioty           = $item['prioty'];
-$progress         = $item['progress'] * 100;
-
+$progress         = $item['progress'];
 ?>
 <div class="modal-dialog">
     <div class="modal-content">

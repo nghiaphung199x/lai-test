@@ -119,6 +119,7 @@ class BizTasks extends Secure_area
             $task_trangthai = lang('task_trangthai');
             $task_trangthai[5] = 'Chậm tiến độ';
             $task_trangthai[6] = 'Đã hoàn thành nhưng chậm tiến độ';
+
             $result = array();
             foreach($task_trangthai as $id => $name) {
                 $re_keywords = rewriteUrl($keywords, 'low');
@@ -491,7 +492,7 @@ class BizTasks extends Secure_area
                 }
 
 				// update progress
-				if($arrParam['percent'] != $item['percent'] * 100) {
+				if($arrParam['percent'] != $item['percent']) {
 					$arrParam['key']   = 'pencil-square-o';
 					$arrParam['level'] = $item['level'];
 
@@ -802,7 +803,7 @@ class BizTasks extends Secure_area
 						$params['id'] = $arrParam['task_id'];
 					
 						if($arrParam['progress'] == -1) {
-							$arrParam['progress'] = $item['progress'] * 100; // progress mới nhất
+							$arrParam['progress'] = $item['progress']; // progress mới nhất
 							$this->MTasks->saveItem($params, array('task'=>'update-tiendo'));
 							
 							$arrParam['key'] = '';

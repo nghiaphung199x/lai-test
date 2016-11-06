@@ -4,6 +4,12 @@
     }
 }
 
+@media print, screen and (max-width: 788px) {
+    #content {
+        margin-left: 0;
+    }
+}
+
 @media (min-width: 768px) {
     .box-modal .modal-content {
         width: 700px;

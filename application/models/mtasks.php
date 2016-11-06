@@ -210,15 +210,7 @@ class MTasks extends MNested2{
             elseif($options['type'] == 'slow-finish') // hoàn thành nhưng chậm tiến độ
                 $trangthai = 6;
 
-            if(!empty($arrParams['trangthai'])) {
-                $trangthai_arr = explode(',', $arrParams['trangthai']);
-                if(in_array($trangthai, $trangthai_arr)) {
-                    $arrParams['trangthai'] = $trangthai;
-                }else
-                    $arrParams['trangthai'] = '-1';
-
-            }else
-                $arrParams['trangthai'] = $trangthai;
+            $arrParams['trangthai'] = $trangthai;
 
             // filter
             $where = $this->get_where_from_filter($arrParams);
@@ -340,16 +332,8 @@ class MTasks extends MNested2{
             elseif($options['type'] == 'slow-finish') // hoàn thành nhưng chậm tiến độ
                 $trangthai = 6;
 
-            if(!empty($arrParams['trangthai'])) {
-                $trangthai_arr = explode(',', $arrParams['trangthai']);
-                if(in_array($trangthai, $trangthai_arr)) {
-                    $arrParams['trangthai'] = $trangthai;
-                }else
-                    $arrParams['trangthai'] = '-1';
+            $arrParams['trangthai'] = $trangthai;
 
-            }else
-                $arrParams['trangthai'] = $trangthai;
- 
             // clause
             $where = $this->get_where_from_filter($arrParams);
             if(!empty($where)) {
@@ -458,7 +442,7 @@ class MTasks extends MNested2{
 				$data['name']  					= 		stripslashes($arrParam['name']);
 				$data['detail'] 				= 		stripslashes($arrParam['detail']);
 				$data['percent']				= 		1;
-				$data['progress']				= 		$arrParam['progress'] / 100;
+				$data['progress']				= 		$arrParam['progress'];
 				$data['lft']					= 		0;
 				$data['rgt']					= 		1;
 				$data['level']					= 		0;
@@ -491,8 +475,8 @@ class MTasks extends MNested2{
 			}else {
 				$data['name']  					= 		stripslashes($arrParam['name']);
 				$data['detail'] 				= 		stripslashes($arrParam['detail']);
-				$data['percent']				= 		$arrParam['percent'] / 100;
-				$data['progress']				= 		$arrParam['progress'] / 100;
+				$data['percent']				= 		$arrParam['percent'];
+				$data['progress']				= 		$arrParam['progress'];
 				$data['date_start']				= 		$arrParam['date_start'];
 				$data['date_end']				= 		$arrParam['date_end'];
 				$data['duration']				= 		$arrParam['duration'];
@@ -564,7 +548,7 @@ class MTasks extends MNested2{
 			$data['color']					= 		$arrParam['color'];
 			$data['customer_ids']			= 		$customer_ids;
 			if($arrParam['parent'] != 0)
-				$data['percent']				= 		$arrParam['percent'] / 100;
+				$data['percent']				= 		$arrParam['percent'];
 
 
 			$this->db->update($this->_table,$data);
@@ -628,7 +612,7 @@ class MTasks extends MNested2{
 			$data['trangthai']			= 		$arrParam['trangthai'];
 			$data['prioty']				= 		$arrParam['prioty'];
 			if($arrParam['progress'] != -1) 
-				$data['progress']			= 		$arrParam['progress'] / 100;
+				$data['progress']			= 		$arrParam['progress'];
 
 			if($arrParam['progress'] == 100)
 				$data['date_finish'] = @date("Y-m-d H:i:s");
@@ -644,7 +628,7 @@ class MTasks extends MNested2{
 		}elseif($options['task'] == 'update-progress') {
 			$this->db->where("id",$arrParam['id']);
 
-			$data['progress']			= 		$arrParam['progress'] / 100;
+			$data['progress']			= 		$arrParam['progress'];
 
 			if($arrParam['progress'] == 100)
 				$data['date_finish'] = @date("Y-m-d H:i:s");
@@ -945,6 +929,7 @@ class MTasks extends MNested2{
 
 			if(!empty($project_ids)) {
 				//task list
+                $task_ids    = array();
 				$project_ids = array_unique($project_ids);
 				if(!empty($project_ids)) {
 					$this->db->select("DATE_FORMAT(date_start, '%d-%m-%Y') as start_date", FALSE);
@@ -958,7 +943,7 @@ class MTasks extends MNested2{
 					$query 		  = $this->db->get();
 					
 					$res_tmp     = $query->result_array();
-					
+
 					$this->db->flush_cache();
 
 					$task_list_tmp = array();
@@ -1002,15 +987,37 @@ class MTasks extends MNested2{
 
 			$task_list = array();
 			if(!empty($task_list_tmp)) {
-				// task relation
-				$resultTmp = $this->getUsersRelation($task_ids);
-				$implement_ids = $create_task_ids = $is_xem_ids = $task_implements = array();
+
+                $implement_ids = $create_task_ids = $is_xem_ids = $task_implements = array();
+                $resultTmp              = $this->getUsersRelation($task_ids);
+                $task_implements_origin = $this->task_implements($resultTmp);
+                $sort_lft_items         = $this->sort_lft_items($res_tmp);
+
+                $task_implements[0] = array();
+
+                foreach($sort_lft_items as $val) {
+                    $task_id = $val['id'];
+                    $origin = (isset($task_implements_origin[$task_id])) ? $task_implements_origin[$task_id] : array();
+
+                    $parent  = $val['parent'];
+
+                    if(!isset($task_implements[$parent])) {
+                        $parent_item = $this->getItem(array('id'=>$parent), array('task'=>'information'));
+                        $task_ids    = $this->getIds(array('lft'=>$parent_item['lft'], 'rgt'=>$parent_item['rgt'], 'project_id'=>$parent_item['project_id']), array('task'=>'up-branch'));
+                        $tmp = $this->getUsersRelation($task_ids, 'implement');
+                        $task_implements[$task_id] = array_merge($tmp, $origin);
+                    }else{
+                        $task_implements[$task_id] = array_merge($task_implements[$parent], $origin);
+                    }
+
+                    $task_implements[$task_id] = array_unique($task_implements[$task_id]);
+
+                }
 
 				if(!empty($resultTmp)) {
 					foreach($resultTmp as $val) {
 						if($val['is_implement'] == 1) {
 							$implement_ids[] = $val['task_id'];
-							$task_implements[$val['task_id']][] = $val['user_id'];
 						}
 
 						if($val['is_create_task'] == 1)
@@ -1029,8 +1036,6 @@ class MTasks extends MNested2{
 					$usersInfo = $userTable->getItems(array('user_ids'=>$user_ids));
 				}
 
-				$implement = array();
-
 				foreach($project_ids as $project_id) {
 					$task_list[$project_id] = $task_list_tmp[$project_id];
 					unset($task_list_tmp[$project_id]);
@@ -1044,43 +1049,33 @@ class MTasks extends MNested2{
 				}
 
 				foreach($task_list as &$val) {
-					$implement_origin = array();
 					if($val['level'] == 0 || $val['level'] == 1) {
 						$val['open'] = true;
 					}
 					
-					$val['text'] = $val['text'] . ' ('.($val['progress'] * 100).'%)';
+					$val['text'] = $val['text'] . ' ('.($val['progress']).'%)';
 					if($val['pheduyet'] == -1)
 						$val['text'] = $val['text'] . ' - Chờ phê duyệt';
 					elseif($val['pheduyet'] == 0)
 						$val['text'] = $val['text'] . ' - Không phê duyệt';
-					
-					if(isset($task_implements[$val['id']])){
-                        $implement_origin = $task_implements[$val['id']];
+
+                    $val['implement_ids'] = $task_implements[$val['id']];
+                    $val['implement'] 	   = '';
+                    if(!empty($val['implement_ids'])){
+                        foreach($val['implement_ids'] as $user_id){
+                            if(in_array($user_id, $task_implements_origin[$val['id']]))
+                                $val['implement'][] = '<strong>'.$usersInfo[$user_id]['username'].'</strong>';
+                            else
+                                $val['implement'][] = $usersInfo[$user_id]['username'];
+                        }
+
+                        $val['implement'] = implode(', ', $val['implement']);
                     }
 
-					$implement 		  = $implement_origin;
-                    $implement = array_unique($implement);
-
-					if($val['parent'] > 0)
-						$implement = array_merge($implement, $task_list[$val['parent']]['implement_ids']);
-
-					$val['implement_ids'] = $implement;
-					if(!empty($val['implement_ids'])){
-						foreach($val['implement_ids'] as $user_id) {
-							if(in_array($user_id, $implement_origin))
-								$val['implement'][] = '<strong>'.$usersInfo[$user_id]['username'].'</strong>';
-							else
-								$val['implement'][] = $usersInfo[$user_id]['username'];
-						}
-						
-						$val['implement'] = implode(', ', $val['implement']);
-					}
-					
 					//tooltip information
 					$tyle = '';
 					if($val['parent'] > 0)
-						$tyle = ($val['percent'] * 100) . '% <strong> '.$task_list[$val['parent']]['name'].'</strong>';
+						$tyle = ($val['percent']) . '% <strong> '.$task_list[$val['parent']]['name'].'</strong>';
 					
 					$date_time   = $val['start_date'] . ' đến ' . $val['end_date'];
 					$date_finish = '';
@@ -1439,21 +1434,34 @@ class MTasks extends MNested2{
 			}
 
 			if(!empty($result)) {
-				//get relation users
-				$resultTmp = $this->getUsersRelation($task_ids); 
-	
-				$user_ids = array();
-				$task_implements = $user_ids = array();
-				if(!empty($resultTmp)) {
-					foreach($resultTmp as $val) {
-						if($val['is_implement'] == 1) {
-							$implement_ids[] = $val['task_id'];
-							$task_implements[$val['task_id']][] = $val['user_id'];
-						}
+                $task_implements        = array();
+                $task_implements[0]     = array();
+				$resultTmp              = $this->getUsersRelation($task_ids);
+                $task_implements_origin = $this->task_implements($resultTmp);
+                $sort_lft_items         = $this->sort_lft_items($result);
 
-						$user_ids[] = $val['user_id'];
-					}
-				}
+                foreach($sort_lft_items as $val) {
+                    $task_id = $val['id'];
+                    $origin = (isset($task_implements_origin[$task_id])) ? $task_implements_origin[$task_id] : array();
+                    $parent  = $val['parent'];
+
+                    if(!isset($task_implements[$parent])) {
+                        $parent_item = $this->getItem(array('id'=>$parent), array('task'=>'information'));
+                        $task_ids    = $this->getIds(array('lft'=>$parent_item['lft'], 'rgt'=>$parent_item['rgt'], 'project_id'=>$parent_item['project_id']), array('task'=>'up-branch'));
+                        $tmp = $this->getUsersRelation($task_ids, 'implement');
+                        $task_implements[$task_id] = array_merge($tmp, $origin);
+                    }else{
+                        $task_implements[$task_id] = array_merge($task_implements[$parent], $origin);
+                    }
+
+                    $task_implements[$task_id] = array_unique($task_implements[$task_id]);
+                }
+
+				$user_ids = array();
+                if(!empty($task_implements)) {
+                    foreach($task_implements as $val)
+                        $user_ids = array_merge($user_ids, $val);
+                }
 
 				//users list
 				if(!empty($user_ids)) {
@@ -1462,28 +1470,20 @@ class MTasks extends MNested2{
 				}
 
 				foreach($result as &$val) {
-					$implement_origin = array();
+                    $task_id = $val['id'];
+                    $val['project_name']  = $project_informations[$val['project_id']]['name'];
+                    $val['implement_ids'] = $task_implements[$val['id']];
+                    $val['implement'] 	   = '';
+                    if(!empty($val['implement_ids'])){
+                        foreach($val['implement_ids'] as $user_id){
+                            if(in_array($user_id, $task_implements_origin[$task_id]))
+                                $val['implement'][] = '<strong>'.$usersInfo[$user_id]['username'].'</strong>';
+                            else
+                                $val['implement'][] = $usersInfo[$user_id]['username'];
+                        }
 
-					if(isset($task_implements[$val['id']]))
-						$implement_origin = $task_implements[$val['id']];
-
-					$implement 		  = $implement_origin;
-
-					if($val['parent'] > 0)
-						$implement = array_merge($implement, $result[$val['parent']]['implement_ids']);
-
-					$implement = array_unique($implement);
-					$val['implement_ids'] = $implement;
-					if(!empty($val['implement_ids'])){
-						foreach($val['implement_ids'] as $user_id) {
-							if(in_array($user_id, $implement_origin))
-								$val['implement'][] = '<strong>'.$usersInfo[$user_id]['username'].'</strong>';
-							else
-								$val['implement'][] = $usersInfo[$user_id]['username'];
-						}
-						
-						$val['implement'] = implode(', ', $val['implement']);
-					}
+                        $val['implement'] = implode(', ', $val['implement']);
+                    }
 
 					if($val['trangthai'] == 0 || $val['trangthai'] == 1){	// chưa thực hiên + đang thực hiện
 						$now        = date('Y-m-d', strtotime(date("d-m-Y")));
@@ -1802,7 +1802,7 @@ class MTasks extends MNested2{
 		else {
             $percent = 0;
 			foreach($result as $value)
-				$percent = $percent + 100 * $value['percent']; 
+				$percent = $percent + $value['percent'];
 		}
 		
 		$percent = 100 - $percent;
