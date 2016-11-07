@@ -2208,24 +2208,26 @@ class MTasks extends MNested2{
         }
 
         if(!empty($arrParams['trangthai'])) {
-            $flag = false;
             $current_now = date('Y-m-d H:i:s');
             if($arrParams['trangthai'] == 'zero')
                 $arrParams['trangthai'] = '0';
 
             $trangthai_arr = explode(',', $arrParams['trangthai']);
-            if(in_array(5, $trangthai_arr)) {
-                if(($key = array_search(5, $trangthai_arr)) !== false) {
-                    $flag = true;
-                    unset($trangthai_arr[$key]);
+            if(in_array(5, $trangthai_arr) && in_array(6, $trangthai_arr)) {
+                if(($key = array_search(5, $trangthai_arr)) !== false) unset($trangthai_arr[$key]);
+                if(($key = array_search(6, $trangthai_arr)) !== false) unset($trangthai_arr[$key]);
+            }else {
+                if(in_array(5, $trangthai_arr)) {
+                    if(($key = array_search(5, $trangthai_arr)) !== false) unset($trangthai_arr[$key]);
+                    $where_ext = "  AND TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') > 0";
+                }
+                if(in_array(6, $trangthai_arr)) {
+                    if(($key = array_search(5, $trangthai_arr)) !== false) unset($trangthai_arr[$key]);
+                    $where_ext = "  AND TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') <= 0";
                 }
             }
 
-            $where_tmp = 't.trangthai IN ('.implode(',', $trangthai_arr).')';
-            if($flag == true)
-                $where_tmp = $where_tmp . "  AND TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') > 0";
-
-            $where[] = $where_tmp;
+            $where[] = 't.trangthai IN ('.implode(',', $trangthai_arr).')' . $where_ext;
         }
 
         if(!empty($arrParams['customers'])) {
@@ -2239,8 +2241,29 @@ class MTasks extends MNested2{
         }
 
         if(!empty($arrParams['pheduyet']) && $arrParams['pheduyet'] != '-1,0,1,2') {
+            if($arrParams['pheduyet'] == 'zero')
+                $arrParams['pheduyet'] = '0';
+
             $pheduyet = $arrParams['pheduyet'];
             $where[]  = 't.pheduyet IN ('.$pheduyet.')';
+        }
+
+        if(!empty($arrParams['implement'])) {
+            $implement = $arrParams['implement'];
+            $this->db->select("r.task_id")
+                     ->from('task_user_relations AS r')
+                     ->where('r.user_id IN ('.$implement.')')
+                     ->where('r.is_implement = 1');
+
+            $query = $this->db->get();
+            $resultTmp = $query->result_array();
+            $this->db->flush_cache();
+            if(!empty($resultTmp)) {
+                foreach($resultTmp as $val)
+                    $task_ids[] = $val['task_id'];
+
+            }
+
         }
 
         if(!empty($arrParams['implement']) || !empty($arrParams['xem'])) {

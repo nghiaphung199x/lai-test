@@ -121,6 +121,7 @@ class BizTasks extends Secure_area
             $keywords       = trim($post['keywords']);
             $task_trangthai = lang('task_trangthai');
             $task_trangthai[5] = 'Chậm tiến độ';
+            $task_trangthai[6] = 'Đúng tiến độ';
 
             $result = array();
             foreach($task_trangthai as $id => $name) {
@@ -298,7 +299,7 @@ class BizTasks extends Secure_area
 			$this->_data['parent_item'] 		= $parent_item;
 			$this->_data['project_relation'] 	= $project_relation;
 			$this->_data['task_template'] 	    = $task_template;
-			
+
 			//view
 			$this->load->view('tasks/addform_view',$this->_data);
 		}
