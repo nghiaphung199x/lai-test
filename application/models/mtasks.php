@@ -2248,6 +2248,8 @@ class MTasks extends MNested2{
             $where[]  = 't.pheduyet IN ('.$pheduyet.')';
         }
 
+        $phppos_tasks = $this->db->dbprefix($this->_table);
+
         if(!empty($arrParams['implement'])) {
             $implement = $arrParams['implement'];
             $this->db->select("r.task_id")
@@ -2259,32 +2261,71 @@ class MTasks extends MNested2{
             $resultTmp = $query->result_array();
             $this->db->flush_cache();
             if(!empty($resultTmp)) {
+                $task_ids = array();
                 foreach($resultTmp as $val)
                     $task_ids[] = $val['task_id'];
 
+                $task_ids = implode(', ', $task_ids);
+                $sql = "SELECT t.id
+                        FROM $phppos_tasks AS t
+                        INNER JOIN (
+                            SELECT id, lft, rgt, project_id
+                            FROM $phppos_tasks
+                            WHERE id IN ($task_ids)
+                        ) AS tmp
+                        ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt";
+
+                $query  = $this->db->query($sql);
+                $resTmp = $query->result_array();
+                $this->db->flush_cache();
+
+                $task_ids = array();
+                foreach($resTmp as $val)
+                    $task_ids[] = $val['id'];
+
+                $where[] = 't.id IN ('.implode(',', $task_ids).')';
             }
 
         }
 
-        if(!empty($arrParams['implement']) || !empty($arrParams['xem'])) {
-            $where_clause = array();
-            if(!empty($arrParams['implement'])) {
-                $implement = $arrParams['implement'];
-                $where_clause[] = '(user_id IN ('.$implement.') AND is_implement = 1)';
+        if(!empty($arrParams['xem'])) {
+            $implement = $arrParams['implement'];
+            $this->db->select("r.task_id")
+                    ->from('task_user_relations AS r')
+                    ->where('r.user_id IN ('.$implement.')')
+                    ->where('r.is_implement = 1');
+
+            $query = $this->db->get();
+            $resultTmp = $query->result_array();
+            $this->db->flush_cache();
+            if(!empty($resultTmp)) {
+                $task_ids = array();
+                foreach($resultTmp as $val)
+                    $task_ids[] = $val['task_id'];
+
+                $task_ids = implode(', ', $task_ids);
+                $sql = "SELECT t.id
+                        FROM $phppos_tasks AS t
+                        INNER JOIN (
+                            SELECT id, lft, rgt, project_id
+                            FROM $phppos_tasks
+                            WHERE id IN ($task_ids)
+                        ) AS tmp
+                        ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt";
+
+                $query  = $this->db->query($sql);
+                $resTmp = $query->result_array();
+                $this->db->flush_cache();
+
+                $task_ids = array();
+                foreach($resTmp as $val)
+                    $task_ids[] = $val['id'];
+
+                $where[] = 't.id IN ('.implode(',', $task_ids).')';
             }
 
-            if(!empty($arrParams['xem'])) {
-                $xem       = $arrParams['xem'];
-                $where_clause[] = '(user_id IN ('.$xem.') AND is_xem = 1)';
-            }
-
-            $where_clause = implode(' AND ', $where_clause);
-            $sql = 'SELECT task_id
-                    FROM ' . $this->db->dbprefix(task_user_relations) . '
-                    WHERE ' . $where_clause;
-
-            $where[] = 't.id IN ('.$sql.')';
         }
+
 
         if(!empty($arrParams['progress']) && $arrParams['progress'] != '-1,0,1,2') {
             $sql = 'SELECT task_id
