@@ -9,7 +9,7 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url() . 'assets/tasks/css/tree.css'; ?>" media="screen">
 
 <script src="<?php echo base_url() . 'assets/tasks/js/task-core.js'; ?>"></script>
-<script src="<?php echo base_url() . 'assets/tasks/js/script.js'; ?>"></script>
+<script src="<?php echo base_url() . 'assets/tasks/js/template.js'; ?>"></script>
 
 <div class="main-content">
 	<div class="row" id="form">
@@ -46,12 +46,11 @@
 									<div class="col-sm-9 col-md-9 col-lg-10" id="sort_section">
 										<ul class="sTree2 listsClass" id="sTree2">
 										</ul>
-										<a href="javascript:;" class="del_task" style="position: absolute; top: 97px; right: 30px; display: none;">[Xóa]</a>			
 									</div>
 								</div>
 								
 								<div class="form-actions pull-right">	
-									<input type="button" name="submit" value="Thêm mới" onclick="add_template();" class="btn btn-primary submit_button btn-large button_new">
+									<input type="button" value="Thêm mới" onclick="update_template();" class="btn btn-primary submit_button btn-large button_new">
 								</div>
 							</div>
 						</div>
@@ -61,7 +60,8 @@
 		</div>
 	</div>
 </div>
-<div id="quick-form" class="gantt_cal_light" style=""></div>
+<div class="modal fade box-modal" id="quick_modal">
+</div>
 <script type="text/javascript">
 $( document ).ready(function() {
 	var options = {
@@ -80,9 +80,6 @@ $( document ).ready(function() {
 			ignoreClass: 'clickable',
 		};
    $('#sTree2').sortableLists( options );
-
-   
-	
 });
 </script>
 <?php $this->load->view("partial/footer"); ?>

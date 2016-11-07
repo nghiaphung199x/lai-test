@@ -75,8 +75,21 @@ class MTaskTemplate extends MNestedTemplate{
 				
 				$lastId = $this->insertNode($data,$arrParam['parent'], $arrParam['template_id']);
 			}
-		}
-		
+		}elseif($options['task'] == 'edit') {
+            $lastId = $arrParam['id'];
+            $this->db->where("id",$arrParam['id']);
+
+            $data['name']  					= 		stripslashes($arrParam['name']);
+            $data['lft']					= 		0;
+            $data['rgt']					= 		1;
+            $data['modified']				= 		@date("Y-m-d H:i:s");
+            $data['modified_by']			= 		$this->_id_admin;
+
+            $this->db->update($this->_table,$data);
+            $this->db->flush_cache();
+        }
+
+
 		return $lastId;
 		
 	}
@@ -140,13 +153,48 @@ class MTaskTemplate extends MNestedTemplate{
 		
 		return $result;
 	}
-	
+
+    public function getItem($arrParam = null, $options = null) {
+        if($options == null) {
+            $result = $this->getItem($arrParam, array('task'=>'information'));
+            if(!empty($result)) {
+                $lft         = $result['lft'];
+                $rgt         = $result['rgt'];
+                $template_id = $result['id'];
+                $this->db -> select('t.*')
+                          -> from($this->_table . ' AS t')
+                          -> where('t.lft > ' . $lft . ' AND rgt < ' . $rgt)
+                          -> where('t.template_id', $template_id)
+                          -> order_by('t.lft', 'ASC');
+
+                $query = $this->db->get();
+
+                $result['tasks'] = $query->result_array();
+                $this->db->flush_cache();
+            }
+        }elseif($options['task'] == 'information') {
+            $this->db -> select('t.*')
+                      -> from($this->_table . ' AS t')
+                      -> where('t.id', $arrParam['id']);
+
+            $query = $this->db->get();
+
+            $result = $query->row_array();
+            $this->db->flush_cache();
+        }
+
+        return $result;
+    }
 	
 	public function deleteItem($arrParam = null, $options = null) {
 		if($options['task'] == 'delete'){
 			$this->db->where('template_id IN (' . implode(', ', $arrParam['template_ids']) . ')');
 			$this->db->delete($this->_table);
 			$this->db->flush_cache();
-		}
+		}elseif($options['task'] == 'delete-task-of-template') {
+            $this->db->where('template_id = ' . (int)$arrParam['id'] . ' AND id != ' . (int)$arrParam['id']);
+            $this->db->delete($this->_table);
+            $this->db->flush_cache();
+        }
 	}
 }

@@ -1,5 +1,4 @@
 $( document ).ready(function() {
-    var data_table = $('#project_grid_table').attr('data-table');
     // autocomplete
     var frame_array = ['customer_list', 'xem_list', 'implement_list', 'trangthai_list'];
     $.each(frame_array, function( index, value ) {
@@ -54,64 +53,7 @@ $( document ).ready(function() {
 		    checkbox.prop('checked', true);
 	    }
    });
-   
-   // template task list table
-   $('body').on('click','#btnListTasks',function(){
-		var tree_array    = $('#sTree2').sortableListsToArray();
-		var tasks = new Array();
-		if(tree_array.length > 0) {
-			$.each( tree_array, function( key, value ) {
-				tmp = new Object();
-				tmp.id   = value.id;
-				tmp.name = $('#'+value.id).attr('data-name');
-				if (typeof value.parentId === "undefined") {
-				    tmp.parent = 'root';
-				}else
-					tmp.parent = value.parentId;
-				
-				tasks[tasks.length] = tmp;
-			});
-		}
 
-		var url = BASE_URL + 'tasks/listTemplateTask';
-		$.ajax({
-			type: "GET",
-			url: url,
-			data: {
-				tasks : tasks
-			},
-			success: function(html){
-				  $('#quick-form').html(html);
-				  $('#quick-form').show();
-				  create_layer('quick');
-		    }
-		});   
-    });
-   
-    //Turn text element into input field - update template task
-    $('body').on('dblclick', '[data-editable]', function(){
-	   var $el = $(this);
-	   trElement    = $el.closest('tr');
-	   var id = trElement.find('a').attr('data-id');
-	  
-	   var $input = $('<input/>').val( $el.text() );
-	   $el.replaceWith( $input );
-	   
-	   var save = function(){
-	     var $span = $('<span data-editable />').text( $input.val() );
-	     $input.replaceWith( $span );
-	     
-	     data = new Object();
-	     
-	     data.text    = $input.val();
-	     data.id      = id;
-
-	     do_something(data);
-	   };
-	   
-	   $input.one('blur', save).focus();
-	 });
-    
 	// phân trang
     var array_list = ['template'];
 	$.each( array_list, function( key, keyword ) {
@@ -146,38 +88,6 @@ $( document ).ready(function() {
 
             tr_child.show();
             $(this).text('+');
-        }
-    });
-
-    //sort
-    $('body').on('click','table [data-field]',function(){
-        var attr     = $(this).attr('data-field');
-        var table    = $(this).closest('table');
-        var table_id = table.attr('id');
-        if($(this).hasClass('header')) {
-            if($(this).hasClass('headerSortUp')){
-                $(this).removeClass('headerSortUp');
-                $(this).addClass('headerSortDown');
-            }else {
-                $(this).removeClass('headerSortDown');
-                $(this).addClass('headerSortUp');
-            }
-        }else {
-            table.find('td').removeClass('header');
-            table.find('td').removeClass('headerSortUp');
-            table.find('td').removeClass('headerSortDown');
-            $(this).addClass('header headerSortUp');
-        }
-
-        if(table_id == 'project_grid_table') {
-            if(data_table == 'task_list')
-                load_list(data_table, 1);
-            else
-                load_list('project-grid', 1);
-        }else {
-            var tr_parent = table.closest('[data-parent]');
-            var project_id = tr_parent.attr('data-parent');
-            load_task_childs(project_id, 1);
         }
     });
 
@@ -1125,120 +1035,6 @@ function reset_form() {
     $('#progress_-1').prop('checked', false);
     $('#progress_0').prop('checked', false);
     $('#progress_1_2').prop('checked', false)
-
-}
-
-
-function add_template_task() {
-	var url = BASE_URL + 'tasks/addcvtemplate'
-	$.ajax({
-		type: "GET",
-		url: url,
-		data: {
-		},
-		success: function(html){
-			  $('#quick-form').html(html);
-			  $('#quick-form').show();
-			  create_layer('quick');
-	    }
-	});
-}
-
-function delete_template() {
-	var checkbox = $(".file_checkbox:checked");
-	var template_ids = new Array();
-	$(checkbox).each(function( index ) {
-		template_ids[template_ids.length] = $(this).val();
-	});
-	
-	bootbox.confirm('Bạn có chắc muốn xóa không?', function(result){
-		if (result){
-			$.ajax({
-				type: "POST",
-				url: BASE_URL + 'tasks/deleteTemplate',
-				data: {
-					template_ids   : template_ids,
-				},
-				success: function(string){
-					toastr.success('Cập nhật thành công!', 'Thông báo');
-					load_list('template', 1);
-			    }
-			});
-		}
-	});
-}
-
-function del_template_task(obj) {
-	var id = $(obj).attr('data-id');
-	parent_item = $('#'+id).closest('ul'); 
-
-	if(parent_item.hasClass('listsClass')){
-		$('#'+id).remove();
-	}else{
-		parent_item.remove();
-	}
-		
-	// remove on table
-	$(obj).closest('tr').remove();
-	var child_ids = $(obj).attr('data-child');
-	if (child_ids) {
-		var child_ids = child_ids.split(",");
-		$.each(child_ids, function( index, value ) {
-			$('#template_task_list tbody tr a[data-id="'+value+'"]').closest('tr').remove();
-		});
-	}
-	
-	var count = $('#template_task_list tbody tr').length;
-	$('#count_template_task').text(count);
-	
-	if(count == 0) {
-		$('#template_task_list tbody').html('<tr><td colspan="2"><div class="col-log-12" style="text-align: center; color: #efcb41;">Không có dữ liệu hiển thị</div></td></tr>');
-	}
-}
-
-function do_something(data) {
-	var id   = data.id;
-	var text = data.text;
-	$('#'+id+ ' > div').html(text);
-}
-
-function add_template() {
-	var template_name = $.trim($('#template_name').val());
-	var tree_array    = $('#sTree2').sortableListsToArray();
-	var tasks = new Array();
-	if(tree_array.length > 0) {
-		$.each( tree_array, function( key, value ) {
-			tmp = new Object();
-			tmp.id   = value.id;
-			tmp.name = $('#'+value.id).attr('data-name');
-			if (typeof value.parentId === "undefined") {
-			    tmp.parent = 'root';
-			}else
-				tmp.parent = value.parentId;
-			
-			tasks[tasks.length] = tmp;
-		});
-	}
-	
-	$.ajax({
-		type: "POST",
-		url: BASE_URL + 'tasks/templateAdd',
-		data: {
-			template_name : template_name,
-			tasks : tasks
-		},
-		success: function(string){
-			var res = $.parseJSON(string);
-			
-			if(res.flag == 'false'){
-				toastr.error(res.msg, 'Lỗi!');
-			}else {
-				toastr.success(res.msg, 'Thông báo');
-				$('#template_name').val('');
-				$('#sTree2').html('');
-			}
-	    }
-	});
 }
 
 function add_project() {

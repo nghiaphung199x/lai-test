@@ -736,10 +736,21 @@ function create_breadcrumb()
     elseif($ci->uri->segment(1) == 'tasks') {
         $project_link  = base_url() . 'tasks';
         $personal_link = base_url() . 'tasks/personal';
+        $template_link = base_url() . 'tasks/template';
+        $template_add_link = base_url() . 'tasks/templateAdd';
+        $template_edit_link = base_url() . 'tasks/editTemplate';
         if($ci->uri->segment(2) == 'personal') {
             $return.= '<a tabindex="-1" class="current" href="'.$personal_link.'">Công việc cá nhân</a>';
-        }else {
-            $return.= '<a tabindex="-1" class="current" href="'.$project_link.'">Công việc dự án</a>';
+        }elseif($ci->uri->segment(2) == 'template') {
+            $return.= '<a tabindex="-1" class="current" href="'.$template_link.'">Mẫu công việc</a>';
+        }elseif($ci->uri->segment(2) == 'templateAdd') {
+            $return.= '<a tabindex="-1" class="current" href="'.$template_link.'">Mẫu công việc</a>';
+            $return.= '<a tabindex="-1" class="current" href="'.$template_add_link.'">Thêm mẫu</a>';
+        }elseif($ci->uri->segment(2) == 'editTemplate') {
+            $return.= '<a tabindex="-1" class="current" href="'.$template_link.'">Mẫu công việc</a>';
+            $return.= '<a tabindex="-1" class="current" href="'.$template_edit_link.'">Sửa mẫu</a>';
+        } else {
+            $return.= '<a tabindex="-1" class="current" href="'.$template_edit_link.'">Công việc dự án</a>';
             if ($ci->uri->segment(2) == NULL) //Main page
             {
                 $return.= '<a tabindex="-1" class="current" href="javascript:;">Lược đồ</a>';

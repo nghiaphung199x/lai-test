@@ -357,7 +357,40 @@ var user_name = '<?php echo $user_info['username']; ?>';
 var current_project_id = 0;
 
 $( document ).ready(function() {
+    var data_table = $('#project_grid_table').attr('data-table');
 	load_list('project-grid', 1);
+
+    //sort
+    $('body').on('click','table [data-field]',function(){
+        var attr     = $(this).attr('data-field');
+        var table    = $(this).closest('table');
+        var table_id = table.attr('id');
+        if($(this).hasClass('header')) {
+            if($(this).hasClass('headerSortUp')){
+                $(this).removeClass('headerSortUp');
+                $(this).addClass('headerSortDown');
+            }else {
+                $(this).removeClass('headerSortDown');
+                $(this).addClass('headerSortUp');
+            }
+        }else {
+            table.find('td').removeClass('header');
+            table.find('td').removeClass('headerSortUp');
+            table.find('td').removeClass('headerSortDown');
+            $(this).addClass('header headerSortUp');
+        }
+
+        if(table_id == 'project_grid_table') {
+            if(data_table == 'task_list')
+                load_list(data_table, 1);
+            else
+                load_list('project-grid', 1);
+        }else {
+            var tr_parent = table.closest('[data-parent]');
+            var project_id = tr_parent.attr('data-parent');
+            load_task_childs(project_id, 1);
+        }
+    });
 });
 </script>
 

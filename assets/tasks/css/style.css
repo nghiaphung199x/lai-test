@@ -225,7 +225,7 @@ button[name="statistic"]:hover, button[name="statistic"]:focus{
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f9f9f9), color-stop(1, #f9f9f9));
     border-top-left-radius: 5px !important;
     border-top-right-radius: 5px !important;
-    border-bottom: 1px solid #cecece !important;
+    border-bottom: 1px solid #e9e9e9 !important;
     padding: 10px;
 }
 
@@ -643,116 +643,33 @@ button[name="statistic"]:hover, button[name="statistic"]:focus{
 	left: 40px;
 }
 
-#quick-form {
-	width: 900px;
-    border-radius: 0;
-    display: none;
-    top: 36px;
-    left: 50%;
-    transform: translate(-50%, 0);
-    z-index: 29999000;
-    height: auto;
-    font-size: 14px;
-}
-
-#quick-form .manage-table {
-	margin-top: 0;
-	padding-left: 15px;
-	padding-right: 15px;
-}
-
-#quick-form .input-group {
-	margin-bottom: 10px;
-}
-
-#quick-form .gantt_cal_ltitle {
-    background: #489ee7;
-    color: white;
-    border-radius: 0;
-}
-
-#quick-form .gantt_cal_larea {
-    border: 0;
-    height: auto;
-    padding: 10px 0 15px;
-}
-
-#quick-form .form-horizontal .control-label {
-    text-align: left;
-    font-weight: unset;
-    color: black;
-    margin-bottom: 10px;
-}
-
-#quick-form .form-group select[name="trangthai"] {
-    width: 70%;
-    margin-right: 20px;
-    float: left;
-}
-
-#quick-form .form-group input[name="progress"] {
-    float: left;
-    width: calc(30% - 20px);
-}
-
-#quick-form .toolbars .list {
-    height: 45px;
-    line-height: 44px;
-    border-bottom: 1px solid #ccc;
-	list-style: none;
-	padding-left: 0px;
-}
-
-#quick-form .toolbars .list li {
-	float: left;
-	border-right: 1px solid #ccc;
-}
-
-#quick-form .toolbars .list li.right {
-	float: right;
-    border-right: 0;
-    border-left: 1px solid #ccc;
-}
-
-#quick-form .toolbars .list li a {
-	display: block;
-    padding: 0 10px;
-    text-decoration: none;
-    color: black;
-    border-bottom: 1px solid #ccc;
-}
-
-#quick-form .toolbars .list li a:hover{
-	background: #ebebeb;
-}
-
-#quick-form .toolbars .list li a i {
-	font-size: 14px;
-	margin-right: 6px;
-}
-
-#quick-form .table {
+#quick_modal .table {
     margin-bottom: 0;
     border: 1px solid #d7dce5 !important;
 }
 
-#quick-form .manage-table table th {
+#quick_modal table th {
     text-align: center;
     font-weight: bold;
     cursor: pointer;
 }
 
-#quick-form .manage-table table td {
+#quick_modal table td {
     border-top: 1px solid #d7dce5;
     border-bottom: 1px solid #d7dce5;
+    padding: 4px 10px;
 }
 
-#quick-form .manage-table table td input {
-	width: 90%;
+#quick_modal table td input {
+    width: 90%;
 }
 
-#quick-form .manage-table table td.center {
+#quick_modal table td.center {
     text-align: center;
+}
+
+#quick_modal table td.right {
+    text-align: right;
 }
 
 #pagination_top a{

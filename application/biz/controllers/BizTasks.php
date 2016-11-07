@@ -54,6 +54,7 @@ class BizTasks extends Secure_area
 
         // load helper
         $this->load->helper('filterext');
+        $this->load->helper('recursive');
         $this->load->helper('sort_items');
 	}
 	
@@ -1408,6 +1409,7 @@ class BizTasks extends Secure_area
 				}
 	
 				$respon = array('flag'=>'true', 'msg'=>'Cập nhật thành công.');
+                $_SESSION['notice'] = 'Cập nhật thành công';
 			}else {
 				$respon = array('flag'=>'false', 'msg'=>current($errors));
 			}
@@ -1418,8 +1420,50 @@ class BizTasks extends Secure_area
 	}
 	
 	public function editTemplate() {
-		$id = $this->uri->segment(3);
-		$this->load->view('tasks/editTemplate_view',$this->_data);
+        $this->load->model('MTaskTemplate');
+        $post  = $this->input->post();
+
+        if(!empty($post)) {
+            $this->_data['arrParam']['name'] = $this->_data['arrParam']['template_name'];
+            $flagError = false;
+            if(!isset($this->_data['arrParam']['tasks'])) {
+                $flagError = true;
+                $errors[] = 'Phải thêm công việc cho template.';
+            }
+
+            if($flagError == false) {
+                // update template
+                $last_id = $this->MTaskTemplate->saveItem($this->_data['arrParam'], array('task'=>'edit'));
+                // delete tasks of template
+                $this->MTaskTemplate->deleteItem($this->_data['arrParam'], array('task'=>'delete-task-of-template'));
+
+                // + task for template
+                $arrayParent = array();
+                foreach($this->_data['arrParam']['tasks'] as $key => $params) {
+                    if($params['parent'] == 'root')
+                        $params['parent'] = $last_id;
+                    else
+                        $params['parent'] = $arrayParent[$params['parent']];
+
+                    $params['template_id'] = $last_id;
+
+                    $arrayParent[$params['id']] = $this->MTaskTemplate->saveItem($params, array('task'=>'add'));
+                }
+
+                $respon = array('flag'=>'true', 'msg'=>'Cập nhật thành công.');
+                $_SESSION['notice'] = 'Cập nhật thành công';
+            }else {
+                $respon = array('flag'=>'false', 'msg'=>current($errors));
+            }
+
+            echo json_encode($respon);
+        }else {
+            $id = $this->uri->segment(3);
+            $item = $this->MTaskTemplate->getItem(array('id'=>$id));
+
+            $this->_data['item'] = $item;
+            $this->load->view('tasks/editTemplate_view',$this->_data);
+        }
 	}
 	
 	public function deleteTemplate() {
