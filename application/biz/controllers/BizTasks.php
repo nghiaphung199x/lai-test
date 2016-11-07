@@ -90,13 +90,15 @@ class BizTasks extends Secure_area
 		$ketqua = $this->MTasks->listItem($this->_data['arrParam']);
 	
 		$result = array('ketqua'=>$ketqua['ketqua'], 'deny'=>$ketqua['deny'], 'drag_task'=>$ketqua['drag_task'], 'links'=>array());
-		if(!empty($ketqua['ketqua'])) {
+        if(!empty($ketqua['ketqua'])) {
+            foreach($result['ketqua'] as $val)
+                $task_ids[] = $val['id'];
+
 			$this->load->model('MTasksLinks');
 			$arrParams['task_ids'] = array_keys($ketqua['ketqua']);
-			$links = $this->MTasksLinks->listItem($arrParams, array('task'=>'by-source'));
-			$result['links'] = $links;
+            $result['links'] = $this->MTasksLinks->listItem(array('task_ids'=>$task_ids), array('task'=>'by-source'));
 		}
-		
+
 		$result['count']      = $config['total_rows'];
 		$result['pagination'] = $pagination;
 
@@ -119,7 +121,6 @@ class BizTasks extends Secure_area
             $keywords       = trim($post['keywords']);
             $task_trangthai = lang('task_trangthai');
             $task_trangthai[5] = 'Chậm tiến độ';
-            $task_trangthai[6] = 'Đã hoàn thành nhưng chậm tiến độ';
 
             $result = array();
             foreach($task_trangthai as $id => $name) {
@@ -1540,15 +1541,16 @@ class BizTasks extends Secure_area
 			$config['per_page'] = $this->_paginator['per_page'];
 			$config['uri_segment'] = $this->_paginator['uri_segment'];
 			$config['use_page_numbers'] = TRUE;
-		
+
 			$this->load->library("pagination");
 			$this->pagination->initialize($config);
 			$this->pagination->createConfig('front-end');
-		
+
 			$pagination = $this->pagination->create_ajax();
-		
+
 			$this->_data['arrParam']['start'] = $this->uri->segment(3);
 			$items = $this->MTasks->listItem($this->_data['arrParam'], array('task'=>'grid-project'));
+
 
 			$result = array('count'=> $config['total_rows'], 'items'=>$items, 'pagination'=>$pagination);
 			echo json_encode($result);
@@ -1584,7 +1586,7 @@ class BizTasks extends Secure_area
             );
 
             echo json_encode($data);
-        }
+       }
     }
 
     public function tasks_statistic() {
@@ -1654,7 +1656,7 @@ class BizTasks extends Secure_area
 
 		if(!empty($post)) {
 			$config['base_url'] = base_url() . 'tasks/task_list_store';
-			$config['total_rows'] = $this->MTasks->count_item($this->_data['arrParam']);
+		    $config['total_rows'] = $this->MTasks->count_item($this->_data['arrParam']);
 
 			$config['per_page'] = $this->_paginator['per_page'];
 			$config['uri_segment'] = $this->_paginator['uri_segment'];

@@ -72,12 +72,6 @@
             var s_implement_html     = $('#s_implement_html');
             var s_xem_html           = $('#s_xem_html');
 
-            var data = {class: 'trangthai', value: 0, title: 'Chưa thực hiện'};
-            var span_trangthai_0 = get_item_autocomplete(data);
-
-            var data = {class: 'trangthai', value: 1, title: 'Đang thực hiện'};
-            var span_trangthai_1 = get_item_autocomplete(data);
-
             //reset some element input
             s_trangthai.val('');
             s_trangthai_html.html('');
@@ -93,8 +87,6 @@
                     var current_date = get_current_date();
                     s_date_start_to.val(current_date + ' 23:59');
                     s_date_end_from.val(current_date + ' 00:00');
-                    s_trangthai.val('0,1');
-                    s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
 
                     s_date_start_radio.val('complex');
                     s_date_end_radio.val('complex');
@@ -106,8 +98,6 @@
 
                     s_date_start_to.val(lastDay + ' 23:59');
                     s_date_end_from.val(firstDay + ' 00:00');
-                    s_trangthai.val('0,1');
-                    s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
 
                     s_date_start_radio.val('complex');
                     s_date_end_radio.val('complex');
@@ -120,8 +110,6 @@
 
                     s_date_start_to.val(lastDay + ' 59:59');
                     s_date_end_from.val(firstDay + ' 00:00');
-                    s_trangthai.val('0,1');
-                    s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
 
                     s_date_start_radio.val('complex');
                     s_date_end_radio.val('complex');
@@ -133,8 +121,6 @@
 
                     s_date_start_to.val(lastDay + ' 59:59');
                     s_date_end_from.val(firstDay + ' 00:00');
-                    s_trangthai.val('0,1');
-                    s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
 
                     s_date_start_radio.val('complex');
                     s_date_end_radio.val('complex');
@@ -143,8 +129,6 @@
                 default:
                     s_date_start_to.val('');
                     s_date_end_from.val('');
-                    s_trangthai.val('');
-                    s_trangthai_html.html('');
 
                     s_date_start_radio.val('simple');
                     s_date_end_radio.val('simple');

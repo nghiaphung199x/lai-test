@@ -356,8 +356,9 @@ var user_id = <?php echo $user_info['id']; ?>;
 var user_name = '<?php echo $user_info['username']; ?>';
 var current_project_id = 0;
 
+var data_table = $('#project_grid_table').attr('data-table');
 $( document ).ready(function() {
-    var data_table = $('#project_grid_table').attr('data-table');
+
 	load_list('project-grid', 1);
 
     //sort

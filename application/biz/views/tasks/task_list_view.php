@@ -96,7 +96,7 @@
                             <tr align="center" style="font-weight:bold">
                                 <th align="center" data-field="name">Tên Công việc</th>
                                 <th align="center" style="width: 10%;" data-field="project">Dự án</th>
-                                <th align="center" style="width: 15%;" data-field="prioty">Ưu tiên</th>
+                                <th align="center" style="width: 10%;" data-field="prioty">Ưu tiên</th>
                                 <th align="center" style="width: 100px;" data-field="date_start">Bắt đầu</th>
                                 <th align="center" style="width: 100px;" data-field="date_end">Kết thúc</th>
                                 <th align="center" style="width: 270px;" data-field="progress">Tiến độ</th>
@@ -377,9 +377,9 @@
                         $(this).addClass('headerSortUp');
                     }
                 }else {
-                    table.find('td').removeClass('header');
-                    table.find('td').removeClass('headerSortUp');
-                    table.find('td').removeClass('headerSortDown');
+                    table.find('th').removeClass('header');
+                    table.find('th').removeClass('headerSortUp');
+                    table.find('th').removeClass('headerSortDown');
                     $(this).addClass('header headerSortUp');
                 }
 

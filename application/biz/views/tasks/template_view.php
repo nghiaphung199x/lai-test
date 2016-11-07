@@ -4,12 +4,12 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/tasks/css/responsive.css" type="text/css" media="screen" />
 
 <script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/task-core.js" ></script>
-<script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/script.js" ></script>
+<script type="text/javascript" src="<?php echo base_url() ?>assets/tasks/js/template.js" ></script>
 
 <div class="manage_buttons">
-<div class="manage-row-options hidden">
+<div class="manage-row-options hidden" data-table="template_task">
 	<div class="email_buttons text-center">		
-		<a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_template();"><span class="">Xóa lựa chọn</span></a>		
+		<a href="javascript:;" class="btn btn-red btn-lg" title="Xóa" onclick="delete_template();"><span class="">Xóa lựa chọn</span></a>
 	</div>
 </div>
 <div class="cl">
@@ -26,8 +26,10 @@
 	<div class="pull-right">
 		<div class="buttons-list" style="padding-top: 0;">
 			<div class="pull-right-btn">
-				<a href="<?php echo base_url() . 'tasks/templateAdd' ?>" id="new-person-btn" class="btn btn-primary btn-lg" title="Thêm mới Template" style="margin-top: 16px;"><span class="">Thêm mới Template</span></a>					
-			</div>
+				<a href="<?php echo base_url() . 'tasks/templateAdd' ?>" id="new-person-btn" class="btn btn-primary btn-lg" title="Thêm mới" style="margin-top: 16px;"><span class="">Thêm mới</span></a>
+                <a href="<?php echo base_url() . 'tasks' ?>" class="btn btn-primary btn-lg" title="Công việc dự án" style="margin-top: 16px;"><span class="">Công việc dự án</span></a>
+                <a href="<?php echo base_url() . 'tasks/personal' ?>" class="btn btn-primary btn-lg" title="Công việc cá nhân" style="margin-top: 16px;"><span class="">Công việc cá nhân</span></a>
+            </div>
 		</div>				
 	</div>
     <div class="cl"></div>
@@ -46,7 +48,7 @@
 				<i class="fa fa-spinner fa-spin" id="loading_1"></i>
 			</div>
 			<div class="panel-body nopadding table_holder table-responsive">
-				<table class="tablesorter table  table-hover my-table" id="template_table">
+				<table class="tablesorter table  table-hover my-table" id="template_table" data-table="template_task">
 					<thead>
 						<tr>
 							<th class="leftmost" style="width: 20px;">

@@ -1150,6 +1150,7 @@ function load_list(keyword, page) {
             if(data.trangthai == '0') {
                 data.trangthai = 'zero';
             }
+            console.log(data);
 
             break;
         }

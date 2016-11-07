@@ -20,6 +20,7 @@ class MTasks extends MNested2{
 		
 		$this->_fields 	 =  array(
                             'project' 	 	=> 't.project_id',
+                            'progress' 	 	=> 't.progress',
 							'name' 	 		=> 't.name',
 							'prioty' 	 	=> 't.prioty',
                             'date_start' 	=> 't.date_start',
@@ -210,7 +211,8 @@ class MTasks extends MNested2{
             elseif($options['type'] == 'slow-finish') // hoàn thành nhưng chậm tiến độ
                 $trangthai = 6;
 
-            $arrParams['trangthai'] = $trangthai;
+
+            $this->db->where('t.trangthai', $trangthai);
 
             // filter
             $where = $this->get_where_from_filter($arrParams);
@@ -386,17 +388,13 @@ class MTasks extends MNested2{
 	public function countItem($arrParams = null, $options = null) {
 		if($options == null || $options['task'] == 'grid-project') {
 			$flagAll = $this->checkAllPermission();
-			
+
 			if($flagAll == false) {
 				//related project
 				$sql = 'SELECT COUNT(t.id) AS total_item
 						FROM ' . $this->db->dbprefix($this->_table).' AS t
 						WHERE t.id IN (SELECT task_id FROM '.$this->db->dbprefix(task_user_relations).' WHERE user_id = '.$this->_id_admin.')
 						AND t.parent = 0';
-				
-				if(!empty($arrParams['keywords'])) {
-					$sql = $sql . ' AND t.name LIKE \'%'.$arrParams['keywords'].'%\'';
-				}
 
                 $where = $this->get_where_from_filter($arrParams);
                 if(!empty($where)) {
@@ -407,19 +405,18 @@ class MTasks extends MNested2{
 				$query = $this->db->query($sql);
 				$result = $query->row()->totalItem;
 			}else {
-
 				$this->db -> select('COUNT(t.id) AS totalItem')
 						  -> from($this->_table . ' AS t')
 						  -> where('t.parent = 0');
 
                 $where = $this->get_where_from_filter($arrParams);
+
                 if(!empty($where)) {
                     foreach($where as $wh)
                         $this->db->where($wh);
                 }
 					
 				$query = $this->db->get();
-				
 				$result = $query->row()->totalItem;
 			}
 		}
@@ -1901,7 +1898,6 @@ class MTasks extends MNested2{
 
 				$task_ids = $this->getIds(array('lft'=>$project['lft'], 'rgt'=>$project['rgt'], 'project_id'=>$project['id']));
 			}
-
 		}
 		
 		return $task_ids;
@@ -2212,66 +2208,24 @@ class MTasks extends MNested2{
         }
 
         if(!empty($arrParams['trangthai'])) {
+            $flag = false;
+            $current_now = date('Y-m-d H:i:s');
             if($arrParams['trangthai'] == 'zero')
                 $arrParams['trangthai'] = '0';
 
-            $current_now = date('Y-m-d H:i:s');
             $trangthai_arr = explode(',', $arrParams['trangthai']);
-            $trangthai     = $arrParams['trangthai'];
-
-            if(in_array(2, $trangthai_arr)) {
-                if(($key = array_search(6, $trangthai_arr)) !== false) {
-                    unset($trangthai_arr[$key]);
-                }
-            }
-
-            if(in_array(0, $trangthai_arr) && in_array(1, $trangthai_arr)) {
+            if(in_array(5, $trangthai_arr)) {
                 if(($key = array_search(5, $trangthai_arr)) !== false) {
+                    $flag = true;
                     unset($trangthai_arr[$key]);
                 }
             }
 
-            if(!in_array(5, $trangthai_arr) && !in_array(6, $trangthai_arr)) {
-            	$where[] = 't.trangthai IN ('.$trangthai.')';
-   
-            }else {
-                $where_clause = array();
-                if(in_array(5, $trangthai_arr)) {
-                    if(($key = array_search(0, $trangthai_arr)) !== false) {
-                        unset($trangthai_arr[$key]);
-                    }
+            $where_tmp = 't.trangthai IN ('.implode(',', $trangthai_arr).')';
+            if($flag == true)
+                $where_tmp = $where_tmp . "  AND TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') > 0";
 
-                    if(($key = array_search(1, $trangthai_arr)) !== false) {
-                        unset($trangthai_arr[$key]);
-                    }
-
-                    if(($key = array_search(5, $trangthai_arr)) !== false) {
-                        unset($trangthai_arr[$key]);
-                    }
-
-                    $where_clause[] = "t.trangthai IN (0,1) AND TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') > 0";
-                }
-
-                if(in_array(6, $trangthai_arr)) {
-                    if(($key = array_search(2, $trangthai_arr)) !== false) {
-                        unset($trangthai_arr[$key]);
-                    }
-
-                    if(($key = array_search(6, $trangthai_arr)) !== false) {
-                        unset($trangthai_arr[$key]);
-                    }
-
-                    $where_clause[] = "t.trangthai IN (2) AND TIMESTAMPDIFF(SECOND, t.date_finish, '$current_now') > 0";
-                }
-
-                if(!empty($trangthai_arr)) {
-                    $where_clause[] = 't.trangthai IN ('.implode(',', $trangthai_arr).')';
-                }
-
-                $where_clause = implode(' OR ', $where_clause);
-                $where[] = $where_clause;
-            }
-
+            $where[] = $where_tmp;
         }
 
         if(!empty($arrParams['customers'])) {

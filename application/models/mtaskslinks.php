@@ -17,9 +17,9 @@ class MTasksLinks extends CI_Model{
 			$this->db->select("l.*")
 					->from($this->_table . ' AS l')
 					->where('l.source IN ('.implode(',', $arrParams['task_ids']).')');
-			
+
 			$query = $this->db->get();
-			
+
 			$result = $query->result_array();
 		}
 		return $result;
