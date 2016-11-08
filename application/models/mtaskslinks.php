@@ -43,6 +43,21 @@ class MTasksLinks extends CI_Model{
 			$this->db->where('id = ' . $arrParam['id']);
 			$this->db->delete($this->_table);
 			$this->db->flush_cache();
-		}
+		}elseif($options['task'] == 'delete-multi-by-task') {
+            $tblTasks = $this->model_load_model('MTasks');
+            $task_ids = $tblTasks->getIds($arrParam, array('task'=>'by-task-ids'));
+            if(!empty($task_ids)) {
+                $this->db->where('task_id IN ('.implode(',', $task_ids).')');
+                $this->db->delete($this->_table);
+                $this->db->flush_cache();
+            }
+        }
 	}
+
+    function model_load_model($model_name)
+    {
+        $CI =& get_instance();
+        $CI->load->model($model_name);
+        return $CI->$model_name;
+    }
 }

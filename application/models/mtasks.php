@@ -182,7 +182,6 @@ class MTasks extends MNested2{
 
             $this->db->where('t.id != ' . $arrParams['project_id']);
 
-
             if(!empty($where)) {
                 foreach($where as $wh)
                     $this->db->where($wh);
@@ -1629,14 +1628,29 @@ class MTasks extends MNested2{
 				
 			$query = $this->db->get();
 			$resultTmp =  $query->result_array();
-		}
-		
-		$result = array();
-		if(!empty($resultTmp)) {
-			foreach($resultTmp as $val)
-				$result[] = $val['id'];
-		}
-		
+		}elseif($options['task'] == 'by-task-ids') {
+            $phppos_tasks = $this->db->dbprefix($this->_table);
+            $task_ids = implode(',', $arrParam['task_ids']);
+            $sql = "SELECT t.id
+                    FROM $phppos_tasks AS t
+                    INNER JOIN (
+                        SELECT id, lft, rgt, project_id
+                        FROM $phppos_tasks
+                        WHERE id IN ($task_ids)
+                    ) AS tmp
+                    ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt";
+
+            $query     = $this->db->query($sql);
+            $resultTmp = $query->result_array();
+            $this->db->flush_cache();
+        }
+
+        $result = array();
+        if(!empty($resultTmp)) {
+            foreach($resultTmp as $val)
+                $result[] = $val['id'];
+        }
+
 		return $result;
 	}
 	
@@ -2307,8 +2321,7 @@ class MTasks extends MNested2{
             $where[]  = 't.pheduyet IN ('.$pheduyet.')';
         }
 
-         $phppos_tasks = $this->db->dbprefix($this->_table);
-
+        $phppos_tasks = $this->db->dbprefix($this->_table);
         if(!empty($arrParams['implement'])) {
             $implement = $arrParams['implement'];
             $this->db->select("r.task_id")

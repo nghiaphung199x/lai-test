@@ -114,28 +114,10 @@ class MTaskComment extends CI_Model{
 
 	public function deleteItem($arrParam = null, $options = null){
 		if($options['task'] == 'delete-multi-by-task'){
-            $upload_dir = FILE_TASK_PATH . '/document/';
- 			$items = $this->getItems($arrParam);
- 			if(!empty($items)) {
-                $files = array();
- 				foreach($items as $val) {
- 					$ids[] 		  = $val['id'];
-                    if(!empty($val['files'])) {
-                        $file_tmp     = explode(',', $val['files']);
-                        $files       = $val['files'];
-                    }
-                }
+            $this->db->where('task_id IN (' . implode(', ', $arrParam['task_ids']) . ')');
+            $this->db->delete($this->_table);
 
-                if(!empty($files)) {
-                    foreach($files as $file)
-                        @unlink($upload_dir . $file);
-                }
-
-                $this->db->where('task_id IN (' . implode(', ', $arrParam['task_ids']) . ')');
- 				$this->db->delete($this->_table);
-				
- 				$this->db->flush_cache();
- 			}
+            $this->db->flush_cache();
 		}
 	}
 	

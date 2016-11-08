@@ -1284,6 +1284,8 @@ class BizTasks extends Secure_area
 		$this->load->model('MTaskProgress');
         $this->load->model('MTaskFiles');
         $this->load->model('MTaskComment');
+        $this->load->model('MTasksLinks');
+        $this->load->model('MTasksRelation');
 		$arrParam = $this->_data['arrParam'];
 
 		if(!empty($post)) {
@@ -1299,6 +1301,9 @@ class BizTasks extends Secure_area
 					$this->MTaskProgress->solve($params, array('task'=>'remove'));
 				}
 			}
+            // delete user relation
+            $this->MTasksRelation->deleteItem(array('cid'=>$arrParam['ids']), array('task'=>'delete-multi'));
+
             // delete files tasks
             $this->MTaskFiles->deleteItem(array('task_ids'=>$arrParam['ids']), array('task'=>'delete-by-tasks'));
 
@@ -1308,6 +1313,8 @@ class BizTasks extends Secure_area
             // delete progress
             $this->MTaskProgress->deleteItem(array('task_ids'=>$arrParam['ids']), array('task'=>'delete-multi-by-task'));
 
+            // delete links
+            $this->MTasksLinks->deleteItem(array('task_ids'=>$arrParam['ids']), array('task'=>'delete-multi-by-task'));
         }
 	}
 	
@@ -1587,7 +1594,7 @@ class BizTasks extends Secure_area
             );
 
             echo json_encode($data);
-       }
+        }
     }
 
     public function tasks_statistic() {
