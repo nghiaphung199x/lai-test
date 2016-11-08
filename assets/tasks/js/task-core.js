@@ -338,19 +338,19 @@ function load_template_project_grid(items) {
 									+'<tr data-parent="'+id+'" data-content="0" style="display: none;">'
 									+'<td colspan="8" class="innertable" style="display: table-cell;">'
                                         +'<div class="clearfix">'
-                                          +'<div class="col-xs-12 col-md-6 pull-right" style="padding-left: 0; padding-right: 0">'
-                                             +' <select class="form-control search_date_type">'
-                                                 +'<option value="0" selected="selected">-- Thời gian --</option>'
-                                                 +'<option value="today">Trong ngày</option>'
-                                                 +'<option value="weekend">Trong tuần</option>'
-                                                 +'<option value="month">Trong tháng</option>'
-                                                 +'<option value="year">Trong năm</option>'
-
-                                             +' </select>'
+                                            +'<div class="col-xs-12 col-md-6 pull-right" style="padding-left: 0; padding-right: 0">'
+                                                 +'<button name="submitf" class="btn btn-primary btn-lg submitf" data-id="'+id+'" data-name="'+value.name+'">Nâng cao</button>'
                                              +' </div>'
                                              +'<div class="col-xs-12 col-md-6 pull-left" style="padding-left: 0; padding-right: 0;">'
                                                  +'<input type="text" class="form-control ui-autocomplete-input search_keywords" value="" placeholder="Tìm kiếm công việc" >'
-                                                 +'<button name="submitf" class="btn btn-primary btn-lg submitf" data-id="'+id+'" data-name="'+value.name+'">Nâng cao</button>'
+                                                  +' <select class="form-control search_date_type">'
+                                                      +'<option value="0" selected="selected">-- Thời gian --</option>'
+                                                      +'<option value="today">Trong ngày</option>'
+                                                      +'<option value="weekend">Trong tuần</option>'
+                                                      +'<option value="month">Trong tháng</option>'
+                                                      +'<option value="year">Trong năm</option>'
+
+                                                  +' </select>'
                                                  +'<button name="statistic" class="btn btn-primary btn-lg statistic" data-id="'+id+'" data-name="'+value.name+'">Thống kê</button>'
                                                  +'<input type="hidden" class="s_keywords s_input_filter" value="" />'
                                                  +'<input type="hidden" class="s_date_start s_input_filter" value="all" />'
@@ -380,7 +380,7 @@ function load_template_project_grid(items) {
 													+'<td align="center" style="width: 8%;" data-field="prioty">Ưu tiên</td>'
 													+'<td align="center" style="width: 100px;" data-field="date_start">Bắt đầu</td>'
 													+'<td align="center" style="width: 100px;" data-field="date_end">Kết thúc</td>'
-													+'<td align="center" style="width: 270px;" data-field="progress">Tiến độ</td>'
+													+'<td align="center" style="width: 275px;" data-field="progress">Tiến độ</td>'
 													+'<td align="center" style="width: 10%;" data-field="trangthai">Tình trạng</td>'
 													+'<td align="center" style="width: 20%;">Phụ trách</td>'
 												+'</tr>'
@@ -1150,7 +1150,6 @@ function load_list(keyword, page) {
             if(data.trangthai == '0') {
                 data.trangthai = 'zero';
             }
-            console.log(data);
 
             break;
         }
@@ -1306,6 +1305,12 @@ function get_data_child_task(data, project_id, tr_element) {
 
     if(data.trangthai == '0')
         data.trangthai = 'zero';
+
+    if(data.pheduyet == '0')
+    	data.pheduyet = 'zero';
+
+    if(data.progress == '0')
+    	data.progress = 'zero';
 
     return data;
 }
@@ -1954,6 +1959,10 @@ function do_change_advance_search(obj, type, options) {
         }
 
         switch(type) {
+            case 'all':
+                do_quick_search(project_id);
+                break;
+
             case 'implement':
                 var html = get_item_autocomplete({class : 'implement', value: user_id, title: user_name});
                 s_implement.val(user_id);
@@ -2018,11 +2027,13 @@ function do_change_advance_search(obj, type, options) {
 
         $('#task_report').modal('toggle');
 
-        if (typeof options == 'undefined'){
-            load_task_childs(project_id, 1);
-        }else {
-            var data_table = $('#project_grid_table').attr('data-table');
-            load_list(data_table, 1);
+        if(type != 'all') {
+            if (typeof options == 'undefined'){
+                load_task_childs(project_id, 1);
+            }else {
+                var data_table = $('#project_grid_table').attr('data-table');
+                load_list(data_table, 1);
+            }
         }
     }
 

@@ -96,7 +96,7 @@
 								<td align="center" style="width: 8%;" data-field="prioty">Ưu tiên</td>
 								<td align="center" style="width: 100px;" data-field="date_start">Bắt đầu</td>
 								<td align="center" style="width: 100px;" data-field="date_end">Kết thúc</td>
-								<td align="center" style="width: 270px;" data-field="progress">Tiến độ</td>
+								<td align="center" style="width: 275px;" data-field="progress">Tiến độ</td>
 								<td align="center" style="width: 10%;" data-field="trangthai">Tình trạng</td>
 								<td align="center" style="width: 20%;">Phụ trách</td>			
 							</tr>
@@ -320,7 +320,7 @@
             <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> <h4 class="modal-title" id="my_report_task">Thống kê <span>[Dự án]</span></h4> </div>
             <div class="modal-body">
                 <ul>
-                    <li class="all">Công việc: <a class="unclick">0</a></li>
+                    <li class="all">Công việc: <a onclick="do_change_advance_search(this,'all');">0</a></li>
                     <li class="implement">Phụ trách: <a onclick="do_change_advance_search(this,'implement');">0</a></li>
                     <li class="xem">Theo dõi: <a onclick="do_change_advance_search(this,'xem');">0</a></li>
                     <li class="cancel">Đóng dừng: <a onclick="do_change_advance_search(this,'cancel');">0</a></li>
@@ -358,9 +358,7 @@ var current_project_id = 0;
 
 var data_table = $('#project_grid_table').attr('data-table');
 $( document ).ready(function() {
-
 	load_list('project-grid', 1);
-
     //sort
     $('body').on('click','table [data-field]',function(){
         var attr     = $(this).attr('data-field');

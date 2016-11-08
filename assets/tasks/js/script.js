@@ -146,171 +146,88 @@ $( document ).ready(function() {
             var tr_element      = $('#project_grid_table tr[data-parent="'+project_id+'"]');
             var s_trangthai     = tr_element.find('.s_trangthai');
             var url             = BASE_URL + 'tasks/tasks_child_statistic';
+            var search_date_type  = tr_element.find('.search_date_type').val();
 
             current_project_id = project_id;
             $('#current_project_id').val(project_id);
             $('#my_report_task span').html(task_name);
 
-            data                  = get_data_child_task(data, project_id, tr_element);
-            data.project_id       = project_id;
+            data.project_id         = project_id;
+            data.keywords           = tr_element.find('.s_keywords').val();
+
+            switch (search_date_type)
+            {
+                case 'today' : {
+                    var current_date = get_current_date();
+                    data.date_start_to = current_date + ' 23:59';
+                    data.date_end_from = current_date + ' 00:00';
+
+                    break;
+                }
+                case 'weekend' : {
+                    var firstDay = get_first_date_of_current_weekend();
+                    var lastDay = get_last_date_of_current_weekend();
+
+                    data.date_start_to = lastDay + ' 23:59';
+                    data.date_end_from = firstDay + ' 00:00';
+
+                    break;
+                }
+
+                case 'month' : {
+                    var firstDay = get_first_date_of_current_month();
+                    var lastDay = get_last_date_of_current_month();
+
+                    data.date_start_to = lastDay + ' 59:59';
+                    data.date_end_from = firstDay + ' 00:00';
+
+                    break;
+                }
+
+                case 'year' : {
+                    var firstDay = get_first_date_of_current_year();
+                    var lastDay = get_last_date_of_current_year();
+
+                    data.date_start_to = lastDay + ' 59:59';
+                    data.date_end_from = firstDay + ' 00:00';
+
+                    break;
+                }
+
+                default : {
+                    data.date_start_to = '';
+                    data.date_end_from = '';
+                }
+            }
         }
-console.log(data);
-//        $.ajax({
-//            type: "POST",
-//            url: url,
-//            data: data,
-//            success: function(string){
-//               var status = ['unfulfilled', 'processing', 'finish', 'cancel', 'not-done', 'slow_proccessing', 'slow-finish'];
-//               var trangthai_value = s_trangthai.val();
-//
-//               if(trangthai_value)
-//                  var trangthai_arr = trangthai_value.split(",");
-//               else
-//                  var trangthai_arr = new Array();
-//
-//                if(trangthai_arr.indexOf("0") != -1 || trangthai_arr.indexOf("1")){
-//                    if(trangthai_arr.indexOf("5") == -1)
-//                        trangthai_arr[trangthai_arr.length] = "5";
-//                }
-//
-//                if(trangthai_arr.indexOf("2") != -1 && trangthai_arr.indexOf("6") == -1) {
-//                    trangthai_arr[trangthai_arr.length] = "6";
-//                }
-//
-//                if(trangthai_arr.length == 0)
-//                    $('#task_report li a').removeClass('unclick');
-//                else {
-//                    $('#task_report li a').removeClass('unclick');
-//                    for (i = 0; i < status.length; i++) {
-//                        var str = i.toString();
-//                        var status_element = status[i];
-//                        if(trangthai_arr.indexOf(str) == -1){
-//                            $('#task_report li.'+status_element+' a').addClass('unclick');
-//                        }
-//                    }
-//                }
-//
-//                var result = $.parseJSON(string);
-//                $('#task_report li.all a').text(result.all);
-//                $('#task_report li.implement a').text(result.implement);
-//                $('#task_report li.xem a').text(result.xem);
-//                $('#task_report li.cancel a').text(result.cancel);
-//                $('#task_report li.not-done a').text(result.not_done);
-//                $('#task_report li.unfulfilled a').text(result.unfulfilled);
-//                $('#task_report li.processing a').text(result.processing);
-//                $('#task_report li.slow_proccessing a').text(result.slow_proccessing);
-//                $('#task_report li.finish a').text(result.finish);
-//                $('#task_report li.slow-finish a').text(result.slow_finish);
-//
-//                $("#task_report").modal();
-//            }
-//        });
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: function(string){
+                var result = $.parseJSON(string);
+                $('#task_report li.all a').text(result.all);
+                $('#task_report li.implement a').text(result.implement);
+                $('#task_report li.xem a').text(result.xem);
+                $('#task_report li.cancel a').text(result.cancel);
+                $('#task_report li.not-done a').text(result.not_done);
+                $('#task_report li.unfulfilled a').text(result.unfulfilled);
+                $('#task_report li.processing a').text(result.processing);
+                $('#task_report li.slow_proccessing a').text(result.slow_proccessing);
+                $('#task_report li.finish a').text(result.finish);
+                $('#task_report li.slow-finish a').text(result.slow_finish);
+
+                $("#task_report").modal();
+            }
+        });
     });
 
+
     $('body').on('change','.search_date_type',function(){
-        var value                = $(this).val();
-        var element_parent       = $(this).closest('tr[data-parent]');
-        var project_id           = element_parent.attr('data-parent');
-        var s_date_start_to      = element_parent.find('.s_date_start_to');
-        var s_date_start_from    = element_parent.find('.s_date_start_from');
-        var s_date_end_to        = element_parent.find('.s_date_end_to');
-        var s_date_end_from      = element_parent.find('.s_date_end_from');
-        var s_trangthai          = element_parent.find('.s_trangthai');
-        var s_date_start_radio   = element_parent.find('.s_date_start_radio');
-        var s_date_end_radio     = element_parent.find('.s_date_end_radio');
-        var s_status             = element_parent.find('.s_status');
-        var s_progress           = element_parent.find('.s_progress');
-        var s_customer           = element_parent.find('.s_customer');
-        var s_trangthai          = element_parent.find('.s_trangthai');
-        var s_implement          = element_parent.find('.s_implement');
-        var s_xem                = element_parent.find('.s_xem');
-
-        var s_trangthai_html     = element_parent.find('.s_trangthai_html');
-        var s_customer_html      = element_parent.find('.s_customer_html');
-        var s_implement_html     = element_parent.find('.s_implement_html');
-        var s_xem_html           = element_parent.find('.s_xem_html');
-
-        var data = {class: 'trangthai', value: 0, title: 'Chưa thực hiện'};
-        var span_trangthai_0 = get_item_autocomplete(data);
-
-        var data = {class: 'trangthai', value: 1, title: 'Đang thực hiện'};
-        var span_trangthai_1 = get_item_autocomplete(data);
-
-        //reset some element input
-        s_trangthai.val('');
-        s_trangthai_html.html('');
-        s_customer.val('');
-        s_customer_html.html('');
-        s_implement.val('');
-        s_implement_html.html('');
-        s_xem.val('');
-        s_xem_html.html('');
-        s_status.val('-1,0,1,2');
-        s_progress.val('-1,0,1,2');
-
-        switch(value) {
-            case 'today':
-                var current_date = get_current_date();
-                s_date_start_to.val(current_date + ' 23:59');
-                s_date_end_from.val(current_date + ' 00:00');
-                s_trangthai.val('0,1');
-                s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
-
-                s_date_start_radio.val('complex');
-                s_date_end_radio.val('complex');
-                break;
-
-            case 'weekend':
-                var firstDay = get_first_date_of_current_weekend();
-                var lastDay = get_last_date_of_current_weekend();
-
-                s_date_start_to.val(lastDay + ' 23:59');
-                s_date_end_from.val(firstDay + ' 00:00');
-                s_trangthai.val('0,1');
-                s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
-
-                s_date_start_radio.val('complex');
-                s_date_end_radio.val('complex');
-
-                break;
-
-            case 'month':
-                var firstDay = get_first_date_of_current_month();
-                var lastDay = get_last_date_of_current_month();
-
-                s_date_start_to.val(lastDay + ' 59:59');
-                s_date_end_from.val(firstDay + ' 00:00');
-                s_trangthai.val('0,1');
-                s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
-
-                s_date_start_radio.val('complex');
-                s_date_end_radio.val('complex');
-                break;
-
-            case 'year':
-                var firstDay = get_first_date_of_current_year();
-                var lastDay = get_last_date_of_current_year();
-
-                s_date_start_to.val(lastDay + ' 59:59');
-                s_date_end_from.val(firstDay + ' 00:00');
-                s_trangthai.val('0,1');
-                s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
-
-                s_date_start_radio.val('complex');
-                s_date_end_radio.val('complex');
-                break;
-
-            default:
-                s_date_start_to.val('');
-                s_date_end_from.val('');
-                s_trangthai.val('');
-                s_trangthai_html.html('');
-
-                s_date_start_radio.val('simple');
-                s_date_end_radio.val('simple');
-        }
-
-        load_task_childs(project_id, 1);
+        var tr_element = $(this).closest('[data-parent]');
+        var data_parent = tr_element.attr('data-parent');
+        do_quick_search(data_parent);
     });
 
     // event when close modal
@@ -379,12 +296,6 @@ console.log(data);
         var s_implement_html     = $('#s_implement_html');
         var s_xem_html           = $('#s_xem_html');
 
-        var data = {class: 'trangthai', value: 0, title: 'Chưa thực hiện'};
-        var span_trangthai_0 = get_item_autocomplete(data);
-
-        var data = {class: 'trangthai', value: 1, title: 'Đang thực hiện'};
-        var span_trangthai_1 = get_item_autocomplete(data);
-
         //reset some element input
         s_trangthai.val('');
         s_trangthai_html.html('');
@@ -400,8 +311,7 @@ console.log(data);
                 var current_date = get_current_date();
                 s_date_start_to.val(current_date + ' 23:59');
                 s_date_end_from.val(current_date + ' 00:00');
-                s_trangthai.val('0,1');
-                s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
+
 
                 s_date_start_radio.val('complex');
                 s_date_end_radio.val('complex');
@@ -427,8 +337,6 @@ console.log(data);
 
                 s_date_start_to.val(lastDay + ' 59:59');
                 s_date_end_from.val(firstDay + ' 00:00');
-                s_trangthai.val('0,1');
-                s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
 
                 s_date_start_radio.val('complex');
                 s_date_end_radio.val('complex');
@@ -440,8 +348,6 @@ console.log(data);
 
                 s_date_start_to.val(lastDay + ' 59:59');
                 s_date_end_from.val(firstDay + ' 00:00');
-                s_trangthai.val('0,1');
-                s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
 
                 s_date_start_radio.val('complex');
                 s_date_end_radio.val('complex');
@@ -450,8 +356,6 @@ console.log(data);
             default:
                 s_date_start_to.val('');
                 s_date_end_from.val('');
-                s_trangthai.val('');
-                s_trangthai_html.html('');
 
                 s_date_start_radio.val('simple');
                 s_date_end_radio.val('simple');
@@ -464,6 +368,99 @@ console.log(data);
     });
 
 });
+
+
+function do_quick_search(data_parent) {
+    var element_parent       = $('tr[data-parent='+data_parent+']');
+    var value                = element_parent.find('.search_date_type').val();
+
+    var project_id           = element_parent.attr('data-parent');
+    var s_date_start_to      = element_parent.find('.s_date_start_to');
+    var s_date_start_from    = element_parent.find('.s_date_start_from');
+    var s_date_end_to        = element_parent.find('.s_date_end_to');
+    var s_date_end_from      = element_parent.find('.s_date_end_from');
+    var s_trangthai          = element_parent.find('.s_trangthai');
+    var s_date_start_radio   = element_parent.find('.s_date_start_radio');
+    var s_date_end_radio     = element_parent.find('.s_date_end_radio');
+    var s_status             = element_parent.find('.s_status');
+    var s_progress           = element_parent.find('.s_progress');
+    var s_customer           = element_parent.find('.s_customer');
+    var s_trangthai          = element_parent.find('.s_trangthai');
+    var s_implement          = element_parent.find('.s_implement');
+    var s_xem                = element_parent.find('.s_xem');
+
+    var s_trangthai_html     = element_parent.find('.s_trangthai_html');
+    var s_customer_html      = element_parent.find('.s_customer_html');
+    var s_implement_html     = element_parent.find('.s_implement_html');
+    var s_xem_html           = element_parent.find('.s_xem_html');
+
+    //reset some element input
+    s_trangthai.val('');
+    s_trangthai_html.html('');
+    s_customer.val('');
+    s_customer_html.html('');
+    s_implement.val('');
+    s_implement_html.html('');
+    s_xem.val('');
+    s_xem_html.html('');
+    s_status.val('-1,0,1,2');
+    s_progress.val('-1,0,1,2');
+
+    switch(value) {
+        case 'today':
+            var current_date = get_current_date();
+            s_date_start_to.val(current_date + ' 23:59');
+            s_date_end_from.val(current_date + ' 00:00');
+
+            s_date_start_radio.val('complex');
+            s_date_end_radio.val('complex');
+            break;
+
+        case 'weekend':
+            var firstDay = get_first_date_of_current_weekend();
+            var lastDay = get_last_date_of_current_weekend();
+
+            s_date_start_to.val(lastDay + ' 23:59');
+            s_date_end_from.val(firstDay + ' 00:00');
+
+            s_date_start_radio.val('complex');
+            s_date_end_radio.val('complex');
+
+            break;
+
+        case 'month':
+            var firstDay = get_first_date_of_current_month();
+            var lastDay = get_last_date_of_current_month();
+
+            s_date_start_to.val(lastDay + ' 59:59');
+            s_date_end_from.val(firstDay + ' 00:00');
+
+            s_date_start_radio.val('complex');
+            s_date_end_radio.val('complex');
+            break;
+
+        case 'year':
+            var firstDay = get_first_date_of_current_year();
+            var lastDay = get_last_date_of_current_year();
+
+            s_date_start_to.val(lastDay + ' 59:59');
+            s_date_end_from.val(firstDay + ' 00:00');
+
+            s_date_start_radio.val('complex');
+            s_date_end_radio.val('complex');
+            break;
+
+        default:
+            s_date_start_to.val('');
+            s_date_end_from.val('');
+
+            s_date_start_radio.val('simple');
+            s_date_end_radio.val('simple');
+    }
+
+    load_task_childs(project_id, 1);
+}
+
 
 function set_project_hidden_input() {
     var search_keywords        = $('#search_keywords');

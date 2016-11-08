@@ -8,6 +8,7 @@ class MTasks extends MNested2{
 	protected $_fields 		    = array();
     protected $_prioty          = null;
     protected $_trangthai       = null;
+    protected $_trangthai_type  = nulll;
 
 	public function __construct(){
 		parent::__construct();
@@ -28,6 +29,18 @@ class MTasks extends MNested2{
 							'modified' 	    => 't.modified',
 							'username' 		=> 'e.username',
 					  );
+
+
+        $this->_trangthai_type = array(
+                            'cancel' => array('3'), // đóng, dừng
+                            'not-done' => array('4'), // không thực hiện
+                            'unfulfilled' => array('0'), // chưa thực hiện
+                            'processing' => array('1'), // đang tiến hành
+                            'slow_proccessing' => array('0','1','5'), // chậm tiến độ
+                            'finish' => array('2'), // hoàn thành
+                            'slow-finish' => array('2','5'), // hoàn thành nhưng chậm tiến độ
+                            'completed-on-schedule'=> array('2','6'), // hoàn thành đúng tiến độ
+        );
 		
 		$this->_prioty    = lang('task_prioty');
 		$this->_trangthai = lang('task_trangthai');
@@ -88,7 +101,8 @@ class MTasks extends MNested2{
         $tasks               =  $this->db->dbprefix($this->_table);
         $task_user_relations =  $this->db->dbprefix(task_user_relations);
 		if($options['task'] == 'task-by-project') {
-			$task_ids = $this->getTasksIdsByProject($arrParams['project']);
+			$task_ids    =   $this->getTasksIdsByProject($arrParams['project']);
+            $where       =   $this->get_where_from_filter($arrParams);
 
 			$this->db->select("COUNT(t.id) AS totalItem")
 					 ->from($this->_table . ' AS t');
@@ -101,9 +115,6 @@ class MTasks extends MNested2{
 
             $this->db->where('t.id != ' . $arrParams['project_id']);
 
-            // filter
-            $where = $this->get_where_from_filter($arrParams);
-
             if(!empty($where)) {
                 foreach($where as $wh)
                     $this->db->where($wh);
@@ -114,6 +125,50 @@ class MTasks extends MNested2{
 			$result = $query->row_array();
 			$result = $result['totalItem'];
 		}elseif($options['task'] == 'task-by-project-implement') {
+            if(!empty($arrParams['implement'])) {
+                $implement_arr = explode(',', $arrParams['implement']);
+                if(in_array($this->_id_admin, $implement_arr))
+                    $arrParams['implement'] = $this->_id_admin;
+                else
+                    $arrParams['implement'] = '-1';
+            }else
+                $arrParams['implement'] = $this->_id_admin;
+
+            $task_ids = $this->getTasksIdsByProject($arrParams['project']);
+            $where = $this->get_where_from_filter($arrParams);
+
+            $this->db->select("COUNT(t.id) AS totalItem")
+                     ->from($this->_table . ' AS t');
+
+            if($task_ids == 'all') {
+                $this->db->where('t.project_id', $arrParams['project_id']);
+            }else {
+                $this->db->where('t.id IN ' . implode(', ', $task_ids));
+            }
+
+            $this->db->where('t.id != ' . $arrParams['project_id']);
+
+            if(!empty($where)) {
+                foreach($where as $wh)
+                    $this->db->where($wh);
+            }
+
+            $query 	   = $this->db->get();
+
+            $result = $query->row_array();
+            $result = $result['totalItem'];
+        }elseif($options['task'] == 'task-by-project-cc') {
+            if(!empty($arrParams['xem'])) {
+                $xem_arr = explode(',', $arrParams['xem']);
+                if(in_array($this->_id_admin, $xem_arr))
+                    $arrParams['xem'] = $this->_id_admin;
+                else
+                    $arrParams['xem'] = '0';
+            }else
+                $arrParams['xem'] = $this->_id_admin;
+
+            $where = $this->get_where_from_filter($arrParams);
+
             $task_ids = $this->getTasksIdsByProject($arrParams['project']);
 
             $this->db->select("COUNT(t.id) AS totalItem")
@@ -127,52 +182,7 @@ class MTasks extends MNested2{
 
             $this->db->where('t.id != ' . $arrParams['project_id']);
 
-            if(!empty($arrParams['implement'])) {
-                $implement_arr = explode(',', $arrParams['implement']);
-                if(in_array($this->_id_admin, $implement_arr))
-                    $arrParams['implement'] = $this->_id_admin;
-                else
-                    $arrParams['implement'] = '0';
-            }else
-                $arrParams['implement'] = $this->_id_admin;
 
-            // filter
-            $where = $this->get_where_from_filter($arrParams);
-
-            if(!empty($where)) {
-                foreach($where as $wh)
-                    $this->db->where($wh);
-            }
-
-            $query 	   = $this->db->get();
-
-            $result = $query->row_array();
-            $result = $result['totalItem'];
-        }elseif($options['task'] == 'task-by-project-cc') {
-            $task_ids = $this->getTasksIdsByProject($arrParams['project']);
-
-            $this->db->select("COUNT(t.id) AS totalItem")
-                ->from($this->_table . ' AS t');
-
-            if($task_ids == 'all') {
-                $this->db->where('t.project_id', $arrParams['project_id']);
-            }else {
-                $this->db->where('t.id IN ' . implode(', ', $task_ids));
-            }
-
-            $this->db->where('t.id != ' . $arrParams['project_id']);
-
-            if(!empty($arrParams['xem'])) {
-                $xem_arr = explode(',', $arrParams['xem']);
-                if(in_array($this->_id_admin, $xem_arr))
-                    $arrParams['xem'] = $this->_id_admin;
-                else
-                    $arrParams['xem'] = '0';
-            }else
-                $arrParams['implement'] = $this->_id_admin;
-
-            // filter
-            $where = $this->get_where_from_filter($arrParams);
             if(!empty($where)) {
                 foreach($where as $wh)
                     $this->db->where($wh);
@@ -184,9 +194,39 @@ class MTasks extends MNested2{
             $result = $result['totalItem'];
         }elseif($options['task'] == 'task-by-project-trangthai') {
             $task_ids = $this->getTasksIdsByProject($arrParams['project']);
+            $type = $this->_trangthai_type[$options['type']];
+            if(!empty($arrParams['trangthai'])) {
+                $trangthai = $arrParams['trangthai'];
+                if($trangthai == 'zero')
+                    $trangthai = '0';
+
+                $trangthai_arr = explode(',', $trangthai);
+                if((array_search('5', $trangthai_arr)) == false && (array_search('6', $trangthai_arr)) == false) {
+                    $trangthai_arr[] = '5';
+                    $trangthai_arr[] = '6';
+                }
+            }else
+                $trangthai_arr = array('0','1','2','3','4','5','6');
+
+            foreach($trangthai_arr as $val) {
+                if(in_array($val, $type)) {
+                    if(($key = array_search($val, $type)) !== false) {
+                        unset($type[$key]);
+                    }
+                }
+            }
+
+            if(count($type) == 0) {
+                $arrParams['trangthai'] = implode(',', $this->_trangthai_type[$options['type']]);
+                if($arrParams['trangthai'] == '0')
+                    $arrParams['trangthai'] == 'zero';
+            }else
+                $arrParams['trangthai'] = '-1';
+
+            $where = $this->get_where_from_filter($arrParams);
 
             $this->db->select("COUNT(t.id) AS totalItem")
-                ->from($this->_table . ' AS t');
+                 ->from($this->_table . ' AS t');
 
             if($task_ids == 'all') {
                 $this->db->where('t.project_id', $arrParams['project_id']);
@@ -196,26 +236,6 @@ class MTasks extends MNested2{
 
             $this->db->where('t.id != ' . $arrParams['project_id']);
 
-            if($options['type'] == 'cancel') // đóng, dừng
-                $trangthai = 3;
-            elseif($options['type'] == 'not-done') // không thực hiện
-                $trangthai = 4;
-            elseif($options['type'] == 'unfulfilled') // chưa thực hiện
-                $trangthai = 0;
-            elseif($options['type'] == 'processing') // đang tiến hành
-                $trangthai = 1;
-            elseif($options['type'] == 'slow_proccessing') // chậm tiến độ
-                $trangthai = 5;
-            elseif($options['type'] == 'finish') // hoàn thành
-                $trangthai = 2;
-            elseif($options['type'] == 'slow-finish') // hoàn thành nhưng chậm tiến độ
-                $trangthai = 6;
-
-
-            $this->db->where('t.trangthai', $trangthai);
-
-            // filter
-            $where = $this->get_where_from_filter($arrParams);
             if(!empty($where)) {
                 foreach($where as $wh)
                     $this->db->where($wh);
@@ -251,14 +271,16 @@ class MTasks extends MNested2{
             $result = $query->row_array();
             $result = $result['totalItem'];
         }elseif($options['task'] == 'task-by-all-implement') {
+
             if(!empty($arrParams['implement'])) {
                 $implement_arr = explode(',', $arrParams['implement']);
                 if(in_array($this->_id_admin, $implement_arr))
                     $arrParams['implement'] = $this->_id_admin;
                 else
-                    $arrParams['implement'] = '0';
+                    $arrParams['implement'] = '-1';
             }else
                 $arrParams['implement'] = $this->_id_admin;
+
 
             // clause
             $where = $this->get_where_from_filter($arrParams);
@@ -292,7 +314,7 @@ class MTasks extends MNested2{
                 else
                     $arrParams['xem'] = '0';
             }else
-                $arrParams['implement'] = $this->_id_admin;
+                $arrParams['xem'] = $this->_id_admin;
 
             // clause
             $where = $this->get_where_from_filter($arrParams);
@@ -319,22 +341,34 @@ class MTasks extends MNested2{
             $result = $query->row_array();
             $result = $result['totalItem'];
         }elseif($options['task'] == 'task-by-all-trangthai') {
-            if($options['type'] == 'cancel') // đóng, dừng
-                $trangthai = 3;
-            elseif($options['type'] == 'not-done') // không thực hiện
-                $trangthai = 4;
-            elseif($options['type'] == 'unfulfilled') // chưa thực hiện
-                $trangthai = 0;
-            elseif($options['type'] == 'processing') // đang tiến hành
-                $trangthai = 1;
-            elseif($options['type'] == 'slow_proccessing') // chậm tiến độ
-                $trangthai = 5;
-            elseif($options['type'] == 'finish') // hoàn thành
-                $trangthai = 2;
-            elseif($options['type'] == 'slow-finish') // hoàn thành nhưng chậm tiến độ
-                $trangthai = 6;
+            $type = $this->_trangthai_type[$options['type']];
+            if(!empty($arrParams['trangthai'])) {
+                $trangthai = $arrParams['trangthai'];
+                if($trangthai == 'zero')
+                    $trangthai = '0';
 
-            $arrParams['trangthai'] = $trangthai;
+                $trangthai_arr = explode(',', $trangthai);
+                if((array_search('5', $trangthai_arr)) == false && (array_search('6', $trangthai_arr)) == false) {
+                    $trangthai_arr[] = '5';
+                    $trangthai_arr[] = '6';
+                }
+            }else
+                $trangthai_arr = array('0','1','2','3','4','5','6');
+
+            foreach($trangthai_arr as $val) {
+                if(in_array($val, $type)) {
+                    if(($key = array_search($val, $type)) !== false) {
+                        unset($type[$key]);
+                    }
+                }
+            }
+
+            if(count($type) == 0) {
+                $arrParams['trangthai'] = implode(',', $this->_trangthai_type[$options['type']]);
+                if($arrParams['trangthai'] == '0')
+                    $arrParams['trangthai'] == 'zero';
+            }else
+                $arrParams['trangthai'] = '-1';
 
             // clause
             $where = $this->get_where_from_filter($arrParams);
@@ -405,11 +439,10 @@ class MTasks extends MNested2{
 				$query = $this->db->query($sql);
 				$result = $query->row()->totalItem;
 			}else {
+                $where = $this->get_where_from_filter($arrParams);
 				$this->db -> select('COUNT(t.id) AS totalItem')
 						  -> from($this->_table . ' AS t')
 						  -> where('t.parent = 0');
-
-                $where = $this->get_where_from_filter($arrParams);
 
                 if(!empty($where)) {
                     foreach($where as $wh)
@@ -892,6 +925,7 @@ class MTasks extends MNested2{
                     $project_ids = array(-1);
 			}
 
+            $where = $this->get_where_from_filter($arrParams);
 			$this->db->select("t.id")
 				     ->from($this->_table . ' AS t')
 					 ->where('t.parent = 0')
@@ -902,7 +936,7 @@ class MTasks extends MNested2{
                 $this->db->where('project_id IN ('.implode(', ', $project_ids).')');
             }
 			
-			$where = $this->get_where_from_filter($arrParams);
+
             if(!empty($where)) {
                 foreach($where as $wh)
                     $this->db->where($wh);
@@ -1259,6 +1293,8 @@ class MTasks extends MNested2{
                     $project_ids = array(-1);
 			}
 
+            $where = $this->get_where_from_filter($arrParams);
+
 			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);
 			$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date", FALSE);
 			$this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as finish_date", FALSE);
@@ -1279,7 +1315,7 @@ class MTasks extends MNested2{
 			if(!empty($project_ids))
 				$this->db->where('t.project_id IN ('.implode(', ', $project_ids).')');
 
-            $where = $this->get_where_from_filter($arrParams);
+
             if(!empty($where)) {
                 foreach($where as $wh)
                     $this->db->where($wh);
@@ -1383,6 +1419,9 @@ class MTasks extends MNested2{
 		}elseif($options['task'] == 'task-by-project') {
 			$task_ids = $this->getTasksIdsByProject($arrParams['project']);
 
+            // filter
+            $where = $this->get_where_from_filter($arrParams);
+
 			$this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);
 			$this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date", FALSE);
 			$this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as finish_date", FALSE);
@@ -1395,8 +1434,6 @@ class MTasks extends MNested2{
 				$this->db->where('t.id IN ' . implode(', ', $task_ids));
 			}
 
-            // filter
-            $where = $this->get_where_from_filter($arrParams);
 
             if(!empty($where)) {
                 foreach($where as $wh)
@@ -1883,20 +1920,41 @@ class MTasks extends MNested2{
 		elseif(in_array('update_brand_task', $this->_task_permission)) {
 			$task_ids = $this->getIds(array('lft'=>$project['lft'], 'rgt'=>$project['rgt'], 'project_id'=>$project['id']));
 		}else {
+            $phppos_tasks = $this->db->dbprefix($this->_table);
+
 			$this->db->select("t.id")
 					 ->from($this->_table . ' AS t')
-					 ->join('task_user_relations AS r', 't.id = r.task_id AND t.project_id = ' . $project['id'] . ' AND r.user_id = ' . $this->_id_admin, 'left')
-					 ->where('r.is_create_task = 1');
+					 ->join('task_user_relations AS r', 't.id = r.task_id AND r.user_id = ' . $this->_id_admin, 'left')
+					 ->where('r.project_id', $project['id']);
 
 		    $query 	   = $this->db->get();
 			$resultTmp = $query->result_array();
 			$task_ids = array();
 			if(!empty($resultTmp)) {
 				foreach ($resultTmp as $value) {
-					$ids[] = $value['id'];
+                    $task_ids[] = $value['id'];
 				}
 
-				$task_ids = $this->getIds(array('lft'=>$project['lft'], 'rgt'=>$project['rgt'], 'project_id'=>$project['id']));
+                $task_ids = implode(',', $task_ids);
+
+                $sql = "SELECT t.id
+                            FROM $phppos_tasks AS t
+                            INNER JOIN (
+                                SELECT id, lft, rgt, project_id
+                                FROM $phppos_tasks
+                                WHERE id IN ($task_ids)
+                            ) AS tmp
+                            ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt";
+
+                $query  = $this->db->query($sql);
+                $resTmp = $query->result_array();
+                $this->db->flush_cache();
+
+                $task_ids = array();
+                if(!empty($resTmp)) {
+                    foreach($resTmp as $val)
+                        $task_ids[] = $val['id'];
+                }
 			}
 		}
 		
@@ -2177,6 +2235,7 @@ class MTasks extends MNested2{
 
 	protected function get_where_from_filter($arrParams) {
 		$where = array();
+
         if(!empty($arrParams['keywords'])) {
             $keywords = $arrParams['keywords'];
             $where[] = '(t.name LIKE \'%'.$keywords.'%\' OR t.detail LIKE \'%'.$keywords.'%\')';
@@ -2188,23 +2247,22 @@ class MTasks extends MNested2{
 
         if(!empty($arrParams['date_start_from'])) {
             $date_start_from = $arrParams['date_start_from'];
-            $where[] 	     = 't.date_start >= \''.$date_start_from.'\'';
+            $where[]         = 't.date_start >= \''.$date_start_from.'\'';
         }
 
         if(!empty($arrParams['date_start_to'])) {
             $date_start_to = $arrParams['date_start_to'];
-            $where[] 	   = 't.date_start <= \''.$date_start_to.'\'';
+            $where[]       = 't.date_start <= \''.$date_start_to.'\'';
         }
 
         if(!empty($arrParams['date_end_from'])) {
             $date_end_from = $arrParams['date_end_from'];
-            $where[] 	   = 't.date_end >= \''.$date_end_from.'\'';
-    
+            $where[]       = 't.date_end >= \''.$date_end_from.'\'';
         }
 
         if(!empty($arrParams['date_end_to'])) {
             $date_end_to = $arrParams['date_end_to'];
-            $where[] 	 = 't.date_end <= \''.$date_end_to.'\'';
+            $where[]     = 't.date_end <= \''.$date_end_to.'\'';
         }
 
         if(!empty($arrParams['trangthai'])) {
@@ -2219,15 +2277,16 @@ class MTasks extends MNested2{
             }else {
                 if(in_array(5, $trangthai_arr)) {
                     if(($key = array_search(5, $trangthai_arr)) !== false) unset($trangthai_arr[$key]);
-                    $where_ext = "  AND TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') > 0";
+                    $where_clause[] = "TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') > 0";
                 }
                 if(in_array(6, $trangthai_arr)) {
                     if(($key = array_search(5, $trangthai_arr)) !== false) unset($trangthai_arr[$key]);
-                    $where_ext = "  AND TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') <= 0";
+                    $where_clause[] = "TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') <= 0";
                 }
             }
 
-            $where[] = 't.trangthai IN ('.implode(',', $trangthai_arr).')' . $where_ext;
+            $where_clause[] = 't.trangthai IN ('.implode(',', $trangthai_arr).')';
+            $where[] = '('.implode(' AND ', $where_clause).')';
         }
 
         if(!empty($arrParams['customers'])) {
@@ -2248,7 +2307,7 @@ class MTasks extends MNested2{
             $where[]  = 't.pheduyet IN ('.$pheduyet.')';
         }
 
-        $phppos_tasks = $this->db->dbprefix($this->_table);
+         $phppos_tasks = $this->db->dbprefix($this->_table);
 
         if(!empty($arrParams['implement'])) {
             $implement = $arrParams['implement'];
@@ -2284,56 +2343,60 @@ class MTasks extends MNested2{
                     $task_ids[] = $val['id'];
 
                 $where[] = 't.id IN ('.implode(',', $task_ids).')';
-            }
+            }else
+                $where[] = 't.id = -1';
 
         }
 
         if(!empty($arrParams['xem'])) {
-            $implement = $arrParams['implement'];
-            $this->db->select("r.task_id")
-                    ->from('task_user_relations AS r')
-                    ->where('r.user_id IN ('.$implement.')')
-                    ->where('r.is_implement = 1');
+                $xem = $arrParams['xem'];
+                $this->db->select("r.task_id")
+                        ->from('task_user_relations AS r')
+                        ->where('r.user_id IN ('.$xem.')')
+                        ->where('r.is_xem = 1');
 
-            $query = $this->db->get();
-            $resultTmp = $query->result_array();
-            $this->db->flush_cache();
-            if(!empty($resultTmp)) {
-                $task_ids = array();
-                foreach($resultTmp as $val)
-                    $task_ids[] = $val['task_id'];
-
-                $task_ids = implode(', ', $task_ids);
-                $sql = "SELECT t.id
-                        FROM $phppos_tasks AS t
-                        INNER JOIN (
-                            SELECT id, lft, rgt, project_id
-                            FROM $phppos_tasks
-                            WHERE id IN ($task_ids)
-                        ) AS tmp
-                        ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt";
-
-                $query  = $this->db->query($sql);
-                $resTmp = $query->result_array();
+                $query = $this->db->get();
+                $resultTmp = $query->result_array();
                 $this->db->flush_cache();
+                if(!empty($resultTmp)) {
+                    $task_ids = array();
+                    foreach($resultTmp as $val)
+                        $task_ids[] = $val['task_id'];
 
-                $task_ids = array();
-                foreach($resTmp as $val)
-                    $task_ids[] = $val['id'];
+                    $task_ids = implode(', ', $task_ids);
+                    $sql = "SELECT t.id
+                            FROM $phppos_tasks AS t
+                            INNER JOIN (
+                                SELECT id, lft, rgt, project_id
+                                FROM $phppos_tasks
+                                WHERE id IN ($task_ids)
+                            ) AS tmp
+                            ON t.project_id = tmp.project_id AND t.lft >= tmp.lft AND t.rgt <= tmp.rgt";
 
-                $where[] = 't.id IN ('.implode(',', $task_ids).')';
+                    $query  = $this->db->query($sql);
+                    $resTmp = $query->result_array();
+                    $this->db->flush_cache();
+
+                    $task_ids = array();
+                    foreach($resTmp as $val)
+                        $task_ids[] = $val['id'];
+
+                    $where[] = 't.id IN ('.implode(',', $task_ids).')';
+                }else
+                    $where[] = 't.id = -1';
+
             }
 
-        }
-
-
         if(!empty($arrParams['progress']) && $arrParams['progress'] != '-1,0,1,2') {
-            $sql = 'SELECT task_id
-                    FROM ' . $this->db->dbprefix(task_progress) .
-                  ' WHERE trangthai IN ('.$arrParams['progress'].')';
+                if($arrParams['progress'] == 'zero')
+                    $arrParams['progress'] = '0';
 
-            $where[] = 't.id IN ('.$sql.')';
-        }
+                $sql = 'SELECT task_id
+                        FROM ' . $this->db->dbprefix(task_progress) .
+                      ' WHERE trangthai IN ('.$arrParams['progress'].')';
+
+                $where[] = 't.id IN ('.$sql.')';
+            }
 
         return $where;
 

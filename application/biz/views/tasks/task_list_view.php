@@ -24,8 +24,8 @@
                             <option value="month">Trong tháng</option>
                             <option value="year">Trong năm</option>
                         </select>
-                        <button name="btn_advance_project" id="btn_advance_project" class="btn btn-primary btn-lg">Nâng cao</button>
                         <button name="statistic" class="btn btn-primary btn-lg statistic" id="btn_statistic">Thống kê</button>
+                        <button name="btn_advance_project" id="btn_advance_project" class="btn btn-primary btn-lg">Nâng cao</button>
                         <input type="hidden" id="s_keywords" />
                         <input type="hidden" id="s_date_start" value="all" />
                         <input type="hidden" id="s_date_start_radio" value="simple" />
@@ -99,7 +99,7 @@
                                 <th align="center" style="width: 10%;" data-field="prioty">Ưu tiên</th>
                                 <th align="center" style="width: 100px;" data-field="date_start">Bắt đầu</th>
                                 <th align="center" style="width: 100px;" data-field="date_end">Kết thúc</th>
-                                <th align="center" style="width: 270px;" data-field="progress">Tiến độ</th>
+                                <th align="center" style="width: 275px;" data-field="progress">Tiến độ</th>
                                 <th align="center" style="width: 10%;" data-field="trangthai">Tình trạng</th>
                                 <th align="center" style="width: 15%;">Phụ trách</th>
                             </tr>

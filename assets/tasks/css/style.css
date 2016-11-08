@@ -198,7 +198,7 @@ button[name="statistic"]:hover, button[name="statistic"]:focus{
 }
 
 #project_grid_table [name="submitf"] {
-    float: left;
+    float: right;
 }
 
 #template_list .panel-heading {
@@ -1659,7 +1659,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 #project_grid_table .search_keywords {
-    width: 300px;
+    width: 190px;
     margin-bottom: 5px;
     float: left;
     margin-right: 10px;
@@ -1672,8 +1672,8 @@ body::-webkit-scrollbar-thumb {
 }
 
 #project_grid_table .search_date_type {
-    width: 300px;
-    float: right;
+    width: 120px;
+    float: left;
 }
 
 #project_grid_table .btn.statistic {

@@ -490,6 +490,24 @@
 			 						  {name:"duration",   label:"Số ngày",   align: "center" },
 			 						  {name:"add",        label:"",          width:44 }
 			 				   ];
+
+                gantt.config.scale_unit = "month";
+                gantt.config.step = 1;
+                gantt.config.date_scale = "%F, %Y";
+                gantt.config.min_column_width = 50;
+
+                gantt.config.scale_height = 90;
+
+                var weekScaleTemplate = function(date){
+                    var dateToStr = gantt.date.date_to_str("%d %M");
+                    var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
+                    return dateToStr(date) + " - " + dateToStr(endDate);
+                };
+
+                gantt.config.subscales = [
+                    {unit:"week", step:1, template:weekScaleTemplate},
+                    {unit:"day", step:1, date:"%D" }
+                ];
 			   
 			 
 			   gantt.init("gantt_here");
@@ -548,7 +566,7 @@
 		}else {
 			toastr.success('Cập nhật thành công!', 'Thông báo');
             $('#my_modal').modal('toggle');
-			load_task(1,'clearAll');
+			load_task(1);
 		}
 	}
 
