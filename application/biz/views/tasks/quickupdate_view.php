@@ -14,6 +14,7 @@
     $prioty 	= $item['prioty'];
     $pheduyet   = $item['pheduyet'];
     $date_finish= $item['date_finish'];
+    $created_by_name = $item['created_by_name'];
     $pheduyet_note = nl2br($item['pheduyet_note']);
     $project_name  = $project_item['name'];
 

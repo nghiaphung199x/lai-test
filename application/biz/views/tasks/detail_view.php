@@ -16,6 +16,8 @@ $pheduyet   = $item['pheduyet'];
 $date_finish= $item['date_finish'];
 $pheduyet_note = nl2br($item['pheduyet_note']);
 $project_name  = $project_item['name'];
+$created_by_name = $item['created_by_name'];
+
 
 $task_permission = $user_info['task_permission'];
 

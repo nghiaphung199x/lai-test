@@ -7,7 +7,7 @@ class MTaskPersonal extends CI_Model{
 
     protected $_prioty          = null;
     protected $_trangthai       = null;
-
+    protected $_trangthai_type  = null;
 
     public function __construct(){
         parent::__construct();
@@ -27,6 +27,17 @@ class MTaskPersonal extends CI_Model{
             'username' 		=> 'e.username',
         );
 
+        $this->_trangthai_type = array(
+            'cancel' => array('3'), // đóng, dừng
+            'not-done' => array('4'), // không thực hiện
+            'unfulfilled' => array('0'), // chưa thực hiện
+            'processing' => array('1'), // đang tiến hành
+            'slow_proccessing' => array('0','1','5'), // chậm tiến độ
+            'finish' => array('2'), // hoàn thành
+            'slow-finish' => array('2','5'), // hoàn thành nhưng chậm tiến độ
+            'completed-on-schedule'=> array('2','6'), // hoàn thành đúng tiến độ
+        );
+
         $this->_prioty    = lang('task_prioty');
         $this->_trangthai = lang('task_trangthai');
 
@@ -35,6 +46,7 @@ class MTaskPersonal extends CI_Model{
     public function statistic($arrParams = null, $options = null) {
         $id_admin = $this->_id_admin;
         if($options['task'] == 'task-by-project') {
+            $where = $this->get_where_from_filter($arrParams);
             $this->db->select("COUNT(t.id) AS totalItem")
                      ->from($this->_table . ' AS t');
 
@@ -42,9 +54,6 @@ class MTaskPersonal extends CI_Model{
                 $this->db->where("CONCAT(',',t.implements,',') LIKE '%,$id_admin,%'");
             elseif($arrParams['data_table'] == 'follow')
                 $this->db->where("CONCAT(',',t.xems,',') LIKE '%,$id_admin,%'");
-
-            // filter
-            $where = $this->get_where_from_filter($arrParams);
 
             if(!empty($where)) {
                 foreach($where as $wh)
@@ -56,6 +65,38 @@ class MTaskPersonal extends CI_Model{
             $result = $query->row_array();
             $result = $result['totalItem'];
         }elseif($options['task'] == 'task-by-project-trangthai') {
+            $type = $this->_trangthai_type[$options['type']];
+            if(!empty($arrParams['trangthai'])) {
+                $trangthai = $arrParams['trangthai'];
+                if($trangthai == 'zero')
+                    $trangthai = '0';
+
+                $trangthai_arr = explode(',', $trangthai);
+                if((array_search('5', $trangthai_arr)) == false && (array_search('6', $trangthai_arr)) == false) {
+                    $trangthai_arr[] = '5';
+                    $trangthai_arr[] = '6';
+                }
+            }else
+                $trangthai_arr = array('0','1','2','3','4','5','6');
+
+            foreach($trangthai_arr as $val) {
+                if(in_array($val, $type)) {
+                    if(($key = array_search($val, $type)) !== false) {
+                        unset($type[$key]);
+                    }
+                }
+            }
+
+            if(count($type) == 0) {
+                $arrParams['trangthai'] = implode(',', $this->_trangthai_type[$options['type']]);
+                if($arrParams['trangthai'] == '0'){
+                    $arrParams['trangthai'] = 'zero';
+                }
+
+            }else
+                $arrParams['trangthai'] = '-1';
+
+            $where = $this->get_where_from_filter($arrParams);
             $this->db->select("COUNT(t.id) AS totalItem")
                      ->from($this->_table . ' AS t');
 
@@ -63,33 +104,6 @@ class MTaskPersonal extends CI_Model{
                 $this->db->where("CONCAT(',',t.implements,',') LIKE '%,$id_admin,%'");
             elseif($arrParams['data_table'] == 'follow')
                 $this->db->where("CONCAT(',',t.xems,',') LIKE '%,$id_admin,%'");
-
-            if($options['type'] == 'cancel') // đóng, dừng
-                $trangthai = 3;
-            elseif($options['type'] == 'not-done') // không thực hiện
-                $trangthai = 4;
-            elseif($options['type'] == 'unfulfilled') // chưa thực hiện
-                $trangthai = 'zero';
-            elseif($options['type'] == 'processing') // đang tiến hành
-                $trangthai = 1;
-            elseif($options['type'] == 'slow_proccessing') // chậm tiến độ
-                $trangthai = 5;
-            elseif($options['type'] == 'finish') // hoàn thành
-                $trangthai = 2;
-            elseif($options['type'] == 'slow-finish') // hoàn thành nhưng chậm tiến độ
-                $trangthai = 6;
-
-            if(!empty($arrParams['trangthai'])) {
-                $trangthai_arr = explode(',', $arrParams['trangthai']);
-                if(in_array($trangthai, $trangthai_arr)) {
-                    $arrParams['trangthai'] = $trangthai;
-                }else
-                    $arrParams['trangthai'] = '-1';
-
-            }else
-                $arrParams['trangthai'] = $trangthai;
-
-            $where = $this->get_where_from_filter($arrParams);
 
             if(!empty($where)) {
                 foreach($where as $wh)
@@ -109,11 +123,12 @@ class MTaskPersonal extends CI_Model{
     public function countItem($arrParams = null, $options = null) {
         if($options == null) {
             $id_admin = $this->_id_admin;
+            $where = $this->get_where_from_filter($arrParams);
             $this->db -> select('COUNT(t.id) AS totalItem')
                       -> from($this->_table . ' AS t');
 
             $this->db->where("CONCAT(',',t.implements,',') LIKE '%,$id_admin,%'");
-            $where = $this->get_where_from_filter($arrParams);
+
             if(!empty($where)) {
                 foreach($where as $wh)
                     $this->db->where($wh);
@@ -161,6 +176,9 @@ class MTaskPersonal extends CI_Model{
                     $user_ids = array_merge($user_ids, $xem_ids);
                 }
 
+                $user_ids[] = $result['created_by'];
+                $user_ids = array_unique($user_ids);
+
                 if(!empty($user_ids)) {
                     $users = $tblUsers->getItems(array('user_ids'=>$user_ids));
                 }
@@ -175,13 +193,13 @@ class MTaskPersonal extends CI_Model{
                         $xems[$user_id] = $users[$user_id];
                 }
 
-                $result['customers']     = $customers;
-                $result['implements']    = $implements;
-                $result['xems']          = $xems;
-                $result['implement_ids'] = $implement_ids;
-                $result['xem_ids']       = $xem_ids;
-                $result['files']         = $tblFiles->getItems(array('task_ids'=>array($arrParams['id'])), array('task'=>'by-tasks'));
-
+                $result['customers']       = $customers;
+                $result['implements']      = $implements;
+                $result['xems']            = $xems;
+                $result['implement_ids']   = $implement_ids;
+                $result['xem_ids']         = $xem_ids;
+                $result['created_by_name'] = $users[$user_id]['username'];
+                $result['files']           = $tblFiles->getItems(array('task_ids'=>array($arrParams['id'])), array('task'=>'by-tasks'));
             }
         }elseif($options['task'] == 'information') {
             $this->db->select("t.*")
@@ -202,7 +220,7 @@ class MTaskPersonal extends CI_Model{
         $paginator = $arrParams['paginator'];
         if($options == null) {
             $id_admin = $this->_id_admin;
-
+            $where = $this->get_where_from_filter($arrParams);
             $this->db->select("DATE_FORMAT(t.date_start, '%d-%m-%Y') as start_date", FALSE);
             $this->db->select("DATE_FORMAT(t.date_end, '%d-%m-%Y') as end_date", FALSE);
             $this->db->select("DATE_FORMAT(t.date_finish, '%d-%m-%Y') as finish_date", FALSE);
@@ -223,7 +241,6 @@ class MTaskPersonal extends CI_Model{
                           ->order_by('t.date_start', 'DESC');
             }
 
-            $where = $this->get_where_from_filter($arrParams);
             if(!empty($where)) {
                 foreach($where as $wh)
                     $this->db->where($wh);
@@ -433,63 +450,27 @@ class MTaskPersonal extends CI_Model{
         }
 
         if(!empty($arrParams['trangthai'])) {
-            if($arrParams['trangthai']  == 'zero')
+            $current_now = date('Y-m-d H:i:s');
+            if($arrParams['trangthai'] == 'zero')
                 $arrParams['trangthai'] = '0';
 
-            $current_now = date('Y-m-d H:i:s');
             $trangthai_arr = explode(',', $arrParams['trangthai']);
-
-            if(in_array(2, $trangthai_arr)) {
-                if(($key = array_search(6, $trangthai_arr)) !== false) {
-                    unset($trangthai_arr[$key]);
-                }
-            }
-
-            if(in_array(0, $trangthai_arr) && in_array(1, $trangthai_arr)) {
-                if(($key = array_search(5, $trangthai_arr)) !== false) {
-                    unset($trangthai_arr[$key]);
-                }
-            }
-
-            if(!in_array(5, $trangthai_arr) && !in_array(6, $trangthai_arr)) {
-                $where[] = 't.trangthai IN ('.$arrParams['trangthai'].')';
+            if(in_array(5, $trangthai_arr) && in_array(6, $trangthai_arr)) {
+                if(($key = array_search(5, $trangthai_arr)) !== false) unset($trangthai_arr[$key]);
+                if(($key = array_search(6, $trangthai_arr)) !== false) unset($trangthai_arr[$key]);
             }else {
-                $where_clause = array();
                 if(in_array(5, $trangthai_arr)) {
-                    if(($key = array_search(0, $trangthai_arr)) !== false) {
-                        unset($trangthai_arr[$key]);
-                    }
-
-                    if(($key = array_search(1, $trangthai_arr)) !== false) {
-                        unset($trangthai_arr[$key]);
-                    }
-
-                    if(($key = array_search(5, $trangthai_arr)) !== false) {
-                        unset($trangthai_arr[$key]);
-                    }
-
-                    $where_clause[] = "t.trangthai IN (0,1) AND TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') > 0";
+                    if(($key = array_search(5, $trangthai_arr)) !== false) unset($trangthai_arr[$key]);
+                    $where_clause[] = "TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') > 0";
                 }
-
                 if(in_array(6, $trangthai_arr)) {
-                    if(($key = array_search(2, $trangthai_arr)) !== false) {
-                        unset($trangthai_arr[$key]);
-                    }
-
-                    if(($key = array_search(6, $trangthai_arr)) !== false) {
-                        unset($trangthai_arr[$key]);
-                    }
-
-                    $where_clause[] = "t.trangthai IN (2) AND TIMESTAMPDIFF(SECOND, t.date_finish, '$current_now') > 0";
+                    if(($key = array_search(5, $trangthai_arr)) !== false) unset($trangthai_arr[$key]);
+                    $where_clause[] = "TIMESTAMPDIFF(SECOND, t.date_end, '$current_now') <= 0";
                 }
-
-                if(!empty($trangthai_arr)) {
-                    $where_clause[] = 't.trangthai IN ('.implode(',', $trangthai_arr).')';
-                }
-
-                $where_clause = implode(' OR ', $where_clause);
-                $where[] = $where_clause;
             }
+
+            $where_clause[] = 't.trangthai IN ('.implode(',', $trangthai_arr).')';
+            $where[] = '('.implode(' AND ', $where_clause).')';
         }
 
         if(!empty($arrParams['customers'])) {

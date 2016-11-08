@@ -8,7 +8,7 @@ class MTasks extends MNested2{
 	protected $_fields 		    = array();
     protected $_prioty          = null;
     protected $_trangthai       = null;
-    protected $_trangthai_type  = nulll;
+    protected $_trangthai_type  = null;
 
 	public function __construct(){
 		parent::__construct();
@@ -218,7 +218,7 @@ class MTasks extends MNested2{
             if(count($type) == 0) {
                 $arrParams['trangthai'] = implode(',', $this->_trangthai_type[$options['type']]);
                 if($arrParams['trangthai'] == '0')
-                    $arrParams['trangthai'] == 'zero';
+                    $arrParams['trangthai'] = 'zero';
             }else
                 $arrParams['trangthai'] = '-1';
 
@@ -470,7 +470,7 @@ class MTasks extends MNested2{
 			if($arrParam['parent'] == 0) {
 				$data['name']  					= 		stripslashes($arrParam['name']);
 				$data['detail'] 				= 		stripslashes($arrParam['detail']);
-				$data['percent']				= 		1;
+				$data['percent']				= 		100;
 				$data['progress']				= 		$arrParam['progress'];
 				$data['lft']					= 		0;
 				$data['rgt']					= 		1;
@@ -1106,7 +1106,7 @@ class MTasks extends MNested2{
 					$tyle = '';
 					if($val['parent'] > 0)
 						$tyle = ($val['percent']) . '% <strong> '.$task_list[$val['parent']]['name'].'</strong>';
-					
+
 					$date_time   = $val['start_date'] . ' đến ' . $val['end_date'];
 					$date_finish = '';
 					if($val['trangthai'] == 0 || $val['trangthai'] == 1){	// chưa thực hiên + đang thực hiện
@@ -1159,7 +1159,7 @@ class MTasks extends MNested2{
 					
 					$tooltip[] = '<strong>Phụ trách</strong>: '.$val['implement'];
 					$val['tooltip'] = implode('<br />', $tooltip);
-
+                    $val['progress'] = $val['progress'] / 100;
 				}
 			}
 

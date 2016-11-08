@@ -136,9 +136,11 @@ $( document ).ready(function() {
     // statistic click
     $('body').on('click','.statistic',function(){
         if(data_table == 'task_list') {
-            var data        = get_data_hidden();
-            var url         = BASE_URL + 'tasks/tasks_statistic';
-            var s_trangthai = $('#s_trangthai');
+            var url                 = BASE_URL + 'tasks/tasks_statistic';
+            var search_date_type    = $('#search_date_type').val();
+
+            var data                =   new Object();
+            data.keywords           =   $('#s_keywords').val();
         }else {
             var task_name       = $(this).attr('data-name');
             var project_id      = $(this).attr('data-id');
@@ -154,50 +156,50 @@ $( document ).ready(function() {
 
             data.project_id         = project_id;
             data.keywords           = tr_element.find('.s_keywords').val();
+        }
 
-            switch (search_date_type)
-            {
-                case 'today' : {
-                    var current_date = get_current_date();
-                    data.date_start_to = current_date + ' 23:59';
-                    data.date_end_from = current_date + ' 00:00';
+        switch (search_date_type)
+        {
+            case 'today' : {
+                var current_date = get_current_date();
+                data.date_start_to = current_date + ' 23:59';
+                data.date_end_from = current_date + ' 00:00';
 
-                    break;
-                }
-                case 'weekend' : {
-                    var firstDay = get_first_date_of_current_weekend();
-                    var lastDay = get_last_date_of_current_weekend();
+                break;
+            }
+            case 'weekend' : {
+                var firstDay = get_first_date_of_current_weekend();
+                var lastDay = get_last_date_of_current_weekend();
 
-                    data.date_start_to = lastDay + ' 23:59';
-                    data.date_end_from = firstDay + ' 00:00';
+                data.date_start_to = lastDay + ' 23:59';
+                data.date_end_from = firstDay + ' 00:00';
 
-                    break;
-                }
+                break;
+            }
 
-                case 'month' : {
-                    var firstDay = get_first_date_of_current_month();
-                    var lastDay = get_last_date_of_current_month();
+            case 'month' : {
+                var firstDay = get_first_date_of_current_month();
+                var lastDay = get_last_date_of_current_month();
 
-                    data.date_start_to = lastDay + ' 59:59';
-                    data.date_end_from = firstDay + ' 00:00';
+                data.date_start_to = lastDay + ' 59:59';
+                data.date_end_from = firstDay + ' 00:00';
 
-                    break;
-                }
+                break;
+            }
 
-                case 'year' : {
-                    var firstDay = get_first_date_of_current_year();
-                    var lastDay = get_last_date_of_current_year();
+            case 'year' : {
+                var firstDay = get_first_date_of_current_year();
+                var lastDay = get_last_date_of_current_year();
 
-                    data.date_start_to = lastDay + ' 59:59';
-                    data.date_end_from = firstDay + ' 00:00';
+                data.date_start_to = lastDay + ' 59:59';
+                data.date_end_from = firstDay + ' 00:00';
 
-                    break;
-                }
+                break;
+            }
 
-                default : {
-                    data.date_start_to = '';
-                    data.date_end_from = '';
-                }
+            default : {
+                data.date_start_to = '';
+                data.date_end_from = '';
             }
         }
 
@@ -368,7 +370,6 @@ $( document ).ready(function() {
     });
 
 });
-
 
 function do_quick_search(data_parent) {
     var element_parent       = $('tr[data-parent='+data_parent+']');

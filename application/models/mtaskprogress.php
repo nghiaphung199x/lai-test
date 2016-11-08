@@ -313,7 +313,7 @@ class MTaskProgress extends CI_Model{
 			if($parent_id > 0) {
 				$new_parent_progress = 0;
 				foreach($last_level as $task) {
-					$new_parent_progress = $new_parent_progress + $task['percent'] * $task['progress'];
+					$new_parent_progress = $new_parent_progress + $task['percent'] * 0.01 * $task['progress'];
 				}
 
 				//update parent
@@ -323,7 +323,7 @@ class MTaskProgress extends CI_Model{
 				if(!empty($level)) {
 					foreach($level as &$l) {
 						foreach($l as &$task) {
-							if($parent_id == $task[id]) { 
+							if($parent_id == $task['id']) {
 								$task['progress'] = $new_parent_progress;
 								$parent_item = $task;
 								
@@ -355,7 +355,7 @@ class MTaskProgress extends CI_Model{
 						'trangthai' 		 => $parent_item['trangthai'],
 						'prioty' 			 => $parent_item['prioty'],
 						'progress' 			 => $parent_item['progress'],
-						'pheduyet'			 => 3,
+						'pheduyet'			 => 2,
 						'note' 				 => '',
 						'reply' 			 => '',
 						'created'			 => @date("Y-m-d H:i:s"),
@@ -394,7 +394,7 @@ class MTaskProgress extends CI_Model{
 					'trangthai' 		 => $task['trangthai'],
 					'prioty' 			 => $task['prioty'],
 					'progress' 			 => $task['progress'],
-					'pheduyet'			 => 3,
+					'pheduyet'			 => $arrParam['pheduyet'],
 					'note' 				 => '',
 					'reply' 			 => '',
 					'created'			 => @date("Y-m-d H:i:s"),
@@ -414,7 +414,6 @@ class MTaskProgress extends CI_Model{
 		if(!empty($this->_items)){
 			$this->db->insert_batch($this->_table, $this->_items);
 		}
-			
 	}
 
 	function handling($arrParam = null, $options = null) {
@@ -422,7 +421,7 @@ class MTaskProgress extends CI_Model{
 			$progress_item = $this->getItem(array('id'=>$arrParam['id']), array('task'=>'public-info'));
 		elseif($options['task'] == 'progress'){
 			$progress_item 			   = $arrParam;
-			$progress_item['progress'] = $progress_item['progress'];
+
 		}
 		$taskTable = $this->model_load_model('MTasks');
 		$task = $taskTable->getItem(array('id'=>$progress_item['task_id']), array('task'=>'public-info'));

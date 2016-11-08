@@ -10,6 +10,7 @@ $duration 	= $item['duration'];
 $trangthai  = $item['trangthai'];
 $prioty 	= $item['prioty'];
 $date_finish= $item['date_finish'];
+$created_by_name = $item['created_by_name'];
 
 $trangthai_arr = array('Chưa thực hiện', 'Đang thực hiện', 'Hoàn thành', 'Đóng/dừng', 'Không thực hiện');
 $prioty_arr    = array('Rất cao', 'Cao', 'Trung bình', 'Thấp', 'Rất thấp');

@@ -65,10 +65,10 @@ if($item['lft'] != $item['rgt'] - 1)
 
                         </div>
                         <div class="col-lg-12">
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label class="col-md-3 col-lg-2 control-label">Ghi chú</label>
                                 <div class="col-md-9 col-lg-10">
-                                    <textarea name="note" class="form-control"></textarea>
+                                    <textarea name="note" class="form-control" style="margin-bottom: 0;"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -77,7 +77,7 @@ if($item['lft'] != $item['rgt'] - 1)
                 </div>
             </form>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" style="padding-top: 0;">
             <a href="javascript:;" onclick="save_tiendo();" class="btn btn-primary">Lưu</a>
         </div>
     </div>

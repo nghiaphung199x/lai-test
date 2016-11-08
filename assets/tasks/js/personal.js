@@ -107,104 +107,7 @@ $( document ).ready(function() {
     // search date type
     $('body').on('change','#search_date_type',function(){
         var value                = $(this).val();
-
-        var s_date_start_to      = $('#s_date_start_to');
-        var s_date_start_from    = $('#s_date_start_from');
-        var s_date_end_to        = $('#s_date_end_to');
-        var s_date_end_from      = $('#s_date_end_from');
-        var s_trangthai          = $('#s_trangthai');
-        var s_date_start_radio   = $('#s_date_start_radio');
-        var s_date_end_radio     = $('#s_date_end_radio');
-        var s_status             = $('#s_status');
-        var s_progress           = $('#s_progress');
-        var s_customer           = $('#s_customer');
-        var s_trangthai          = $('#s_trangthai');
-        var s_implement          = $('#s_implement');
-        var s_xem                = $('#s_xem');
-
-        var s_trangthai_html     = $('#s_trangthai_html');
-        var s_customer_html      = $('#s_customer_html');
-        var s_implement_html     = $('#s_implement_html');
-        var s_xem_html           = $('#s_xem_html');
-
-        var data = {class: 'trangthai', value: 0, title: 'Chưa thực hiện'};
-        var span_trangthai_0 = get_item_autocomplete(data);
-
-        var data = {class: 'trangthai', value: 1, title: 'Đang thực hiện'};
-        var span_trangthai_1 = get_item_autocomplete(data);
-
-        //reset some element input
-        s_trangthai.val('');
-        s_trangthai_html.html('');
-        s_customer.val('');
-        s_customer_html.html('');
-        s_implement.val('');
-        s_implement_html.html('');
-        s_xem.val('');
-        s_xem_html.html('');
-
-        switch(value) {
-            case 'today':
-                var current_date = get_current_date();
-                s_date_start_to.val(current_date + ' 23:59');
-                s_date_end_from.val(current_date + ' 00:00');
-                s_trangthai.val('0,1');
-                s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
-
-                s_date_start_radio.val('complex');
-                s_date_end_radio.val('complex');
-                break;
-
-            case 'weekend':
-                var firstDay = get_first_date_of_current_weekend();
-                var lastDay = get_last_date_of_current_weekend();
-
-                s_date_start_to.val(lastDay + ' 23:59');
-                s_date_end_from.val(firstDay + ' 00:00');
-                s_trangthai.val('0,1');
-                s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
-
-                s_date_start_radio.val('complex');
-                s_date_end_radio.val('complex');
-
-                break;
-
-            case 'month':
-                var firstDay = get_first_date_of_current_month();
-                var lastDay = get_last_date_of_current_month();
-
-                s_date_start_to.val(lastDay + ' 59:59');
-                s_date_end_from.val(firstDay + ' 00:00');
-                s_trangthai.val('0,1');
-                s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
-
-                s_date_start_radio.val('complex');
-                s_date_end_radio.val('complex');
-                break;
-
-            case 'year':
-                var firstDay = get_first_date_of_current_year();
-                var lastDay = get_last_date_of_current_year();
-
-                s_date_start_to.val(lastDay + ' 59:59');
-                s_date_end_from.val(firstDay + ' 00:00');
-                s_trangthai.val('0,1');
-                s_trangthai_html.html(span_trangthai_0 + span_trangthai_1);
-
-                s_date_start_radio.val('complex');
-                s_date_end_radio.val('complex');
-                break;
-
-            default:
-                s_date_start_to.val('');
-                s_date_end_from.val('');
-                s_trangthai.val('');
-                s_trangthai_html.html('');
-
-                s_date_start_radio.val('simple');
-                s_date_end_radio.val('simple');
-        }
-        load_list(data_table, 1);
+        do_personal_search(value)
     });
 
     // event when modal close
@@ -226,20 +129,54 @@ $( document ).ready(function() {
 
     // statistic click
     $('body').on('click','.statistic',function(){
-        var data = new Object();
-        // get filter input
-        data.keywords         = $.trim($('#s_keywords').val());
-        data.date_start_from  = $.trim($('#s_date_start_from').val());
-        data.date_start_to    = $.trim($('#s_date_start_to').val());
-        data.date_end_from    = $.trim($('#s_date_end_from').val());
-        data.date_end_to      = $.trim($('#s_date_end_to').val());
-        data.trangthai        = $.trim($('#s_trangthai').val());
-        data.customers        = $.trim($('#s_customer').val());
-        data.implement        = $.trim($('#s_implement').val());
-        data.xem              = $.trim($('#s_xem').val());
-        data.data_table       = data_table;
-        if(data.trangthai == '0')
-            data.trangthai == 'zero';
+        var data                =   new Object();
+        var search_date_type    = $('#search_date_type').val();
+
+        data.keywords           = $.trim($('#s_keywords').val());
+        switch (search_date_type)
+        {
+            case 'today' : {
+                var current_date = get_current_date();
+                data.date_start_to = current_date + ' 23:59';
+                data.date_end_from = current_date + ' 00:00';
+
+                break;
+            }
+            case 'weekend' : {
+                var firstDay = get_first_date_of_current_weekend();
+                var lastDay = get_last_date_of_current_weekend();
+
+                data.date_start_to = lastDay + ' 23:59';
+                data.date_end_from = firstDay + ' 00:00';
+
+                break;
+            }
+
+            case 'month' : {
+                var firstDay = get_first_date_of_current_month();
+                var lastDay = get_last_date_of_current_month();
+
+                data.date_start_to = lastDay + ' 59:59';
+                data.date_end_from = firstDay + ' 00:00';
+
+                break;
+            }
+
+            case 'year' : {
+                var firstDay = get_first_date_of_current_year();
+                var lastDay = get_last_date_of_current_year();
+
+                data.date_start_to = lastDay + ' 59:59';
+                data.date_end_from = firstDay + ' 00:00';
+
+                break;
+            }
+
+            default : {
+                data.date_start_to = '';
+                data.date_end_from = '';
+            }
+        }
 
         $.ajax({
             type: "POST",
@@ -247,14 +184,14 @@ $( document ).ready(function() {
             data: data,
             success: function(string){
                 var result = $.parseJSON(string);
-                $('#task_report li.all span').text(result.all);
-                $('#task_report li.cancel span').text(result.cancel);
-                $('#task_report li.not-done span').text(result.not_done);
-                $('#task_report li.unfulfilled span').text(result.unfulfilled);
-                $('#task_report li.processing span').text(result.processing);
-                $('#task_report li.slow_proccessing span').text(result.slow_proccessing);
-                $('#task_report li.finish span').text(result.finish);
-                $('#task_report li.slow-finish span').text(result.slow_finish);
+                $('#task_report li.all a').text(result.all);
+                $('#task_report li.cancel a').text(result.cancel);
+                $('#task_report li.not-done a').text(result.not_done);
+                $('#task_report li.unfulfilled a').text(result.unfulfilled);
+                $('#task_report li.processing a').text(result.processing);
+                $('#task_report li.slow_proccessing a').text(result.slow_proccessing);
+                $('#task_report li.finish a').text(result.finish);
+                $('#task_report li.slow-finish a').text(result.slow_finish);
 
                 $("#task_report").modal();
             }
@@ -503,6 +440,90 @@ function set_form_input() {
 
     html = s_xem_html.html();
     $(html).insertBefore( "#xem_result" );
+}
+
+function do_personal_search(value) {
+    var s_date_start_to      = $('#s_date_start_to');
+    var s_date_start_from    = $('#s_date_start_from');
+    var s_date_end_to        = $('#s_date_end_to');
+    var s_date_end_from      = $('#s_date_end_from');
+    var s_trangthai          = $('#s_trangthai');
+    var s_date_start_radio   = $('#s_date_start_radio');
+    var s_date_end_radio     = $('#s_date_end_radio');
+    var s_status             = $('#s_status');
+    var s_progress           = $('#s_progress');
+    var s_customer           = $('#s_customer');
+    var s_trangthai          = $('#s_trangthai');
+    var s_implement          = $('#s_implement');
+    var s_xem                = $('#s_xem');
+
+    var s_trangthai_html     = $('#s_trangthai_html');
+    var s_customer_html      = $('#s_customer_html');
+    var s_implement_html     = $('#s_implement_html');
+    var s_xem_html           = $('#s_xem_html');
+
+    //reset some element input
+    s_trangthai.val('');
+    s_trangthai_html.html('');
+    s_customer.val('');
+    s_customer_html.html('');
+    s_implement.val('');
+    s_implement_html.html('');
+    s_xem.val('');
+    s_xem_html.html('');
+
+    switch(value) {
+        case 'today':
+            var current_date = get_current_date();
+            s_date_start_to.val(current_date + ' 23:59');
+            s_date_end_from.val(current_date + ' 00:00');
+
+            s_date_start_radio.val('complex');
+            s_date_end_radio.val('complex');
+            break;
+
+        case 'weekend':
+            var firstDay = get_first_date_of_current_weekend();
+            var lastDay = get_last_date_of_current_weekend();
+
+            s_date_start_to.val(lastDay + ' 23:59');
+            s_date_end_from.val(firstDay + ' 00:00');
+
+            s_date_start_radio.val('complex');
+            s_date_end_radio.val('complex');
+
+            break;
+
+        case 'month':
+            var firstDay = get_first_date_of_current_month();
+            var lastDay = get_last_date_of_current_month();
+
+            s_date_start_to.val(lastDay + ' 59:59');
+            s_date_end_from.val(firstDay + ' 00:00');
+
+            s_date_start_radio.val('complex');
+            s_date_end_radio.val('complex');
+            break;
+
+        case 'year':
+            var firstDay = get_first_date_of_current_year();
+            var lastDay = get_last_date_of_current_year();
+
+            s_date_start_to.val(lastDay + ' 59:59');
+            s_date_end_from.val(firstDay + ' 00:00');
+
+            s_date_start_radio.val('complex');
+            s_date_end_radio.val('complex');
+            break;
+
+        default:
+            s_date_start_to.val('');
+            s_date_end_from.val('');
+
+            s_date_start_radio.val('simple');
+            s_date_end_radio.val('simple');
+    }
+    load_list('personal', 1);
 }
 
 function load_personal_comment(task_id, page) {

@@ -322,16 +322,16 @@
                 <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> <h4 class="modal-title" id="my_report_task">Thống kê công việc</h4> </div>
                 <div class="modal-body">
                     <ul>
-                        <li class="all">Công việc: <a>0</a></li>
-                        <li class="implement">Phụ trách: <a onclick="do_change_advance_search('implement');">0</a></li>
-                        <li class="xem">Theo dõi: <a onclick="do_change_advance_search('xem');">0</a></li>
-                        <li class="cancel">Đóng dừng: <a onclick="do_change_advance_search('cancel');">0</a></li>
-                        <li class="not-done">Không thực hiện: <a onclick="do_change_advance_search('not-done');">0</a></li>
-                        <li class="unfulfilled">Chưa thực hiện: <a onclick="do_change_advance_search('unfulfilled');">0</a></li>
-                        <li class="processing">Đang tiến hành: <a onclick="do_change_advance_search('processing');">0</a></li>
-                        <li class="slow_proccessing">Chậm tiến độ: <a onclick="do_change_advance_search('slow_proccessing');">0</a></li>
-                        <li class="finish">Đã hoàn thành: <a onclick="do_change_advance_search('finish');">0</a></li>
-                        <li class="slow-finish">Đã hoàn thành nhưng chậm tiến độ: <a onclick="do_change_advance_search('slow-finish');">0</a></li>
+                        <li class="all" onclick="do_change_advance_search(this,'all','task_list');">Công việc: <a>0</a></li>
+                        <li class="implement">Phụ trách: <a onclick="do_change_advance_search(this,'implement','task_list');">0</a></li>
+                        <li class="xem">Theo dõi: <a onclick="do_change_advance_search(this,'xem','task_list');">0</a></li>
+                        <li class="cancel">Đóng dừng: <a onclick="do_change_advance_search(this,'cancel','task_list');">0</a></li>
+                        <li class="not-done">Không thực hiện: <a onclick="do_change_advance_search(this,'not-done','task_list');">0</a></li>
+                        <li class="unfulfilled">Chưa thực hiện: <a onclick="do_change_advance_search(this,'unfulfilled','task_list');">0</a></li>
+                        <li class="processing">Đang tiến hành: <a onclick="do_change_advance_search(this,'processing','task_list');">0</a></li>
+                        <li class="slow_proccessing">Chậm tiến độ: <a onclick="do_change_advance_search(this,'slow_proccessing','task_list');">0</a></li>
+                        <li class="finish">Đã hoàn thành: <a onclick="do_change_advance_search(this,'finish','task_list');">0</a></li>
+                        <li class="slow-finish">Đã hoàn thành nhưng chậm tiến độ: <a onclick="do_change_advance_search(this,'slow-finish','task_list');">0</a></li>
                     </ul>
                 </div>
             </div>

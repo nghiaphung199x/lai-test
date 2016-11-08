@@ -200,7 +200,7 @@ function load_template_task_child(items) {
 			  var trangthai    = value.trangthai;
 			  var note    	   = value.note;
 
-			  var positive = parseFloat(progress) * 100;
+			  var positive = parseFloat(progress);
 			  var negative = 100 - positive;
 
 			  string[string.length] = '<tr>'
@@ -257,7 +257,7 @@ function load_template_task_list(items) {
             var note    	 = value.note;
             var project_name = value.project_name;
 
-            var positive = parseFloat(progress) * 100;
+            var positive = parseFloat(progress);
             var negative = 100 - positive;
 
             string[string.length] = '<tr>'
@@ -311,7 +311,7 @@ function load_template_project_grid(items) {
 			  var trangthai    = value.trangthai;
 			  var note    	   = value.note;
 			  
-			  var positive = parseFloat(progress) * 100;
+			  var positive = parseFloat(progress);
 			  var negative = 100 - positive;
 	 
 			  string[string.length] = '<tr data-tree="'+id+'">'
@@ -423,7 +423,7 @@ function load_template_personal(items) {
                 var note    	   = value.note;
             }
 
-            var positive = parseFloat(progress) * 100;
+            var positive = parseFloat(progress);
             var negative = 100 - positive;
 
             string[string.length] =    '<tr>'
@@ -1412,9 +1412,12 @@ function tiendoData(data) {
 		
 		countTiendo();
 		if(data.reload == 'true') {
+            var data_table = $('#project_grid_table').attr('data-table');
             if($('#current_project_id').length) {
                 var project_id = $('#task_form [name="project_id"]').val();
                 load_task_childs(project_id, 1);
+            }else if(data_table == 'task_list'){
+                load_list('task_list', 1);
             }else
                 load_task(1,'clearAll');
         }
@@ -1483,11 +1486,15 @@ function taskData(data) {
         toastr.success('Cập nhật thành công!', 'Thông báo');
         $('#my_modal').modal('toggle');
 
+        var data_table = $('#project_grid_table').attr('data-table');
+
         if($('#current_project_id').length){
             var project_id = $('#task_form [name="project_id"]').val();
             load_task_childs(project_id, 1);
+        }else if(data_table == 'task_list') {
+            load_list('task_list', 1);
         }else
-            load_task(1, 'clearAll');
+           load_task(1, 'clearAll');
     }
 }
 
@@ -1933,6 +1940,7 @@ function get_two_dates(date) {
 }
 
 function do_change_advance_search(obj, type, options) {
+
     var class_name     = $(obj).attr('class');
     if(class_name != 'unclick') {
         var project_id     = $('#current_project_id').val();
@@ -1960,7 +1968,12 @@ function do_change_advance_search(obj, type, options) {
 
         switch(type) {
             case 'all':
-                do_quick_search(project_id);
+                if (typeof options == 'undefined')
+                    do_quick_search(project_id);
+                else {
+                    var search_date_type = $('#search_date_type').val();
+                    do_personal_search(search_date_type);
+                }
                 break;
 
             case 'implement':
