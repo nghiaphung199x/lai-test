@@ -95,11 +95,13 @@ $lang['module_tasks']='Công việc';
 $lang['module_tasks_desc']='&nbsp';
 $lang['module_tasks_view'] 	   	       = 'Danh sách Dự án/Công việc';
 $lang['module_update_project'] 	   	   = 'Cập nhật Dự án';
-$lang['module_permisson_project'] 	   = 'Cấp phép cập nhật công việc trong dự án';
 $lang['module_update_all_task'] 	   = 'Cập nhật toàn bộ công việc';
-$lang['module_permission_all_task']    = 'Cấp phép cập nhật công việc con';
 $lang['module_update_brand_task'] 	   = 'Cập nhật công việc trong dự án phụ trách';
-$lang['module_permission_brand_task']  = 'Cấp phép cập nhật công việc trong dự án phụ trách';
+$lang['module_permisson_create_task']  = 'Cấp phép cập nhật công việc';
+$lang['module_template_task_view'] 	   = 'Danh sách mẫu công việc';
+$lang['module_update_task_template']   = 'Cập nhật mẫu công việc';
+$lang['module_personal_task_view'] 	   = 'Danh sách công việc cá nhân';
+$lang['module_update_personal_task']   = 'Cập nhật công việc cá nhân';
 
 //end task
 $lang['module_items_transfer_pending'] = 'Duyệt đơn chuyển kho';

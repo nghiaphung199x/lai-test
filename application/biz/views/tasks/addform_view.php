@@ -28,7 +28,7 @@
 			if(in_array('update_all_task', $task_permission))
 				$pheduyet = 1;
 			
-			if(in_array('permission_brand_task', $task_permission) && in_array($user_info['id'], $project_implement)) {
+			if(in_array('permission_create_task', $task_permission) && in_array($user_info['id'], $project_implement)) {
 				$pheduyet = 1;
 				$is_create_task = true;
 			}
@@ -46,7 +46,7 @@
 		
 		$pheduyet = 1;
 		
-		if(in_array('permisson_project', $task_permission)) 
+		if(in_array('permission_create_task', $task_permission))
 			$is_create_task = true;
 
 	}

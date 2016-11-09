@@ -9,3 +9,18 @@ nghiavl@115.146.126.125:/opt/repos/4biz2016.git
 6/11 (chủ nhật) : đi làm
 7/11 : đi làm chiều. nghỉ sáng
 8/11 : đi làm
+9/11: đi làm
+
+INSERT INTO `phppos_modules` (`name_lang_key`, `desc_lang_key`, `sort`, `icon`, `module_id`, `main_menu`) VALUES
+('module_tasks', 'module_tasks_desc', 100, 'bag', 'tasks', 1);
+
+INSERT INTO `phppos_modules_actions` (`action_id`, `module_id`, `action_name_key`, `sort`) VALUES
+('permission_create_task', 'tasks', 'module_permisson_create_task', 5),
+('personal_task_view', 'tasks', 'module_personal_task_view', 8),
+('tasks_view', 'tasks', 'module_tasks_view', 1),
+('template_task_view', 'tasks', 'module_template_task_view', 6),
+('update_all_task', 'tasks', 'module_update_all_task', 3),
+('update_brand_task', 'tasks', 'module_update_brand_task', 4),
+('update_personal_task', 'tasks', 'module_update_personal_task', 9),
+('update_project', 'tasks', 'module_update_project', 2),
+('update_task_template', 'tasks', 'module_update_task_template', 7);

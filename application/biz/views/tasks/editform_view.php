@@ -37,7 +37,7 @@ if($parent > 0) {
             }
         }
 
-        if(in_array('permission_brand_task', $task_permission) && in_array($user_info['id'], $project_implement))
+        if(in_array('permission_create_task', $task_permission) && in_array($user_info['id'], $project_implement))
             $is_create_task = true;
     }
 
@@ -47,7 +47,7 @@ if($parent > 0) {
 }else{
     $title = 'Dự án "'.$item['name'].'"';
     $congviec_title = 'Tên dự án';
-    if(in_array('permisson_project', $task_permission))
+    if(in_array('permission_create_task', $task_permission))
         $is_create_task = true;
 
     $btnPheduyet = false;
