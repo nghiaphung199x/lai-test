@@ -535,8 +535,8 @@ function loading(keyword) {
 	}else{
 		$("#loading_2").show();
 	}
-		 
 }
+
 
 function close_loading(keyword) {
 	if(keyword != 'file' && keyword != 'file-personal') {
@@ -1939,13 +1939,56 @@ function get_two_dates(date) {
     return date;
 }
 
-function do_change_advance_search(obj, type, options) {
-
-    var class_name     = $(obj).attr('class');
-    if(class_name != 'unclick') {
+function reset_hidden_input(options) {
+    if (typeof options == 'undefined'){
         var project_id     = $('#current_project_id').val();
         var element_parent = $('#project_grid_table').find('tr[data-parent="'+project_id+'"]');
 
+        var s_trangthai                = element_parent.find('.s_trangthai');
+        var s_customer                 = element_parent.find('.s_customer');
+        var s_implement                = element_parent.find('.s_implement');
+        var s_xem                      = element_parent.find('.s_xem');
+        var s_status                   = element_parent.find('.s_status');
+        var s_progress                 = element_parent.find('.s_progress');
+
+        var s_trangthai_html           =    element_parent.find('.s_trangthai_html');
+        var s_customer_html            =    element_parent.find('.s_customer_html');
+        var s_implement_html           =    element_parent.find('.s_implement_html');
+        var s_xem_html                 =    element_parent.find('.s_xem_html');
+    }else {
+        var s_trangthai            = $('#s_trangthai');
+        var s_customer             = $('#s_customer');
+        var s_implement            = $('#s_implement');
+        var s_xem                  = $('#s_xem');
+        var s_status               = $('#s_status');
+        var s_progress             = $('#s_progress');
+
+        var s_trangthai_html        = $('#s_trangthai_html');
+        var s_customer_html         = $('#s_customer_html');
+        var s_implement_html        = $('#s_implement_html');
+        var s_xem_html              = $('#s_xem_html');
+    }
+
+    s_trangthai.val('');
+    s_customer.val('');
+    s_implement.val('');
+    s_xem.val('');
+    s_status.val('');
+    s_progress.val('');
+
+    s_trangthai_html.html('');
+    s_customer_html.html('');
+    s_implement_html.html('');
+    s_xem_html.html('');
+}
+
+function do_change_advance_search(obj, type, options) {
+    var class_name     = $(obj).attr('class');
+    if(class_name != 'unclick') {
+        var project_id     = $('#current_project_id').val();
+
+        var element_parent = $('#project_grid_table').find('tr[data-parent="'+project_id+'"]');
+        reset_hidden_input();
         if (typeof options == 'undefined'){
             var s_trangthai            = element_parent.find('.s_trangthai');
             var s_implement            = element_parent.find('.s_implement');
